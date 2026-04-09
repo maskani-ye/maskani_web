@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
+import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 
 export const metadata: Metadata = {
   title: {
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-arabic antialiased bg-cream min-h-screen">
         <AuthProvider>
-          {children}
+          <LayoutWrapper>{children}</LayoutWrapper>
           <Toaster
             position="top-center"
             richColors
