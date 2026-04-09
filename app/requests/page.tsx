@@ -22,7 +22,7 @@ export default function RequestsPage() {
   const [filters, setFilters] = useState({ city: "", property_type: "", offer_type: "" });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(r.data)).catch(() => {});
+    api.get("/cities/").then((r) => setCities(Array.isArray(r.data) ? r.data : r.data.results ?? [])).catch(() => {});
   }, []);
 
   const fetchRequests = useCallback(async () => {

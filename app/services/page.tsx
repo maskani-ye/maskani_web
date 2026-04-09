@@ -17,7 +17,7 @@ export default function ServicesPage() {
   const [filters, setFilters] = useState({ category: "", city: "" });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(r.data)).catch(() => {});
+    api.get("/cities/").then((r) => setCities(Array.isArray(r.data) ? r.data : r.data.results ?? [])).catch(() => {});
   }, []);
 
   const fetchProviders = useCallback(async () => {

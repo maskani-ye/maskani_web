@@ -26,7 +26,7 @@ export default function FraudReportsPage() {
   const [filters, setFilters] = useState({ search: "", fraud_type: "", status: "", city: "" });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(r.data)).catch(() => {});
+    api.get("/cities/").then((r) => setCities(Array.isArray(r.data) ? r.data : r.data.results ?? [])).catch(() => {});
   }, []);
 
   const fetchReports = useCallback(async () => {
