@@ -6,7 +6,7 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import {
   UsersGroupRounded, Buildings2, ShieldWarning, PenNewSquare,
-  Eye, GraphNewUp, Bell, CheckCircle,
+  Eye, GraphNewUp, Bell, CheckCircle, MapPoint,
 } from "@solar-icons/react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { Button } from "@/components/ui/Button";
@@ -153,7 +153,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Pending Reports */}
         <div className="bg-white rounded-2xl card-shadow p-5">
           <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -165,6 +165,20 @@ export default function AdminDashboardPage() {
           </p>
           <Button onClick={() => router.push("/admin/reports")} variant="outline" fullWidth>
             مراجعة البلاغات
+          </Button>
+        </div>
+
+        {/* Cities Management */}
+        <div className="bg-white rounded-2xl card-shadow p-5">
+          <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <MapPoint className="h-5 w-5 text-primary" />
+            إدارة المدن والدول
+          </h3>
+          <p className="text-gray-500 text-sm mb-4">
+            إضافة وتعديل المدن والدول المتاحة في المنصة
+          </p>
+          <Button onClick={() => router.push("/admin/cities")} variant="outline" fullWidth>
+            إدارة المدن
           </Button>
         </div>
 

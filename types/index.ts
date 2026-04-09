@@ -19,12 +19,24 @@ export interface User {
   created_at: string;
 }
 
-// ─── Cities ───────────────────────────────────────────────────────────────
+// ─── Cities & Countries ───────────────────────────────────────────────────
+export interface Country {
+  id: number;
+  name_ar: string;
+  name_en: string;
+  code: string;
+  is_active: boolean;
+  cities: City[];
+}
+
 export interface City {
   id: number;
   name_ar: string;
   name_en: string;
   region: string;
+  country: number;
+  country_name: string;
+  is_active?: boolean;
 }
 
 // ─── Listings ─────────────────────────────────────────────────────────────
