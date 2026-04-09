@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -30,7 +30,7 @@ const OFFER_TYPE_OPTS = [
   { value: "rent_yearly", label: "إيجار سنوي" },
 ];
 
-export default function ListingsPage() {
+function ListingsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -296,5 +296,13 @@ export default function ListingsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ListingsPage() {
+  return (
+    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-gray-400">جاري التحميل...</div>}>
+      <ListingsContent />
+    </Suspense>
   );
 }
