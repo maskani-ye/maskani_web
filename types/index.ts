@@ -9,6 +9,7 @@ export interface User {
   avatar: string | null;
   bio: string;
   is_verified: boolean;
+  is_active: boolean;
   city: number | null;
   city_name: string | null;
   average_rating: number | null;

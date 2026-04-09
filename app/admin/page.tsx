@@ -226,7 +226,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Pending Reports */}
         <div className="bg-white rounded-2xl card-shadow p-5">
           <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -261,6 +261,18 @@ export default function AdminDashboardPage() {
           <p className="text-gray-500 text-sm mb-4">إضافة وتعديل المدن والدول المتاحة في المنصة</p>
           <Button onClick={() => router.push("/admin/cities")} variant="outline" fullWidth>
             إدارة المدن
+          </Button>
+        </div>
+
+        {/* Users */}
+        <div className="bg-white rounded-2xl card-shadow p-5">
+          <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+            <UsersGroupRounded className="h-5 w-5 text-primary" />
+            إدارة المستخدمين
+          </h3>
+          <p className="text-gray-500 text-sm mb-4">عرض وتعديل وتوثيق وتعليق حسابات المستخدمين</p>
+          <Button onClick={() => router.push("/admin/users")} variant="outline" fullWidth>
+            إدارة المستخدمين
           </Button>
         </div>
 
