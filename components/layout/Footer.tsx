@@ -1,0 +1,85 @@
+import Link from "next/link";
+import { Home, Phone, Mail, Shield, Building2, Wrench, MessageSquarePlus } from "lucide-react";
+
+export function Footer() {
+  return (
+    <footer className="bg-primary text-white mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand */}
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
+                <Home className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-2xl font-extrabold">مسكني</span>
+            </div>
+            <p className="text-primary-200 text-sm leading-relaxed">
+              منصة عقارية اجتماعية تربط بين صاحب العقار والعميل. بيع، إيجار، خدمات، ومجتمع لمكافحة الاحتيال.
+            </p>
+          </div>
+
+          {/* Links */}
+          <div>
+            <h4 className="font-bold text-white mb-4">الخدمات</h4>
+            <ul className="space-y-2">
+              {[
+                { href: "/listings?offer_type=sale", label: "عقارات للبيع" },
+                { href: "/listings?offer_type=rent_monthly", label: "إيجار شهري" },
+                { href: "/listings?offer_type=rent_yearly", label: "إيجار سنوي" },
+                { href: "/listings?property_type=land", label: "أراضي" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-primary-200 hover:text-white text-sm transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-white mb-4">المنصة</h4>
+            <ul className="space-y-2">
+              {[
+                { href: "/services", label: "خدمات عقارية" },
+                { href: "/fraud-reports", label: "مجتمع الشكاوي" },
+                { href: "/requests", label: "طلبات العملاء" },
+                { href: "/auth/register", label: "إنشاء حساب" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-primary-200 hover:text-white text-sm transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-white mb-4">التواصل</h4>
+            <ul className="space-y-3">
+              <li className="flex items-center gap-2 text-primary-200 text-sm">
+                <Shield className="h-4 w-4 text-gold" />
+                <span>منصة موثوقة وآمنة</span>
+              </li>
+              <li className="flex items-center gap-2 text-primary-200 text-sm">
+                <Building2 className="h-4 w-4 text-gold" />
+                <span>آلاف الإعلانات العقارية</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="border-t border-primary-600 mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-primary-200 text-sm">
+            © {new Date().getFullYear()} مسكني — جميع الحقوق محفوظة
+          </p>
+          <p className="text-primary-300 text-xs">
+            لا توجد عمليات دفع إلكترونية — التواصل مباشر بين الأطراف
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
