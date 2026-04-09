@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import {
-  Users, Building2, ShieldAlert, MessageSquarePlus,
-  Eye, TrendingUp, Bell, CheckCircle2,
-} from "lucide-react";
+  UsersGroupRounded, Buildings2, ShieldWarning, PenNewSquare,
+  Eye, GraphNewUp, Bell, CheckCircle,
+} from "@solar-icons/react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
@@ -77,12 +77,12 @@ export default function AdminDashboardPage() {
   );
 
   const statCards = [
-    { label: "إجمالي المستخدمين", value: stats.users_count, icon: Users, color: "bg-primary/10 text-primary" },
-    { label: "إجمالي الإعلانات", value: stats.listings_count, icon: Building2, color: "bg-gold/10 text-gold" },
-    { label: "بلاغات الاحتيال", value: stats.fraud_reports_count, icon: ShieldAlert, color: "bg-red-100 text-red-600" },
+    { label: "إجمالي المستخدمين", value: stats.users_count, icon: UsersGroupRounded, color: "bg-primary/10 text-primary" },
+    { label: "إجمالي الإعلانات", value: stats.listings_count, icon: Buildings2, color: "bg-gold/10 text-gold" },
+    { label: "بلاغات الاحتيال", value: stats.fraud_reports_count, icon: ShieldWarning, color: "bg-red-100 text-red-600" },
     { label: "بلاغات قيد المراجعة", value: stats.pending_reports_count, icon: Eye, color: "bg-yellow-100 text-yellow-600" },
-    { label: "طلبات العملاء", value: stats.requests_count, icon: MessageSquarePlus, color: "bg-blue-100 text-blue-600" },
-    { label: "مزودو الخدمة", value: stats.services_count, icon: TrendingUp, color: "bg-purple-100 text-purple-600" },
+    { label: "طلبات العملاء", value: stats.requests_count, icon: PenNewSquare, color: "bg-blue-100 text-blue-600" },
+    { label: "مزودو الخدمة", value: stats.services_count, icon: GraphNewUp, color: "bg-purple-100 text-purple-600" },
   ];
 
   const pieData = [
@@ -157,7 +157,7 @@ export default function AdminDashboardPage() {
         {/* Pending Reports */}
         <div className="bg-white rounded-2xl card-shadow p-5">
           <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <ShieldAlert className="h-5 w-5 text-red-500" />
+            <ShieldWarning className="h-5 w-5 text-red-500" />
             إدارة البلاغات
           </h3>
           <p className="text-gray-500 text-sm mb-4">
@@ -201,6 +201,7 @@ export default function AdminDashboardPage() {
             </select>
             <Button onClick={handleBroadcast} loading={sending} fullWidth>
               <Bell className="h-4 w-4" /> إرسال الإشعار
+
             </Button>
           </div>
         </div>

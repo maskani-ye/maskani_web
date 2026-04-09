@@ -7,7 +7,7 @@ import { serviceCategoryLabels } from "@/lib/utils";
 import type { ServiceProvider, PaginatedResponse, City } from "@/types";
 import { Select } from "@/components/ui/Select";
 import { StarRating } from "@/components/ui/StarRating";
-import { Wrench, User, CheckCircle2, MapPin, Phone } from "lucide-react";
+import { Settings, User, CheckCircle, MapPoint, Phone } from "@solar-icons/react";
 import { toast } from "sonner";
 
 export default function ServicesPage() {
@@ -37,7 +37,7 @@ export default function ServicesPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Wrench className="h-6 w-6 text-primary" /> الخدمات العقارية
+          <Settings className="h-6 w-6 text-primary" /> الخدمات العقارية
         </h1>
         <p className="text-gray-500 text-sm mt-1">مهندسون، مقاولون، مصممون، وأكثر</p>
       </div>
@@ -84,7 +84,7 @@ export default function ServicesPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-1">
                       <span className="font-bold text-gray-900 text-sm truncate">{p.user_name}</span>
-                      {p.user_verified && <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0" />}
+                      {p.user_verified && <CheckCircle className="h-3.5 w-3.5 text-primary flex-shrink-0" />}
                     </div>
                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
                       {serviceCategoryLabels[p.category]}
@@ -95,7 +95,7 @@ export default function ServicesPage() {
                 <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
                   <span>{p.experience_years} سنة خبرة</span>
                   {p.cities_names && p.cities_names.length > 0 && (
-                    <span className="flex items-center gap-0.5"><MapPin className="h-3 w-3 text-primary" />{p.cities_names.slice(0, 2).join("، ")}</span>
+                    <span className="flex items-center gap-0.5"><MapPoint className="h-3 w-3 text-primary" />{p.cities_names.slice(0, 2).join("، ")}</span>
                   )}
                 </div>
                 <div className="flex items-center justify-between">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, Phone, Mail, Shield, Building2, Wrench, MessageSquarePlus } from "lucide-react";
+import { Home2, Phone, Letter, Shield, Buildings2, Settings, PenNewSquare } from "@solar-icons/react";
 
 export function Footer() {
   return (
@@ -10,7 +10,7 @@ export function Footer() {
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
-                <Home className="h-5 w-5 text-white" />
+                <Home2 className="h-5 w-5 text-white" />
               </div>
               <span className="text-2xl font-extrabold">مسكني</span>
             </div>
@@ -64,7 +64,7 @@ export function Footer() {
                 <span>منصة موثوقة وآمنة</span>
               </li>
               <li className="flex items-center gap-2 text-primary-200 text-sm">
-                <Building2 className="h-4 w-4 text-gold" />
+                <Buildings2 className="h-4 w-4 text-gold" />
                 <span>آلاف الإعلانات العقارية</span>
               </li>
             </ul>

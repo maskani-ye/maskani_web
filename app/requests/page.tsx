@@ -8,7 +8,7 @@ import { formatRelativeTime, formatPrice } from "@/lib/utils";
 import type { ClientRequest, PaginatedResponse, City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
-import { MessageSquarePlus, Plus, MapPin, BedDouble, Coins, Clock, ChevronRight } from "lucide-react";
+import { PenNewSquare, AddCircle, MapPoint, Bed, Dollar, ClockCircle, AltArrowRight } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
@@ -51,13 +51,13 @@ export default function RequestsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <MessageSquarePlus className="h-6 w-6 text-primary" />
+            <PenNewSquare className="h-6 w-6 text-primary" />
             طلبات العملاء
           </h1>
           <p className="text-gray-500 text-sm mt-1">{total} طلب نشط</p>
         </div>
         <Button onClick={() => user ? router.push("/requests/create") : router.push("/auth/login")}>
-          <Plus className="h-4 w-4" /> نشر طلب
+          <AddCircle className="h-4 w-4" /> نشر طلب
         </Button>
       </div>
 
@@ -98,7 +98,7 @@ export default function RequestsPage() {
         </div>
       ) : requests.length === 0 ? (
         <div className="text-center py-20">
-          <MessageSquarePlus className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <PenNewSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 text-lg">لا توجد طلبات حالياً</p>
           <p className="text-gray-400 text-sm mt-1">كن أول من ينشر طلبه!</p>
         </div>
@@ -119,9 +119,9 @@ export default function RequestsPage() {
                     </div>
                     <p className="font-bold text-gray-800 mb-2">{req.client_name} يبحث عن عقار</p>
                     <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
-                      <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5 text-primary" /> {req.city_name}{req.neighborhood && ` — ${req.neighborhood}`}</span>
-                      {req.budget_max && <span className="flex items-center gap-1"><Coins className="h-3.5 w-3.5 text-gold" /> حتى {formatPrice(req.budget_max)}</span>}
-                      {req.rooms_needed && <span className="flex items-center gap-1"><BedDouble className="h-3.5 w-3.5" /> {req.rooms_needed} غرف</span>}
+                      <span className="flex items-center gap-1"><MapPoint className="h-3.5 w-3.5 text-primary" /> {req.city_name}{req.neighborhood && ` — ${req.neighborhood}`}</span>
+                      {req.budget_max && <span className="flex items-center gap-1"><Dollar className="h-3.5 w-3.5 text-gold" /> حتى {formatPrice(req.budget_max)}</span>}
+                      {req.rooms_needed && <span className="flex items-center gap-1"><Bed className="h-3.5 w-3.5" /> {req.rooms_needed} غرف</span>}
                     </div>
                     {req.additional_specs && (
                       <p className="text-xs text-gray-400 mt-2 line-clamp-1">{req.additional_specs}</p>
@@ -130,10 +130,10 @@ export default function RequestsPage() {
                   <div className="text-left flex-shrink-0">
                     <div className="text-sm font-bold text-primary">{req.offers_count} عرض</div>
                     <div className="text-xs text-gray-400 flex items-center gap-1 mt-1">
-                      <Clock className="h-3.5 w-3.5" />
+                      <ClockCircle className="h-3.5 w-3.5" />
                       {formatRelativeTime(req.created_at)}
                     </div>
-                    <ChevronRight className="h-4 w-4 text-gray-300 mt-2 mr-auto" />
+                    <AltArrowRight className="h-4 w-4 text-gray-300 mt-2 mr-auto" />
                   </div>
                 </div>
               </div>

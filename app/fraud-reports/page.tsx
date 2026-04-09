@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import {
-  ShieldAlert, Search, ThumbsUp, ThumbsDown, MessageCircle,
-  Plus, AlertTriangle, CheckCircle2, Clock,
-} from "lucide-react";
+  ShieldWarning, Magnifer, Like, Dislike, ChatRound,
+  AddCircle, DangerTriangle, CheckCircle, ClockCircle,
+} from "@solar-icons/react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -54,9 +54,9 @@ export default function FraudReportsPage() {
   };
 
   const statusIcon = (s: string) => {
-    if (s === "verified") return <CheckCircle2 className="h-4 w-4 text-red-600" />;
-    if (s === "pending") return <Clock className="h-4 w-4 text-yellow-600" />;
-    return <AlertTriangle className="h-4 w-4 text-gray-400" />;
+    if (s === "verified") return <CheckCircle className="h-4 w-4 text-red-600" />;
+    if (s === "pending") return <ClockCircle className="h-4 w-4 text-yellow-600" />;
+    return <DangerTriangle className="h-4 w-4 text-gray-400" />;
   };
 
   return (
@@ -65,20 +65,20 @@ export default function FraudReportsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ShieldAlert className="h-6 w-6 text-red-600" />
+            <ShieldWarning className="h-6 w-6 text-red-600" />
             مجتمع الشكاوي
           </h1>
           <p className="text-gray-500 text-sm mt-1">{total} بلاغ | الشفافية تحمي الجميع</p>
         </div>
         <Button onClick={() => user ? router.push("/fraud-reports/create") : router.push("/auth/login")}>
-          <Plus className="h-4 w-4" />
+          <AddCircle className="h-4 w-4" />
           رفع بلاغ
         </Button>
       </div>
 
       {/* Warning Banner */}
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-        <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+        <DangerTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
         <p className="text-sm text-amber-800">
           البلاغات المنشورة هنا لأغراض تحذيرية وقائية. يُرجى الالتزام بالمصداقية والدقة عند رفع أي بلاغ.
         </p>
@@ -90,7 +90,7 @@ export default function FraudReportsPage() {
           placeholder="بحث..."
           value={filters.search}
           onChange={(e) => setFilters((p) => ({ ...p, search: e.target.value }))}
-          startIcon={<Search className="h-4 w-4" />}
+          startIcon={<Magnifer className="h-4 w-4" />}
           className="col-span-2 md:col-span-1"
         />
         <Select
@@ -130,7 +130,7 @@ export default function FraudReportsPage() {
         </div>
       ) : reports.length === 0 ? (
         <div className="text-center py-20">
-          <ShieldAlert className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <ShieldWarning className="h-16 w-16 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 text-lg">لا توجد بلاغات مطابقة</p>
         </div>
       ) : (
@@ -174,18 +174,18 @@ export default function FraudReportsPage() {
                     onClick={(e) => handleVote(report.id, true, e)}
                     className="flex items-center gap-1.5 text-sm text-green-600 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
                   >
-                    <ThumbsUp className="h-4 w-4" />
+                    <Like className="h-4 w-4" />
                     <span>مصداقي ({report.votes_credible})</span>
                   </button>
                   <button
                     onClick={(e) => handleVote(report.id, false, e)}
                     className="flex items-center gap-1.5 text-sm text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
                   >
-                    <ThumbsDown className="h-4 w-4" />
+                    <Dislike className="h-4 w-4" />
                     <span>غير مصداقي ({report.votes_not_credible})</span>
                   </button>
                   <div className="flex items-center gap-1 text-sm text-gray-400 mr-auto">
-                    <MessageCircle className="h-4 w-4" />
+                    <ChatRound className="h-4 w-4" />
                     <span>{report.comments_count} تعليق</span>
                   </div>
                   <div className="text-sm font-bold text-gray-600">

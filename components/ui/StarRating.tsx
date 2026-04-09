@@ -1,6 +1,6 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { Star } from "@solar-icons/react";
 import { cn } from "@/lib/utils";
 
 interface StarRatingProps {

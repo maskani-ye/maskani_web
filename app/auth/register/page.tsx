@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Home, Phone, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Home2, Phone, Lock, User, Eye, EyeClosed } from "@solar-icons/react";
 import { toast } from "sonner";
 import { getErrorMessage, api } from "@/lib/api";
 import type { City } from "@/types";
@@ -60,7 +60,7 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex flex-col items-center gap-2">
             <div className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
-              <Home className="h-7 w-7 text-white" />
+              <Home2 className="h-7 w-7 text-white" />
             </div>
             <span className="text-2xl font-extrabold text-primary">مسكني</span>
           </Link>
@@ -110,7 +110,7 @@ export default function RegisterPage() {
               startIcon={<Lock className="h-4 w-4" />}
               endIcon={
                 <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? <EyeClosed className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               }
               required

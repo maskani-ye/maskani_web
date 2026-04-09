@@ -9,9 +9,9 @@ import type { Listing, City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import {
-  Search, Building2, ShieldAlert, Wrench, MessageSquarePlus, ArrowLeft,
-  MapPin, BedDouble, Maximize2, Eye,
-} from "lucide-react";
+  Magnifer, Buildings2, ShieldWarning, Settings, PenNewSquare, AltArrowLeft,
+  MapPoint, Bed, Ruler, Eye,
+} from "@solar-icons/react";
 import { motion } from "framer-motion";
 
 export default function HomeClient() {
@@ -94,7 +94,7 @@ export default function HomeClient() {
                 placeholder="نوع العرض"
               />
               <Button onClick={handleSearch} size="lg" className="w-full">
-                <Search className="h-4 w-4" />
+                <Magnifer className="h-4 w-4" />
                 بحث
               </Button>
             </div>
@@ -106,10 +106,10 @@ export default function HomeClient() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { icon: Building2, label: "إعلانات للبيع والإيجار", color: "bg-primary/10 text-primary", href: "/listings" },
-            { icon: Wrench, label: "خدمات عقارية متخصصة", color: "bg-gold/10 text-gold", href: "/services" },
-            { icon: ShieldAlert, label: "مجتمع الشكاوي", color: "bg-red-50 text-red-600", href: "/fraud-reports" },
-            { icon: MessageSquarePlus, label: "طلبات العملاء", color: "bg-blue-50 text-blue-600", href: "/requests" },
+            { icon: Buildings2, label: "إعلانات للبيع والإيجار", color: "bg-primary/10 text-primary", href: "/listings" },
+            { icon: Settings, label: "خدمات عقارية متخصصة", color: "bg-gold/10 text-gold", href: "/services" },
+            { icon: ShieldWarning, label: "مجتمع الشكاوي", color: "bg-red-50 text-red-600", href: "/fraud-reports" },
+            { icon: PenNewSquare, label: "طلبات العملاء", color: "bg-blue-50 text-blue-600", href: "/requests" },
           ].map((item) => {
             const Icon = item.icon;
             return (
@@ -135,7 +135,7 @@ export default function HomeClient() {
           </div>
           <Link href="/listings">
             <Button variant="outline" size="sm">
-              عرض الكل <ArrowLeft className="h-4 w-4" />
+              عرض الكل <AltArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
         </div>
@@ -158,7 +158,7 @@ export default function HomeClient() {
           </p>
           <Link href="/fraud-reports/create">
             <Button size="lg" variant="danger">
-              <ShieldAlert className="h-5 w-5" />
+              <ShieldWarning className="h-5 w-5" />
               رفع بلاغ احتيال
             </Button>
           </Link>
@@ -181,7 +181,7 @@ function ListingCard({ listing }: { listing: Listing }) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <Building2 className="h-12 w-12 text-gray-300" />
+              <Buildings2 className="h-12 w-12 text-gray-300" />
             </div>
           )}
           <div className="absolute top-3 right-3">
@@ -197,18 +197,18 @@ function ListingCard({ listing }: { listing: Listing }) {
             {listing.title}
           </h3>
           <div className="flex items-center gap-1 text-gray-400 text-xs mb-3">
-            <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+            <MapPoint className="h-3.5 w-3.5 flex-shrink-0" />
             <span>{listing.city_name}{listing.neighborhood && ` — ${listing.neighborhood}`}</span>
           </div>
           <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
             {listing.rooms && (
               <span className="flex items-center gap-1">
-                <BedDouble className="h-3.5 w-3.5 text-primary" /> {listing.rooms}
+                <Bed className="h-3.5 w-3.5 text-primary" /> {listing.rooms}
               </span>
             )}
             {listing.area && (
               <span className="flex items-center gap-1">
-                <Maximize2 className="h-3.5 w-3.5 text-primary" /> {listing.area}م²
+                <Ruler className="h-3.5 w-3.5 text-primary" /> {listing.area}م²
               </span>
             )}
             <span className="flex items-center gap-1 mr-auto">

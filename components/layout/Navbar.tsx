@@ -5,19 +5,19 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import {
-  Home, Search, Building2, ShieldAlert, MessageSquarePlus,
-  Bell, User, Menu, X, ChevronDown, LogOut, Settings, Plus,
-} from "lucide-react";
+  Home2, Magnifer, Buildings2, ShieldWarning, PenNewSquare,
+  Bell, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings, AddCircle,
+} from "@solar-icons/react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 const navLinks = [
-  { href: "/listings", label: "الإعلانات", icon: Building2 },
+  { href: "/listings", label: "الإعلانات", icon: Buildings2 },
   { href: "/services", label: "الخدمات", icon: Settings },
-  { href: "/fraud-reports", label: "مجتمع الشكاوي", icon: ShieldAlert },
-  { href: "/requests", label: "طلبات العملاء", icon: MessageSquarePlus },
+  { href: "/fraud-reports", label: "مجتمع الشكاوي", icon: ShieldWarning },
+  { href: "/requests", label: "طلبات العملاء", icon: PenNewSquare },
 ];
 
 export function Navbar() {
@@ -40,7 +40,7 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
             <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
-              <Home className="h-5 w-5 text-white" />
+              <Home2 className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-extrabold text-primary">مسكني</span>
           </Link>
@@ -73,7 +73,7 @@ export function Navbar() {
                 {/* Add Listing Button */}
                 {(user.role === "owner" || user.role === "broker" || user.role === "admin") && (
                   <Button size="sm" onClick={() => router.push("/listings/create")}>
-                    <Plus className="h-4 w-4" />
+                    <AddCircle className="h-4 w-4" />
                     إضافة إعلان
                   </Button>
                 )}
@@ -97,7 +97,7 @@ export function Navbar() {
                       </div>
                     )}
                     <span className="text-sm font-semibold text-gray-800 max-w-24 truncate">{user.full_name}</span>
-                    <ChevronDown className="h-4 w-4 text-gray-400" />
+                    <AltArrowDown className="h-4 w-4 text-gray-400" />
                   </button>
 
                   {profileOpen && (
@@ -106,13 +106,13 @@ export function Navbar() {
                         <User className="h-4 w-4 text-primary" /> ملفي الشخصي
                       </Link>
                       <Link href="/listings/my" className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700" onClick={() => setProfileOpen(false)}>
-                        <Building2 className="h-4 w-4 text-primary" /> إعلاناتي
+                        <Buildings2 className="h-4 w-4 text-primary" /> إعلاناتي
                       </Link>
                       <Link href="/requests/my" className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700" onClick={() => setProfileOpen(false)}>
-                        <MessageSquarePlus className="h-4 w-4 text-primary" /> طلباتي
+                        <PenNewSquare className="h-4 w-4 text-primary" /> طلباتي
                       </Link>
                       <Link href="/favorites" className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700" onClick={() => setProfileOpen(false)}>
-                        <Search className="h-4 w-4 text-primary" /> المفضّلة
+                        <Magnifer className="h-4 w-4 text-primary" /> المفضّلة
                       </Link>
                       {user.role === "admin" && (
                         <Link href="/admin" className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm text-gold" onClick={() => setProfileOpen(false)}>
@@ -121,7 +121,7 @@ export function Navbar() {
                       )}
                       <hr className="my-1 border-gray-100" />
                       <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2.5 hover:bg-red-50 text-sm text-red-600 w-full text-right">
-                        <LogOut className="h-4 w-4" /> تسجيل الخروج
+                        <Login className="h-4 w-4" /> تسجيل الخروج
                       </button>
                     </div>
                   )}
@@ -141,7 +141,7 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <button className="md:hidden p-2 rounded-lg hover:bg-gray-100" onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileOpen ? <CloseCircle className="h-5 w-5" /> : <HamburgerMenu className="h-5 w-5" />}
           </button>
         </div>
 

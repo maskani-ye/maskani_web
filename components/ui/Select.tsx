@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { forwardRef, SelectHTMLAttributes, ReactNode } from "react";
-import { ChevronDown } from "lucide-react";
+import { AltArrowDown } from "@solar-icons/react";
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
@@ -42,7 +42,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <AltArrowDown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
         </div>
         {error && <p className="text-xs text-red-500">{error}</p>}
       </div>

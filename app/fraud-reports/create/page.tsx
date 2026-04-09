@@ -7,7 +7,7 @@ import type { City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { ShieldAlert, Upload, X } from "lucide-react";
+import { ShieldWarning, CloudUpload, CloseCircle } from "@solar-icons/react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 
@@ -67,7 +67,7 @@ export default function CreateFraudReportPage() {
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-          <ShieldAlert className="h-5 w-5 text-red-600" />
+          <ShieldWarning className="h-5 w-5 text-red-600" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">رفع بلاغ احتيال</h1>
@@ -102,7 +102,7 @@ export default function CreateFraudReportPage() {
         <div>
           <label className="text-sm font-semibold text-gray-700 mb-1.5 block">أدلة وصور (حتى 5 صور)</label>
           <label className="flex items-center justify-center gap-2 h-24 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors">
-            <Upload className="h-5 w-5 text-gray-400" />
+            <CloudUpload className="h-5 w-5 text-gray-400" />
             <span className="text-sm text-gray-400">اضغط لرفع الصور</span>
             <input type="file" multiple accept="image/*" onChange={handleImages} className="hidden" />
           </label>
@@ -112,7 +112,7 @@ export default function CreateFraudReportPage() {
                 <div key={i} className="relative w-16 h-14 rounded-xl overflow-hidden">
                   <img src={URL.createObjectURL(img)} alt="" className="w-full h-full object-cover" />
                   <button type="button" onClick={() => setImages((p) => p.filter((_, j) => j !== i))} className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                    <X className="h-3 w-3 text-white" />
+                    <CloseCircle className="h-3 w-3 text-white" />
                   </button>
                 </div>
               ))}
@@ -121,7 +121,7 @@ export default function CreateFraudReportPage() {
         </div>
 
         <Button type="submit" fullWidth loading={loading} size="lg" variant="danger">
-          <ShieldAlert className="h-4 w-4" />
+          <ShieldWarning className="h-4 w-4" />
           نشر البلاغ
         </Button>
       </form>

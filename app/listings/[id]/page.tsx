@@ -14,24 +14,24 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { StarRating } from "@/components/ui/StarRating";
 import {
-  MapPin, BedDouble, Maximize2, Eye, Heart, Phone, MessageSquare,
-  CheckCircle2, XCircle, Building2, Share2, ArrowRight, User,
-  Bath, Layers, Car, Wifi, Wind, Shield, TreePine, Zap, Package, PawPrint,
-} from "lucide-react";
+  MapPoint, Bed, Ruler, Eye, Heart, Phone, ChatSquare,
+  CheckCircle, CloseCircle, Buildings2, Share, AltArrowRight, User,
+  Bath, Layers, TagPrice, WiFiRouter, CloudBolt, Shield, Leaf, Bolt, Box, Paw,
+} from "@solar-icons/react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 const featuresList = [
   { key: "has_elevator", label: "مصعد", icon: Layers },
-  { key: "has_parking", label: "موقف سيارة", icon: Car },
-  { key: "has_garden", label: "حديقة", icon: TreePine },
-  { key: "has_pool", label: "مسبح", icon: Package },
+  { key: "has_parking", label: "موقف سيارة", icon: TagPrice },
+  { key: "has_garden", label: "حديقة", icon: Leaf },
+  { key: "has_pool", label: "مسبح", icon: Box },
   { key: "has_security", label: "أمن وحراسة", icon: Shield },
-  { key: "has_internet", label: "إنترنت", icon: Wifi },
-  { key: "has_ac", label: "تكييف", icon: Wind },
-  { key: "has_generator", label: "مولد كهربائي", icon: Zap },
-  { key: "has_storage", label: "غرفة تخزين", icon: Package },
-  { key: "pets_allowed", label: "يسمح بالحيوانات", icon: PawPrint },
+  { key: "has_internet", label: "إنترنت", icon: WiFiRouter },
+  { key: "has_ac", label: "تكييف", icon: CloudBolt },
+  { key: "has_generator", label: "مولد كهربائي", icon: Bolt },
+  { key: "has_storage", label: "غرفة تخزين", icon: Box },
+  { key: "pets_allowed", label: "يسمح بالحيوانات", icon: Paw },
 ] as const;
 
 export default function ListingDetailPage() {
@@ -108,9 +108,9 @@ export default function ListingDetailPage() {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
         <Link href="/" className="hover:text-primary">الرئيسية</Link>
-        <ArrowRight className="h-3.5 w-3.5" />
+        <AltArrowRight className="h-3.5 w-3.5" />
         <Link href="/listings" className="hover:text-primary">الإعلانات</Link>
-        <ArrowRight className="h-3.5 w-3.5" />
+        <AltArrowRight className="h-3.5 w-3.5" />
         <span className="text-gray-700 font-medium line-clamp-1">{listing.title}</span>
       </div>
 
@@ -135,7 +135,7 @@ export default function ListingDetailPage() {
                 </AnimatePresence>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Building2 className="h-20 w-20 text-gray-300" />
+                  <Buildings2 className="h-20 w-20 text-gray-300" />
                 </div>
               )}
               {/* Overlay Badges */}
@@ -170,16 +170,17 @@ export default function ListingDetailPage() {
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-1">{listing.title}</h1>
                 <div className="flex items-center gap-1 text-gray-500 text-sm">
-                  <MapPin className="h-4 w-4 text-primary" />
+                  <MapPoint className="h-4 w-4 text-primary" />
                   <span>{listing.city_name}{listing.neighborhood && ` — ${listing.neighborhood}`}</span>
                 </div>
               </div>
               <div className="flex gap-2">
                 <button onClick={handleFavorite} className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center hover:bg-red-50 transition-colors">
                   <Heart className={`h-5 w-5 ${favorited ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
+
                 </button>
                 <button onClick={handleShare} className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors">
-                  <Share2 className="h-5 w-5 text-gray-400" />
+                  <Share className="h-5 w-5 text-gray-400" />
                 </button>
               </div>
             </div>
@@ -187,12 +188,12 @@ export default function ListingDetailPage() {
             {/* Specs */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
               {[
-                { icon: Building2, label: "النوع", value: propertyTypeLabels[listing.property_type] },
-                ...(listing.rooms != null ? [{ icon: BedDouble, label: "الغرف", value: `${listing.rooms} غرف` }] : []),
+                { icon: Buildings2, label: "النوع", value: propertyTypeLabels[listing.property_type] },
+                ...(listing.rooms != null ? [{ icon: Bed, label: "الغرف", value: `${listing.rooms} غرف` }] : []),
                 ...(listing.bathrooms != null ? [{ icon: Bath, label: "الحمامات", value: `${listing.bathrooms}` }] : []),
-                ...(listing.area ? [{ icon: Maximize2, label: "المساحة", value: `${listing.area} م²` }] : []),
+                ...(listing.area ? [{ icon: Ruler, label: "المساحة", value: `${listing.area} م²` }] : []),
                 ...(listing.floor != null ? [{ icon: Layers, label: "الطابق", value: `${listing.floor}` }] : []),
-                ...(listing.furnishing ? [{ icon: Package, label: "التأثيث", value: furnishingLabels[listing.furnishing] }] : []),
+                ...(listing.furnishing ? [{ icon: Box, label: "التأثيث", value: furnishingLabels[listing.furnishing] }] : []),
               ].map((spec, i) => {
                 const Icon = spec.icon;
                 return (
@@ -213,7 +214,7 @@ export default function ListingDetailPage() {
                   const has = listing[key as keyof Listing] as boolean;
                   return (
                     <span key={key} className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-medium ${has ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400 line-through"}`}>
-                      {has ? <CheckCircle2 className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
+                      {has ? <CheckCircle className="h-3.5 w-3.5" /> : <CloseCircle className="h-3.5 w-3.5" />}
                       {label}
                     </span>
                   );
@@ -283,6 +284,7 @@ export default function ListingDetailPage() {
                 <a href={`tel:${listing.contact_phone}`}>
                   <Button fullWidth variant="primary">
                     <Phone className="h-4 w-4" />
+
                     اتصال: {listing.contact_phone}
                   </Button>
                 </a>
@@ -290,7 +292,7 @@ export default function ListingDetailPage() {
               {listing.contact_whatsapp && (
                 <a href={`https://wa.me/${listing.contact_whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer">
                   <Button fullWidth variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
-                    <MessageSquare className="h-4 w-4" />
+                    <ChatSquare className="h-4 w-4" />
                     واتساب
                   </Button>
                 </a>
@@ -313,7 +315,7 @@ export default function ListingDetailPage() {
                   <div>
                     <p className="font-bold text-gray-800 text-sm flex items-center gap-1">
                       {listing.user.full_name}
-                      {listing.user.is_verified && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
+                      {listing.user.is_verified && <CheckCircle className="h-3.5 w-3.5 text-primary" />}
                     </p>
                     {listing.user.average_rating && (
                       <StarRating rating={listing.user.average_rating} size="sm" />

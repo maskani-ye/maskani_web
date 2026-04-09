@@ -11,9 +11,9 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Badge } from "@/components/ui/Badge";
 import {
-  Search, SlidersHorizontal, Building2, MapPin, BedDouble,
-  Maximize2, Eye, Heart, ChevronRight, ChevronLeft, X,
-} from "lucide-react";
+  Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed,
+  Ruler, Eye, Heart, AltArrowRight, AltArrowLeft, CloseCircle,
+} from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
@@ -109,7 +109,7 @@ function ListingsContent() {
           <p className="text-gray-500 text-sm mt-1">{total} إعلان متاح</p>
         </div>
         <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
-          <SlidersHorizontal className="h-4 w-4" />
+          <SliderHorizontal className="h-4 w-4" />
           الفلاتر
         </Button>
       </div>
@@ -120,7 +120,7 @@ function ListingsContent() {
           placeholder="ابحث بالعنوان أو الحي..."
           value={filters.search}
           onChange={(e) => handleFilterChange("search", e.target.value)}
-          startIcon={<Search className="h-4 w-4" />}
+          startIcon={<Magnifer className="h-4 w-4" />}
           className="flex-1"
         />
         <Select
@@ -231,7 +231,7 @@ function ListingsContent() {
         </div>
       ) : listings.length === 0 ? (
         <div className="text-center py-20">
-          <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <Buildings2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 text-lg font-medium">لا توجد إعلانات مطابقة</p>
           <p className="text-gray-400 text-sm mt-1">جرّب تغيير معايير البحث</p>
         </div>
@@ -245,7 +245,7 @@ function ListingsContent() {
                     <img src={listing.main_image} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Building2 className="h-12 w-12 text-gray-300" />
+                      <Buildings2 className="h-12 w-12 text-gray-300" />
                     </div>
                   )}
                   <div className="absolute top-3 right-3">
@@ -258,6 +258,7 @@ function ListingsContent() {
                     className="absolute top-3 left-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
                   >
                     <Heart className={`h-4 w-4 ${favorites.has(listing.id) ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
+
                   </button>
                 </div>
                 <div className="p-4">
@@ -267,12 +268,12 @@ function ListingsContent() {
                   </div>
                   <h3 className="font-bold text-gray-900 text-sm mb-1 line-clamp-1">{listing.title}</h3>
                   <div className="flex items-center gap-1 text-gray-400 text-xs mb-3">
-                    <MapPin className="h-3.5 w-3.5" />
+                    <MapPoint className="h-3.5 w-3.5" />
                     <span>{listing.city_name}{listing.neighborhood && ` — ${listing.neighborhood}`}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
-                    {listing.rooms && <span className="flex items-center gap-0.5"><BedDouble className="h-3.5 w-3.5 text-primary" /> {listing.rooms}</span>}
-                    {listing.area && <span className="flex items-center gap-0.5"><Maximize2 className="h-3.5 w-3.5 text-primary" /> {listing.area}م²</span>}
+                    {listing.rooms && <span className="flex items-center gap-0.5"><Bed className="h-3.5 w-3.5 text-primary" /> {listing.rooms}</span>}
+                    {listing.area && <span className="flex items-center gap-0.5"><Ruler className="h-3.5 w-3.5 text-primary" /> {listing.area}م²</span>}
                     <span className="flex items-center gap-0.5 mr-auto"><Eye className="h-3.5 w-3.5" /> {listing.views_count}</span>
                   </div>
                   <p className="text-primary font-extrabold text-base">{formatPrice(listing.price)}</p>
@@ -287,11 +288,11 @@ function ListingsContent() {
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-3 mt-10">
           <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-            <ChevronRight className="h-4 w-4" /> السابق
+            <AltArrowRight className="h-4 w-4" /> السابق
           </Button>
           <span className="text-sm text-gray-600 font-medium">صفحة {page} من {totalPages}</span>
           <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
-            التالي <ChevronLeft className="h-4 w-4" />
+            التالي <AltArrowLeft className="h-4 w-4" />
           </Button>
         </div>
       )}
