@@ -24,7 +24,7 @@ export default function HomeClient() {
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
-    api.get("/listings/?page_size=8").then((r) => setListings(r.data.results)).catch(() => {});
+    api.get("/listings/?limit=8&offset=0").then((r) => setListings(r.data.results)).catch(() => {});
   }, []);
 
   const handleSearch = () => {

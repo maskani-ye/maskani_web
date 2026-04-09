@@ -28,7 +28,7 @@ export default function RequestsPage() {
   const fetchRequests = useCallback(async () => {
     setLoading(true);
     try {
-      const params: Record<string, string> = { page_size: "20" };
+      const params: Record<string, string> = { offset: "0", limit: "20" };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
       const { data } = await api.get<PaginatedResponse<ClientRequest>>("/requests/", { params });
       setRequests(data.results);

@@ -37,12 +37,12 @@ export default function AdminDashboardPage() {
     }
     // نبني stats من API calls متعددة
     Promise.all([
-      api.get("/auth/users/?page_size=1").catch(() => ({ data: { count: 0 } })),
-      api.get("/listings/?page_size=1").catch(() => ({ data: { count: 0 } })),
-      api.get("/fraud-reports/?page_size=1").catch(() => ({ data: { count: 0 } })),
-      api.get("/fraud-reports/?status=pending&page_size=1").catch(() => ({ data: { count: 0 } })),
-      api.get("/requests/?page_size=1").catch(() => ({ data: { count: 0 } })),
-      api.get("/services/?page_size=1").catch(() => ({ data: { count: 0 } })),
+      api.get("/auth/users/?limit=1&offset=0").catch(() => ({ data: { count: 0 } })),
+      api.get("/listings/?limit=1&offset=0").catch(() => ({ data: { count: 0 } })),
+      api.get("/fraud-reports/?limit=1&offset=0").catch(() => ({ data: { count: 0 } })),
+      api.get("/fraud-reports/?status=pending&limit=1&offset=0").catch(() => ({ data: { count: 0 } })),
+      api.get("/requests/?limit=1&offset=0").catch(() => ({ data: { count: 0 } })),
+      api.get("/services/?limit=1&offset=0").catch(() => ({ data: { count: 0 } })),
     ]).then(([users, listings, fraud, pendingFraud, requests, services]) => {
       setStats({
         users_count: users.data.count,

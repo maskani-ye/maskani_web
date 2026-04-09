@@ -64,7 +64,7 @@ function ListingsContent() {
   const fetchListings = useCallback(async () => {
     setLoading(true);
     try {
-      const params: Record<string, string> = { page: String(page), page_size: "20" };
+      const params: Record<string, string> = { offset: String((page - 1) * 20), limit: "20" };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
       const { data } = await api.get<PaginatedResponse<Listing>>("/listings/", { params });
       setListings(data.results);

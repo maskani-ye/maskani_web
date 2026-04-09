@@ -64,7 +64,7 @@ export default function AdminCitiesPage() {
     try {
       const [cRes, citRes] = await Promise.all([
         api.get<PaginatedResponse<Country>>("/cities/countries/"),
-        api.get<PaginatedResponse<City>>("/cities/", { params: { page_size: 100 } }),
+        api.get<PaginatedResponse<City>>("/cities/", { params: { limit: 100, offset: 0 } }),
       ]);
       setCountries(cRes.data.results ?? []);
       setCities(citRes.data.results ?? []);
