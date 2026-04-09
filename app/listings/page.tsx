@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, getErrorMessage } from "@/lib/api";
 import { formatPrice, offerTypeLabels, propertyTypeLabels, statusLabels, statusColors } from "@/lib/utils";
 import type { Listing, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -58,7 +58,7 @@ function ListingsContent() {
   });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(Array.isArray(r.data) ? r.data : r.data.results ?? [])).catch(() => {});
+    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, []);
 
   const fetchListings = useCallback(async () => {
@@ -69,8 +69,8 @@ function ListingsContent() {
       const { data } = await api.get<PaginatedResponse<Listing>>("/listings/", { params });
       setListings(data.results);
       setTotal(data.count);
-    } catch {
-      toast.error("تعذّر تحميل الإعلانات");
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ function ListingsContent() {
         return next;
       });
       toast.success(data.message);
-    } catch { toast.error("حدث خطأ"); }
+    } catch (err) { toast.error(getErrorMessage(err)); }
   };
 
   const totalPages = Math.ceil(total / 20);

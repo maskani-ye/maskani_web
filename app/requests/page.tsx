@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, getErrorMessage } from "@/lib/api";
 import { formatRelativeTime, formatPrice } from "@/lib/utils";
 import type { ClientRequest, PaginatedResponse, City } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -22,7 +22,7 @@ export default function RequestsPage() {
   const [filters, setFilters] = useState({ city: "", property_type: "", offer_type: "" });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(Array.isArray(r.data) ? r.data : r.data.results ?? [])).catch(() => {});
+    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, []);
 
   const fetchRequests = useCallback(async () => {
@@ -33,7 +33,7 @@ export default function RequestsPage() {
       const { data } = await api.get<PaginatedResponse<ClientRequest>>("/requests/", { params });
       setRequests(data.results);
       setTotal(data.count);
-    } catch { toast.error("تعذّر تحميل الطلبات"); }
+    } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
   }, [filters]);
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, getErrorMessage } from "@/lib/api";
 import { serviceCategoryLabels } from "@/lib/utils";
 import type { ServiceProvider, PaginatedResponse, City } from "@/types";
 import { Select } from "@/components/ui/Select";
@@ -17,7 +17,7 @@ export default function ServicesPage() {
   const [filters, setFilters] = useState({ category: "", city: "" });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(Array.isArray(r.data) ? r.data : r.data.results ?? [])).catch(() => {});
+    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, []);
 
   const fetchProviders = useCallback(async () => {
@@ -27,7 +27,7 @@ export default function ServicesPage() {
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
       const { data } = await api.get<PaginatedResponse<ServiceProvider>>("/services/", { params });
       setProviders(data.results);
-    } catch { toast.error("تعذّر تحميل الخدمات"); }
+    } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
   }, [filters]);
 

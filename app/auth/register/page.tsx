@@ -31,7 +31,7 @@ export default function RegisterPage() {
   const router = useRouter();
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(Array.isArray(r.data) ? r.data : r.data.results ?? [])).catch(() => {});
+    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, []);
 
   const handleChange = (field: string, value: string) =>

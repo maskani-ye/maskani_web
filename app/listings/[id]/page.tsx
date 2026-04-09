@@ -62,7 +62,7 @@ export default function ListingDetailPage() {
       const { data } = await api.post(`/social/favorites/${id}/toggle/`);
       setFavorited(data.favorited);
       toast.success(data.message);
-    } catch { toast.error("حدث خطأ"); }
+    } catch (err) { toast.error(getErrorMessage(err)); }
   };
 
   const handleShare = () => {

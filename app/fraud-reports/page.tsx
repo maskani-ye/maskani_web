@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, getErrorMessage } from "@/lib/api";
 import { formatRelativeTime, fraudTypeLabels, reportStatusColors, reportStatusLabels } from "@/lib/utils";
 import type { FraudReport, PaginatedResponse, City } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -26,7 +26,7 @@ export default function FraudReportsPage() {
   const [filters, setFilters] = useState({ search: "", fraud_type: "", status: "", city: "" });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(Array.isArray(r.data) ? r.data : r.data.results ?? [])).catch(() => {});
+    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, []);
 
   const fetchReports = useCallback(async () => {
@@ -37,7 +37,7 @@ export default function FraudReportsPage() {
       const { data } = await api.get<PaginatedResponse<FraudReport>>("/fraud-reports/", { params });
       setReports(data.results);
       setTotal(data.count);
-    } catch { toast.error("تعذّر تحميل البلاغات"); }
+    } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
   }, [filters]);
 
@@ -50,7 +50,7 @@ export default function FraudReportsPage() {
       const { data } = await api.post(`/fraud-reports/${reportId}/vote/`, { is_credible: isCredible });
       setReports((prev) => prev.map((r) => r.id === reportId ? { ...r, credibility_score: data.credibility_score } : r));
       toast.success("تم تسجيل تصويتك");
-    } catch { toast.error("حدث خطأ"); }
+    } catch (err) { toast.error(getErrorMessage(err)); }
   };
 
   const statusIcon = (s: string) => {
