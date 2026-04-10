@@ -7,22 +7,15 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+// Select kept for city dropdown
 import { Home2, Phone, Lock, User, Eye, EyeClosed } from "@solar-icons/react";
 import { toast } from "sonner";
 import { getErrorMessage, api } from "@/lib/api";
 import type { City } from "@/types";
 
-const roleOptions = [
-  { value: "client", label: "عميل (أبحث عن عقار)" },
-  { value: "owner", label: "مالك عقار" },
-  { value: "broker", label: "دلال / وسيط" },
-  { value: "service_provider", label: "مزود خدمة (مهندس / مقاول...)" },
-];
-
 export default function RegisterPage() {
   const [form, setForm] = useState({
-    phone: "", full_name: "", password: "", password_confirm: "",
-    role: "client", city: "",
+    phone: "", full_name: "", password: "", password_confirm: "", city: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -86,13 +79,6 @@ export default function RegisterPage() {
               startIcon={<Phone className="h-4 w-4" />}
               required
               dir="ltr"
-            />
-            <Select
-              label="نوع الحساب"
-              options={roleOptions}
-              value={form.role}
-              onChange={(e) => handleChange("role", e.target.value)}
-              required
             />
             <Select
               label="المدينة"

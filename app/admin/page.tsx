@@ -39,8 +39,7 @@ interface AdminStats {
 const COLORS = ["#2D6A4F", "#D4A017", "#EF4444", "#3B82F6", "#8B5CF6"];
 
 const roleLabels: Record<string, string> = {
-  owner: "مالك", broker: "وسيط", client: "عميل",
-  service_provider: "مزود خدمة", admin: "مشرف",
+  user: "مستخدم", admin: "مشرف",
 };
 const offerLabels: Record<string, string> = {
   sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
@@ -302,10 +301,8 @@ export default function AdminDashboardPage() {
               className="w-full h-10 border border-gray-200 rounded-xl px-4 text-sm focus:outline-none"
             >
               <option value="">الكل</option>
-              <option value="owner">الملاك</option>
-              <option value="broker">الدلالون</option>
-              <option value="client">العملاء</option>
-              <option value="service_provider">مزودو الخدمة</option>
+              <option value="user">المستخدمون</option>
+              <option value="admin">المشرفون</option>
             </select>
             <Button onClick={handleBroadcast} loading={sending} fullWidth>
               <Bell className="h-4 w-4" /> إرسال

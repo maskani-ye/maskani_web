@@ -71,12 +71,10 @@ export function Navbar() {
             {user ? (
               <>
                 {/* Add Listing Button */}
-                {(user.role === "owner" || user.role === "broker" || user.role === "admin") && (
-                  <Button size="sm" onClick={() => router.push("/listings/create")}>
-                    <AddCircle className="h-4 w-4" />
-                    إضافة إعلان
-                  </Button>
-                )}
+                <Button size="sm" onClick={() => router.push("/listings/create")}>
+                  <AddCircle className="h-4 w-4" />
+                  إضافة إعلان
+                </Button>
 
                 {/* Notifications */}
                 <Link href="/notifications" className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">

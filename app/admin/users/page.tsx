@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import type { User, UserRole, PaginatedResponse } from "@/types";
+import type { User, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { toast } from "sonner";
@@ -15,13 +15,9 @@ import {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ROLE_LABELS: Record<string, string> = {
-  owner: "مالك", broker: "وسيط", client: "عميل",
-  service_provider: "مزود خدمة", admin: "مشرف",
-};
-const ROLE_COLORS: Record<string, "green" | "yellow" | "blue" | "gold" | "red" | "gray"> = {
-  owner: "green", broker: "yellow", client: "blue",
-  service_provider: "gold", admin: "red",
+const ROLE_LABELS: Record<string, string> = { user: "مستخدم", admin: "مشرف" };
+const ROLE_COLORS: Record<string, "green" | "blue" | "red" | "gray"> = {
+  user: "blue", admin: "red",
 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -41,7 +37,6 @@ export default function AdminUsersPage() {
   const [activeFilter, setActive] = useState("");
 
   const [selected, setSelected] = useState<User | null>(null);
-  const [editRole, setEditRole] = useState<UserRole | "">("");
   const [saving, setSaving]     = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
 
@@ -78,18 +73,15 @@ export default function AdminUsersPage() {
   }, [search, roleFilter, activeFilter]);
 
   // ── actions ────────────────────────────────────────────────────────────────
-  const openDetail = (u: User) => { setSelected(u); setEditRole(u.role); };
+  const openDetail = (u: User) => { setSelected(u); };
 
-  const saveEdit = async () => {
-    if (!selected) return;
-    setSaving(true);
+  const toggleServiceProvider = async (u: User) => {
     try {
-      const res = await api.patch<User>(`/admin/users/${selected.id}/`, { role: editRole });
-      toast.success("تم تحديث المستخدم");
-      setSelected(res.data);
-      setUsers((prev) => prev.map((u) => u.id === res.data.id ? res.data : u));
+      const res = await api.patch<User>(`/admin/users/${u.id}/`, { is_service_provider: !u.is_service_provider });
+      toast.success(res.data.is_service_provider ? "تم الترقية لمزود خدمة" : "تم إلغاء ترقية مزود الخدمة");
+      setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
+      if (selected?.id === res.data.id) setSelected(res.data);
     } catch (err) { toast.error(getErrorMessage(err)); }
-    finally { setSaving(false); }
   };
 
   const toggleVerified = async (u: User) => {
@@ -169,7 +161,7 @@ export default function AdminUsersPage() {
           ))}
         </select>
 
-        {/* Active filter */}
+        {/* Service provider filter */}
         <select
           value={activeFilter}
           onChange={(e) => setActive(e.target.value)}
@@ -304,28 +296,28 @@ export default function AdminUsersPage() {
               </div>
             </div>
 
-            {/* Role editor */}
-            <div className="mb-4">
-              <label className="text-xs font-semibold text-gray-600 mb-1.5 block">الدور</label>
-              <select
-                value={editRole}
-                onChange={(e) => setEditRole(e.target.value as UserRole)}
-                disabled={selected.role === "admin"}
-                className="w-full h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-              >
-                {Object.entries(ROLE_LABELS).filter(([v]) => v !== "admin").map(([v, l]) => (
-                  <option key={v} value={v}>{l}</option>
-                ))}
-              </select>
+            {/* Badges */}
+            <div className="flex flex-wrap gap-1.5 justify-center mb-4">
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${selected.role === "admin" ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"}`}>
+                {ROLE_LABELS[selected.role] ?? selected.role}
+              </span>
+              {selected.is_service_provider && (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-100 text-purple-600">
+                  مزود خدمة
+                </span>
+              )}
             </div>
 
             {/* Actions */}
             <div className="space-y-2">
-              {selected.role !== "admin" && editRole !== selected.role && (
-                <Button onClick={saveEdit} loading={saving} fullWidth size="sm">
-                  <UserCheck className="h-4 w-4" /> حفظ الدور
-                </Button>
-              )}
+              <Button
+                onClick={() => toggleServiceProvider(selected)}
+                variant="outline" fullWidth size="sm"
+                disabled={selected.role === "admin"}
+              >
+                <UserCheck className="h-4 w-4" />
+                {selected.is_service_provider ? "إلغاء ترقية مزود الخدمة" : "ترقية لمزود خدمة"}
+              </Button>
               <Button
                 onClick={() => toggleVerified(selected)}
                 variant="outline" fullWidth size="sm"

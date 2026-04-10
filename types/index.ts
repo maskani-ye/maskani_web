@@ -1,11 +1,12 @@
 // ─── Users ────────────────────────────────────────────────────────────────
-export type UserRole = "owner" | "broker" | "client" | "service_provider" | "admin";
+export type UserRole = "user" | "admin";
 
 export interface User {
   id: number;
   phone: string;
   full_name: string;
   role: UserRole;
+  is_service_provider: boolean;
   avatar: string | null;
   bio: string;
   is_verified: boolean;
