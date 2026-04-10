@@ -85,7 +85,7 @@ export function getErrorMessage(error: unknown): string {
     const data = error.response?.data;
     if (data?.message) return data.message;
     if (data?.fields?.length) {
-      return data.fields.map((f: { field: string; message: string[] }) => `${f.field}: ${f.message.join(", ")}`).join(" | ");
+      return data.fields.map((f: { field: string; message: string }) => `${f.field}: ${f.message}`).join(" | ");
     }
   }
   return "حدث خطأ غير متوقع";
