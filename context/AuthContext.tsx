@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import type { User } from "@/types";
+import Cookies from "js-cookie";
 import { fetchCurrentUser, setTokens, clearTokens, isAuthenticated } from "@/lib/auth";
 import { api } from "@/lib/api";
 
@@ -30,10 +31,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refreshUser = useCallback(async () => {
+    // If access token is missing but refresh token exists → restore session silently
     if (!isAuthenticated()) {
-      setUser(null);
-      setLoading(false);
-      return;
+      const refresh = Cookies.get("refresh_token");
+      if (!refresh) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      try {
+        const { data } = await api.post("/auth/token/refresh/", { refresh });
+        setTokens(data.access, data.refresh ?? refresh);
+      } catch {
+        // Refresh token expired → clear and send to login
+        clearTokens();
+        setUser(null);
+        setLoading(false);
+        return;
+      }
     }
     const u = await fetchCurrentUser();
     setUser(u);
