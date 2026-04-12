@@ -44,6 +44,7 @@ export interface City {
 // ─── Listings ─────────────────────────────────────────────────────────────
 export type PropertyType = "apartment" | "house" | "land" | "commercial";
 export type OfferType = "sale" | "rent_monthly" | "rent_yearly";
+export type Currency = "SAR" | "YER" | "USD";
 export type FurnishingType = "furnished" | "unfurnished" | "semi_furnished";
 export type ListingStatus = "available" | "reserved" | "sold_rented";
 
@@ -72,6 +73,7 @@ export interface Listing {
   latitude: string | null;
   longitude: string | null;
   price: string;
+  currency: Currency;
   area: string | null;
   rooms: number | null;
   bathrooms: number | null;
@@ -193,6 +195,7 @@ export interface ClientRequest {
   neighborhood: string;
   budget_min: string | null;
   budget_max: string | null;
+  currency: Currency;
   rooms_needed: number | null;
   additional_specs: string;
   contact_phone: string;

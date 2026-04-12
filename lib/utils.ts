@@ -7,11 +7,25 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatPrice(price: string | number): string {
+export const CURRENCY_LABELS: Record<string, string> = {
+  SAR: "ريال سعودي",
+  YER: "ريال يمني",
+  USD: "دولار",
+};
+
+export const CURRENCY_SYMBOLS: Record<string, string> = {
+  SAR: "ر.س",
+  YER: "ر.ي",
+  USD: "$",
+};
+
+export function formatPrice(price: string | number, currency: string = "SAR"): string {
   const num = typeof price === "string" ? parseFloat(price) : price;
-  return new Intl.NumberFormat("ar-SA", {
+  const localeMap: Record<string, string> = { SAR: "ar-SA", YER: "ar-YE", USD: "en-US" };
+  const locale = localeMap[currency] ?? "ar-SA";
+  return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: "SAR",
+    currency: currency,
     maximumFractionDigits: 0,
   }).format(num);
 }

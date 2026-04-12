@@ -222,7 +222,7 @@ export default function AdminListingsPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 font-semibold text-primary hidden md:table-cell">
-                      {formatPrice(l.price)}
+                      {formatPrice(l.price, l.currency)}
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       {l.is_active
@@ -273,7 +273,7 @@ export default function AdminListingsPage() {
 
             <div className="grid grid-cols-2 gap-2 mb-4">
               <div className="bg-gray-50 rounded-xl p-2.5 text-center">
-                <p className="text-sm font-bold text-primary">{formatPrice(selected.price)}</p>
+                <p className="text-sm font-bold text-primary">{formatPrice(selected.price, selected.currency)}</p>
                 <p className="text-xs text-gray-500">السعر</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-2.5 text-center">

@@ -27,6 +27,7 @@ interface AdminRequest {
   neighborhood: string;
   budget_min: string | null;
   budget_max: string | null;
+  currency: string;
   rooms_needed: number | null;
   additional_specs: string;
   contact_phone: string;
@@ -145,10 +146,11 @@ export default function AdminRequestsPage() {
   // ── Budget helper ────────────────────────────────────────────────────────────
   const budgetLabel = (req: AdminRequest) => {
     if (!req.budget_min && !req.budget_max) return null;
+    const cur = req.currency ?? "SAR";
     if (req.budget_min && req.budget_max)
-      return `${formatPrice(Number(req.budget_min))} — ${formatPrice(Number(req.budget_max))}`;
-    if (req.budget_min) return `من ${formatPrice(Number(req.budget_min))}`;
-    return `حتى ${formatPrice(Number(req.budget_max))}`;
+      return `${formatPrice(Number(req.budget_min), cur)} — ${formatPrice(Number(req.budget_max), cur)}`;
+    if (req.budget_min) return `من ${formatPrice(Number(req.budget_min), cur)}`;
+    return `حتى ${formatPrice(Number(req.budget_max!), cur)}`;
   };
 
   return (
