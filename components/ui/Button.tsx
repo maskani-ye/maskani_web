@@ -4,9 +4,13 @@ import { cn } from "@/lib/utils";
 import { Restart } from "@solar-icons/react";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
+// ─── Button ─────────────────────────────────────────────────────────────────
+// زر متعدد الأنماط مع حالة تحميل. variant=success أخضر مصمت، size=icon مربّع.
+// usage: <Button variant="success" loading={saving}>حفظ</Button> | <Button size="icon"><Icon/></Button>
+
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
-  size?: "sm" | "md" | "lg";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "success";
+  size?: "sm" | "md" | "lg" | "icon";
   loading?: boolean;
   fullWidth?: boolean;
 }
@@ -17,12 +21,14 @@ const variants = {
   outline: "border-2 border-primary text-primary hover:bg-primary-50 active:bg-primary-100",
   ghost: "text-primary hover:bg-primary-50 active:bg-primary-100",
   danger: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm",
+  success: "bg-success-600 text-white hover:bg-success-700 active:bg-success-700 shadow-sm hover:shadow-md",
 };
 
 const sizes = {
   sm: "h-8 px-3 text-sm rounded-lg",
   md: "h-10 px-5 text-sm rounded-xl",
   lg: "h-12 px-6 text-base rounded-xl",
+  icon: "h-10 w-10 p-0 text-sm rounded-xl", // square icon-only button
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

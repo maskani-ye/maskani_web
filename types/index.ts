@@ -100,6 +100,44 @@ export interface Listing {
   updated_at: string;
 }
 
+// ─── Property Types (Admin) ─────────────────────────────────────────────────
+export interface PropertyTypeItem {
+  id: number;
+  name_ar: string;
+  name_en: string;
+  slug: string;
+  icon: string;
+  is_active: boolean;
+  order: number;
+  listings_count?: number;
+}
+
+// نسخة مصغّرة تأتي متداخلة داخل الإعلان
+export interface PropertyTypeRef {
+  id: number;
+  name_ar: string;
+  icon: string;
+}
+
+// ─── Service Categories (Admin) ─────────────────────────────────────────────
+export interface ServiceCategoryItem {
+  id: number;
+  name_ar: string;
+  name_en: string;
+  slug: string;
+  icon: string;
+  is_active: boolean;
+  order: number;
+  providers_count?: number;
+}
+
+// نسخة مصغّرة تأتي متداخلة داخل مزوّد الخدمة
+export interface ServiceCategoryRef {
+  id: number;
+  name_ar: string;
+  icon: string;
+}
+
 // ─── Services ─────────────────────────────────────────────────────────────
 export type ServiceCategory =
   | "architect" | "interior_designer" | "contractor"

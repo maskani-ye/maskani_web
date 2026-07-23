@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api, getErrorMessage } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
-import type { PaginatedResponse } from "@/types";
+import type { PaginatedResponse, PropertyTypeRef } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { ServiceIcon } from "@/lib/serviceIcons";
 import { toast } from "sonner";
 import {
   Buildings2, Magnifer, CloseCircle, Eye,
@@ -17,9 +18,10 @@ import {
 interface AdminListing {
   id: number;
   title: string;
-  property_type: string;
+  property_type: PropertyTypeRef | null;
   offer_type: string;
   price: string;
+  currency?: string;
   area: string | null;
   city: number;
   city_name?: string;
@@ -33,9 +35,6 @@ interface AdminListing {
   created_at: string;
 }
 
-const PROPERTY_LABELS: Record<string, string> = {
-  apartment: "شقة", house: "منزل", land: "أرض", commercial: "تجاري",
-};
 const OFFER_LABELS: Record<string, string> = {
   sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
 };
@@ -60,6 +59,8 @@ export default function AdminListingsPage() {
   const [selected, setSelected]       = useState<AdminListing | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminListing | null>(null);
 
+  const [propertyTypes, setPropertyTypes] = useState<PropertyTypeRef[]>([]);
+
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── fetch ──────────────────────────────────────────────────────────────────
@@ -80,6 +81,13 @@ export default function AdminListingsPage() {
   }, [search, offerFilter, typeFilter, activeFilter]);
 
   useEffect(() => { fetchListings(0); }, []);
+
+  // ── fetch property types (plain array, not paginated) ────────────────────────
+  useEffect(() => {
+    api.get<PropertyTypeRef[]>("/listings/property-types/")
+      .then((res) => setPropertyTypes(res.data))
+      .catch(() => setPropertyTypes([]));
+  }, []);
 
   useEffect(() => {
     if (searchTimer.current) clearTimeout(searchTimer.current);
@@ -151,7 +159,7 @@ export default function AdminListingsPage() {
         <select value={typeFilter} onChange={(e) => setType(e.target.value)}
           className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none">
           <option value="">كل أنواع العقار</option>
-          {Object.entries(PROPERTY_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          {propertyTypes.map((t) => <option key={t.id} value={String(t.id)}>{t.name_ar}</option>)}
         </select>
         <select value={activeFilter} onChange={(e) => setActive(e.target.value)}
           className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none">
@@ -218,7 +226,14 @@ export default function AdminListingsPage() {
                         <Badge variant={OFFER_COLORS[l.offer_type] ?? "gray"}>
                           {OFFER_LABELS[l.offer_type] ?? l.offer_type}
                         </Badge>
-                        <span className="text-xs text-gray-500">{PROPERTY_LABELS[l.property_type] ?? l.property_type}</span>
+                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                          {l.property_type ? (
+                            <>
+                              <ServiceIcon icon={l.property_type.icon} className="h-3.5 w-3.5" />
+                              {l.property_type.name_ar}
+                            </>
+                          ) : "—"}
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-3 font-semibold text-primary hidden md:table-cell">
@@ -289,7 +304,14 @@ export default function AdminListingsPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">نوع العقار</span>
-                <span className="font-medium">{PROPERTY_LABELS[selected.property_type] ?? selected.property_type}</span>
+                <span className="flex items-center gap-1 font-medium">
+                  {selected.property_type ? (
+                    <>
+                      <ServiceIcon icon={selected.property_type.icon} className="h-4 w-4" />
+                      {selected.property_type.name_ar}
+                    </>
+                  ) : "—"}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">المالك</span>

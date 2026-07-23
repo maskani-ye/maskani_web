@@ -6,17 +6,19 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import {
   GraphNewUp, UsersGroupRounded, ShieldWarning, MapPoint,
-  Buildings2, Settings, Home2, ChatRound,
+  Buildings2, Settings, Home2, ChatRound, Widget,
 } from "@solar-icons/react";
 
 const NAV = [
-  { href: "/admin",           label: "لوحة التحكم",    icon: GraphNewUp },
-  { href: "/admin/users",     label: "المستخدمون",     icon: UsersGroupRounded },
-  { href: "/admin/listings",  label: "الإعلانات",      icon: Buildings2 },
-  { href: "/admin/requests",  label: "طلبات العملاء",  icon: ChatRound },
-  { href: "/admin/reports",   label: "البلاغات",       icon: ShieldWarning },
-  { href: "/admin/cities",    label: "المدن والدول",   icon: MapPoint },
-  { href: "/admin/services",  label: "مزودو الخدمة",  icon: Settings },
+  { href: "/admin",                   label: "لوحة التحكم",    icon: GraphNewUp },
+  { href: "/admin/users",             label: "المستخدمون",     icon: UsersGroupRounded },
+  { href: "/admin/listings",          label: "الإعلانات",      icon: Buildings2 },
+  { href: "/admin/property-types",     label: "أنواع العقارات", icon: MapPoint },
+  { href: "/admin/requests",          label: "طلبات العملاء",  icon: ChatRound },
+  { href: "/admin/reports",           label: "البلاغات",       icon: ShieldWarning },
+  { href: "/admin/cities",            label: "المدن والدول",   icon: MapPoint },
+  { href: "/admin/service-categories", label: "أصناف الخدمات", icon: Widget },
+  { href: "/admin/services",          label: "مزودو الخدمة",  icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -25,7 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== "admin")) router.push("/");
+    if (!loading && (!user || user.role !== "admin")) router.push("/auth/login");
   }, [user, loading, router]);
 
   if (loading || !user || user.role !== "admin") return null;

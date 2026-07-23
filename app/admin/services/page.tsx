@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api, getErrorMessage } from "@/lib/api";
-import type { PaginatedResponse } from "@/types";
+import type { PaginatedResponse, ServiceCategoryRef } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { ServiceIcon } from "@/lib/serviceIcons";
 import { toast } from "sonner";
 import {
   Settings, Magnifer, CloseCircle, Eye,
@@ -19,7 +20,7 @@ interface AdminService {
   user_name?: string;
   user_phone?: string;
   user_avatar?: string | null;
-  category: string;
+  category: ServiceCategoryRef | null;
   title: string;
   experience_years: number;
   cities_names: string[];
@@ -28,14 +29,6 @@ interface AdminService {
   reviews_count: number;
   created_at: string;
 }
-
-const CATEGORY_LABELS: Record<string, string> = {
-  architect: "مهندس معماري", interior_designer: "مصمم داخلي",
-  contractor: "مقاول", supervisor: "مشرف بناء",
-  electrician: "كهربائي", plumber: "سباك",
-  ac_technician: "فني تكييف", painter: "دهان",
-  cleaner: "تنظيف", maintenance: "صيانة", other: "أخرى",
-};
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -51,6 +44,8 @@ export default function AdminServicesPage() {
   const [activeFilter, setActive]     = useState("");
   const [selected, setSelected]       = useState<AdminService | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminService | null>(null);
+
+  const [categories, setCategories]   = useState<ServiceCategoryRef[]>([]);
 
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -71,6 +66,13 @@ export default function AdminServicesPage() {
   }, [search, catFilter, activeFilter]);
 
   useEffect(() => { fetchServices(0); }, []);
+
+  // ── fetch categories (plain array, not paginated) ────────────────────────────
+  useEffect(() => {
+    api.get<ServiceCategoryRef[]>("/services/categories/")
+      .then((res) => setCategories(res.data))
+      .catch(() => setCategories([]));
+  }, []);
 
   useEffect(() => {
     if (searchTimer.current) clearTimeout(searchTimer.current);
@@ -135,7 +137,7 @@ export default function AdminServicesPage() {
         <select value={catFilter} onChange={(e) => setCat(e.target.value)}
           className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none">
           <option value="">كل التخصصات</option>
-          {Object.entries(CATEGORY_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          {categories.map((c) => <option key={c.id} value={String(c.id)}>{c.name_ar}</option>)}
         </select>
         <select value={activeFilter} onChange={(e) => setActive(e.target.value)}
           className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none">
@@ -196,7 +198,16 @@ export default function AdminServicesPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
-                      <Badge variant="gray">{CATEGORY_LABELS[s.category] ?? s.category}</Badge>
+                      {s.category ? (
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-gray-100 text-gray-600">
+                            <ServiceIcon icon={s.category.icon} className="h-3.5 w-3.5" />
+                          </span>
+                          <Badge variant="gray">{s.category.name_ar}</Badge>
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-500 hidden lg:table-cell">
                       {s.cities_names.slice(0, 2).join("، ")}
@@ -256,7 +267,12 @@ export default function AdminServicesPage() {
               )}
               <h2 className="font-bold text-gray-900">{selected.user_name}</h2>
               <p className="text-xs text-gray-500 mt-0.5">{selected.title}</p>
-              <Badge variant="gray" className="mt-2">{CATEGORY_LABELS[selected.category] ?? selected.category}</Badge>
+              {selected.category && (
+                <Badge variant="gray" className="mt-2 inline-flex items-center gap-1.5">
+                  <ServiceIcon icon={selected.category.icon} className="h-3.5 w-3.5" />
+                  {selected.category.name_ar}
+                </Badge>
+              )}
             </div>
 
             {/* Stats */}
