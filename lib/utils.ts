@@ -105,9 +105,6 @@ export const serviceCategoryLabels: Record<string, string> = {
 };
 
 export const roleLabels: Record<string, string> = {
-  owner: "مالك عقار",
-  broker: "دلال / وسيط",
-  client: "عميل",
-  service_provider: "مزود خدمة",
+  user: "مستخدم",
   admin: "مشرف",
 };
