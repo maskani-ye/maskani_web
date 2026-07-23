@@ -149,9 +149,9 @@ export default function ProfilePage() {
           <Bell className="h-6 w-6 text-primary" />
           <span className="text-xs font-medium text-gray-700">الإشعارات</span>
         </Link>
-        <Link href="/requests/my" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
+        <Link href="/requests" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
           <PenNewSquare className="h-6 w-6 text-blue-500" />
-          <span className="text-xs font-medium text-gray-700">طلباتي</span>
+          <span className="text-xs font-medium text-gray-700">الطلبات</span>
         </Link>
       </div>
 
@@ -200,8 +200,7 @@ export default function ProfilePage() {
               ) : myListings.length === 0 ? (
                 <div className="text-center py-12 text-gray-400">
                   <Buildings2 className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm mb-3">لا توجد إعلانات بعد</p>
-                  <Button onClick={() => router.push("/listings/create")} size="sm">إضافة إعلان</Button>
+                  <p className="text-sm">لا توجد إعلانات بعد</p>
                 </div>
               ) : (
                 <div className="space-y-3">

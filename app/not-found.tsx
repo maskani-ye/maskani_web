@@ -10,10 +10,10 @@ export default function NotFound() {
         عذراً، الصفحة التي تبحث عنها غير متوفّرة أو تم نقلها.
       </p>
       <Link
-        href="/admin"
+        href="/"
         className="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-600 transition-colors"
       >
-        العودة إلى لوحة التحكم
+        العودة إلى الرئيسية
       </Link>
     </div>
   );

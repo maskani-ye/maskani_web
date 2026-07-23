@@ -6,10 +6,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import {
   Home2, Magnifer, Buildings2, ShieldWarning, PenNewSquare,
-  Bell, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings, AddCircle,
+  Bell, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings,
 } from "@solar-icons/react";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -70,14 +69,8 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             {user ? (
               <>
-                {/* Add Listing Button */}
-                <Button size="sm" onClick={() => router.push("/listings/create")}>
-                  <AddCircle className="h-4 w-4" />
-                  إضافة إعلان
-                </Button>
-
                 {/* Notifications */}
-                <Link href="/notifications" className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                <Link href="/notifications" aria-label="الإشعارات" className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
                   <Bell className="h-5 w-5 text-gray-600" />
                 </Link>
 
@@ -102,12 +95,6 @@ export function Navbar() {
                     <div className="absolute left-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
                       <Link href="/profile" className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700" onClick={() => setProfileOpen(false)}>
                         <User className="h-4 w-4 text-primary" /> ملفي الشخصي
-                      </Link>
-                      <Link href="/listings/my" className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700" onClick={() => setProfileOpen(false)}>
-                        <Buildings2 className="h-4 w-4 text-primary" /> إعلاناتي
-                      </Link>
-                      <Link href="/requests/my" className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700" onClick={() => setProfileOpen(false)}>
-                        <PenNewSquare className="h-4 w-4 text-primary" /> طلباتي
                       </Link>
                       <Link href="/favorites" className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700" onClick={() => setProfileOpen(false)}>
                         <Magnifer className="h-4 w-4 text-primary" /> المفضّلة
@@ -135,7 +122,12 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden p-2 rounded-lg hover:bg-gray-100" onClick={() => setMobileOpen(!mobileOpen)}>
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="القائمة"
+            aria-expanded={mobileOpen}
+          >
             {mobileOpen ? <CloseCircle className="h-5 w-5" /> : <HamburgerMenu className="h-5 w-5" />}
           </button>
         </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home2, Phone, Letter, Shield, Buildings2, Settings, PenNewSquare } from "@solar-icons/react";
+import { Home2, Shield, Buildings2 } from "@solar-icons/react";
 
 export function Footer() {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ComponentType } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
@@ -8,23 +8,34 @@ import { formatPrice, offerTypeLabels } from "@/lib/utils";
 import type { Listing, City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   Magnifer, Buildings2, ShieldWarning, Settings, PenNewSquare, AltArrowLeft,
   MapPoint, Bed, Ruler, Eye,
 } from "@solar-icons/react";
 import { motion } from "framer-motion";
 
+// أيقونات Solar تُعرّف weight كنوع اتحادي بينما EmptyState تتوقّع نوعاً أوسع؛
+// نُوسّع النوع لأيقونة تكفيها className لتفادي تعارض الأنواع دون تعديل المكوّن المشترك.
+const asIcon = (I: ComponentType<{ className?: string }>) => I;
+
 export default function HomeClient() {
   const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [cities, setCities] = useState<City[]>([]);
+  const [loadingListings, setLoadingListings] = useState(true);
   const [searchFilters, setSearchFilters] = useState({
     city: "", property_type: "", offer_type: "",
   });
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
-    api.get("/listings/?limit=8&offset=0").then((r) => setListings(r.data.results)).catch(() => {});
+    api
+      .get("/listings/?limit=8&offset=0")
+      .then((r) => setListings(r.data.results ?? []))
+      .catch(() => setListings([]))
+      .finally(() => setLoadingListings(false));
   }, []);
 
   const handleSearch = () => {
@@ -140,11 +151,32 @@ export default function HomeClient() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {listings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
-        </div>
+        {loadingListings ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl card-shadow overflow-hidden">
+                <Skeleton className="h-44 w-full rounded-none" />
+                <div className="p-4 space-y-3">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-5 w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : listings.length === 0 ? (
+          <EmptyState
+            icon={asIcon(Buildings2)}
+            title="لا توجد إعلانات بعد"
+            message="لم يتم نشر أي عقارات على المنصة حتى الآن. تحقّق لاحقاً."
+          />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {listings.map((listing) => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* ─── CTA ──────────────────────────────────────────────────────────── */}
