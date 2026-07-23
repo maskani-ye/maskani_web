@@ -6,6 +6,7 @@ import { formatRelativeTime, formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 import {
   ChatRound, Magnifer, CloseCircle, TrashBinTrash,
@@ -82,6 +83,7 @@ export default function AdminRequestsPage() {
   const [activeFilter, setActiveFilter] = useState("");
 
   const [selected, setSelected] = useState<AdminRequest | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AdminRequest | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   // ── Fetch ───────────────────────────────────────────────────────────────────
@@ -124,15 +126,16 @@ export default function AdminRequestsPage() {
   };
 
   // ── Delete ──────────────────────────────────────────────────────────────────
-  const deleteRequest = async (req: AdminRequest) => {
-    if (!confirm(`حذف طلب "${PROPERTY_LABELS[req.property_type]}" لـ "${req.client_name}"؟`)) return;
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await api.delete(`/admin/requests/${req.id}/`);
-      setRequests((prev) => prev.filter((r) => r.id !== req.id));
+      await api.delete(`/admin/requests/${deleteTarget.id}/`);
+      setRequests((prev) => prev.filter((r) => r.id !== deleteTarget.id));
       setTotal((t) => t - 1);
-      if (selected?.id === req.id) setSelected(null);
+      if (selected?.id === deleteTarget.id) setSelected(null);
       toast.success("تم حذف الطلب");
+      setDeleteTarget(null);
     } catch (err) {
       toast.error(getErrorMessage(err));
     } finally {
@@ -285,8 +288,7 @@ export default function AdminRequestsPage() {
                           : <CheckCircle className="h-4 w-4 text-green-500" />}
                       </button>
                       <button
-                        onClick={() => deleteRequest(req)}
-                        disabled={deleting}
+                        onClick={() => setDeleteTarget(req)}
                         className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"
                       >
                         <TrashBinTrash className="h-4 w-4 text-red-400" />
@@ -407,10 +409,8 @@ export default function AdminRequestsPage() {
                 </Button>
                 <Button
                   variant="danger"
-                 
                   fullWidth
-                  disabled={deleting}
-                  onClick={() => deleteRequest(selected)}
+                  onClick={() => setDeleteTarget(selected)}
                 >
                   <TrashBinTrash className="h-4 w-4" /> حذف الطلب
                 </Button>
@@ -419,6 +419,22 @@ export default function AdminRequestsPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirm */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="تأكيد الحذف"
+        message={
+          deleteTarget
+            ? `هل أنت متأكد من حذف طلب "${PROPERTY_LABELS[deleteTarget.property_type] ?? deleteTarget.property_type}" لـ "${deleteTarget.client_name}"؟`
+            : ""
+        }
+        confirmLabel="حذف"
+        variant="danger"
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

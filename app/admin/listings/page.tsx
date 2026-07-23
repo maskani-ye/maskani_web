@@ -6,6 +6,7 @@ import { formatPrice } from "@/lib/utils";
 import type { PaginatedResponse, PropertyTypeRef } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ServiceIcon } from "@/lib/serviceIcons";
 import { toast } from "sonner";
 import {
@@ -58,10 +59,12 @@ export default function AdminListingsPage() {
 
   const [selected, setSelected]       = useState<AdminListing | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminListing | null>(null);
+  const [deleting, setDeleting]       = useState(false);
 
   const [propertyTypes, setPropertyTypes] = useState<PropertyTypeRef[]>([]);
 
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didMount = useRef(false);
 
   // ── fetch ──────────────────────────────────────────────────────────────────
   const fetchListings = useCallback(async (off = 0) => {
@@ -80,8 +83,6 @@ export default function AdminListingsPage() {
     finally { setLoading(false); }
   }, [search, offerFilter, typeFilter, activeFilter]);
 
-  useEffect(() => { fetchListings(0); }, []);
-
   // ── fetch property types (plain array, not paginated) ────────────────────────
   useEffect(() => {
     api.get<PropertyTypeRef[]>("/listings/property-types/")
@@ -89,11 +90,17 @@ export default function AdminListingsPage() {
       .catch(() => setPropertyTypes([]));
   }, []);
 
+  // ── single fetch driver: immediate on mount, debounced on filter changes ──────
   useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      fetchListings(0);
+      return;
+    }
     if (searchTimer.current) clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => fetchListings(0), 400);
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
-  }, [search, offerFilter, typeFilter, activeFilter]);
+  }, [search, offerFilter, typeFilter, activeFilter, fetchListings]);
 
   // ── actions ────────────────────────────────────────────────────────────────
   const toggleActive = async (l: AdminListing) => {
@@ -108,14 +115,17 @@ export default function AdminListingsPage() {
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await api.delete(`/admin/listings/${deleteTarget.id}/`);
-      toast.success("تم حذف الإعلان");
-      setListings((prev) => prev.filter((x) => x.id !== deleteTarget.id));
-      setTotal((t) => t - 1);
-      if (selected?.id === deleteTarget.id) setSelected(null);
+      // Soft delete: backend returns 200 with the deactivated listing body.
+      const res = await api.delete<AdminListing>(`/admin/listings/${deleteTarget.id}/`);
+      const updated = res.data ?? { ...deleteTarget, is_active: false };
+      toast.success("تم إيقاف الإعلان");
+      setListings((prev) => prev.map((x) => x.id === deleteTarget.id ? updated : x));
+      if (selected?.id === deleteTarget.id) setSelected(updated);
+      setDeleteTarget(null);
     } catch (err) { toast.error(getErrorMessage(err)); }
-    finally { setDeleteTarget(null); }
+    finally { setDeleting(false); }
   };
 
   // ── render ─────────────────────────────────────────────────────────────────
@@ -342,21 +352,21 @@ export default function AdminListingsPage() {
         )}
       </div>
 
-      {/* Delete Modal */}
-      {deleteTarget && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
-            <h3 className="font-bold text-gray-900 mb-2">تأكيد الحذف</h3>
-            <p className="text-sm text-gray-600 mb-5">
-              هل أنت متأكد من حذف إعلان <strong>{deleteTarget.title}</strong>؟ لا يمكن التراجع.
-            </p>
-            <div className="flex gap-2">
-              <Button onClick={() => setDeleteTarget(null)} variant="outline" fullWidth>إلغاء</Button>
-              <Button onClick={confirmDelete} variant="danger" fullWidth>حذف</Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete Confirm */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="تأكيد الإيقاف"
+        message={
+          deleteTarget
+            ? <>هل أنت متأكد من إيقاف إعلان <strong>{deleteTarget.title}</strong>؟</>
+            : ""
+        }
+        confirmLabel="إيقاف"
+        variant="danger"
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

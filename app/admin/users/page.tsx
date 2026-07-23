@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import type { User, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 import {
   UsersGroupRounded, Magnifer, CloseCircle, CheckCircle,
@@ -39,8 +40,10 @@ export default function AdminUsersPage() {
   const [selected, setSelected] = useState<User | null>(null);
   const [saving, setSaving]     = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didInitialFetch = useRef(false);
 
   // ── auth guard ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -63,14 +66,18 @@ export default function AdminUsersPage() {
     finally { setLoading(false); }
   }, [search, roleFilter, activeFilter]);
 
-  useEffect(() => { if (!authLoading && me?.role === "admin") fetchUsers(0); }, [authLoading, me]);
-
-  // debounced search
+  // ── single fetch driver: immediate on first auth-ready render, debounced after ──
   useEffect(() => {
+    if (authLoading || me?.role !== "admin") return;
+    if (!didInitialFetch.current) {
+      didInitialFetch.current = true;
+      fetchUsers(0);
+      return;
+    }
     if (searchTimer.current) clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => fetchUsers(0), 400);
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
-  }, [search, roleFilter, activeFilter]);
+  }, [authLoading, me, search, roleFilter, activeFilter, fetchUsers]);
 
   // ── actions ────────────────────────────────────────────────────────────────
   const openDetail = (u: User) => { setSelected(u); };
@@ -93,6 +100,18 @@ export default function AdminUsersPage() {
     } catch (err) { toast.error(getErrorMessage(err)); }
   };
 
+  const changeRole = async (u: User, role: "user" | "admin") => {
+    if (u.role === role) return;
+    setSaving(true);
+    try {
+      const res = await api.patch<User>(`/admin/users/${u.id}/`, { role });
+      toast.success(res.data.role === "admin" ? "تمت الترقية لمشرف" : "تم التحويل لمستخدم عادي");
+      setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
+      if (selected?.id === res.data.id) setSelected(res.data);
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setSaving(false); }
+  };
+
   const toggleActive = async (u: User) => {
     try {
       const res = await api.patch<User>(`/admin/users/${u.id}/`, { is_active: !u.is_active });
@@ -104,14 +123,17 @@ export default function AdminUsersPage() {
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await api.delete(`/admin/users/${deleteTarget.id}/`);
-      toast.success("تم حذف المستخدم");
-      setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
-      setTotal((t) => t - 1);
-      if (selected?.id === deleteTarget.id) setSelected(null);
+      // Soft delete: backend returns 200 with the deactivated user body.
+      const res = await api.delete<User>(`/admin/users/${deleteTarget.id}/`);
+      const updated = res.data ?? { ...deleteTarget, is_active: false };
+      toast.success("تم تعطيل المستخدم");
+      setUsers((prev) => prev.map((u) => u.id === deleteTarget.id ? updated : u));
+      if (selected?.id === deleteTarget.id) setSelected(updated);
+      setDeleteTarget(null);
     } catch (err) { toast.error(getErrorMessage(err)); }
-    finally { setDeleteTarget(null); }
+    finally { setDeleting(false); }
   };
 
   // ── render ─────────────────────────────────────────────────────────────────
@@ -308,6 +330,29 @@ export default function AdminUsersPage() {
               )}
             </div>
 
+            {/* Role control */}
+            <div className="mb-4">
+              <p className="text-xs font-semibold text-gray-600 mb-1.5">الدور</p>
+              <div className="grid grid-cols-2 gap-1.5 bg-gray-50 rounded-xl p-1">
+                {(["user", "admin"] as const).map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => changeRole(selected, r)}
+                    disabled={saving || selected.role === r}
+                    className={`h-9 rounded-lg text-sm font-semibold transition-colors disabled:opacity-100 ${
+                      selected.role === r
+                        ? r === "admin"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-primary/10 text-primary"
+                        : "text-gray-500 hover:bg-white disabled:cursor-not-allowed"
+                    }`}
+                  >
+                    {ROLE_LABELS[r]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Actions */}
             <div className="space-y-2">
               <Button
@@ -354,21 +399,21 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      {/* Delete Confirm Modal */}
-      {deleteTarget && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
-            <h3 className="font-bold text-gray-900 mb-2">تأكيد الحذف</h3>
-            <p className="text-sm text-gray-600 mb-5">
-              هل أنت متأكد من حذف <strong>{deleteTarget.full_name}</strong>؟ لا يمكن التراجع.
-            </p>
-            <div className="flex gap-2">
-              <Button onClick={() => setDeleteTarget(null)} variant="outline" fullWidth>إلغاء</Button>
-              <Button onClick={confirmDelete} variant="danger" fullWidth>حذف</Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete Confirm */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="تأكيد التعطيل"
+        message={
+          deleteTarget
+            ? <>هل أنت متأكد من تعطيل حساب <strong>{deleteTarget.full_name}</strong>؟ سيتم إيقاف الحساب.</>
+            : ""
+        }
+        confirmLabel="تعطيل"
+        variant="danger"
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { api, getErrorMessage } from "@/lib/api";
 import type { PaginatedResponse, ServiceCategoryRef } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ServiceIcon } from "@/lib/serviceIcons";
 import { toast } from "sonner";
 import {
@@ -44,10 +45,12 @@ export default function AdminServicesPage() {
   const [activeFilter, setActive]     = useState("");
   const [selected, setSelected]       = useState<AdminService | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminService | null>(null);
+  const [deleting, setDeleting]       = useState(false);
 
   const [categories, setCategories]   = useState<ServiceCategoryRef[]>([]);
 
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const didMount = useRef(false);
 
   // ── fetch ──────────────────────────────────────────────────────────────────
   const fetchServices = useCallback(async (off = 0) => {
@@ -65,8 +68,6 @@ export default function AdminServicesPage() {
     finally { setLoading(false); }
   }, [search, catFilter, activeFilter]);
 
-  useEffect(() => { fetchServices(0); }, []);
-
   // ── fetch categories (plain array, not paginated) ────────────────────────────
   useEffect(() => {
     api.get<ServiceCategoryRef[]>("/services/categories/")
@@ -74,11 +75,17 @@ export default function AdminServicesPage() {
       .catch(() => setCategories([]));
   }, []);
 
+  // ── single fetch driver: immediate on mount, debounced on filter changes ──────
   useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      fetchServices(0);
+      return;
+    }
     if (searchTimer.current) clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => fetchServices(0), 400);
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
-  }, [search, catFilter, activeFilter]);
+  }, [search, catFilter, activeFilter, fetchServices]);
 
   // ── actions ────────────────────────────────────────────────────────────────
   const toggleActive = async (s: AdminService) => {
@@ -93,14 +100,16 @@ export default function AdminServicesPage() {
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
+    setDeleting(true);
     try {
       await api.delete(`/admin/services/${deleteTarget.id}/`);
       toast.success("تم حذف مزود الخدمة");
       setServices((prev) => prev.filter((x) => x.id !== deleteTarget.id));
       setTotal((t) => t - 1);
       if (selected?.id === deleteTarget.id) setSelected(null);
+      setDeleteTarget(null);
     } catch (err) { toast.error(getErrorMessage(err)); }
-    finally { setDeleteTarget(null); }
+    finally { setDeleting(false); }
   };
 
   // ── render ─────────────────────────────────────────────────────────────────
@@ -322,21 +331,21 @@ export default function AdminServicesPage() {
         )}
       </div>
 
-      {/* Delete Modal */}
-      {deleteTarget && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
-            <h3 className="font-bold text-gray-900 mb-2">تأكيد الحذف</h3>
-            <p className="text-sm text-gray-600 mb-5">
-              هل أنت متأكد من حذف <strong>{deleteTarget.user_name}</strong> من مزودي الخدمة؟
-            </p>
-            <div className="flex gap-2">
-              <Button onClick={() => setDeleteTarget(null)} variant="outline" fullWidth>إلغاء</Button>
-              <Button onClick={confirmDelete} variant="danger" fullWidth>حذف</Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete Confirm */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="تأكيد الحذف"
+        message={
+          deleteTarget
+            ? <>هل أنت متأكد من حذف <strong>{deleteTarget.user_name}</strong> من مزودي الخدمة؟</>
+            : ""
+        }
+        confirmLabel="حذف"
+        variant="danger"
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
