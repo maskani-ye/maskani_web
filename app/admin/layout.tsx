@@ -9,18 +9,21 @@ import {
   GraphNewUp, UsersGroupRounded, ShieldWarning, MapPoint,
   Buildings2, Settings, Home2, ChatRound, Widget,
   City, Logout2, HamburgerMenu, CloseCircle,
+  ShieldCheck, DangerTriangle,
 } from "@solar-icons/react";
 
 const NAV = [
-  { href: "/admin",                    label: "لوحة التحكم",    icon: GraphNewUp },
-  { href: "/admin/users",              label: "المستخدمون",     icon: UsersGroupRounded },
-  { href: "/admin/listings",           label: "الإعلانات",      icon: Buildings2 },
-  { href: "/admin/property-types",     label: "أنواع العقارات", icon: MapPoint },
-  { href: "/admin/requests",           label: "طلبات العملاء",  icon: ChatRound },
-  { href: "/admin/reports",            label: "البلاغات",       icon: ShieldWarning },
-  { href: "/admin/cities",             label: "المدن والدول",   icon: City },
-  { href: "/admin/service-categories", label: "أصناف الخدمات",  icon: Widget },
-  { href: "/admin/services",           label: "مزودو الخدمة",   icon: Settings },
+  { href: "/admin",                    label: "لوحة التحكم",     icon: GraphNewUp },
+  { href: "/admin/users",              label: "المستخدمون",      icon: UsersGroupRounded },
+  { href: "/admin/verification",       label: "طلبات التوثيق",   icon: ShieldCheck },
+  { href: "/admin/listings",           label: "الإعلانات",       icon: Buildings2 },
+  { href: "/admin/property-types",     label: "أنواع العقارات",  icon: MapPoint },
+  { href: "/admin/requests",           label: "طلبات العملاء",   icon: ChatRound },
+  { href: "/admin/reports",            label: "البلاغات",        icon: ShieldWarning },
+  { href: "/admin/user-reports",       label: "بلاغات المستخدمين", icon: DangerTriangle },
+  { href: "/admin/cities",             label: "المدن والدول",    icon: City },
+  { href: "/admin/service-categories", label: "أصناف الخدمات",   icon: Widget },
+  { href: "/admin/services",           label: "مزودو الخدمة",    icon: Settings },
 ];
 
 function isActive(href: string, pathname: string) {
