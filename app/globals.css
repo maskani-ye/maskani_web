@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+/* خط Cairo يُحمَّل مرة واحدة عبر <link> في app/layout.tsx (لا تكرّره هنا) */
 
 :root {
   --primary: #2D6A4F;

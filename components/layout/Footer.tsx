@@ -45,7 +45,6 @@ export function Footer() {
                 { href: "/services", label: "خدمات عقارية" },
                 { href: "/fraud-reports", label: "مجتمع الشكاوي" },
                 { href: "/requests", label: "طلبات العملاء" },
-                { href: "/auth/register", label: "إنشاء حساب" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-primary-200 hover:text-white text-sm transition-colors">

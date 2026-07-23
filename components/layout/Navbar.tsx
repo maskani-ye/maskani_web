@@ -128,10 +128,7 @@ export function Navbar() {
             ) : (
               <>
                 <Link href="/auth/login">
-                  <Button variant="outline" size="sm">دخول</Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button size="sm">إنشاء حساب</Button>
+                  <Button size="sm">دخول</Button>
                 </Link>
               </>
             )}
@@ -163,10 +160,7 @@ export function Navbar() {
             {!user ? (
               <div className="flex gap-2 pt-2 px-4">
                 <Link href="/auth/login" className="flex-1">
-                  <Button variant="outline" fullWidth size="sm">دخول</Button>
-                </Link>
-                <Link href="/auth/register" className="flex-1">
-                  <Button fullWidth size="sm">إنشاء حساب</Button>
+                  <Button fullWidth size="sm">دخول</Button>
                 </Link>
               </div>
             ) : (

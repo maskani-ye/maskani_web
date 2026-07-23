@@ -6,9 +6,10 @@ import { Footer } from "./Footer";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAuth = pathname.startsWith("/auth");
+  // مسارات /auth و /admin لها هيكلها الخاص — لا نغلّفها بشريط التنقّل العام والتذييل
+  const isBare = pathname.startsWith("/auth") || pathname.startsWith("/admin");
 
-  if (isAuth) return <>{children}</>;
+  if (isBare) return <>{children}</>;
 
   return (
     <div className="flex flex-col min-h-screen">
