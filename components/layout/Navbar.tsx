@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import {
   Home2, Magnifer, Buildings2, ShieldWarning, PenNewSquare,
-  Bell, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings,
+  Bell, ChatRound, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings,
 } from "@solar-icons/react";
 import { Button } from "@/components/ui/Button";
+import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -25,6 +26,20 @@ export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [chatUnread, setChatUnread] = useState(0);
+
+  useEffect(() => {
+    if (!user) { setChatUnread(0); return; }
+    const fetchUnread = async () => {
+      try {
+        const res = await api.get("/chat/unread-count/");
+        setChatUnread(res.data.unread_count ?? res.data.count ?? 0);
+      } catch { /* silent */ }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   const handleLogout = async () => {
     await logout();
@@ -69,6 +84,16 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             {user ? (
               <>
+                {/* Chat */}
+                <Link href="/chat" aria-label="المحادثات" className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                  <ChatRound className="h-5 w-5 text-gray-600" />
+                  {chatUnread > 0 && (
+                    <span className="absolute top-0.5 left-0.5 min-w-[1.1rem] h-[1.1rem] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
+                      {chatUnread > 99 ? "99+" : chatUnread}
+                    </span>
+                  )}
+                </Link>
+
                 {/* Notifications */}
                 <Link href="/notifications" aria-label="الإشعارات" className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
                   <Bell className="h-5 w-5 text-gray-600" />
@@ -157,6 +182,14 @@ export function Navbar() {
               </div>
             ) : (
               <div className="pt-2 px-4 space-y-2">
+                <Link href="/chat" className="flex items-center justify-between text-sm text-gray-700 py-2" onClick={() => setMobileOpen(false)}>
+                  <span className="flex items-center gap-2"><ChatRound className="h-4 w-4 text-primary" /> المحادثات</span>
+                  {chatUnread > 0 && (
+                    <span className="min-w-[1.1rem] h-[1.1rem] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
+                      {chatUnread > 99 ? "99+" : chatUnread}
+                    </span>
+                  )}
+                </Link>
                 <Link href="/profile" className="block text-sm text-gray-700 py-2" onClick={() => setMobileOpen(false)}>ملفي الشخصي</Link>
                 <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="text-sm text-red-600 py-2 text-right w-full">تسجيل الخروج</button>
               </div>

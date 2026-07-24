@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { StarRating } from "@/components/ui/StarRating";
 import {
-  MapPoint, Bed, Ruler, Eye, Heart, Phone, ChatSquare,
+  MapPoint, Bed, Ruler, Eye, Heart, Phone, ChatSquare, ChatRoundDots,
   CheckCircle, CloseCircle, Buildings2, Share, AltArrowRight, User, PenNewSquare,
   Bath, Layers, TagPrice, WiFiRouter, CloudBolt, Shield, Leaf, Bolt, Box, Paw,
 } from "@solar-icons/react";
@@ -45,6 +45,7 @@ export default function ListingDetailPage() {
   const [favorited, setFavorited] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<{ id: number; user_name: string; user_avatar: string | null; text: string; created_at: string }[]>([]);
+  const [startingChat, setStartingChat] = useState(false);
 
   useEffect(() => {
     api.get<Listing>(`/listings/${id}/`)
@@ -64,6 +65,23 @@ export default function ListingDetailPage() {
       setFavorited(data.favorited);
       toast.success(data.message);
     } catch (err) { toast.error(getErrorMessage(err)); }
+  };
+
+  const startConversation = async () => {
+    if (!user) { router.push("/auth/login"); return; }
+    if (typeof listing?.user !== "object") return;
+    setStartingChat(true);
+    try {
+      const { data } = await api.post("/chat/conversations/", {
+        recipient_id: listing.user.id,
+        listing: listing.id,
+      });
+      router.push(`/chat/${data.id}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setStartingChat(false);
+    }
   };
 
   const handleShare = () => {
@@ -313,6 +331,12 @@ export default function ListingDetailPage() {
 
             {/* Contact */}
             <div className="space-y-3">
+              {typeof listing.user === "object" && user?.id !== listing.user.id && (
+                <Button fullWidth variant="primary" onClick={startConversation} loading={startingChat}>
+                  <ChatRoundDots className="h-4 w-4" />
+                  مراسلة المُعلن
+                </Button>
+              )}
               {listing.contact_phone && (
                 <a href={`tel:${listing.contact_phone}`}>
                   <Button fullWidth variant="primary">

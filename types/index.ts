@@ -271,6 +271,32 @@ export interface Notification {
   created_at: string;
 }
 
+// ─── Chat / Direct Messages ───────────────────────────────────────────────
+export interface ChatParticipant {
+  id: number;
+  full_name: string;
+  avatar: string | null;
+}
+
+export interface Message {
+  id: number;
+  conversation: number;
+  sender: number; // user id
+  body: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface Conversation {
+  id: number;
+  other_participant: ChatParticipant;
+  listing: number | null;
+  last_message: Pick<Message, "body" | "created_at"> & Partial<Message> | null;
+  unread_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // ─── API Pagination ───────────────────────────────────────────────────────
 export interface PaginatedResponse<T> {
   count: number;

@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
   User as UserIcon, CheckCircle, MapPoint, Buildings2, Star,
-  UserPlus, UserMinus, AltArrowRight,
+  UserPlus, UserMinus, AltArrowRight, ChatRoundDots,
 } from "@solar-icons/react";
 import { toast } from "sonner";
 
@@ -45,8 +45,22 @@ export default function PublicProfilePage() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [startingChat, setStartingChat] = useState(false);
 
   const isSelf = !!me && !!profile && me.id === profile.id;
+
+  const startConversation = async () => {
+    if (!me) { router.push("/auth/login"); return; }
+    setStartingChat(true);
+    try {
+      const { data } = await api.post("/chat/conversations/", { recipient_id: Number(id) });
+      router.push(`/chat/${data.id}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setStartingChat(false);
+    }
+  };
 
   const loadRatings = useCallback(() => {
     api.get(`/social/users/${id}/ratings/`)
@@ -138,10 +152,17 @@ export default function PublicProfilePage() {
             )}
             {profile.bio && <p className="text-sm text-gray-600 mt-2 leading-relaxed">{profile.bio}</p>}
           </div>
-          {me && !isSelf && (
-            <Button onClick={toggleFollow} loading={followBusy} variant={following ? "outline" : "primary"} size="sm">
-              {following ? <><UserMinus className="h-4 w-4" /> إلغاء المتابعة</> : <><UserPlus className="h-4 w-4" /> متابعة</>}
-            </Button>
+          {!isSelf && (
+            <div className="flex flex-col gap-2 shrink-0">
+              {me && (
+                <Button onClick={toggleFollow} loading={followBusy} variant={following ? "outline" : "primary"} size="sm">
+                  {following ? <><UserMinus className="h-4 w-4" /> إلغاء المتابعة</> : <><UserPlus className="h-4 w-4" /> متابعة</>}
+                </Button>
+              )}
+              <Button onClick={startConversation} loading={startingChat} variant="outline" size="sm">
+                <ChatRoundDots className="h-4 w-4" /> مراسلة
+              </Button>
+            </div>
           )}
         </div>
 
