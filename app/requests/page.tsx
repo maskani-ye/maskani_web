@@ -10,16 +10,18 @@ import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { PenNewSquare, AddCircle, MapPoint, Bed, Dollar, ClockCircle, AltArrowRight } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
+import { useCity } from "@/context/CityContext";
 import { toast } from "sonner";
 
 export default function RequestsPage() {
   const { user } = useAuth();
+  const { cityId, setCity } = useCity();
   const router = useRouter();
   const [requests, setRequests] = useState<ClientRequest[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState<City[]>([]);
-  const [filters, setFilters] = useState({ city: "", property_type: "", offer_type: "" });
+  const [filters, setFilters] = useState({ property_type: "", offer_type: "" });
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
@@ -30,12 +32,13 @@ export default function RequestsPage() {
     try {
       const params: Record<string, string> = { offset: "0", limit: "20" };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
+      if (cityId) params.city = cityId;
       const { data } = await api.get<PaginatedResponse<ClientRequest>>("/requests/", { params });
       setRequests(data.results);
       setTotal(data.count);
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
-  }, [filters]);
+  }, [filters, cityId]);
 
   useEffect(() => { fetchRequests(); }, [fetchRequests]);
 
@@ -65,8 +68,12 @@ export default function RequestsPage() {
       <div className="bg-white rounded-2xl card-shadow p-4 mb-6 grid grid-cols-3 gap-3">
         <Select
           options={cities.map((c) => ({ value: c.id, label: c.name_ar }))}
-          value={filters.city}
-          onChange={(e) => setFilters((p) => ({ ...p, city: e.target.value }))}
+          value={cityId}
+          onChange={(e) => {
+            const id = e.target.value;
+            const name = cities.find((c) => String(c.id) === id)?.name_ar ?? "";
+            setCity(id, name);
+          }}
           placeholder="المدينة"
         />
         <Select
@@ -120,7 +127,7 @@ export default function RequestsPage() {
                     <p className="font-bold text-gray-800 mb-2">{req.client_name} يبحث عن عقار</p>
                     <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
                       <span className="flex items-center gap-1"><MapPoint className="h-3.5 w-3.5 text-primary" /> {req.city_name}{req.neighborhood && ` — ${req.neighborhood}`}</span>
-                      {req.budget_max && <span className="flex items-center gap-1"><Dollar className="h-3.5 w-3.5 text-gold" /> حتى {formatPrice(req.budget_max)}</span>}
+                      {req.budget_max && <span className="flex items-center gap-1"><Dollar className="h-3.5 w-3.5 text-gold" /> حتى {formatPrice(req.budget_max, req.currency)}</span>}
                       {req.rooms_needed && <span className="flex items-center gap-1"><Bed className="h-3.5 w-3.5" /> {req.rooms_needed} غرف</span>}
                     </div>
                     {req.additional_specs && (

@@ -22,7 +22,7 @@ interface AdminListing {
   property_type: PropertyTypeRef | null;
   offer_type: string;
   price: string;
-  currency?: string;
+  currency: string;
   area: string | null;
   city: number;
   city_name?: string;

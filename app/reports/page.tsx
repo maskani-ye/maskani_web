@@ -14,16 +14,18 @@ import {
 } from "@solar-icons/react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { useCity } from "@/context/CityContext";
 import { useRouter } from "next/navigation";
 
 export default function FraudReportsPage() {
   const { user } = useAuth();
+  const { cityId, setCity } = useCity();
   const router = useRouter();
   const [reports, setReports] = useState<FraudReport[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState<City[]>([]);
-  const [filters, setFilters] = useState({ search: "", fraud_type: "", status: "", city: "" });
+  const [filters, setFilters] = useState({ search: "", fraud_type: "", status: "" });
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
@@ -34,12 +36,13 @@ export default function FraudReportsPage() {
     try {
       const params: Record<string, string> = { offset: "0", limit: "20" };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
+      if (cityId) params.city = cityId;
       const { data } = await api.get<PaginatedResponse<FraudReport>>("/reports/", { params });
       setReports(data.results);
       setTotal(data.count);
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
-  }, [filters]);
+  }, [filters, cityId]);
 
   useEffect(() => { fetchReports(); }, [fetchReports]);
 
@@ -101,8 +104,12 @@ export default function FraudReportsPage() {
         />
         <Select
           options={cities.map((c) => ({ value: c.id, label: c.name_ar }))}
-          value={filters.city}
-          onChange={(e) => setFilters((p) => ({ ...p, city: e.target.value }))}
+          value={cityId}
+          onChange={(e) => {
+            const id = e.target.value;
+            const name = cities.find((c) => String(c.id) === id)?.name_ar ?? "";
+            setCity(id, name);
+          }}
           placeholder="المدينة"
         />
         <Select

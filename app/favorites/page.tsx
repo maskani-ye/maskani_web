@@ -114,7 +114,7 @@ export default function FavoritesPage() {
                           <MapPoint className="h-3 w-3" />{l.city_name}
                         </p>
                       )}
-                      <p className="text-primary font-bold mt-1">{formatPrice(l.price)}</p>
+                      <p className="text-primary font-bold mt-1">{formatPrice(l.price, l.currency)}</p>
                     </div>
                     <button
                       onClick={() => removeFavorite(l.id)}

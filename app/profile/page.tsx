@@ -305,7 +305,7 @@ export default function ProfilePage() {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-900 truncate">{l.title}</p>
                         <p className="text-xs text-gray-500">{l.city_name}</p>
-                        <p className="text-sm font-bold text-primary mt-0.5">{formatPrice(l.price)}</p>
+                        <p className="text-sm font-bold text-primary mt-0.5">{formatPrice(l.price, l.currency)}</p>
                       </div>
                       <Badge variant={l.is_active ? "green" : "gray"}>{l.is_active ? "نشط" : "موقوف"}</Badge>
                     </Link>

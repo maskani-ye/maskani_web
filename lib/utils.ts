@@ -19,7 +19,7 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: "$",
 };
 
-export function formatPrice(price: string | number, currency: string = "SAR"): string {
+export function formatPrice(price: string | number, currency: string): string {
   const num = typeof price === "string" ? parseFloat(price) : price;
   const localeMap: Record<string, string> = { SAR: "ar-SA", YER: "ar-YE", USD: "en-US" };
   const locale = localeMap[currency] ?? "ar-SA";

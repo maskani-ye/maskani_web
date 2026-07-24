@@ -9,12 +9,14 @@ import { Select } from "@/components/ui/Select";
 import { StarRating } from "@/components/ui/StarRating";
 import { Settings, User, CheckCircle, MapPoint, Phone } from "@solar-icons/react";
 import { toast } from "sonner";
+import { useCity } from "@/context/CityContext";
 
 export default function ServicesPage() {
+  const { cityId, setCity } = useCity();
   const [providers, setProviders] = useState<ServiceProvider[]>([]);
   const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState<City[]>([]);
-  const [filters, setFilters] = useState({ category: "", city: "" });
+  const [filters, setFilters] = useState({ category: "" });
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
@@ -25,11 +27,12 @@ export default function ServicesPage() {
     try {
       const params: Record<string, string> = { offset: "0", limit: "20" };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
+      if (cityId) params.city = cityId;
       const { data } = await api.get<PaginatedResponse<ServiceProvider>>("/services/", { params });
       setProviders(data.results);
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
-  }, [filters]);
+  }, [filters, cityId]);
 
   useEffect(() => { fetchProviders(); }, [fetchProviders]);
 
@@ -55,8 +58,12 @@ export default function ServicesPage() {
       <div className="flex gap-3 mb-6">
         <Select
           options={cities.map((c) => ({ value: c.id, label: c.name_ar }))}
-          value={filters.city}
-          onChange={(e) => setFilters((p) => ({ ...p, city: e.target.value }))}
+          value={cityId}
+          onChange={(e) => {
+            const id = e.target.value;
+            const name = cities.find((c) => String(c.id) === id)?.name_ar ?? "";
+            setCity(id, name);
+          }}
           placeholder="تصفية بالمدينة"
           className="max-w-xs"
         />

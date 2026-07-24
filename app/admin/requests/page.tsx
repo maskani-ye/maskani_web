@@ -149,7 +149,7 @@ export default function AdminRequestsPage() {
   // ── Budget helper ────────────────────────────────────────────────────────────
   const budgetLabel = (req: AdminRequest) => {
     if (!req.budget_min && !req.budget_max) return null;
-    const cur = req.currency ?? "SAR";
+    const cur = req.currency;
     if (req.budget_min && req.budget_max)
       return `${formatPrice(Number(req.budget_min), cur)} — ${formatPrice(Number(req.budget_max), cur)}`;
     if (req.budget_min) return `من ${formatPrice(Number(req.budget_min), cur)}`;

@@ -16,6 +16,7 @@ import {
   Map as MapIcon, List as ListIcon, AddCircle,
 } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
+import { useCity } from "@/context/CityContext";
 import { toast } from "sonner";
 import ListingsMap from "@/components/map/ListingsMap";
 import { cityCoords, YEMEN_CENTER, DEFAULT_ZOOM } from "@/components/map/constants";
@@ -37,6 +38,7 @@ function ListingsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
+  const { cityId, setCity } = useCity();
 
   const [listings, setListings] = useState<Listing[]>([]);
   const [total, setTotal] = useState(0);
@@ -49,7 +51,6 @@ function ListingsContent() {
 
   const [filters, setFilters] = useState({
     search: searchParams.get("search") || "",
-    city: searchParams.get("city") || "",
     property_type: searchParams.get("property_type") || "",
     offer_type: searchParams.get("offer_type") || "",
     price_min: searchParams.get("price_min") || "",
@@ -65,12 +66,11 @@ function ListingsContent() {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, []);
 
-  // تذكّر آخر مدينة اختارها المستخدم (مثل التطبيق) — تُطبَّق فقط إن لم تُحدَّد مدينة
-  // في رابط الصفحة، وتُقرأ بعد التحميل لتفادي عدم تطابق SSR/hydration.
+  // المدينة يملكها السياق العام (CityContext) — مصدر واحد. عند فتح الصفحة برابط
+  // يحمل ?city=، نتبنّاه كمدينة عامة مرّة واحدة ليتزامن مع الشريط العلوي.
   useEffect(() => {
-    if (searchParams.get("city")) return;
-    const saved = typeof window !== "undefined" ? localStorage.getItem("maskani_selected_city") : null;
-    if (saved) setFilters((p) => (p.city ? p : { ...p, city: saved }));
+    const urlCity = searchParams.get("city");
+    if (urlCity && urlCity !== cityId) setCity(urlCity, "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -79,6 +79,7 @@ function ListingsContent() {
     try {
       const params: Record<string, string> = { offset: String((page - 1) * 20), limit: "20" };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
+      if (cityId) params.city = cityId;
       const { data } = await api.get<PaginatedResponse<Listing>>("/listings/", { params });
       setListings(data.results);
       setTotal(data.count);
@@ -87,18 +88,16 @@ function ListingsContent() {
     } finally {
       setLoading(false);
     }
-  }, [filters, page]);
+  }, [filters, page, cityId]);
 
   useEffect(() => { fetchListings(); }, [fetchListings]);
+
+  // إعادة الصفحة للأولى عند تبديل المدينة العامة (من الشريط أو الفلتر)
+  useEffect(() => { setPage(1); }, [cityId]);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters((p) => ({ ...p, [key]: value }));
     setPage(1);
-    // احفظ آخر مدينة مختارة لتُستعاد في الزيارة القادمة
-    if (key === "city" && typeof window !== "undefined") {
-      if (value) localStorage.setItem("maskani_selected_city", value);
-      else localStorage.removeItem("maskani_selected_city");
-    }
   };
 
   const toggleFavorite = async (id: number, e: React.MouseEvent) => {
@@ -121,7 +120,7 @@ function ListingsContent() {
   // ── مركز الخريطة: إحداثيات صريحة من الرابط، ثم المدينة المختارة، ثم صنعاء ──
   const latParam = parseFloat(searchParams.get("lat") || "");
   const lngParam = parseFloat(searchParams.get("lng") || "");
-  const selectedCity = cities.find((c) => String(c.id) === String(filters.city));
+  const selectedCity = cities.find((c) => String(c.id) === cityId);
   const mapCenter: [number, number] =
     Number.isFinite(latParam) && Number.isFinite(lngParam)
       ? [latParam, lngParam]
@@ -132,6 +131,7 @@ function ListingsContent() {
   Object.entries(filters).forEach(([k, v]) => {
     if (v && k !== "ordering") mapFilters[k] = v;
   });
+  if (cityId) mapFilters.city = cityId;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -200,8 +200,12 @@ function ListingsContent() {
           <Select
             label="المدينة"
             options={cities.map((c) => ({ value: c.id, label: c.name_ar }))}
-            value={filters.city}
-            onChange={(e) => handleFilterChange("city", e.target.value)}
+            value={cityId}
+            onChange={(e) => {
+              const id = e.target.value;
+              const name = cities.find((c) => String(c.id) === id)?.name_ar ?? "";
+              setCity(id, name);
+            }}
             placeholder="الكل"
           />
           <Select
@@ -341,7 +345,7 @@ function ListingsContent() {
                     {listing.area && <span className="flex items-center gap-0.5"><Ruler className="h-3.5 w-3.5 text-primary" /> {listing.area}م²</span>}
                     <span className="flex items-center gap-0.5 mr-auto"><Eye className="h-3.5 w-3.5" /> {listing.views_count}</span>
                   </div>
-                  <p className="text-primary font-extrabold text-base">{formatPrice(listing.price)}</p>
+                  <p className="text-primary font-extrabold text-base">{formatPrice(listing.price, listing.currency)}</p>
                 </div>
               </div>
             </Link>

@@ -4,13 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useCity } from "@/context/CityContext";
 import {
   Home2, Magnifer, Buildings2, ShieldWarning, PenNewSquare,
-  Bell, ChatRound, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings,
+  Bell, ChatRound, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings, MapPoint,
 } from "@solar-icons/react";
 import { Button } from "@/components/ui/Button";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import type { City } from "@/types";
 import { toast } from "sonner";
 
 const navLinks = [
@@ -22,11 +24,25 @@ const navLinks = [
 
 export function Navbar() {
   const { user, logout } = useAuth();
+  const { cityId, cityName, setCity } = useCity();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [cityOpen, setCityOpen] = useState(false);
+  const [cities, setCities] = useState<City[]>([]);
   const [chatUnread, setChatUnread] = useState(0);
+
+  // قائمة المدن للمُحدِّد العام
+  useEffect(() => {
+    api.get("/cities/", { params: { limit: 100 } })
+      .then((r) => setCities(r.data.results ?? []))
+      .catch(() => {});
+  }, []);
+
+  // الاسم المعروض: من السياق، أو من قائمة المدن (لدعم الصيغة القديمة)، وإلا "كل المدن"
+  const selectedCityName =
+    cityName || cities.find((c) => String(c.id) === cityId)?.name_ar || "";
 
   useEffect(() => {
     if (!user) { setChatUnread(0); return; }
@@ -82,6 +98,45 @@ export function Navbar() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-2">
+            {/* مُحدِّد المدينة العام — مصدر واحد لكل الصفحات */}
+            <div className="relative">
+              <button
+                onClick={() => setCityOpen((v) => !v)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors text-sm font-semibold text-gray-700"
+                aria-label="اختر المدينة"
+                aria-expanded={cityOpen}
+              >
+                <MapPoint className="h-4 w-4 text-primary" />
+                <span className="max-w-28 truncate">{selectedCityName || "كل المدن"}</span>
+                <AltArrowDown className="h-4 w-4 text-gray-400" />
+              </button>
+              {cityOpen && (
+                <div className="absolute left-0 mt-2 w-52 max-h-80 overflow-y-auto bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                  <button
+                    onClick={() => { setCity("", ""); setCityOpen(false); }}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm w-full text-right",
+                      !cityId ? "text-primary font-bold" : "text-gray-700"
+                    )}
+                  >
+                    كل المدن
+                  </button>
+                  {cities.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => { setCity(String(c.id), c.name_ar); setCityOpen(false); }}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm w-full text-right",
+                        String(c.id) === cityId ? "text-primary font-bold" : "text-gray-700"
+                      )}
+                    >
+                      {c.name_ar}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {user ? (
               <>
                 {/* Chat */}
@@ -160,6 +215,26 @@ export function Navbar() {
         {/* Mobile Menu */}
         {mobileOpen && (
           <div className="md:hidden border-t border-gray-100 py-3 space-y-1">
+            {/* مُحدِّد المدينة العام — الجوّال */}
+            <div className="px-4 pb-2">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mb-1">
+                <MapPoint className="h-3.5 w-3.5 text-primary" /> المدينة
+              </label>
+              <select
+                value={cityId}
+                onChange={(e) => {
+                  const id = e.target.value;
+                  const name = cities.find((c) => String(c.id) === id)?.name_ar ?? "";
+                  setCity(id, name);
+                }}
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 focus:border-primary focus:outline-none"
+              >
+                <option value="">كل المدن</option>
+                {cities.map((c) => (
+                  <option key={c.id} value={String(c.id)}>{c.name_ar}</option>
+                ))}
+              </select>
+            </div>
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (

@@ -248,7 +248,7 @@ function ListingCard({ listing }: { listing: Listing }) {
             </span>
           </div>
           <p className="text-primary font-extrabold text-base">
-            {formatPrice(listing.price)}
+            {formatPrice(listing.price, listing.currency)}
           </p>
         </div>
       </div>
