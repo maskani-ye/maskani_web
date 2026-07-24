@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/Badge";
 import {
   Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed,
   Ruler, Eye, Heart, AltArrowRight, AltArrowLeft, CloseCircle,
-  Map as MapIcon, List as ListIcon,
+  Map as MapIcon, List as ListIcon, AddCircle,
 } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
@@ -164,6 +164,10 @@ function ListingsContent() {
           <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
             <SliderHorizontal className="h-4 w-4" />
             الفلاتر
+          </Button>
+          <Button size="sm" onClick={() => user ? router.push("/listings/create") : router.push("/auth/login")}>
+            <AddCircle className="h-4 w-4" />
+            أضف إعلان
           </Button>
         </div>
       </div>

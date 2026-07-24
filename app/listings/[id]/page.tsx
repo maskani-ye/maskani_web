@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/Badge";
 import { StarRating } from "@/components/ui/StarRating";
 import {
   MapPoint, Bed, Ruler, Eye, Heart, Phone, ChatSquare,
-  CheckCircle, CloseCircle, Buildings2, Share, AltArrowRight, User,
+  CheckCircle, CloseCircle, Buildings2, Share, AltArrowRight, User, PenNewSquare,
   Bath, Layers, TagPrice, WiFiRouter, CloudBolt, Shield, Leaf, Bolt, Box, Paw,
 } from "@solar-icons/react";
 import { toast } from "sonner";
@@ -293,9 +293,18 @@ export default function ListingDetailPage() {
 
         {/* ── Right Column ──────────────────────────────────────────── */}
         <div className="space-y-4">
+          {/* Owner-only edit */}
+          {typeof listing.user === "object" && user?.id === listing.user.id && (
+            <Link href={`/listings/${listing.id}/edit`}>
+              <Button fullWidth variant="outline" className="mb-4">
+                <PenNewSquare className="h-4 w-4" /> تعديل الإعلان
+              </Button>
+            </Link>
+          )}
+
           {/* Price Card */}
           <div className="bg-white rounded-2xl card-shadow p-5 sticky top-20">
-            <p className="text-3xl font-extrabold text-primary mb-1">{formatPrice(listing.price)}</p>
+            <p className="text-3xl font-extrabold text-primary mb-1">{formatPrice(listing.price, listing.currency)}</p>
             {listing.offer_type !== "sale" && (
               <p className="text-sm text-gray-400">{listing.offer_type === "rent_monthly" ? "شهرياً" : "سنوياً"}</p>
             )}

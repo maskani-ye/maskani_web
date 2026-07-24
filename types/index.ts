@@ -256,6 +256,7 @@ export interface RequestOffer {
   message: string;
   contact_phone: string;
   is_read: boolean;
+  is_accepted: boolean;
   created_at: string;
 }
 

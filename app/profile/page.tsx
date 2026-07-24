@@ -13,8 +13,17 @@ import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   UserRounded, Buildings2, Heart, Bell, MapPoint,
-  PenNewSquare, CheckCircle, Logout,
+  PenNewSquare, CheckCircle, Logout, ShieldCheck, CloudUpload, CloseCircle, ClockCircle,
 } from "@solar-icons/react";
+
+interface VerificationRequest {
+  id: number;
+  status: "pending" | "approved" | "rejected";
+  note: string;
+  document: string | null;
+  review_note: string;
+  created_at: string;
+}
 
 const ROLE_LABELS: Record<string, string> = {
   owner: "مالك عقار", broker: "وسيط / دلال", client: "عميل",
@@ -36,6 +45,12 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [loadingListings, setLoadingListings] = useState(false);
 
+  // ── طلب توثيق الحساب ──
+  const [verif, setVerif] = useState<VerificationRequest | null>(null);
+  const [verifNote, setVerifNote] = useState("");
+  const [verifDoc, setVerifDoc] = useState<File | null>(null);
+  const [verifSubmitting, setVerifSubmitting] = useState(false);
+
   useEffect(() => {
     if (!authLoading && !user) router.push("/auth/login");
   }, [user, authLoading, router]);
@@ -47,6 +62,31 @@ export default function ProfilePage() {
   useEffect(() => {
     if (tab === "listings" && user) fetchMyListings();
   }, [tab, user]);
+
+  // اجلب حالة طلب التوثيق الحالي (404 = لا يوجد طلب)
+  useEffect(() => {
+    if (!user || user.is_verified) return;
+    api.get<VerificationRequest>("/verification/my/")
+      .then((r) => setVerif(r.data))
+      .catch(() => setVerif(null));
+  }, [user]);
+
+  const submitVerification = async () => {
+    setVerifSubmitting(true);
+    try {
+      const fd = new FormData();
+      if (verifNote) fd.append("note", verifNote);
+      if (verifDoc) fd.append("document", verifDoc);
+      const { data } = await api.post<VerificationRequest>("/verification/request/", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setVerif(data);
+      setVerifNote("");
+      setVerifDoc(null);
+      toast.success("تم إرسال طلب التوثيق");
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setVerifSubmitting(false); }
+  };
 
   const fetchMyListings = async () => {
     setLoadingListings(true);
@@ -154,6 +194,57 @@ export default function ProfilePage() {
           <span className="text-xs font-medium text-gray-700">الطلبات</span>
         </Link>
       </div>
+
+      {/* توثيق الحساب — يظهر فقط لغير الموثّقين */}
+      {!user.is_verified && (
+        <div className="bg-white rounded-2xl card-shadow p-5 mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            <h2 className="font-bold text-gray-800">توثيق الحساب</h2>
+          </div>
+
+          {verif?.status === "pending" ? (
+            <div className="flex items-start gap-2 bg-yellow-50 border border-yellow-100 rounded-xl p-3">
+              <ClockCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-yellow-700">طلبك قيد المراجعة</p>
+                <p className="text-xs text-yellow-600 mt-0.5">سيتم إشعارك عند اتخاذ قرار من الإدارة.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {verif?.status === "rejected" && (
+                <div className="bg-red-50 border border-red-100 rounded-xl p-3">
+                  <p className="text-sm font-semibold text-red-700">تم رفض طلبك السابق</p>
+                  {verif.review_note && <p className="text-xs text-red-600 mt-0.5">السبب: {verif.review_note}</p>}
+                  <p className="text-xs text-gray-500 mt-1">يمكنك تقديم طلب جديد.</p>
+                </div>
+              )}
+              <p className="text-sm text-gray-500">وثّق حسابك لزيادة ثقة المستخدمين بك. أرفق مستنداً يثبت هويتك (اختياري).</p>
+              <textarea
+                value={verifNote}
+                onChange={(e) => setVerifNote(e.target.value)}
+                rows={2}
+                placeholder="ملاحظة للإدارة (اختياري)"
+                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+              />
+              <label className="flex items-center justify-center gap-2 h-20 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors">
+                <CloudUpload className="h-5 w-5 text-gray-400" />
+                <span className="text-sm text-gray-400">{verifDoc ? verifDoc.name : "أرفق مستنداً (اختياري)"}</span>
+                <input type="file" accept="image/*,application/pdf" onChange={(e) => setVerifDoc(e.target.files?.[0] ?? null)} className="hidden" />
+              </label>
+              {verifDoc && (
+                <button onClick={() => setVerifDoc(null)} className="flex items-center gap-1 text-xs text-red-500">
+                  <CloseCircle className="h-3.5 w-3.5" /> إزالة المستند
+                </button>
+              )}
+              <Button onClick={submitVerification} loading={verifSubmitting} fullWidth>
+                <ShieldCheck className="h-4 w-4" /> طلب توثيق الحساب
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="bg-white rounded-2xl card-shadow overflow-hidden">
