@@ -6,17 +6,16 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { PhoneField } from "@/components/ui/PhoneField";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { Home2, Phone, User } from "@solar-icons/react";
+import { Home2, LockPassword, User } from "@solar-icons/react";
 import { toast } from "sonner";
 import { getErrorMessage, api } from "@/lib/api";
-import type { City } from "@/types";
+import type { City, User as AppUser } from "@/types";
 
-const ADMIN_ONLY_MESSAGE = "هذه اللوحة مخصّصة للمشرفين فقط";
-
-// تنقّل كامل بعد الدخول — يقرأ التطبيق الجلسة من الكوكيز نظيفاً (يتفادى السباق الزمني)
-function goToAdmin() {
-  window.location.href = "/admin";
+// تنقّل كامل بعد الدخول حسب الدور — يقرأ التطبيق الجلسة من الكوكيز نظيفاً (يتفادى السباق الزمني)
+function redirectByRole(role?: string) {
+  window.location.href = role === "admin" ? "/admin" : "/";
 }
 
 interface CompletionState {
@@ -30,7 +29,29 @@ export default function LoginPage() {
   const [inlineError, setInlineError] = useState<string | null>(null);
   const [completion, setCompletion] = useState<CompletionState | null>(null);
 
-  const { loginWithGoogle, completeGoogle } = useAuth();
+  // نموذج الدخول بالهاتف
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { login, loginWithGoogle, completeGoogle } = useAuth();
+
+  const handlePhoneLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setInlineError(null);
+    setLoading(true);
+    try {
+      const user = await login(phone, password);
+      toast.success("مرحباً بك في مسكني!");
+      redirectByRole(user?.role);
+    } catch (err) {
+      const msg = getErrorMessage(err);
+      setInlineError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // نجاح جوجل → id_token → POST /auth/google/
   const handleGoogleCredential = async (idToken: string) => {
@@ -40,16 +61,13 @@ export default function LoginPage() {
       const result = await loginWithGoogle(idToken);
       if (result.status === "success") {
         toast.success("مرحباً بك في مسكني!");
-        goToAdmin();
-      } else if (result.status === "needs_completion") {
+        redirectByRole(result.user.role);
+      } else {
         setCompletion({
           idToken,
           email: result.email,
           full_name: result.full_name,
         });
-      } else {
-        // forbidden — تم مسح التوكنات داخل الـ context
-        setInlineError(ADMIN_ONLY_MESSAGE);
       }
     } catch (err) {
       setInlineError(getErrorMessage(err));
@@ -69,7 +87,7 @@ export default function LoginPage() {
             </div>
             <span className="text-2xl font-extrabold text-primary">مسكني</span>
           </div>
-          <p className="text-gray-500 mt-2 text-sm">لوحة الإدارة</p>
+          <p className="text-gray-500 mt-2 text-sm">مرحباً بك في مسكني</p>
         </div>
 
         {completion ? (
@@ -77,26 +95,48 @@ export default function LoginPage() {
             completion={completion}
             onCancel={() => setCompletion(null)}
             onComplete={completeGoogle}
-            onDone={() => {
+            onDone={(user) => {
               toast.success("مرحباً بك في مسكني!");
-              goToAdmin();
-            }}
-            onForbidden={() => {
-              setCompletion(null);
-              setInlineError(ADMIN_ONLY_MESSAGE);
+              redirectByRole(user.role);
             }}
           />
         ) : (
           <div className="bg-white rounded-3xl card-shadow p-8">
+            <h1 className="text-xl font-bold text-primary text-center mb-1">تسجيل الدخول</h1>
+            <p className="text-center text-sm text-gray-500 mb-6">
+              سجّل دخولك للمتابعة إلى حسابك
+            </p>
+
             {inlineError && (
               <div className="mb-5 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600 text-center">
                 {inlineError}
               </div>
             )}
 
-            <p className="text-center text-sm text-gray-600 mb-5">
-              سجّل دخولك بحساب جوجل للمتابعة
-            </p>
+            {/* نموذج الدخول بالهاتف */}
+            <form onSubmit={handlePhoneLogin} className="space-y-4">
+              <PhoneField value={phone} onChange={setPhone} required />
+              <Input
+                label="كلمة المرور"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                startIcon={<LockPassword className="h-4 w-4" />}
+                required
+              />
+              <Button type="submit" fullWidth loading={loading} size="lg" className="mt-1">
+                دخول
+              </Button>
+            </form>
+
+            {/* فاصل */}
+            <div className="flex items-center gap-3 my-6">
+              <span className="h-px flex-1 bg-gray-200" />
+              <span className="text-xs text-gray-400">أو</span>
+              <span className="h-px flex-1 bg-gray-200" />
+            </div>
+
             <div aria-busy={googleLoading}>
               <GoogleSignInButton
                 onCredential={handleGoogleCredential}
@@ -109,8 +149,11 @@ export default function LoginPage() {
           </div>
         )}
 
-        <p className="text-center text-xs text-gray-400 mt-6">
-          الدخول متاح للمشرفين فقط
+        <p className="text-center text-sm text-gray-500 mt-6">
+          ليس لديك حساب؟{" "}
+          <Link href="/auth/register" className="text-primary font-semibold hover:underline">
+            إنشاء حساب جديد
+          </Link>
         </p>
       </div>
     </div>
@@ -121,8 +164,7 @@ export default function LoginPage() {
 interface CompletionFormProps {
   completion: CompletionState;
   onComplete: ReturnType<typeof useAuth>["completeGoogle"];
-  onDone: () => void;
-  onForbidden: () => void;
+  onDone: (user: AppUser) => void;
   onCancel: () => void;
 }
 
@@ -130,7 +172,6 @@ function GoogleCompletionForm({
   completion,
   onComplete,
   onDone,
-  onForbidden,
   onCancel,
 }: CompletionFormProps) {
   const [fullName, setFullName] = useState(completion.full_name);
@@ -159,9 +200,7 @@ function GoogleCompletionForm({
         full_name: fullName.trim() || undefined,
       });
       if (result.status === "success") {
-        onDone();
-      } else {
-        onForbidden();
+        onDone(result.user);
       }
     } catch (err) {
       setError(getErrorMessage(err));
@@ -198,16 +237,7 @@ function GoogleCompletionForm({
           startIcon={<User className="h-4 w-4" />}
           required
         />
-        <Input
-          label="رقم الهاتف"
-          type="tel"
-          placeholder="05xxxxxxxx"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          startIcon={<Phone className="h-4 w-4" />}
-          required
-          dir="ltr"
-        />
+        <PhoneField value={phone} onChange={setPhone} required />
         <Select
           label="المدينة (اختياري)"
           options={cities.map((c) => ({ value: c.id, label: c.name_ar }))}

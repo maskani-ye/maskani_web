@@ -9,8 +9,8 @@ import { api } from "@/lib/api";
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (phone: string, password: string) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  login: (phone: string, password: string) => Promise<User | null>;
+  register: (data: RegisterData) => Promise<User>;
   loginWithGoogle: (idToken: string) => Promise<GoogleAuthResult>;
   completeGoogle: (data: GoogleCompleteData) => Promise<GoogleAuthResult>;
   logout: () => Promise<void>;
@@ -22,7 +22,7 @@ interface RegisterData {
   full_name: string;
   password: string;
   password_confirm: string;
-  role: string;
+  role?: string;
   city?: number;
 }
 
@@ -33,11 +33,10 @@ interface GoogleCompleteData {
   full_name?: string;
 }
 
-// نتيجة تدفق جوجل — إما دخول ناجح، أو حساب جديد يحتاج استكمال، أو مستخدم ليس مشرفاً
+// نتيجة تدفق جوجل — إما دخول ناجح، أو حساب جديد يحتاج استكمال بياناته
 export type GoogleAuthResult =
   | { status: "success"; user: User }
-  | { status: "needs_completion"; email: string; full_name: string }
-  | { status: "forbidden" };
+  | { status: "needs_completion"; email: string; full_name: string };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -74,31 +73,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUser();
   }, [refreshUser]);
 
-  const login = async (phone: string, password: string) => {
+  const login = async (phone: string, password: string): Promise<User | null> => {
     const { data } = await api.post("/auth/login/", { phone, password });
     setTokens(data.access, data.refresh);
     const u = await fetchCurrentUser();
     setUser(u);
+    return u;
   };
 
-  const register = async (formData: RegisterData) => {
+  const register = async (formData: RegisterData): Promise<User> => {
     const { data } = await api.post("/auth/register/", formData);
     setTokens(data.access, data.refresh);
     setUser(data.user);
+    return data.user as User;
   };
 
-  // بوابة المشرفين: نُثبّت الجلسة فقط إن كان المستخدم مشرفاً
+  // نُثبّت الجلسة لكل المستخدمين — لا توجد بوابة أدوار هنا
   const finalizeAuth = (data: {
     user: User;
     access: string;
     refresh: string;
   }): GoogleAuthResult => {
-    if (data.user?.role !== "admin") {
-      // لا نحفظ التوكنات لغير المشرفين
-      clearTokens();
-      setUser(null);
-      return { status: "forbidden" };
-    }
     setTokens(data.access, data.refresh);
     setUser(data.user);
     return { status: "success", user: data.user };
