@@ -13,9 +13,12 @@ import { Badge } from "@/components/ui/Badge";
 import {
   Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed,
   Ruler, Eye, Heart, AltArrowRight, AltArrowLeft, CloseCircle,
+  Map as MapIcon, List as ListIcon,
 } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import ListingsMap from "@/components/map/ListingsMap";
+import { cityCoords, YEMEN_CENTER, DEFAULT_ZOOM } from "@/components/map/constants";
 
 const PROPERTY_TYPE_OPTS = [
   { value: "apartment", label: "شقة" },
@@ -42,6 +45,7 @@ function ListingsContent() {
   const [cities, setCities] = useState<City[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [view, setView] = useState<"list" | "map">(searchParams.get("view") === "map" ? "map" : "list");
 
   const [filters, setFilters] = useState({
     search: searchParams.get("search") || "",
@@ -100,6 +104,21 @@ function ListingsContent() {
 
   const totalPages = Math.ceil(total / 20);
 
+  // ── مركز الخريطة: إحداثيات صريحة من الرابط، ثم المدينة المختارة، ثم صنعاء ──
+  const latParam = parseFloat(searchParams.get("lat") || "");
+  const lngParam = parseFloat(searchParams.get("lng") || "");
+  const selectedCity = cities.find((c) => String(c.id) === String(filters.city));
+  const mapCenter: [number, number] =
+    Number.isFinite(latParam) && Number.isFinite(lngParam)
+      ? [latParam, lngParam]
+      : (selectedCity && cityCoords(selectedCity.name_ar, selectedCity.name_en)) || YEMEN_CENTER;
+
+  // ── فلاتر الخريطة (بدون الترقيم/الترتيب) لتمريرها مع الـ bbox ──
+  const mapFilters: Record<string, string> = {};
+  Object.entries(filters).forEach(([k, v]) => {
+    if (v && k !== "ordering") mapFilters[k] = v;
+  });
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
@@ -108,10 +127,31 @@ function ListingsContent() {
           <h1 className="text-2xl font-bold text-gray-900">الإعلانات العقارية</h1>
           <p className="text-gray-500 text-sm mt-1">{total} إعلان متاح</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
-          <SliderHorizontal className="h-4 w-4" />
-          الفلاتر
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* مبدّل قائمة / خريطة */}
+          <div className="flex rounded-xl border border-gray-200 bg-white p-1">
+            <button
+              onClick={() => setView("list")}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
+                view === "list" ? "bg-primary text-white" : "text-gray-500 hover:text-primary"
+              }`}
+            >
+              <ListIcon className="h-4 w-4" /> قائمة
+            </button>
+            <button
+              onClick={() => setView("map")}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
+                view === "map" ? "bg-primary text-white" : "text-gray-500 hover:text-primary"
+              }`}
+            >
+              <MapIcon className="h-4 w-4" /> خريطة
+            </button>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
+            <SliderHorizontal className="h-4 w-4" />
+            الفلاتر
+          </Button>
+        </div>
       </div>
 
       {/* Search Bar */}
@@ -215,6 +255,13 @@ function ListingsContent() {
         </div>
       )}
 
+      {/* Map View */}
+      {view === "map" ? (
+        <div className="h-[70vh] w-full overflow-hidden rounded-2xl card-shadow">
+          <ListingsMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} />
+        </div>
+      ) : (
+      <>
       {/* Listings Grid */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -295,6 +342,8 @@ function ListingsContent() {
             التالي <AltArrowLeft className="h-4 w-4" />
           </Button>
         </div>
+      )}
+      </>
       )}
     </div>
   );

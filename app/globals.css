@@ -52,3 +52,31 @@ body {
     box-shadow: 0 8px 32px rgba(45, 106, 79, 0.16);
   }
 }
+
+/* ─── Leaflet Map (ألوان مسكني + RTL) ────────────────────────────── */
+.maskani-map { font-family: "Cairo", "Tajawal", sans-serif; }
+.leaflet-container { font-family: inherit; background: #e8eef0; }
+
+/* أيقونة العلامة المخصّصة — بلا خلفية */
+.maskani-marker { background: transparent; border: none; }
+.maskani-marker svg { filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25)); }
+
+/* تجمّعات العلامات بلون العلامة التجارية */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large { background-color: rgba(45, 106, 79, 0.25); }
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background-color: #2D6A4F;
+  color: #fff;
+  font-weight: 700;
+  font-family: "Cairo", "Tajawal", sans-serif;
+}
+
+/* نافذة العلامة (popup) */
+.leaflet-popup-content-wrapper { border-radius: 1rem; box-shadow: 0 8px 32px rgba(45,106,79,0.16); }
+.leaflet-popup-content { margin: 0.5rem; }
+
+/* الإسناد + أدوات التحكّم بمحاذاة RTL-aware */
+.leaflet-control-attribution { font-family: "Cairo", "Tajawal", sans-serif; font-size: 10px; direction: ltr; }

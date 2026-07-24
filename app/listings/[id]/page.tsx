@@ -20,6 +20,7 @@ import {
 } from "@solar-icons/react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import MiniMap from "@/components/map/MiniMap";
 
 const featuresList = [
   { key: "has_elevator", label: "مصعد", icon: Layers },
@@ -102,6 +103,10 @@ export default function ListingDetailPage() {
   );
 
   const images = listing.images || (listing.main_image ? [{ id: 0, image: listing.main_image, is_main: true, order: 0 }] : []);
+
+  const lat = listing.latitude != null ? parseFloat(listing.latitude) : NaN;
+  const lng = listing.longitude != null ? parseFloat(listing.longitude) : NaN;
+  const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
@@ -233,6 +238,25 @@ export default function ListingDetailPage() {
               <span>نُشر {formatRelativeTime(listing.created_at)}</span>
             </div>
           </div>
+
+          {/* Location — يظهر فقط عند توفّر الإحداثيات */}
+          {hasCoords && (
+            <div className="bg-white rounded-2xl card-shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-gray-800 flex items-center gap-1.5">
+                  <MapPoint className="h-5 w-5 text-primary" /> الموقع
+                </h3>
+                <Link href={`/listings?view=map&lat=${lat}&lng=${lng}`}>
+                  <Button variant="outline" size="sm">
+                    <MapPoint className="h-4 w-4" /> عرض على الخريطة الكاملة
+                  </Button>
+                </Link>
+              </div>
+              <div className="h-64 w-full overflow-hidden rounded-2xl">
+                <MiniMap lat={lat} lng={lng} />
+              </div>
+            </div>
+          )}
 
           {/* Comments */}
           <div className="bg-white rounded-2xl card-shadow p-6">
