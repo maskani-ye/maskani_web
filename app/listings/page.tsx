@@ -65,6 +65,15 @@ function ListingsContent() {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, []);
 
+  // تذكّر آخر مدينة اختارها المستخدم (مثل التطبيق) — تُطبَّق فقط إن لم تُحدَّد مدينة
+  // في رابط الصفحة، وتُقرأ بعد التحميل لتفادي عدم تطابق SSR/hydration.
+  useEffect(() => {
+    if (searchParams.get("city")) return;
+    const saved = typeof window !== "undefined" ? localStorage.getItem("maskani_selected_city") : null;
+    if (saved) setFilters((p) => (p.city ? p : { ...p, city: saved }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const fetchListings = useCallback(async () => {
     setLoading(true);
     try {
@@ -85,6 +94,11 @@ function ListingsContent() {
   const handleFilterChange = (key: string, value: string) => {
     setFilters((p) => ({ ...p, [key]: value }));
     setPage(1);
+    // احفظ آخر مدينة مختارة لتُستعاد في الزيارة القادمة
+    if (key === "city" && typeof window !== "undefined") {
+      if (value) localStorage.setItem("maskani_selected_city", value);
+      else localStorage.removeItem("maskani_selected_city");
+    }
   };
 
   const toggleFavorite = async (id: number, e: React.MouseEvent) => {
