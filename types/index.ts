@@ -38,6 +38,8 @@ export interface City {
   region: string;
   country: number;
   country_name: string;
+  latitude?: string | null;
+  longitude?: string | null;
   is_active?: boolean;
 }
 

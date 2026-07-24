@@ -117,14 +117,21 @@ function ListingsContent() {
 
   const totalPages = Math.ceil(total / 20);
 
-  // ── مركز الخريطة: إحداثيات صريحة من الرابط، ثم المدينة المختارة، ثم صنعاء ──
+  // ── مركز الخريطة: إحداثيات صريحة من الرابط، ثم الإحداثيات الحقيقية للمدينة
+  //    المختارة من الـ API، ثم البحث بالاسم كاحتياطي، ثم صنعاء ──
   const latParam = parseFloat(searchParams.get("lat") || "");
   const lngParam = parseFloat(searchParams.get("lng") || "");
   const selectedCity = cities.find((c) => String(c.id) === cityId);
+  const cityLat = selectedCity?.latitude != null ? parseFloat(selectedCity.latitude) : NaN;
+  const cityLng = selectedCity?.longitude != null ? parseFloat(selectedCity.longitude) : NaN;
+  const cityRealCoords: [number, number] | null =
+    Number.isFinite(cityLat) && Number.isFinite(cityLng) ? [cityLat, cityLng] : null;
   const mapCenter: [number, number] =
     Number.isFinite(latParam) && Number.isFinite(lngParam)
       ? [latParam, lngParam]
-      : (selectedCity && cityCoords(selectedCity.name_ar, selectedCity.name_en)) || YEMEN_CENTER;
+      : cityRealCoords ||
+        (selectedCity && cityCoords(selectedCity.name_ar, selectedCity.name_en)) ||
+        YEMEN_CENTER;
 
   // ── فلاتر الخريطة (بدون الترقيم/الترتيب) لتمريرها مع الـ bbox ──
   const mapFilters: Record<string, string> = {};
