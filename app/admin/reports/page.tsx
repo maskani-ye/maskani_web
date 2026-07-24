@@ -62,7 +62,7 @@ export default function AdminReportsPage() {
       if (filters.search) params.search = filters.search;
       if (filters.status) params.status = filters.status;
       if (filters.fraud_type) params.fraud_type = filters.fraud_type;
-      const { data } = await api.get<PaginatedResponse<FraudReport>>("/fraud-reports/", { params });
+      const { data } = await api.get<PaginatedResponse<FraudReport>>("/reports/", { params });
       setReports(data.results);
       setTotal(data.count);
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -75,7 +75,7 @@ export default function AdminReportsPage() {
     setLoadingDetail(true);
     setSelected(null);
     try {
-      const { data } = await api.get<ReportDetail>(`/fraud-reports/${id}/`);
+      const { data } = await api.get<ReportDetail>(`/reports/${id}/`);
       setSelected(data);
       setAdminNote(data.admin_note || "");
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -86,7 +86,7 @@ export default function AdminReportsPage() {
     if (!selected) return;
     setUpdatingStatus(true);
     try {
-      await api.patch(`/fraud-reports/${selected.id}/admin-update/`, {
+      await api.patch(`/reports/${selected.id}/admin-update/`, {
         status: newStatus,
         admin_note: adminNote,
       });

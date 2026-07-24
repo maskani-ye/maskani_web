@@ -43,7 +43,7 @@ export function Footer() {
             <ul className="space-y-2">
               {[
                 { href: "/services", label: "خدمات عقارية" },
-                { href: "/fraud-reports", label: "مجتمع الشكاوي" },
+                { href: "/reports", label: "مجتمع الشكاوي" },
                 { href: "/requests", label: "طلبات العملاء" },
               ].map((link) => (
                 <li key={link.href}>

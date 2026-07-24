@@ -17,12 +17,12 @@ const NAV = [
   { href: "/admin/users",              label: "المستخدمون",      icon: UsersGroupRounded },
   { href: "/admin/verification",       label: "طلبات التوثيق",   icon: ShieldCheck },
   { href: "/admin/listings",           label: "الإعلانات",       icon: Buildings2 },
-  { href: "/admin/property-types",     label: "أنواع العقارات",  icon: MapPoint },
+  { href: "/admin/properties",         label: "أنواع العقارات",  icon: MapPoint },
   { href: "/admin/requests",           label: "طلبات العملاء",   icon: ChatRound },
   { href: "/admin/reports",            label: "البلاغات",        icon: ShieldWarning },
-  { href: "/admin/user-reports",       label: "بلاغات المستخدمين", icon: DangerTriangle },
+  { href: "/admin/flags",              label: "بلاغات المستخدمين", icon: DangerTriangle },
   { href: "/admin/cities",             label: "المدن والدول",    icon: City },
-  { href: "/admin/service-categories", label: "أصناف الخدمات",   icon: Widget },
+  { href: "/admin/categories",         label: "أصناف الخدمات",   icon: Widget },
   { href: "/admin/services",           label: "مزودو الخدمة",    icon: Settings },
 ];
 

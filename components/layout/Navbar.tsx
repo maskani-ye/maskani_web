@@ -15,7 +15,7 @@ import { toast } from "sonner";
 const navLinks = [
   { href: "/listings", label: "الإعلانات", icon: Buildings2 },
   { href: "/services", label: "الخدمات", icon: Settings },
-  { href: "/fraud-reports", label: "مجتمع الشكاوي", icon: ShieldWarning },
+  { href: "/reports", label: "مجتمع الشكاوي", icon: ShieldWarning },
   { href: "/requests", label: "طلبات العملاء", icon: PenNewSquare },
 ];
 

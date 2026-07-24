@@ -34,7 +34,7 @@ export default function FraudReportsPage() {
     try {
       const params: Record<string, string> = { offset: "0", limit: "20" };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
-      const { data } = await api.get<PaginatedResponse<FraudReport>>("/fraud-reports/", { params });
+      const { data } = await api.get<PaginatedResponse<FraudReport>>("/reports/", { params });
       setReports(data.results);
       setTotal(data.count);
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -47,7 +47,7 @@ export default function FraudReportsPage() {
     e.preventDefault();
     if (!user) { router.push("/auth/login"); return; }
     try {
-      const { data } = await api.post(`/fraud-reports/${reportId}/vote/`, { is_credible: isCredible });
+      const { data } = await api.post(`/reports/${reportId}/vote/`, { is_credible: isCredible });
       setReports((prev) => prev.map((r) => r.id === reportId ? { ...r, credibility_score: data.credibility_score } : r));
       toast.success("تم تسجيل تصويتك");
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -70,7 +70,7 @@ export default function FraudReportsPage() {
           </h1>
           <p className="text-gray-500 text-sm mt-1">{total} بلاغ | الشفافية تحمي الجميع</p>
         </div>
-        <Button onClick={() => user ? router.push("/fraud-reports/create") : router.push("/auth/login")}>
+        <Button onClick={() => user ? router.push("/reports/create") : router.push("/auth/login")}>
           <AddCircle className="h-4 w-4" />
           رفع بلاغ
         </Button>
@@ -136,7 +136,7 @@ export default function FraudReportsPage() {
       ) : (
         <div className="space-y-4">
           {reports.map((report) => (
-            <Link key={report.id} href={`/fraud-reports/${report.id}`}>
+            <Link key={report.id} href={`/reports/${report.id}`}>
               <div className="bg-white rounded-2xl card-shadow hover:card-shadow-hover transition-all duration-200 p-5 cursor-pointer">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">

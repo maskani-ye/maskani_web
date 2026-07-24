@@ -51,11 +51,11 @@ export default function CreateFraudReportPage() {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => { if (v) fd.append(k, v); });
       images.forEach((img) => fd.append("images", img));
-      const { data } = await api.post("/fraud-reports/create/", fd, {
+      const { data } = await api.post("/reports/create/", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("تم رفع البلاغ بنجاح");
-      router.push(`/fraud-reports/${data.id}`);
+      router.push(`/reports/${data.id}`);
     } catch (err) {
       toast.error(getErrorMessage(err));
     } finally {

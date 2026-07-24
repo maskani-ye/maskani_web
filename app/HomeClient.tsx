@@ -119,7 +119,7 @@ export default function HomeClient() {
           {[
             { icon: Buildings2, label: "إعلانات للبيع والإيجار", color: "bg-primary/10 text-primary", href: "/listings" },
             { icon: Settings, label: "خدمات عقارية متخصصة", color: "bg-gold/10 text-gold", href: "/services" },
-            { icon: ShieldWarning, label: "مجتمع الشكاوي", color: "bg-red-50 text-red-600", href: "/fraud-reports" },
+            { icon: ShieldWarning, label: "مجتمع الشكاوي", color: "bg-red-50 text-red-600", href: "/reports" },
             { icon: PenNewSquare, label: "طلبات العملاء", color: "bg-blue-50 text-blue-600", href: "/requests" },
           ].map((item) => {
             const Icon = item.icon;
@@ -188,7 +188,7 @@ export default function HomeClient() {
           <p className="text-gray-500 mb-6 max-w-xl mx-auto">
             شارك تجربتك مع المجتمع وساعد الآخرين على تجنّب المحتالين
           </p>
-          <Link href="/fraud-reports/create">
+          <Link href="/reports/create">
             <Button size="lg" variant="danger">
               <ShieldWarning className="h-5 w-5" />
               رفع بلاغ احتيال
