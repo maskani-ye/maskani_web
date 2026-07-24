@@ -79,6 +79,12 @@ api.interceptors.response.use(
   }
 );
 
+// ─── Helper: كود حالة HTTP من الخطأ (أو null إن كان خطأ شبكة/غير HTTP) ─────
+export function getErrorStatus(error: unknown): number | null {
+  if (axios.isAxiosError(error)) return error.response?.status ?? null;
+  return null;
+}
+
 // ─── Helper: استخراج رسالة الخطأ ─────────────────────────────────────────
 export function getErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {

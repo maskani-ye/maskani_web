@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { api, getErrorMessage } from "@/lib/api";
+import { api, getErrorMessage, getErrorStatus } from "@/lib/api";
 import {
   formatPrice, formatRelativeTime, formatDate,
-  propertyTypeLabels, offerTypeLabels, furnishingLabels, statusColors, statusLabels,
-} from "@/lib/utils";
+  propertyTypeLabels, offerTypeLabels, furnishingLabels, statusColors, statusLabels, propertyTypeName } from "@/lib/utils";
 import type { Listing } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +16,7 @@ import {
   MapPoint, Bed, Ruler, Eye, Heart, Phone, ChatSquare, ChatRoundDots,
   CheckCircle, CloseCircle, Buildings2, Share, AltArrowRight, User, PenNewSquare,
   Bath, Layers, TagPrice, WiFiRouter, CloudBolt, Shield, Leaf, Bolt, Box, Paw,
+  Refresh, DangerTriangle,
 } from "@solar-icons/react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,28 +35,55 @@ const featuresList = [
   { key: "pets_allowed", label: "يسمح بالحيوانات", icon: Paw },
 ] as const;
 
+// نوع العقار قد يصل ككائن {id,name_ar,icon} (جدول PropertyType) أو كسلسلة قديمة.
+
+interface ListingComment {
+  id: number;
+  user?: number | null;
+  user_name: string;
+  user_avatar: string | null;
+  text: string;
+  created_at: string;
+}
+
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<{ notFound: boolean; message: string } | null>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [favorited, setFavorited] = useState(false);
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState<{ id: number; user_name: string; user_avatar: string | null; text: string; created_at: string }[]>([]);
+  const [comments, setComments] = useState<ListingComment[]>([]);
   const [startingChat, setStartingChat] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
 
-  useEffect(() => {
+  const loadListing = useCallback(() => {
+    setLoading(true);
+    setError(null);
     api.get<Listing>(`/listings/${id}/`)
       .then((r) => { setListing(r.data); })
-      .catch(() => toast.error("لم يتم العثور على الإعلان"))
+      .catch((err) => {
+        // 404 حقيقي فقط يعني "غير موجود"؛ غير ذلك خطأ شبكة/خادم قابل لإعادة المحاولة.
+        const status = getErrorStatus(err);
+        if (status === 404) {
+          setError({ notFound: true, message: "الإعلان غير موجود" });
+        } else {
+          setError({ notFound: false, message: getErrorMessage(err) });
+        }
+      })
       .finally(() => setLoading(false));
+  }, [id]);
+
+  useEffect(() => {
+    loadListing();
 
     api.get(`/social/listings/${id}/comments/`)
       .then((r) => setComments(r.data.results || r.data))
       .catch(() => {});
-  }, [id]);
+  }, [id, loadListing]);
 
   const handleFavorite = async () => {
     if (!user) { router.push("/auth/login"); return; }
@@ -67,20 +94,41 @@ export default function ListingDetailPage() {
     } catch (err) { toast.error(getErrorMessage(err)); }
   };
 
-  const startConversation = async () => {
+  // مساعد موحّد لبدء/فتح محادثة خاصة (DM) مع مستخدم مع ربطها بالإعلان.
+  const startDM = async (recipientId: number) => {
     if (!user) { router.push("/auth/login"); return; }
-    if (typeof listing?.user !== "object") return;
-    setStartingChat(true);
+    if (!listing) return;
     try {
       const { data } = await api.post("/chat/conversations/", {
-        recipient_id: listing.user.id,
+        recipient_id: recipientId,
         listing: listing.id,
       });
       router.push(`/chat/${data.id}`);
     } catch (err) {
       toast.error(getErrorMessage(err));
+    }
+  };
+
+  // "مراسلة المُعلن" — DM مع صاحب الإعلان.
+  const startConversation = async () => {
+    if (!user) { router.push("/auth/login"); return; }
+    if (typeof listing?.user !== "object") return;
+    setStartingChat(true);
+    try {
+      await startDM(listing.user.id);
     } finally {
       setStartingChat(false);
+    }
+  };
+
+  // "رد خاص" — DM مع كاتب تعليق عام (نمط حراج: تعليق عام + رد خاص بالاسم).
+  const startPrivateReply = async (commentId: number, authorId: number) => {
+    if (!user) { router.push("/auth/login"); return; }
+    setReplyingTo(commentId);
+    try {
+      await startDM(authorId);
+    } finally {
+      setReplyingTo(null);
     }
   };
 
@@ -113,6 +161,24 @@ export default function ListingDetailPage() {
     </div>
   );
 
+  // خطأ شبكة/خادم (ليس 404) — اعرض رسالة واضحة + إعادة المحاولة، لا "غير موجود".
+  if (!listing && error && !error.notFound) return (
+    <div className="max-w-md mx-auto text-center py-20 px-4">
+      <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+        <DangerTriangle className="h-7 w-7 text-red-500" />
+      </div>
+      <p className="text-gray-800 font-bold text-lg mb-1">تعذّر تحميل الإعلان</p>
+      <p className="text-gray-500 text-sm mb-5">{error.message}</p>
+      <div className="flex items-center justify-center gap-3">
+        <Button onClick={loadListing}>
+          <Refresh className="h-4 w-4" /> إعادة المحاولة
+        </Button>
+        <Link href="/listings"><Button variant="outline">العودة للإعلانات</Button></Link>
+      </div>
+    </div>
+  );
+
+  // 404 حقيقي أو غياب البيانات — الإعلان غير موجود فعلاً.
   if (!listing) return (
     <div className="text-center py-20">
       <p className="text-gray-500 text-lg">الإعلان غير موجود</p>
@@ -211,7 +277,7 @@ export default function ListingDetailPage() {
             {/* Specs */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
               {[
-                { icon: Buildings2, label: "النوع", value: propertyTypeLabels[listing.property_type] },
+                { icon: Buildings2, label: "النوع", value: propertyTypeName(listing.property_type) },
                 ...(listing.rooms != null ? [{ icon: Bed, label: "الغرف", value: `${listing.rooms} غرف` }] : []),
                 ...(listing.bathrooms != null ? [{ icon: Bath, label: "الحمامات", value: `${listing.bathrooms}` }] : []),
                 ...(listing.area ? [{ icon: Ruler, label: "المساحة", value: `${listing.area} م²` }] : []),
@@ -291,20 +357,33 @@ export default function ListingDetailPage() {
               </div>
             )}
             <div className="space-y-4">
-              {comments.map((c) => (
-                <div key={c.id} className="flex gap-3">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    {c.user_avatar ? <img src={c.user_avatar} className="w-full h-full rounded-full object-cover" /> : <User className="h-4 w-4 text-primary" />}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-sm text-gray-800">{c.user_name}</span>
-                      <span className="text-xs text-gray-400">{formatRelativeTime(c.created_at)}</span>
+              {comments.map((c) => {
+                const canReply = c.user != null && c.user !== user?.id;
+                return (
+                  <div key={c.id} className="flex gap-3">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {c.user_avatar ? <img src={c.user_avatar} alt="" className="w-full h-full rounded-full object-cover" /> : <User className="h-4 w-4 text-primary" />}
                     </div>
-                    <p className="text-sm text-gray-600">{c.text}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-sm text-gray-800">{c.user_name}</span>
+                        <span className="text-xs text-gray-400">{formatRelativeTime(c.created_at)}</span>
+                      </div>
+                      <p className="text-sm text-gray-600">{c.text}</p>
+                      {canReply && (
+                        <button
+                          onClick={() => startPrivateReply(c.id, c.user as number)}
+                          disabled={replyingTo === c.id}
+                          className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 disabled:opacity-50 transition-colors"
+                        >
+                          <ChatRoundDots className="h-3.5 w-3.5" />
+                          {replyingTo === c.id ? "جارٍ الفتح…" : "رد خاص"}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

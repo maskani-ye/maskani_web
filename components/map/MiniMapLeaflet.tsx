@@ -16,9 +16,10 @@ export interface MiniMapLeafletProps {
   zoom?: number;
 }
 
-const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+// بلاط CARTO Voyager — أقرب مظهر مجاني لخرائط Google (مطابق لتطبيق Flutter).
+const TILE_URL = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+const TILE_SUBDOMAINS = "abcd";
+const TILE_ATTRIBUTION = "© OpenStreetMap contributors © CARTO";
 
 export default function MiniMapLeaflet({ lat, lng, zoom = 15 }: MiniMapLeafletProps) {
   return (
@@ -32,7 +33,7 @@ export default function MiniMapLeaflet({ lat, lng, zoom = 15 }: MiniMapLeafletPr
       attributionControl
       className="maskani-map h-full w-full rounded-2xl z-0"
     >
-      <TileLayer url={OSM_URL} attribution={OSM_ATTRIBUTION} maxZoom={19} />
+      <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains={TILE_SUBDOMAINS} maxZoom={20} />
       <Marker position={[lat, lng]} icon={listingIcon} />
     </MapContainer>
   );

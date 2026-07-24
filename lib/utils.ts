@@ -45,6 +45,16 @@ export const propertyTypeLabels: Record<string, string> = {
   commercial: "محل تجاري",
 };
 
+// property_type may arrive as a nested object {id,name_ar,icon} (current API),
+// a legacy slug string, or a bare id — always render a safe label, never an object.
+export function propertyTypeName(pt: unknown): string {
+  if (pt && typeof pt === "object" && "name_ar" in pt) {
+    return String((pt as { name_ar: string }).name_ar);
+  }
+  if (typeof pt === "string") return propertyTypeLabels[pt] ?? pt;
+  return "—";
+}
+
 export const offerTypeLabels: Record<string, string> = {
   sale: "للبيع",
   rent_monthly: "إيجار شهري",

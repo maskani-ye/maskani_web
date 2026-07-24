@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import { formatPrice, formatRelativeTime } from "@/lib/utils";
+import { formatPrice, formatRelativeTime, propertyTypeName } from "@/lib/utils";
 import type { ClientRequest, RequestOffer, Listing, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
   PenNewSquare, MapPoint, Bed, Dollar, ClockCircle, User, CheckCircle,
-  Phone, AltArrowRight, Buildings2, ChatRound,
+  Phone, AltArrowRight, Buildings2, ChatRound, ChatRoundDots,
 } from "@solar-icons/react";
 import { toast } from "sonner";
 
@@ -38,8 +38,24 @@ export default function RequestDetailPage() {
   const [contactPhone, setContactPhone] = useState("");
   const [selectedListing, setSelectedListing] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [startingChat, setStartingChat] = useState(false);
 
   const isOwner = !!user && !!request && user.id === request.client;
+
+  // "مراسلة" — بدء/فتح محادثة خاصة (DM) مع صاحب الطلب.
+  const startConversation = async () => {
+    if (!user) { router.push("/auth/login"); return; }
+    if (!request) return;
+    setStartingChat(true);
+    try {
+      const { data } = await api.post("/chat/conversations/", { recipient_id: request.client });
+      router.push(`/chat/${data.id}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setStartingChat(false);
+    }
+  };
 
   const loadOffers = useCallback(() => {
     api.get(`/requests/${id}/offers/`)
@@ -120,7 +136,7 @@ export default function RequestDetailPage() {
       <div className="bg-white rounded-2xl card-shadow p-6">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">
-            {propertyTypeLabels[request.property_type] || request.property_type}
+            {propertyTypeName(request.property_type)}
           </span>
           <span className="text-xs bg-gold/10 text-gold px-2.5 py-1 rounded-full font-semibold">
             {offerTypeLabels[request.offer_type] || request.offer_type}
@@ -165,6 +181,12 @@ export default function RequestDetailPage() {
           <span className="flex items-center gap-1"><ClockCircle className="h-3.5 w-3.5" /> {formatRelativeTime(request.created_at)}</span>
           <span className="mr-auto font-bold text-primary">{request.offers_count} عرض</span>
         </div>
+
+        {!isOwner && (
+          <Button className="mt-4" fullWidth variant="primary" onClick={startConversation} loading={startingChat}>
+            <ChatRoundDots className="h-4 w-4" /> مراسلة صاحب الطلب
+          </Button>
+        )}
       </div>
 
       {/* Owner view: offers list */}

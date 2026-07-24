@@ -12,7 +12,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "re
 import MarkerClusterGroup from "react-leaflet-cluster";
 import Link from "next/link";
 import { api } from "@/lib/api";
-import { formatPrice, offerTypeLabels, propertyTypeLabels } from "@/lib/utils";
+import { formatPrice, offerTypeLabels, propertyTypeLabels, propertyTypeName } from "@/lib/utils";
 import { Buildings2, MapPoint } from "@solar-icons/react";
 import { listingIcon } from "./leafletSetup";
 import { DEFAULT_ZOOM, type MapListing, type MapResponse } from "./constants";
@@ -29,10 +29,11 @@ export interface ListingsLeafletMapProps {
   filters?: Record<string, string>;
 }
 
-const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-// إسناد الحقوق مطلوب بموجب سياسة OpenStreetMap.
-const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+// بلاط CARTO Voyager — أقرب مظهر مجاني لخرائط Google (مطابق لتطبيق Flutter).
+const TILE_URL = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+const TILE_SUBDOMAINS = "abcd";
+// إسناد الحقوق مطلوب بموجب سياسة OpenStreetMap و CARTO.
+const TILE_ATTRIBUTION = "© OpenStreetMap contributors © CARTO";
 
 /** يحوّل حدود الخريطة إلى bbox = minLng,minLat,maxLng,maxLat (west,south,east,north) */
 function boundsToBbox(map: LeafletMap): string {
@@ -135,7 +136,7 @@ export default function ListingsLeafletMap({ center, zoom = DEFAULT_ZOOM, filter
         scrollWheelZoom
         className="maskani-map h-full w-full rounded-2xl z-0"
       >
-        <TileLayer url={OSM_URL} attribution={OSM_ATTRIBUTION} maxZoom={19} />
+        <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains={TILE_SUBDOMAINS} maxZoom={20} />
         <Recenter center={center} zoom={zoom} />
         <ViewportLoader filters={filters} onData={handleData} onLoadingChange={setLoading} />
 
@@ -160,7 +161,7 @@ export default function ListingsLeafletMap({ center, zoom = DEFAULT_ZOOM, filter
                     </p>
                     <div className="mt-1 flex items-center gap-1.5 text-[11px]">
                       <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-600">
-                        {propertyTypeLabels[m.property_type]}
+                        {propertyTypeName(m.property_type)}
                       </span>
                       <span
                         className={`rounded-full px-2 py-0.5 font-bold text-white ${

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
-import { formatRelativeTime, formatPrice } from "@/lib/utils";
+import { formatRelativeTime, formatPrice, propertyTypeName } from "@/lib/utils";
 import type { ClientRequest, PaginatedResponse, City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
@@ -118,7 +118,7 @@ export default function RequestsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <span className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">
-                        {propertyTypeLabels[req.property_type] || req.property_type}
+                        {propertyTypeName(req.property_type)}
                       </span>
                       <span className="text-xs bg-gold/10 text-gold px-2.5 py-1 rounded-full font-semibold">
                         {offerTypeLabels[req.offer_type] || req.offer_type}

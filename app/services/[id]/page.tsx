@@ -12,7 +12,7 @@ import { StarRating } from "@/components/ui/StarRating";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
-  Settings, User, CheckCircle, MapPoint, Phone, ChatSquare,
+  Settings, User, CheckCircle, MapPoint, Phone, ChatSquare, ChatRoundDots,
   Star, AltArrowRight, Case, Gallery,
 } from "@solar-icons/react";
 import { toast } from "sonner";
@@ -36,6 +36,27 @@ export default function ServiceDetailPage() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [startingChat, setStartingChat] = useState(false);
+
+  // معرّف مستخدم مزوّد الخدمة (قد يصل user ككائن أو كرقم).
+  const providerUserId =
+    provider && typeof provider.user === "object" ? provider.user.id : (provider?.user as number | undefined);
+  const isSelf = !!user && providerUserId != null && user.id === providerUserId;
+
+  // "مراسلة" — بدء/فتح محادثة خاصة (DM) مع مزوّد الخدمة.
+  const startConversation = async () => {
+    if (!user) { router.push("/auth/login"); return; }
+    if (providerUserId == null) return;
+    setStartingChat(true);
+    try {
+      const { data } = await api.post("/chat/conversations/", { recipient_id: providerUserId });
+      router.push(`/chat/${data.id}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setStartingChat(false);
+    }
+  };
 
   const loadReviews = useCallback(() => {
     api.get(`/services/${id}/reviews/`)
@@ -232,6 +253,11 @@ export default function ServiceDetailPage() {
         <div className="space-y-4">
           <div className="bg-white rounded-2xl card-shadow p-5 sticky top-20 space-y-3">
             <h3 className="font-bold text-gray-800">تواصل مع مزوّد الخدمة</h3>
+            {!isSelf && providerUserId != null && (
+              <Button fullWidth variant="primary" onClick={startConversation} loading={startingChat}>
+                <ChatRoundDots className="h-4 w-4" /> مراسلة
+              </Button>
+            )}
             {provider.contact_phone && (
               <a href={`tel:${provider.contact_phone}`}>
                 <Button fullWidth variant="primary">

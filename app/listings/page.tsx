@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
-import { formatPrice, offerTypeLabels, propertyTypeLabels, statusLabels, statusColors } from "@/lib/utils";
+import { formatPrice, offerTypeLabels, propertyTypeLabels, statusLabels, statusColors, propertyTypeName } from "@/lib/utils";
 import type { Listing, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -332,7 +332,7 @@ function ListingsContent() {
                 </div>
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{propertyTypeLabels[listing.property_type]}</span>
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{propertyTypeName(listing.property_type)}</span>
                     {listing.user_verified && <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">موثّق ✓</span>}
                   </div>
                   <h3 className="font-bold text-gray-900 text-sm mb-1 line-clamp-1">{listing.title}</h3>
