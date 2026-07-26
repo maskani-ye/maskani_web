@@ -303,6 +303,37 @@ export interface Conversation {
   updated_at: string;
 }
 
+// ─── Admin Chat (dashboard) ───────────────────────────────────────────────
+export interface AdminConversationLastMessage {
+  id: number;
+  body: string;
+  sender_id: number;
+  is_deleted: boolean;
+  created_at: string;
+}
+
+export interface AdminConversation {
+  id: number;
+  participant_a: ChatParticipant;
+  participant_b: ChatParticipant;
+  listing: number | null;
+  last_message: AdminConversationLastMessage | null;
+  messages_count: number;
+  unread_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminConversationMessage {
+  id: number;
+  sender: ChatParticipant;
+  body: string;
+  is_read: boolean;
+  is_edited: boolean;
+  is_deleted: boolean;
+  created_at: string;
+}
+
 // ─── API Pagination ───────────────────────────────────────────────────────
 export interface PaginatedResponse<T> {
   count: number;
