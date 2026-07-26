@@ -287,6 +287,10 @@ export interface Message {
   body: string;
   is_read: boolean;
   created_at: string;
+  // ─── حقول البروتوكول اللحظي (WebSocket) — اختيارية للتوافق الخلفي ─────────
+  reply_to?: number | null;
+  is_edited?: boolean;
+  is_deleted?: boolean;
 }
 
 export interface Conversation {
