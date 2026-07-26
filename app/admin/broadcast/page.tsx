@@ -1,0 +1,121 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { api, getErrorMessage } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { toast } from "sonner";
+import { Bell, UsersGroupRounded, Shield, Settings } from "@solar-icons/react";
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const TARGETS: { value: string; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { value: "all",                label: "كل المستخدمين",  icon: UsersGroupRounded },
+  { value: "admins",             label: "المشرفون",       icon: Shield },
+  { value: "service_providers",  label: "مزودو الخدمة",   icon: Settings },
+];
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function AdminBroadcastPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  const [title, setTitle]   = useState("");
+  const [body, setBody]     = useState("");
+  const [target, setTarget] = useState("all");
+  const [sending, setSending] = useState(false);
+
+  // ── auth guard ─────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!authLoading && (!user || user.role !== "admin")) router.push("/");
+  }, [user, authLoading, router]);
+
+  const handleSend = async () => {
+    if (!title.trim() || !body.trim()) { toast.error("العنوان والمحتوى مطلوبان"); return; }
+    setSending(true);
+    try {
+      const res = await api.post<{ message: string; count: number }>(
+        "/admin/broadcast/", { title, body, target }
+      );
+      toast.success(`تم إرسال التعميم إلى ${res.data.count.toLocaleString("ar-YE")} مستخدم`);
+      setTitle("");
+      setBody("");
+      setTarget("all");
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setSending(false); }
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+          <Bell className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">تعميم جماعي</h1>
+          <p className="text-sm text-gray-500">إرسال إشعار لكل المستخدمين أو لشريحة محددة</p>
+        </div>
+      </div>
+
+      <Card className="space-y-5">
+        <Input
+          label="عنوان الإشعار"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="مثال: تحديث جديد في المنصة"
+          required
+        />
+
+        <div className="flex flex-col gap-1.5 w-full">
+          <label className="text-sm font-semibold text-gray-700">
+            محتوى الإشعار <span className="text-red-500 mr-1">*</span>
+          </label>
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder="اكتب نص الإشعار هنا..."
+            rows={4}
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+          />
+        </div>
+
+        {/* Target segment */}
+        <div className="flex flex-col gap-1.5 w-full">
+          <label className="text-sm font-semibold text-gray-700">الفئة المستهدفة</label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {TARGETS.map(({ value, label, icon: Icon }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setTarget(value)}
+                className={`flex items-center gap-2 h-11 px-3 rounded-xl border text-sm font-semibold transition-colors ${
+                  target === value
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <Button onClick={handleSend} loading={sending} disabled={!title.trim() || !body.trim()}>
+            <Bell className="h-4 w-4" /> إرسال التعميم
+          </Button>
+        </div>
+      </Card>
+
+      <p className="text-xs text-gray-400 text-center mt-4">
+        يُرسَل الإشعار داخل التطبيق وعبر إشعارات الدفع (FCM) للأجهزة المسجّلة.
+      </p>
+    </div>
+  );
+}

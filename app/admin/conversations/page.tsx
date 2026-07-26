@@ -9,10 +9,11 @@ import type {
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 import {
   ChatRoundDots, Magnifer, CloseCircle, User,
-  AltArrowLeft, AltArrowRight, Buildings2,
+  AltArrowLeft, AltArrowRight, Buildings2, TrashBinTrash,
 } from "@solar-icons/react";
 
 const LIMIT = 20;
@@ -46,6 +47,11 @@ export default function AdminConversationsPage() {
   const [msgTotal, setMsgTotal] = useState(0);
   const [msgOffset, setMsgOffset] = useState(0);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
+
+  const [deleteConvTarget, setDeleteConvTarget] = useState<AdminConversation | null>(null);
+  const [deletingConv, setDeletingConv] = useState(false);
+  const [deleteMsgTarget, setDeleteMsgTarget] = useState<AdminConversationMessage | null>(null);
+  const [deletingMsg, setDeletingMsg] = useState(false);
 
   // ── Fetch conversations ─────────────────────────────────────────────────────
   const fetchConversations = useCallback(async (off = 0) => {
@@ -92,6 +98,39 @@ export default function AdminConversationsPage() {
     setMsgTotal(0);
     setMsgOffset(0);
     loadMessages(c.id, 0, false);
+  };
+
+  // ── Delete a whole conversation ─────────────────────────────────────────────
+  const confirmDeleteConversation = async () => {
+    if (!deleteConvTarget) return;
+    setDeletingConv(true);
+    try {
+      await api.delete(`/admin/conversations/${deleteConvTarget.id}/`);
+      toast.success("تم حذف المحادثة");
+      setConversations((prev) => prev.filter((c) => c.id !== deleteConvTarget.id));
+      setTotal((t) => Math.max(0, t - 1));
+      if (selected?.id === deleteConvTarget.id) {
+        setSelected(null);
+        setMessages([]);
+      }
+      setDeleteConvTarget(null);
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setDeletingConv(false); }
+  };
+
+  // ── Delete a single message ─────────────────────────────────────────────────
+  const confirmDeleteMessage = async () => {
+    if (!deleteMsgTarget || !selected) return;
+    setDeletingMsg(true);
+    try {
+      await api.delete(`/admin/conversations/${selected.id}/messages/${deleteMsgTarget.id}/`);
+      toast.success("تم حذف الرسالة");
+      setMessages((prev) => prev.filter((m) => m.id !== deleteMsgTarget.id));
+      setMsgTotal((t) => Math.max(0, t - 1));
+      setSelected((c) => c ? { ...c, messages_count: Math.max(0, c.messages_count - 1) } : c);
+      setDeleteMsgTarget(null);
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setDeletingMsg(false); }
   };
 
   const totalPages = Math.ceil(total / LIMIT);
@@ -232,13 +271,22 @@ export default function AdminConversationsPage() {
             <div className="bg-white rounded-2xl card-shadow p-5 sticky top-6 flex flex-col max-h-[calc(100vh-120px)]">
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-gray-900 text-sm">{pairName(selected)}</h3>
-                <button
-                  onClick={() => setSelected(null)}
-                  className="p-1 rounded-lg hover:bg-gray-100"
-                >
-                  <CloseCircle className="h-4 w-4 text-gray-400" />
-                </button>
+                <h3 className="font-bold text-gray-900 text-sm truncate">{pairName(selected)}</h3>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => setDeleteConvTarget(selected)}
+                    className="p-1 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
+                    title="حذف المحادثة"
+                  >
+                    <TrashBinTrash className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setSelected(null)}
+                    className="p-1 rounded-lg hover:bg-gray-100"
+                  >
+                    <CloseCircle className="h-4 w-4 text-gray-400" />
+                  </button>
+                </div>
               </div>
 
               {/* Meta */}
@@ -282,7 +330,7 @@ export default function AdminConversationsPage() {
                     return (
                       <div
                         key={m.id}
-                        className={`flex gap-2 ${mine ? "flex-row" : "flex-row-reverse"}`}
+                        className={`group flex gap-2 ${mine ? "flex-row" : "flex-row-reverse"}`}
                       >
                         <Avatar p={m.sender} small />
                         <div className={`flex-1 min-w-0 ${mine ? "text-right" : "text-left"}`}>
@@ -303,6 +351,13 @@ export default function AdminConversationsPage() {
                             <span>{formatRelativeTime(m.created_at)}</span>
                             {m.is_edited && !m.is_deleted && <span>· مُعدّلة</span>}
                             {m.is_read && <span>· مقروءة</span>}
+                            <button
+                              onClick={() => setDeleteMsgTarget(m)}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-gray-400 hover:text-red-600"
+                              title="حذف الرسالة"
+                            >
+                              <TrashBinTrash className="h-3 w-3" />
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -324,6 +379,34 @@ export default function AdminConversationsPage() {
           </div>
         )}
       </div>
+
+      {/* Delete conversation confirm */}
+      <ConfirmDialog
+        open={!!deleteConvTarget}
+        title="حذف المحادثة"
+        message={
+          deleteConvTarget
+            ? <>هل أنت متأكد من حذف المحادثة بين <strong>{deleteConvTarget.participant_a.full_name}</strong> و<strong>{deleteConvTarget.participant_b.full_name}</strong>؟ سيتم حذف كل الرسائل نهائياً ولا يمكن التراجع.</>
+            : ""
+        }
+        confirmLabel="حذف نهائي"
+        variant="danger"
+        loading={deletingConv}
+        onConfirm={confirmDeleteConversation}
+        onCancel={() => setDeleteConvTarget(null)}
+      />
+
+      {/* Delete message confirm */}
+      <ConfirmDialog
+        open={!!deleteMsgTarget}
+        title="حذف الرسالة"
+        message="هل أنت متأكد من حذف هذه الرسالة نهائياً؟ لا يمكن التراجع."
+        confirmLabel="حذف"
+        variant="danger"
+        loading={deletingMsg}
+        onConfirm={confirmDeleteMessage}
+        onCancel={() => setDeleteMsgTarget(null)}
+      />
     </div>
   );
 }

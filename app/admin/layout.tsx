@@ -9,7 +9,7 @@ import {
   GraphNewUp, UsersGroupRounded, ShieldWarning, MapPoint,
   Buildings2, Settings, Home2, ChatRound, ChatRoundDots, Widget,
   City, Logout2, HamburgerMenu, CloseCircle,
-  ShieldCheck, DangerTriangle,
+  ShieldCheck, DangerTriangle, Bell,
 } from "@solar-icons/react";
 
 const NAV = [
@@ -20,6 +20,7 @@ const NAV = [
   { href: "/admin/properties",         label: "أنواع العقارات",  icon: MapPoint },
   { href: "/admin/requests",           label: "طلبات العملاء",   icon: ChatRound },
   { href: "/admin/conversations",      label: "المحادثات",       icon: ChatRoundDots },
+  { href: "/admin/broadcast",          label: "الإشعارات",       icon: Bell },
   { href: "/admin/reports",            label: "البلاغات",        icon: ShieldWarning },
   { href: "/admin/flags",              label: "بلاغات المستخدمين", icon: DangerTriangle },
   { href: "/admin/cities",             label: "المدن والدول",    icon: City },

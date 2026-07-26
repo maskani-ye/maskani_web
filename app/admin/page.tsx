@@ -7,7 +7,8 @@ import { useAuth } from "@/context/AuthContext";
 import {
   UsersGroupRounded, Buildings2, ShieldWarning, PenNewSquare,
   Eye, GraphNewUp, Bell, CheckCircle, MapPoint, AltArrowUp,
-  DangerTriangle, Refresh, ChartSquare,
+  DangerTriangle, Refresh, ChartSquare, ChatRoundDots, ShieldCheck,
+  Letter, UserCross,
 } from "@solar-icons/react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -25,19 +26,27 @@ import { toast } from "sonner";
 
 interface AdminStats {
   users_count: number;
+  active_users: number;
+  inactive_users: number;
+  verified_count: number;
+  service_providers_count: number;
   listings_count: number;   // الإعلانات النشطة فقط (is_active=True)
+  listings_total: number;
   fraud_count: number;
   pending_fraud: number;
   verified_fraud: number;
   rejected_fraud: number;
   requests_count: number;
   services_count: number;
+  conversations_count: number;
+  messages_count: number;
   new_users_7d: number;
   new_listings_7d: number;
   new_fraud_7d: number;
   roles: { role: string; count: number }[];
   offer_types: { offer_type: string; count: number }[];
   property_types: { property_type__name_ar: string; count: number }[];
+  listings_by_status: { status: string; count: number }[];
   top_cities: { city__name_ar: string; count: number }[];
   daily_users: { day: string; count: number }[];
 }
@@ -47,6 +56,9 @@ const COLORS = ["#2D6A4F", "#D4A017", "#EF4444", "#3B82F6", "#8B5CF6"];
 const roleLabels: Record<string, string> = { user: "مستخدم", admin: "مشرف" };
 const offerLabels: Record<string, string> = {
   sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
+};
+const statusLabels: Record<string, string> = {
+  available: "متاح", reserved: "محجوز", sold_rented: "مباع / مؤجّر",
 };
 
 const tooltipStyle = { fontFamily: "Cairo", borderRadius: 12, fontSize: 12 } as const;
@@ -185,6 +197,7 @@ export default function AdminDashboardPage() {
   const propertyData = (stats.property_types ?? []).map((p) => ({ name: p.property_type__name_ar ?? "غير محدد", value: p.count }));
   const citiesData   = (stats.top_cities ?? []).map((c) => ({ name: c.city__name_ar, value: c.count }));
   const dailyData    = (stats.daily_users ?? []).map((d) => ({ name: d.day?.slice(5), value: d.count }));
+  const statusData   = (stats.listings_by_status ?? []).map((s) => ({ name: statusLabels[s.status] ?? s.status, value: s.count }));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -211,6 +224,16 @@ export default function AdminDashboardPage() {
             sub={k.sub}
           />
         ))}
+      </div>
+
+      {/* Secondary stats — تحليلات أعمق */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <StatCard label="المستخدمون النشطون" value={stats.active_users.toLocaleString("ar-YE")} icon={asIcon(CheckCircle)} />
+        <StatCard label="محظورون / معطّلون"  value={stats.inactive_users.toLocaleString("ar-YE")} icon={asIcon(UserCross)} />
+        <StatCard label="حسابات موثّقة"       value={stats.verified_count.toLocaleString("ar-YE")} icon={asIcon(ShieldCheck)} />
+        <StatCard label="مزودو الخدمة"        value={stats.service_providers_count.toLocaleString("ar-YE")} icon={asIcon(GraphNewUp)} sub="حساب مزوّد" />
+        <StatCard label="المحادثات"           value={stats.conversations_count.toLocaleString("ar-YE")} icon={asIcon(ChatRoundDots)} />
+        <StatCard label="الرسائل"             value={stats.messages_count.toLocaleString("ar-YE")} icon={asIcon(Letter)} />
       </div>
 
       {/* Charts — Row 1 */}
@@ -253,6 +276,20 @@ export default function AdminDashboardPage() {
 
       {/* Charts — Row 2 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <ChartCard
+          title="الإعلانات حسب الحالة"
+          icon={Buildings2}
+          height={180}
+          empty={statusData.length === 0}
+        >
+          <BarChart data={statusData} barSize={32}>
+            <XAxis dataKey="name" tick={axisTick} />
+            <YAxis tick={axisTick} allowDecimals={false} />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Bar dataKey="value" fill="#8B5CF6" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ChartCard>
+
         <ChartCard
           title="الإعلانات حسب نوع العرض"
           icon={Buildings2}

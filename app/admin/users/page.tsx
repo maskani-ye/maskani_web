@@ -328,6 +328,11 @@ export default function AdminUsersPage() {
                   مزود خدمة
                 </span>
               )}
+              {!selected.is_active && (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-100 text-red-600">
+                  محظور / معطّل
+                </span>
+              )}
             </div>
 
             {/* Role control */}
