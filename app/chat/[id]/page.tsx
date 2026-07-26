@@ -8,12 +8,21 @@ import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useChatSocket, type ChatAction } from "@/hooks/useChatSocket";
 import { formatRelativeTime } from "@/lib/utils";
-import type { Conversation, Message, PaginatedResponse } from "@/types";
+import {
+  detectAttachmentType,
+  normalizeAttachment,
+  readImageDimensions,
+  uploadAttachment,
+  uploadToSocketAttachment,
+} from "@/lib/chatAttachments";
+import type { Attachment, AttachmentType, Conversation, Message, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { MessageAttachments } from "@/components/chat/MessageAttachments";
+import { VoiceRecorder } from "@/components/chat/VoiceRecorder";
 import { toast } from "sonner";
-import { ChatRoundDots, User as UserIcon, AltArrowRight, Buildings2, Plain, CheckRead } from "@solar-icons/react";
+import { ChatRoundDots, User as UserIcon, AltArrowRight, Buildings2, Paperclip, Plain, CheckRead } from "@solar-icons/react";
 
 const MESSAGES_LIMIT = 50;
 // نستعمل REST كسقوط آمن فقط عندما لا يكون السوكِت متصلاً (بدلاً من الاستطلاع الدائم).
@@ -40,6 +49,11 @@ function normalizeSocketMessage(
         ? Number(rawReply)
         : null;
 
+  const rawAttachments = Array.isArray(data.attachments) ? (data.attachments as unknown[]) : [];
+  const attachments: Attachment[] = rawAttachments
+    .filter((a): a is Record<string, unknown> => typeof a === "object" && a !== null)
+    .map(normalizeAttachment);
+
   return {
     id: Number(data.id),
     conversation: Number(data.conversation ?? conversationId),
@@ -50,6 +64,7 @@ function normalizeSocketMessage(
     reply_to: replyTo,
     is_edited: Boolean(data.is_edited ?? false),
     is_deleted: Boolean(data.is_deleted ?? false),
+    attachments,
   };
 }
 
@@ -64,6 +79,10 @@ export default function ChatThreadPage() {
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // روابط blob محلية للمعاينة الفورية — تُبطَل عند إلغاء التركيب لتفادي التسريب.
+  const objectUrlsRef = useRef<string[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const firstLoad = useRef(true);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -155,7 +174,15 @@ export default function ChatThreadPage() {
       setMessages((prev) => {
         // توفيق الرسالة المتفائلة (صدى رسالتي): استبدلها في مكانها.
         if (isMe) {
-          const optIdx = prev.findIndex((m) => m.id < 0 && m.sender === msg.sender && m.body === msg.body);
+          const msgHasAtt = (msg.attachments?.length ?? 0) > 0;
+          // نفصل رسائل المرفقات عن الرسائل النصية حتى لا يتصادم توفيق أحدهما بالآخر.
+          const optIdx = prev.findIndex(
+            (m) =>
+              m.id < 0 &&
+              m.sender === msg.sender &&
+              m.body === msg.body &&
+              ((m.attachments?.length ?? 0) > 0) === msgHasAtt,
+          );
           if (optIdx >= 0) {
             const copy = [...prev];
             copy[optIdx] = msg;
@@ -229,9 +256,12 @@ export default function ChatThreadPage() {
   }, [messages, otherTyping, scrollToBottom]);
 
   useEffect(() => {
+    // نلتقط مرجع المصفوفة (نفسه يتراكم عبر push) لتنظيفه عند إلغاء التركيب.
+    const objectUrls = objectUrlsRef.current;
     return () => {
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
       if (otherTypingTimerRef.current) clearTimeout(otherTypingTimerRef.current);
+      objectUrls.forEach((u) => URL.revokeObjectURL(u));
     };
   }, []);
 
@@ -303,6 +333,93 @@ export default function ChatThreadPage() {
     }
   };
 
+  // ─── إرسال مرفق: إدراج متفائل → رفع REST → إرسال عبر السوكِت (الصدى يوفّق) ──
+  const markAttachmentFailed = useCallback((optimisticId: number) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === optimisticId && m.attachments?.length
+          ? { ...m, attachments: m.attachments.map((a) => ({ ...a, status: "failed" as const })) }
+          : m,
+      ),
+    );
+  }, []);
+
+  const sendAttachment = useCallback(
+    async (file: File, type: AttachmentType, meta: { durationMs?: number; width?: number; height?: number } = {}) => {
+      if (!socket.isConnected) {
+        toast.error("تعذّر إرسال المرفق — لا يوجد اتصال");
+        return;
+      }
+      const optimisticId = -Date.now();
+      const localUrl = URL.createObjectURL(file);
+      objectUrlsRef.current.push(localUrl);
+
+      const optimistic: Message = {
+        id: optimisticId,
+        conversation: conversationId,
+        sender: user?.id ?? 0,
+        body: "",
+        is_read: false,
+        created_at: new Date().toISOString(),
+        reply_to: null,
+        is_edited: false,
+        is_deleted: false,
+        attachments: [
+          {
+            id: optimisticId,
+            type,
+            url: "",
+            status: "uploading",
+            local_url: localUrl,
+            mime_type: file.type || null,
+            size_bytes: file.size,
+            duration_ms: meta.durationMs ?? null,
+            width: meta.width ?? null,
+            height: meta.height ?? null,
+          },
+        ],
+      };
+      setMessages((prev) => [...prev, optimistic]);
+
+      try {
+        const upload = await uploadAttachment(id, file, type, meta);
+        // حدّث المرفقة المتفائلة برابط الخادم (مع إبقاء المعاينة المحلية).
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === optimisticId && m.attachments?.length
+              ? { ...m, attachments: [{ ...m.attachments[0], status: "ready" as const, url: upload.url }] }
+              : m,
+          ),
+        );
+        const ok = socket.send("send_message", { attachments: [uploadToSocketAttachment(upload)] });
+        if (!ok) {
+          markAttachmentFailed(optimisticId);
+          toast.error("تعذّر إرسال المرفق");
+        }
+      } catch (err) {
+        markAttachmentFailed(optimisticId);
+        toast.error(getErrorMessage(err));
+      }
+    },
+    [socket, conversationId, user?.id, id, markAttachmentFailed],
+  );
+
+  const handleFilePicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // اسمح بإعادة اختيار نفس الملف
+    if (!file) return;
+    const type = detectAttachmentType(file);
+    const dims = type === "image" ? await readImageDimensions(file) : null;
+    await sendAttachment(file, type, dims ? { width: dims.width, height: dims.height } : {});
+  };
+
+  const handleVoiceSend = useCallback(
+    (file: File, durationMs: number) => {
+      void sendAttachment(file, "audio", { durationMs });
+    },
+    [sendAttachment],
+  );
+
   const other = conversation?.other_participant;
 
   return (
@@ -371,7 +488,14 @@ export default function ChatThreadPage() {
                       تم حذف هذه الرسالة
                     </p>
                   ) : (
-                    <p className="text-sm whitespace-pre-wrap break-words">{m.body}</p>
+                    <>
+                      {m.attachments && m.attachments.length > 0 && (
+                        <div className={m.body ? "mb-1.5" : ""}>
+                          <MessageAttachments attachments={m.attachments} mine={mine} />
+                        </div>
+                      )}
+                      {m.body && <p className="text-sm whitespace-pre-wrap break-words">{m.body}</p>}
+                    </>
                   )}
                   <div className={`flex items-center gap-1 mt-1 ${mine ? "text-white/70" : "text-gray-400"}`}>
                     <span className="text-[10px]">{formatRelativeTime(m.created_at)}</span>
@@ -395,21 +519,43 @@ export default function ChatThreadPage() {
 
       {/* Send box */}
       <div className="mt-4 bg-white rounded-2xl card-shadow p-3 flex items-end gap-2 shrink-0">
-        <textarea
-          value={body}
-          onChange={(e) => {
-            setBody(e.target.value);
-            emitTyping();
-          }}
-          onKeyDown={handleKeyDown}
-          onBlur={stopTyping}
-          rows={1}
-          placeholder="اكتب رسالة..."
-          className="flex-1 resize-none border border-gray-200 rounded-xl px-4 py-2.5 text-sm max-h-32 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*,video/*,*/*"
+          onChange={handleFilePicked}
+          className="hidden"
         />
-        <Button size="icon" onClick={sendMessage} loading={sending} disabled={!body.trim()} aria-label="إرسال">
-          {!sending && <Plain className="h-5 w-5" />}
-        </Button>
+        {!isRecording && (
+          <>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="إرفاق ملف"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary transition-colors hover:bg-primary-50"
+            >
+              <Paperclip className="h-5 w-5" />
+            </button>
+            <textarea
+              value={body}
+              onChange={(e) => {
+                setBody(e.target.value);
+                emitTyping();
+              }}
+              onKeyDown={handleKeyDown}
+              onBlur={stopTyping}
+              rows={1}
+              placeholder="اكتب رسالة..."
+              className="flex-1 resize-none border border-gray-200 rounded-xl px-4 py-2.5 text-sm max-h-32 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            />
+          </>
+        )}
+        <VoiceRecorder onSend={handleVoiceSend} onRecordingChange={setIsRecording} />
+        {!isRecording && (
+          <Button size="icon" onClick={sendMessage} loading={sending} disabled={!body.trim()} aria-label="إرسال">
+            {!sending && <Plain className="h-5 w-5" />}
+          </Button>
+        )}
       </div>
     </div>
   );

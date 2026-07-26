@@ -280,6 +280,39 @@ export interface ChatParticipant {
   avatar: string | null;
 }
 
+// ─── مرفقات الرسائل (صوت/صورة/فيديو/ملف) ──────────────────────────────────
+export type AttachmentType = "image" | "audio" | "video" | "file";
+
+// حالة المرفق: `ready` | `processing` | `failed` (خادمية) أو `uploading` (محلية فقط).
+export type AttachmentStatus = "ready" | "processing" | "failed" | "uploading";
+
+export interface Attachment {
+  id: number;
+  type: AttachmentType;
+  url: string;
+  mime_type?: string | null;
+  size_bytes?: number | null;
+  width?: number | null;
+  height?: number | null;
+  duration_ms?: number | null;
+  thumbnail_url?: string | null;
+  status?: AttachmentStatus;
+  // ─── محلي فقط (لا يُرسل للخادم) — معاينة فورية أثناء الرفع المتفائل ───────
+  local_url?: string;
+}
+
+// نتيجة رفع مرفق: استجابة `POST conversations/<id>/upload/`.
+export interface AttachmentUploadResult {
+  upload_token: string;
+  type: AttachmentType;
+  url: string;
+  mime_type?: string | null;
+  size_bytes?: number | null;
+  width?: number | null;
+  height?: number | null;
+  duration_ms?: number | null;
+}
+
 export interface Message {
   id: number;
   conversation: number;
@@ -291,6 +324,7 @@ export interface Message {
   reply_to?: number | null;
   is_edited?: boolean;
   is_deleted?: boolean;
+  attachments?: Attachment[];
 }
 
 export interface Conversation {
