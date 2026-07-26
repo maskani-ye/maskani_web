@@ -9,21 +9,10 @@ import { api } from "@/lib/api";
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (phone: string, password: string) => Promise<User | null>;
-  register: (data: RegisterData) => Promise<User>;
   loginWithGoogle: (idToken: string) => Promise<GoogleAuthResult>;
   completeGoogle: (data: GoogleCompleteData) => Promise<GoogleAuthResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
-}
-
-interface RegisterData {
-  phone: string;
-  full_name: string;
-  password: string;
-  password_confirm: string;
-  role?: string;
-  city?: number;
 }
 
 interface GoogleCompleteData {
@@ -73,21 +62,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUser();
   }, [refreshUser]);
 
-  const login = async (phone: string, password: string): Promise<User | null> => {
-    const { data } = await api.post("/auth/login/", { phone, password });
-    setTokens(data.access, data.refresh);
-    const u = await fetchCurrentUser();
-    setUser(u);
-    return u;
-  };
-
-  const register = async (formData: RegisterData): Promise<User> => {
-    const { data } = await api.post("/auth/register/", formData);
-    setTokens(data.access, data.refresh);
-    setUser(data.user);
-    return data.user as User;
-  };
-
   // نُثبّت الجلسة لكل المستخدمين — لا توجد بوابة أدوار هنا
   const finalizeAuth = (data: {
     user: User;
@@ -134,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register, loginWithGoogle, completeGoogle, logout, refreshUser }}
+      value={{ user, loading, loginWithGoogle, completeGoogle, logout, refreshUser }}
     >
       {children}
     </AuthContext.Provider>

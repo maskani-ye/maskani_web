@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { Home2, LockPassword, User } from "@solar-icons/react";
+import { Home2, User } from "@solar-icons/react";
 import { toast } from "sonner";
 import { getErrorMessage, api } from "@/lib/api";
 import type { City, User as AppUser } from "@/types";
@@ -29,29 +28,7 @@ export default function LoginPage() {
   const [inlineError, setInlineError] = useState<string | null>(null);
   const [completion, setCompletion] = useState<CompletionState | null>(null);
 
-  // نموذج الدخول بالهاتف
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const { login, loginWithGoogle, completeGoogle } = useAuth();
-
-  const handlePhoneLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setInlineError(null);
-    setLoading(true);
-    try {
-      const user = await login(phone, password);
-      toast.success("مرحباً بك في مسكني!");
-      redirectByRole(user?.role);
-    } catch (err) {
-      const msg = getErrorMessage(err);
-      setInlineError(msg);
-      toast.error(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { loginWithGoogle, completeGoogle } = useAuth();
 
   // نجاح جوجل → id_token → POST /auth/google/
   const handleGoogleCredential = async (idToken: string) => {
@@ -113,30 +90,6 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* نموذج الدخول بالهاتف */}
-            <form onSubmit={handlePhoneLogin} className="space-y-4">
-              <PhoneField value={phone} onChange={setPhone} required />
-              <Input
-                label="كلمة المرور"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                startIcon={<LockPassword className="h-4 w-4" />}
-                required
-              />
-              <Button type="submit" fullWidth loading={loading} size="lg" className="mt-1">
-                دخول
-              </Button>
-            </form>
-
-            {/* فاصل */}
-            <div className="flex items-center gap-3 my-6">
-              <span className="h-px flex-1 bg-gray-200" />
-              <span className="text-xs text-gray-400">أو</span>
-              <span className="h-px flex-1 bg-gray-200" />
-            </div>
-
             <div aria-busy={googleLoading}>
               <GoogleSignInButton
                 onCredential={handleGoogleCredential}
@@ -148,13 +101,6 @@ export default function LoginPage() {
             )}
           </div>
         )}
-
-        <p className="text-center text-sm text-gray-500 mt-6">
-          ليس لديك حساب؟{" "}
-          <Link href="/auth/register" className="text-primary font-semibold hover:underline">
-            إنشاء حساب جديد
-          </Link>
-        </p>
       </div>
     </div>
   );
