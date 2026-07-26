@@ -1,10 +1,11 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import type { User } from "@/types";
 import Cookies from "js-cookie";
 import { fetchCurrentUser, setTokens, clearTokens, isAuthenticated } from "@/lib/auth";
 import { api } from "@/lib/api";
+import { registerDeviceForPush } from "@/lib/push";
 
 interface AuthContextType {
   user: User | null;
@@ -61,6 +62,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     refreshUser();
   }, [refreshUser]);
+
+  // تسجيل جهاز الويب للإشعارات عند توفّر مستخدم مُصادَق — يغطّي نجاح الدخول
+  // وإقلاع جلسة محفوظة (نمط فلاتر: بعد المصادقة + عند الإقلاع). مرّة لكل مستخدم.
+  const pushRegisteredFor = useRef<number | null>(null);
+  useEffect(() => {
+    if (user && pushRegisteredFor.current !== user.id) {
+      pushRegisteredFor.current = user.id;
+      registerDeviceForPush();
+    }
+  }, [user]);
 
   // نُثبّت الجلسة لكل المستخدمين — لا توجد بوابة أدوار هنا
   const finalizeAuth = (data: {
