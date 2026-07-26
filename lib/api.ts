@@ -59,7 +59,13 @@ api.interceptors.response.use(
       try {
         const { data } = await axios.post(`${API_URL}/auth/token/refresh/`, { refresh });
         const newAccess = data.access;
-        Cookies.set("access_token", newAccess, { expires: 1 });
+        const secure = process.env.NODE_ENV === "production";
+        Cookies.set("access_token", newAccess, { expires: 1, secure });
+        // الخادم يُدوّر refresh (ROTATE_REFRESH_TOKENS) ويُبطِل القديم — يجب حفظ
+        // الجديد وإلا فشل التجديد التالي وخرج المستخدم (سبب "تسجيل الدخول كل مرة").
+        if (data.refresh) {
+          Cookies.set("refresh_token", data.refresh, { expires: 30, secure });
+        }
         api.defaults.headers.common.Authorization = `Bearer ${newAccess}`;
         processQueue(null, newAccess);
         originalRequest.headers!.Authorization = `Bearer ${newAccess}`;
