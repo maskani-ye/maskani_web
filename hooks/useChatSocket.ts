@@ -7,8 +7,8 @@ import Cookies from "js-cookie";
  * useChatSocket — دردشة لحظية عبر WebSocket المتصفّح (نظير `MessagesCubit`/`SocketManager`
  * في عميل فلاتر/azbah — نفس البروتوكول والإجراءات).
  *
- * القناة: `wss://<host>/ws/conversations/<id>/chat/?token=<JWT>` — المضيف يُشتقّ من
- * `NEXT_PUBLIC_API_URL` (https→wss وبإسقاط بادئة `/api/v1`). التوكن في كوكي `access_token`
+ * القناة: `wss://<host>/ws/conversations/<id>/chat/?token=<knox>` — المضيف يُشتقّ من
+ * `NEXT_PUBLIC_API_URL` (https→wss وبإسقاط بادئة `/api/v1`). توكن knox في كوكي `token`
  * يُمرَّر عبر `?token=` لأن المتصفح لا يسمح بضبط ترويسات على اتصال WS.
  *
  * الغلاف (وارد وصادر): `{ action, data, user_id }`. `user_id` هو الفاعل — يُقارَن بمعرّف
@@ -217,7 +217,7 @@ export function useChatSocket(options: UseChatSocketOptions): ChatSocket {
         socketRef.current = null;
       }
 
-      const token = Cookies.get("access_token") ?? "";
+      const token = Cookies.get("token") ?? "";
       setState("connecting");
 
       let ws: WebSocket;

@@ -2,8 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import type { User } from "@/types";
-import Cookies from "js-cookie";
-import { fetchCurrentUser, setTokens, clearTokens, isAuthenticated } from "@/lib/auth";
+import { fetchCurrentUser, setToken, clearToken, isAuthenticated, logout as doLogout } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { registerDeviceForPush } from "@/lib/push";
 
@@ -35,24 +34,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refreshUser = useCallback(async () => {
-    // If access token is missing but refresh token exists → restore session silently
+    // توكن knox طويل الأمد — إن غاب فلا جلسة (لا يوجد refresh لاستعادتها).
     if (!isAuthenticated()) {
-      const refresh = Cookies.get("refresh_token");
-      if (!refresh) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-      try {
-        const { data } = await api.post("/auth/token/refresh/", { refresh });
-        setTokens(data.access, data.refresh ?? refresh);
-      } catch {
-        // Refresh token expired → clear and send to login
-        clearTokens();
-        setUser(null);
-        setLoading(false);
-        return;
-      }
+      setUser(null);
+      setLoading(false);
+      return;
     }
     const u = await fetchCurrentUser();
     setUser(u);
@@ -76,10 +62,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // نُثبّت الجلسة لكل المستخدمين — لا توجد بوابة أدوار هنا
   const finalizeAuth = (data: {
     user: User;
-    access: string;
-    refresh: string;
+    token: string;
   }): GoogleAuthResult => {
-    setTokens(data.access, data.refresh);
+    setToken(data.token);
     setUser(data.user);
     return { status: "success", user: data.user };
   };
@@ -108,11 +93,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      const { Cookies } = await import("js-cookie").then((m) => ({ Cookies: m.default }));
-      const refresh = Cookies.get("refresh_token");
-      if (refresh) await api.post("/auth/logout/", { refresh });
+      await doLogout();
     } finally {
-      clearTokens();
+      clearToken();
       setUser(null);
     }
   };

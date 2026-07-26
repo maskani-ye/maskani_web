@@ -377,8 +377,8 @@ export interface PaginatedResponse<T> {
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────
+// استجابة نجاح مصادقة جوجل عبر knox — توكن واحد طويل الأمد (بلا refresh).
 export interface AuthResponse {
   user: User;
-  access: string;
-  refresh: string;
+  token: string;
 }

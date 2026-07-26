@@ -8,79 +8,28 @@ export const api: AxiosInstance = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// ─── Request Interceptor: إضافة access token ─────────────────────────────
+// ─── Request Interceptor: إضافة توكن knox ────────────────────────────────
+// المصادقة عبر ترويسة `Authorization: Token <token>` (ليست Bearer).
 api.interceptors.request.use((config) => {
-  const token = Cookies.get("access_token");
+  const token = Cookies.get("token");
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Token ${token}`;
   }
   return config;
 });
 
-// ─── Response Interceptor: تجديد الـ token تلقائياً ──────────────────────
-let isRefreshing = false;
-let failedQueue: Array<{ resolve: (v: string) => void; reject: (e: unknown) => void }> = [];
-
-const processQueue = (error: unknown, token: string | null) => {
-  failedQueue.forEach((prom) => {
-    if (error) prom.reject(error);
-    else prom.resolve(token!);
-  });
-  failedQueue = [];
-};
-
+// ─── Response Interceptor: عند 401 — مسح التوكن وإعادة التوجيه للدخول ──────
+// توكنات knox طويلة الأمد ولا تُجدَّد — لا يوجد refresh ولا إعادة محاولة.
 api.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
-    const originalRequest = error.config as typeof error.config & { _retry?: boolean };
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then((token) => {
-          originalRequest.headers!.Authorization = `Bearer ${token}`;
-          return api(originalRequest);
-        });
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      const refresh = Cookies.get("refresh_token");
-      if (!refresh) {
-        isRefreshing = false;
-        Cookies.remove("access_token");
-        Cookies.remove("refresh_token");
-        if (typeof window !== "undefined") window.location.href = "/auth/login";
-        return Promise.reject(error);
-      }
-
-      try {
-        const { data } = await axios.post(`${API_URL}/auth/token/refresh/`, { refresh });
-        const newAccess = data.access;
-        const secure = process.env.NODE_ENV === "production";
-        Cookies.set("access_token", newAccess, { expires: 1, secure });
-        // الخادم يُدوّر refresh (ROTATE_REFRESH_TOKENS) ويُبطِل القديم — يجب حفظ
-        // الجديد وإلا فشل التجديد التالي وخرج المستخدم (سبب "تسجيل الدخول كل مرة").
-        if (data.refresh) {
-          Cookies.set("refresh_token", data.refresh, { expires: 30, secure });
-        }
-        api.defaults.headers.common.Authorization = `Bearer ${newAccess}`;
-        processQueue(null, newAccess);
-        originalRequest.headers!.Authorization = `Bearer ${newAccess}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError, null);
-        Cookies.remove("access_token");
-        Cookies.remove("refresh_token");
-        if (typeof window !== "undefined") window.location.href = "/auth/login";
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
+  (error: AxiosError) => {
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      Cookies.remove("token");
+      // تفادي حلقة إعادة التوجيه إن كنّا أصلاً على صفحة الدخول.
+      if (!window.location.pathname.startsWith("/auth/login")) {
+        window.location.href = "/auth/login";
       }
     }
-
     return Promise.reject(error);
   }
 );
