@@ -46,6 +46,32 @@ export default function PublicProfilePage() {
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [startingChat, setStartingChat] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+  const [blockBusy, setBlockBusy] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("spam");
+  const [reportDetail, setReportDetail] = useState("");
+  const [reportBusy, setReportBusy] = useState(false);
+
+  const toggleBlock = async () => {
+    setBlockBusy(true);
+    try {
+      const { data } = await api.post("/social/block/", { user_id: Number(id) });
+      setBlocked(!!data.blocked);
+      toast.success(data.message ?? (data.blocked ? "تم حظر المستخدم" : "تم إلغاء الحظر"));
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setBlockBusy(false); }
+  };
+
+  const submitReport = async () => {
+    setReportBusy(true);
+    try {
+      await api.post("/social/report/", { user_id: Number(id), reason: reportReason, detail: reportDetail });
+      toast.success("تم إرسال البلاغ");
+      setReportOpen(false); setReportDetail("");
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setReportBusy(false); }
+  };
 
   const isSelf = !!me && !!profile && me.id === profile.id;
 
@@ -162,6 +188,16 @@ export default function PublicProfilePage() {
               <Button onClick={startConversation} loading={startingChat} variant="outline" size="sm">
                 <ChatRoundDots className="h-4 w-4" /> مراسلة
               </Button>
+              {me && (
+                <>
+                  <Button onClick={toggleBlock} loading={blockBusy} variant="outline" size="sm">
+                    {blocked ? "إلغاء الحظر" : "حظر"}
+                  </Button>
+                  <Button onClick={() => setReportOpen(true)} variant="ghost" size="sm">
+                    بلاغ
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -274,6 +310,48 @@ export default function PublicProfilePage() {
           </div>
         </div>
       </div>
+
+      {reportOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setReportOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-md p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-bold text-gray-900">الإبلاغ عن المستخدم</h3>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">السبب</label>
+              <select
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+                className="w-full h-11 border border-gray-200 rounded-xl px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                <option value="spam">إزعاج/سبام</option>
+                <option value="harassment">تحرّش/إساءة</option>
+                <option value="scam">احتيال</option>
+                <option value="inappropriate">محتوى غير لائق</option>
+                <option value="other">أخرى</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">تفاصيل (اختياري)</label>
+              <textarea
+                value={reportDetail}
+                onChange={(e) => setReportDetail(e.target.value)}
+                rows={3}
+                placeholder="اكتب تفاصيل إضافية..."
+                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={submitReport} loading={reportBusy} fullWidth>إرسال البلاغ</Button>
+              <Button onClick={() => setReportOpen(false)} variant="outline">إلغاء</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
