@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { formatPrice } from "@/lib/utils";
@@ -93,7 +94,7 @@ export default function FavoritesPage() {
                   <Link href={`/listings/${l.id}`}>
                     <div className="relative h-40 bg-gray-100">
                       {l.main_image ? (
-                        <img src={l.main_image} alt={l.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <Image src={l.main_image} alt={l.title} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <Buildings2 className="h-10 w-10 text-gray-300" />

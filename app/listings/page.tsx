@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { api, getErrorMessage } from "@/lib/api";
 import { formatPrice, offerTypeLabels, propertyTypeLabels, statusLabels, statusColors, propertyTypeName } from "@/lib/utils";
 import type { Listing, City, PaginatedResponse } from "@/types";
@@ -318,7 +319,7 @@ function ListingsContent() {
               <div className="bg-white rounded-2xl card-shadow hover:card-shadow-hover transition-all duration-200 overflow-hidden cursor-pointer group">
                 <div className="relative h-44 bg-gray-100 overflow-hidden">
                   {listing.main_image ? (
-                    <img src={listing.main_image} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <Image src={listing.main_image} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <Buildings2 className="h-12 w-12 text-gray-300" />
