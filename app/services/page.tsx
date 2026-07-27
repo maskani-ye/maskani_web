@@ -48,9 +48,12 @@ export default function ServicesPage() {
           </h1>
           <p className="text-gray-500 text-sm mt-1">مهندسون، مقاولون، مصممون، وأكثر</p>
         </div>
-        {user?.is_service_provider && (
-          <Link href="/services/my"><Button size="sm">إدارة خدمتي</Button></Link>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          <Link href="/jobs"><Button size="sm" variant="outline">طلبات الخدمات</Button></Link>
+          {user?.is_service_provider && (
+            <Link href="/services/my"><Button size="sm">إدارة خدمتي</Button></Link>
+          )}
+        </div>
       </div>
 
       {/* Category Filter Chips */}

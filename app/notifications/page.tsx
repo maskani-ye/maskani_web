@@ -27,6 +27,7 @@ function routeForNotification(n: Notification): string | null {
   const pick = (...keys: string[]) => keys.map((k) => d[k]).find(Boolean) ?? null;
   const conv = pick("conversation_id", "conversation");
   const listing = pick("listing_id", "listing");
+  const job = pick("service_request_id");
   const request = pick("request_id", "request");
   const report = pick("report_id", "fraud_report_id", "report");
   const user = pick("user_id", "user", "follower_id", "rater_id");
@@ -35,9 +36,13 @@ function routeForNotification(n: Notification): string | null {
     case "new_listing":
     case "new_comment":
     case "listing_interest": if (listing) return `/listings/${listing}`; break;
+    case "new_service_request": if (job) return `/jobs/${job}`; break;
     case "new_offer":
     case "request_offer":
-    case "offer_accepted": if (request) return `/requests/${request}`; break;
+    case "offer_accepted":
+      if (job) return `/jobs/${job}`;
+      if (request) return `/requests/${request}`;
+      break;
     case "report_updated":
     case "fraud_report_update": if (report) return `/reports/${report}`; break;
     case "new_follower":
@@ -47,6 +52,7 @@ function routeForNotification(n: Notification): string | null {
   }
   if (conv) return `/chat/${conv}`;
   if (listing) return `/listings/${listing}`;
+  if (job) return `/jobs/${job}`;
   if (request) return `/requests/${request}`;
   if (report) return `/reports/${report}`;
   if (user) return `/users/${user}`;
