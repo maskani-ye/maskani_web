@@ -20,6 +20,39 @@ const PREF_CATEGORIES: { key: string; label: string }[] = [
   { key: "system", label: "إشعارات النظام" },
 ];
 
+/** يشتقّ وجهة الإشعار من نوعه + بياناته (يحاكي notification_router في الفلاتر).
+ *  ملاحظة: طلبات الخدمات (jobs/service_request_id) بلا صفحة ويب → يسقط للاحتياطي. */
+function routeForNotification(n: Notification): string | null {
+  const d = n.data || {};
+  const pick = (...keys: string[]) => keys.map((k) => d[k]).find(Boolean) ?? null;
+  const conv = pick("conversation_id", "conversation");
+  const listing = pick("listing_id", "listing");
+  const request = pick("request_id", "request");
+  const report = pick("report_id", "fraud_report_id", "report");
+  const user = pick("user_id", "user", "follower_id", "rater_id");
+  switch (n.notification_type) {
+    case "new_message": if (conv) return `/chat/${conv}`; break;
+    case "new_listing":
+    case "new_comment":
+    case "listing_interest": if (listing) return `/listings/${listing}`; break;
+    case "new_offer":
+    case "request_offer":
+    case "offer_accepted": if (request) return `/requests/${request}`; break;
+    case "report_updated":
+    case "fraud_report_update": if (report) return `/reports/${report}`; break;
+    case "new_follower":
+    case "new_rating": if (user) return `/users/${user}`; break;
+    case "verification_approved":
+    case "verification_rejected": return "/profile";
+  }
+  if (conv) return `/chat/${conv}`;
+  if (listing) return `/listings/${listing}`;
+  if (request) return `/requests/${request}`;
+  if (report) return `/reports/${report}`;
+  if (user) return `/users/${user}`;
+  return null;
+}
+
 export default function NotificationsPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -159,7 +192,11 @@ export default function NotificationsPage() {
             {notifications.map((n) => (
               <div
                 key={n.id}
-                onClick={() => !n.is_read && markRead(n.id)}
+                onClick={() => {
+                  if (!n.is_read) markRead(n.id);
+                  const route = routeForNotification(n);
+                  if (route) router.push(route);
+                }}
                 className={`flex items-start gap-3 p-4 cursor-pointer hover:bg-gray-50 transition-colors ${!n.is_read ? "bg-primary/5" : ""}`}
               >
                 <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${n.is_read ? "bg-gray-200" : "bg-primary"}`} />
