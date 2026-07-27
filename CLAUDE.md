@@ -2,9 +2,9 @@
 
 ## نظرة عامة
 
-Next.js 14 App Router + TypeScript + Tailwind CSS + RTL عربي — **لوحة الإدارة فقط**
+Next.js 14 App Router + TypeScript + Tailwind CSS + RTL عربي — **تطبيق مستخدم عام + لوحة إدارة**
 
-> هذا التطبيق مخصص للـ Admin فقط. لا توجد ميزات للمستخدمين العاديين هنا — كل ميزات المستخدم في Flutter.
+> تطبيق ويب كامل للمستخدمين العاديين (إعلانات/خدمات/شكاوى/طلبات/شات) **ولوحة إدارة** لأصحاب `role === 'admin'`. تسجيل الدخول **بـ Google حصراً** للجميع، والتوكن **knox** (لا JWT).
 
 ## تشغيل المشروع
 
@@ -85,22 +85,23 @@ maskani_web/
 │   └── layout/               # Sidebar, Header
 ├── context/AuthContext.tsx   # Auth state global
 ├── lib/
-│   ├── api.ts                # Axios + JWT auto-refresh interceptor
-│   ├── auth.ts               # token helpers (localStorage)
+│   ├── api.ts                # Axios + knox Token interceptor (Authorization: Token, بلا refresh)
+│   ├── auth.ts               # knox token cookie helpers (token واحد)
 │   └── utils.ts              # cn(), formatPrice(), label maps
 └── types/index.ts            # كل TypeScript interfaces
 ```
 
 ---
 
-## Auth Flow
+## Auth Flow (Google فقط + knox token — لا JWT)
 
-1. تخزين JWT في `localStorage` عبر `lib/auth.ts`
-2. Axios interceptor في `lib/api.ts` يُضيف `Authorization: Bearer <token>` تلقائيًا
-3. عند 401 — يُحاول refresh تلقائيًا ثم يُعيد الطلب الأصلي
-4. عند فشل الـ refresh — `clearTokens()` + redirect لـ `/auth/login`
-5. `AuthContext` يوفر `{ user, login, register, logout, refreshUser }`
-6. Admin middleware: كل صفحات `/admin/*` تتحقق من `role === 'admin'`
+1. تسجيل الدخول **بـ Google حصراً** للجميع (مستخدم + أدمن): زر Google (GIS) → `id_token` → `POST /auth/google/`. للمستخدم الجديد `needs_completion` → صفحة إكمال (هاتف + مدينة) → `POST /auth/google/complete/`. لا يوجد phone/password ولا register.
+2. النجاح يعيد `{ token, user }` — التوكن **knox** يُخزَّن في كوكي واحد `token` عبر `lib/auth.ts` (`secure` + `sameSite: strict`، 30 يوماً).
+3. Axios interceptor في `lib/api.ts` يُضيف `Authorization: Token <token>` تلقائيًا. **لا refresh** (توكن knox صالح 30 يوماً).
+4. عند 401 — `clearToken()` + redirect لـ `/auth/login` (بلا محاولة تجديد).
+5. `AuthContext` يوفر `{ user, loginWithGoogle, completeGoogle, logout, refreshUser }`.
+6. الخروج: `POST /auth/logout/` (يحذف توكن knox) ثم مسح الكوكي.
+7. Admin middleware: كل صفحات `/admin/*` تتحقق من `role === 'admin'`.
 
 ---
 
