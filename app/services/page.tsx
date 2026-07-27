@@ -10,8 +10,11 @@ import { StarRating } from "@/components/ui/StarRating";
 import { Settings, User, CheckCircle, MapPoint, Phone } from "@solar-icons/react";
 import { toast } from "sonner";
 import { useCity } from "@/context/CityContext";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/Button";
 
 export default function ServicesPage() {
+  const { user } = useAuth();
   const { cityId, setCity } = useCity();
   const [providers, setProviders] = useState<ServiceProvider[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,11 +41,16 @@ export default function ServicesPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Settings className="h-6 w-6 text-primary" /> الخدمات العقارية
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">مهندسون، مقاولون، مصممون، وأكثر</p>
+      <div className="mb-6 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <Settings className="h-6 w-6 text-primary" /> الخدمات العقارية
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">مهندسون، مقاولون، مصممون، وأكثر</p>
+        </div>
+        {user?.is_service_provider && (
+          <Link href="/services/my"><Button size="sm">إدارة خدمتي</Button></Link>
+        )}
       </div>
 
       {/* Category Filter Chips */}
