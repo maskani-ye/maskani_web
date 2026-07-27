@@ -10,6 +10,16 @@ import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
 import { Bell, CheckCircle } from "@solar-icons/react";
 
+const PREF_CATEGORIES: { key: string; label: string }[] = [
+  { key: "messages", label: "الرسائل" },
+  { key: "offers", label: "العروض" },
+  { key: "social", label: "التفاعل الاجتماعي" },
+  { key: "listings", label: "الإعلانات" },
+  { key: "reports", label: "البلاغات" },
+  { key: "verification", label: "التوثيق" },
+  { key: "system", label: "إشعارات النظام" },
+];
+
 export default function NotificationsPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -17,7 +27,30 @@ export default function NotificationsPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
+  const [prefsOpen, setPrefsOpen] = useState(false);
+  const [prefs, setPrefs] = useState<Record<string, boolean> | null>(null);
   const LIMIT = 20;
+
+  const openPrefs = async () => {
+    setPrefsOpen(true);
+    if (prefs) return;
+    try {
+      const { data } = await api.get<Record<string, boolean>>("/notifications/preferences/");
+      setPrefs(data);
+    } catch (err) { toast.error(getErrorMessage(err)); }
+  };
+
+  const togglePref = async (key: string) => {
+    if (!prefs) return;
+    const next = !prefs[key];
+    setPrefs((p) => (p ? { ...p, [key]: next } : p));
+    try {
+      await api.put("/notifications/preferences/", { [key]: next });
+    } catch (err) {
+      setPrefs((p) => (p ? { ...p, [key]: !next } : p));
+      toast.error(getErrorMessage(err));
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/auth/login");
@@ -70,12 +103,44 @@ export default function NotificationsPage() {
             {unread > 0 && <p className="text-xs text-primary font-medium">{unread} غير مقروء</p>}
           </div>
         </div>
-        {unread > 0 && (
-          <Button onClick={markAllRead} variant="outline" size="sm">
-            <CheckCircle className="h-4 w-4" /> تعليم الكل مقروء
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {unread > 0 && (
+            <Button onClick={markAllRead} variant="outline" size="sm">
+              <CheckCircle className="h-4 w-4" /> تعليم الكل مقروء
+            </Button>
+          )}
+          <Button onClick={openPrefs} variant="ghost" size="sm">التفضيلات</Button>
+        </div>
       </div>
+
+      {prefsOpen && (
+        <div className="bg-white rounded-2xl card-shadow p-5 mb-4">
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="font-bold text-gray-800">تفضيلات الإشعارات</h2>
+            <button onClick={() => setPrefsOpen(false)} className="text-sm text-gray-400 hover:text-gray-600">إغلاق</button>
+          </div>
+          <p className="text-xs text-gray-500 mb-3">تحكّم بأنواع الإشعارات التي تصلك (الكتم يوقف إشعار الدفع فقط، ويبقى الإشعار داخل التطبيق).</p>
+          {prefs === null ? (
+            <div className="h-40 bg-gray-100 animate-pulse rounded-xl" />
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {PREF_CATEGORIES.map((c) => (
+                <div key={c.key} className="flex items-center justify-between py-2.5">
+                  <span className="text-sm text-gray-700">{c.label}</span>
+                  <button
+                    type="button"
+                    onClick={() => togglePref(c.key)}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${prefs[c.key] ? "bg-primary" : "bg-gray-300"}`}
+                    aria-pressed={prefs[c.key]}
+                  >
+                    <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${prefs[c.key] ? "left-5" : "left-0.5"}`} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="bg-white rounded-2xl card-shadow overflow-hidden">
         {loading ? (
