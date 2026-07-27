@@ -21,13 +21,6 @@ interface ReportDetail extends FraudReport {
   admin_note: string;
 }
 
-const STATUS_OPTIONS = [
-  { value: "", label: "الكل" },
-  { value: "pending", label: "قيد المراجعة" },
-  { value: "verified", label: "موثّق" },
-  { value: "rejected", label: "مرفوض" },
-];
-
 const FRAUD_TYPE_OPTIONS = [
   { value: "", label: "كل الأنواع" },
   ...Object.entries(fraudTypeLabels).map(([v, l]) => ({ value: v, label: l })),

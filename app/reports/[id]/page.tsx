@@ -6,7 +6,7 @@ import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import {
-  formatRelativeTime, fraudTypeLabels, reportStatusColors, reportStatusLabels,
+  formatRelativeTime, fraudTypeLabels, reportStatusLabels,
 } from "@/lib/utils";
 import type { FraudReport, FraudComment } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
-  ShieldWarning, Like, Dislike, ChatRound, User, Phone, MapPoint,
+  Like, Dislike, ChatRound, User, Phone, MapPoint,
   AltArrowRight, DangerTriangle, Link as LinkIcon,
 } from "@solar-icons/react";
 import { toast } from "sonner";

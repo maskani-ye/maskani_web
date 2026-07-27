@@ -89,7 +89,7 @@ export function DataTable<T>({
   const toggleOne = (id: RowId) => {
     if (!selection) return;
     const next = new Set(selection.selectedIds);
-    next.has(id) ? next.delete(id) : next.add(id);
+    if (next.has(id)) next.delete(id); else next.add(id);
     selection.onChange([...next]);
   };
 

@@ -12,7 +12,7 @@ import {
   ListingFormFields, emptyListingForm, buildListingPatch,
   type ListingFormState,
 } from "@/components/listings/ListingFormFields";
-import { Buildings2, CloudUpload, TrashBinTrash, CheckCircle, Star, AltArrowRight } from "@solar-icons/react";
+import { CloudUpload, TrashBinTrash, CheckCircle, Star, AltArrowRight } from "@solar-icons/react";
 import { toast } from "sonner";
 
 // property_type يأتي متداخلاً ككائن {id,...} في الاستجابة، بينما النوع مُعلَن كسلسلة

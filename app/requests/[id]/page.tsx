@@ -19,9 +19,6 @@ import { toast } from "sonner";
 
 const asIcon = (I: ComponentType<{ className?: string }>) => I;
 
-const propertyTypeLabels: Record<string, string> = {
-  apartment: "شقة", house: "بيت/فيلا", land: "أرض", commercial: "محل", any: "أي نوع",
-};
 const offerTypeLabels: Record<string, string> = {
   sale: "للشراء", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", any: "أي نوع",
 };

@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
   User as UserIcon, CheckCircle, MapPoint, Buildings2, Star,
-  UserPlus, UserMinus, AltArrowRight, ChatRoundDots,
+  UserPlus, UserMinus, ChatRoundDots,
 } from "@solar-icons/react";
 import { toast } from "sonner";
 

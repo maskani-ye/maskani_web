@@ -5,12 +5,11 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage, getErrorStatus } from "@/lib/api";
 import {
-  formatPrice, formatRelativeTime, formatDate,
-  propertyTypeLabels, offerTypeLabels, furnishingLabels, statusColors, statusLabels, propertyTypeName } from "@/lib/utils";
+  formatPrice, formatRelativeTime,
+  offerTypeLabels, furnishingLabels, statusColors, statusLabels, propertyTypeName } from "@/lib/utils";
 import type { Listing } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { StarRating } from "@/components/ui/StarRating";
 import {
   MapPoint, Bed, Ruler, Eye, Heart, Phone, ChatSquare, ChatRoundDots,
@@ -299,7 +298,7 @@ export default function ListingDetailPage() {
             <div className="mb-5">
               <h3 className="font-bold text-gray-800 mb-3">المميزات</h3>
               <div className="flex flex-wrap gap-2">
-                {featuresList.map(({ key, label, icon: Icon }) => {
+                {featuresList.map(({ key, label }) => {
                   const has = listing[key as keyof Listing] as boolean;
                   return (
                     <span key={key} className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-medium ${has ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400 line-through"}`}>

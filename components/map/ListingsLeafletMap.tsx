@@ -12,7 +12,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "re
 import MarkerClusterGroup from "react-leaflet-cluster";
 import Link from "next/link";
 import { api } from "@/lib/api";
-import { formatPrice, offerTypeLabels, propertyTypeLabels, propertyTypeName } from "@/lib/utils";
+import { formatPrice, offerTypeLabels, propertyTypeName } from "@/lib/utils";
 import { Buildings2, MapPoint } from "@solar-icons/react";
 import { listingIcon } from "./leafletSetup";
 import { DEFAULT_ZOOM, type MapListing, type MapResponse } from "./constants";

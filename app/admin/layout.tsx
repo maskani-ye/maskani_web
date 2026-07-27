@@ -116,7 +116,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   );
 
   return (
-    <div className="flex min-h-screen bg-[#F8F6F0]" dir="rtl">
+    <div className="flex min-h-screen bg-cream" dir="rtl">
       {/* الشريط الجانبي الثابت — يظهر من lg فأكثر */}
       <aside className="hidden lg:flex w-56 shrink-0 bg-white border-l border-gray-100 flex-col sticky top-0 h-screen">
         <SidebarInner />

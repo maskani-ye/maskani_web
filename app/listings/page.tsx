@@ -5,15 +5,14 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { api, getErrorMessage } from "@/lib/api";
-import { formatPrice, offerTypeLabels, propertyTypeLabels, statusLabels, statusColors, propertyTypeName } from "@/lib/utils";
+import { formatPrice, offerTypeLabels, propertyTypeName } from "@/lib/utils";
 import type { Listing, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Badge } from "@/components/ui/Badge";
 import {
   Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed,
-  Ruler, Eye, Heart, AltArrowRight, AltArrowLeft, CloseCircle,
+  Ruler, Eye, Heart, AltArrowRight, AltArrowLeft,
   Map as MapIcon, List as ListIcon, AddCircle,
 } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";

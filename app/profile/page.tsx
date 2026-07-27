@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import type { User, Listing, PaginatedResponse } from "@/types";
+import type { Listing, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 import {
-  UserRounded, Buildings2, Heart, Bell, MapPoint,
+  Buildings2, Heart, Bell, MapPoint,
   PenNewSquare, CheckCircle, Logout, ShieldCheck, CloudUpload, CloseCircle, ClockCircle,
 } from "@solar-icons/react";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { forwardRef, SelectHTMLAttributes, ReactNode } from "react";
+import { forwardRef, SelectHTMLAttributes } from "react";
 import { AltArrowDown } from "@solar-icons/react";
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
