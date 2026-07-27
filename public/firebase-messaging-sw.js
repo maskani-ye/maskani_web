@@ -10,7 +10,7 @@ importScripts(
 );
 
 firebase.initializeApp({
-  apiKey: "AIzaSyDhUsPS-ckJ-k6CbUcVpDzPFVJta_OiHTw",
+  apiKey: "AIzaSyCS_uvUhFln6R_S3OfN3V3WAQ3OVN1uIeg",
   authDomain: "maskani-d808a.firebaseapp.com",
   projectId: "maskani-d808a",
   storageBucket: "maskani-d808a.firebasestorage.app",

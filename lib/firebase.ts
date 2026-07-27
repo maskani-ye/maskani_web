@@ -8,7 +8,7 @@ import { getMessaging, isSupported, type Messaging } from "firebase/messaging";
 export const firebaseConfig = {
   apiKey:
     process.env.NEXT_PUBLIC_FIREBASE_API_KEY ??
-    "AIzaSyDhUsPS-ckJ-k6CbUcVpDzPFVJta_OiHTw",
+    "AIzaSyCS_uvUhFln6R_S3OfN3V3WAQ3OVN1uIeg",
   authDomain:
     process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ??
     "maskani-d808a.firebaseapp.com",
