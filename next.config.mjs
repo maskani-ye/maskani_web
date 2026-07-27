@@ -7,8 +7,8 @@ const nextConfig = {
     // وسائط الباك اند (صور الإعلانات/الخدمات/الأفاتار) تُخدَم من هذا النطاق.
     remotePatterns: [
       { protocol: "https", hostname: "api.maskani.homes" },
-      // وسائط Supabase Storage (المخزن السحابي الافتراضي الجديد).
-      { protocol: "https", hostname: "**.supabase.co" },
+      // وسائط Cloudflare R2 (المخزن السحابي الافتراضي).
+      { protocol: "https", hostname: "**.r2.dev" },
     ],
     formats: ["image/avif", "image/webp"],
   },
