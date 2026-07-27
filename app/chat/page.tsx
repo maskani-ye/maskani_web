@@ -91,11 +91,16 @@ export default function ChatListPage() {
                   href={`/chat/${c.id}`}
                   className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
                 >
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
-                    {other?.avatar ? (
-                      <img src={other.avatar} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <UserIcon className="h-6 w-6 text-primary" />
+                  <div className="relative shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                      {other?.avatar ? (
+                        <img src={other.avatar} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <UserIcon className="h-6 w-6 text-primary" />
+                      )}
+                    </div>
+                    {other?.is_online && (
+                      <span className="absolute bottom-0 left-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white" title="متصل الآن" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">

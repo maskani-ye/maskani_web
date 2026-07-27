@@ -275,6 +275,7 @@ export interface Notification {
 
 // ─── Chat / Direct Messages ───────────────────────────────────────────────
 export interface ChatParticipant {
+  is_online?: boolean;
   id: number;
   full_name: string;
   avatar: string | null;
