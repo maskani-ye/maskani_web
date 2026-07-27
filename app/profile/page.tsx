@@ -37,9 +37,8 @@ const ROLE_COLORS: Record<string, "green" | "yellow" | "blue" | "gold" | "red" |
 export default function ProfilePage() {
   const { user, logout, refreshUser, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [tab, setTab] = useState<"info" | "listings" | "password">("info");
+  const [tab, setTab] = useState<"info" | "listings">("info");
   const [form, setForm] = useState({ full_name: "", bio: "" });
-  const [pwForm, setPwForm] = useState({ old_password: "", new_password: "", new_password_confirm: "" });
   const [myListings, setMyListings] = useState<Listing[]>([]);
   const [listingsTotal, setListingsTotal] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -104,20 +103,6 @@ export default function ProfilePage() {
       await api.patch("/auth/me/", form);
       await refreshUser();
       toast.success("تم تحديث الملف الشخصي");
-    } catch (err) { toast.error(getErrorMessage(err)); }
-    finally { setSaving(false); }
-  };
-
-  const changePassword = async () => {
-    if (pwForm.new_password !== pwForm.new_password_confirm) {
-      toast.error("كلمتا المرور غير متطابقتين");
-      return;
-    }
-    setSaving(true);
-    try {
-      await api.post("/auth/change-password/", pwForm);
-      toast.success("تم تغيير كلمة المرور");
-      setPwForm({ old_password: "", new_password: "", new_password_confirm: "" });
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setSaving(false); }
   };
@@ -249,13 +234,13 @@ export default function ProfilePage() {
       {/* Tabs */}
       <div className="bg-white rounded-2xl card-shadow overflow-hidden">
         <div className="flex border-b border-gray-100">
-          {(["info", "listings", "password"] as const).map((t) => (
+          {(["info", "listings"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={`flex-1 py-3 text-sm font-medium transition-colors ${tab === t ? "text-primary border-b-2 border-primary" : "text-gray-500 hover:text-gray-700"}`}
             >
-              {t === "info" ? "البيانات" : t === "listings" ? "إعلاناتي" : "كلمة المرور"}
+              {t === "info" ? "البيانات" : "إعلاناتي"}
             </button>
           ))}
         </div>
@@ -318,29 +303,6 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {tab === "password" && (
-            <div className="space-y-4">
-              <Input
-                label="كلمة المرور الحالية"
-                type="password"
-                value={pwForm.old_password}
-                onChange={(e) => setPwForm((p) => ({ ...p, old_password: e.target.value }))}
-              />
-              <Input
-                label="كلمة المرور الجديدة"
-                type="password"
-                value={pwForm.new_password}
-                onChange={(e) => setPwForm((p) => ({ ...p, new_password: e.target.value }))}
-              />
-              <Input
-                label="تأكيد كلمة المرور الجديدة"
-                type="password"
-                value={pwForm.new_password_confirm}
-                onChange={(e) => setPwForm((p) => ({ ...p, new_password_confirm: e.target.value }))}
-              />
-              <Button onClick={changePassword} loading={saving} fullWidth>تغيير كلمة المرور</Button>
-            </div>
-          )}
         </div>
       </div>
     </div>
