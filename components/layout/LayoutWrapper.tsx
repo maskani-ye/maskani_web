@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
+import { CityFirstVisitModal } from "@/components/city/CityFirstVisitModal";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -16,6 +17,8 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col min-h-screen">
       {/* نافذة Google One Tap تلقائياً للزوّار غير المسجّلين */}
       <GoogleOneTap />
+      {/* أول زيارة بلا مدينة → مودال اختيار المدينة (للزائر أيضاً، مرّة واحدة) */}
+      <CityFirstVisitModal />
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
