@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { PENDING_GOOGLE_KEY } from "@/components/auth/GoogleOneTap";
 import { Home2, User } from "@solar-icons/react";
 import { toast } from "sonner";
 import { getErrorMessage, api } from "@/lib/api";
@@ -29,6 +30,26 @@ export default function LoginPage() {
   const [completion, setCompletion] = useState<CompletionState | null>(null);
 
   const { loginWithGoogle, completeGoogle } = useAuth();
+
+  // إن جاء المستخدم من نافذة One Tap بحساب جديد يحتاج إكمالاً، نستعيد بياناته.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const raw = sessionStorage.getItem(PENDING_GOOGLE_KEY);
+    if (!raw) return;
+    sessionStorage.removeItem(PENDING_GOOGLE_KEY);
+    try {
+      const p = JSON.parse(raw);
+      if (p?.idToken) {
+        setCompletion({
+          idToken: p.idToken,
+          email: p.email ?? "",
+          full_name: p.full_name ?? "",
+        });
+      }
+    } catch {
+      /* تجاهل */
+    }
+  }, []);
 
   // نجاح جوجل → id_token → POST /auth/google/
   const handleGoogleCredential = async (idToken: string) => {

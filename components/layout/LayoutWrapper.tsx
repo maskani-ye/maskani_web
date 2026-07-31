@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
+import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -13,6 +14,8 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* نافذة Google One Tap تلقائياً للزوّار غير المسجّلين */}
+      <GoogleOneTap />
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
