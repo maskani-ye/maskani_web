@@ -70,13 +70,33 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-primary-600 mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-primary-200 text-sm">
-            © {new Date().getFullYear()} مسكني — جميع الحقوق محفوظة
-          </p>
-          <p className="text-primary-300 text-xs">
-            لا توجد عمليات دفع إلكترونية — التواصل مباشر بين الأطراف
-          </p>
+        <div className="border-t border-primary-600 mt-8 pt-6 flex flex-col gap-4">
+          {/* روابط قانونية */}
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <Link
+              href="/privacy"
+              className="text-primary-200 hover:text-white text-sm font-medium transition-colors"
+            >
+              سياسة الخصوصية
+            </Link>
+            <span className="text-primary-600" aria-hidden>
+              ·
+            </span>
+            <Link
+              href="/terms"
+              className="text-primary-200 hover:text-white text-sm font-medium transition-colors"
+            >
+              شروط الاستخدام
+            </Link>
+          </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-2">
+            <p className="text-primary-200 text-sm">
+              © {new Date().getFullYear()} مسكني — جميع الحقوق محفوظة
+            </p>
+            <p className="text-primary-300 text-xs">
+              لا توجد عمليات دفع إلكترونية — التواصل مباشر بين الأطراف
+            </p>
+          </div>
         </div>
       </div>
     </footer>
