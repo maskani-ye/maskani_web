@@ -115,10 +115,10 @@ export default function AdminPropertyTypesPage() {
     setSaving(true);
     try {
       if (modal.editing) {
-        await api.patch(`/admin/property-types/${modal.editing.id}/`, payload);
+        await api.patch(`/admin/listings/property-types/${modal.editing.id}/`, payload);
         toast.success("تم تعديل نوع العقار");
       } else {
-        await api.post("/admin/property-types/", payload);
+        await api.post("/admin/listings/property-types/", payload);
         toast.success("تم إضافة نوع العقار");
       }
       closeModal();
@@ -129,7 +129,7 @@ export default function AdminPropertyTypesPage() {
 
   const toggleActive = async (t: PropertyTypeItem) => {
     try {
-      const res = await api.patch<PropertyTypeItem>(`/admin/property-types/${t.id}/`, { is_active: !t.is_active });
+      const res = await api.patch<PropertyTypeItem>(`/admin/listings/property-types/${t.id}/`, { is_active: !t.is_active });
       setTypes((prev) => prev.map((c) => (c.id === t.id ? { ...c, ...res.data } : c)));
       toast.success(t.is_active ? "تم تعطيل النوع" : "تم تفعيل النوع");
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -139,7 +139,7 @@ export default function AdminPropertyTypesPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await api.delete(`/admin/property-types/${deleteTarget.id}/`);
+      await api.delete(`/admin/listings/property-types/${deleteTarget.id}/`);
       toast.success("تم حذف نوع العقار");
       setDeleteTarget(null);
       fetchTypes(offset);

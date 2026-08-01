@@ -9,6 +9,7 @@ import {
   Eye, GraphNewUp, Bell, CheckCircle, MapPoint, AltArrowUp,
   DangerTriangle, Refresh, ChartSquare, ChatRoundDots, ShieldCheck,
   Letter, UserCross,
+  Case,
 } from "@solar-icons/react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -37,6 +38,7 @@ interface AdminStats {
   verified_fraud: number;
   rejected_fraud: number;
   requests_count: number;
+  service_requests_count: number;
   services_count: number;
   conversations_count: number;
   messages_count: number;
@@ -90,7 +92,7 @@ export default function AdminDashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get<AdminStats>("/admin/stats/");
+      const res = await api.get<AdminStats>("/admin/dashboard/stats/");
       setStats(res.data);
     } catch (err) {
       setError(getErrorMessage(err));
@@ -188,6 +190,7 @@ export default function AdminDashboardPage() {
     { label: "قيد المراجعة",      value: stats.pending_fraud,  icon: Eye,
       sub: `${stats.verified_fraud} موثّق • ${stats.rejected_fraud} مرفوض` },
     { label: "طلبات عقارية",     value: stats.requests_count, icon: PenNewSquare },
+    { label: "طلبات الخدمة",      value: stats.service_requests_count, icon: Case },
     { label: "مزودو الخدمة",      value: stats.services_count, icon: GraphNewUp },
   ];
 

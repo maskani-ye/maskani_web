@@ -105,7 +105,7 @@ export default function AdminConversationsPage() {
     if (!deleteConvTarget) return;
     setDeletingConv(true);
     try {
-      await api.delete(`/admin/conversations/${deleteConvTarget.id}/`);
+      await api.delete(`/admin/chat/conversations/${deleteConvTarget.id}/`);
       toast.success("تم حذف المحادثة");
       setConversations((prev) => prev.filter((c) => c.id !== deleteConvTarget.id));
       setTotal((t) => Math.max(0, t - 1));
@@ -123,7 +123,7 @@ export default function AdminConversationsPage() {
     if (!deleteMsgTarget || !selected) return;
     setDeletingMsg(true);
     try {
-      await api.delete(`/admin/conversations/${selected.id}/messages/${deleteMsgTarget.id}/`);
+      await api.delete(`/admin/chat/conversations/${selected.id}/messages/${deleteMsgTarget.id}/`);
       toast.success("تم حذف الرسالة");
       setMessages((prev) => prev.filter((m) => m.id !== deleteMsgTarget.id));
       setMsgTotal((t) => Math.max(0, t - 1));

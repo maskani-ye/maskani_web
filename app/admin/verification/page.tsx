@@ -128,7 +128,7 @@ export default function AdminVerificationPage() {
     setApproving(true);
     try {
       const res = await api.patch<VerificationRequest>(
-        `/admin/verification-requests/${approveTarget.id}/`, { status: "approved" }
+        `/admin/accounts/verification-requests/${approveTarget.id}/`, { status: "approved" }
       );
       toast.success("تم توثيق الحساب");
       applyUpdate(res.data);
@@ -142,7 +142,7 @@ export default function AdminVerificationPage() {
     setRejecting(true);
     try {
       const res = await api.patch<VerificationRequest>(
-        `/admin/verification-requests/${rejectTarget.id}/`,
+        `/admin/accounts/verification-requests/${rejectTarget.id}/`,
         { status: "rejected", review_note: rejectNote.trim() }
       );
       toast.success("تم رفض الطلب");

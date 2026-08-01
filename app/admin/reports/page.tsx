@@ -79,7 +79,7 @@ export default function AdminReportsPage() {
     if (!selected) return;
     setUpdatingStatus(true);
     try {
-      await api.patch(`/reports/${selected.id}/admin-update/`, {
+      await api.patch(`/admin/reports/${selected.id}/update/`, {
         status: newStatus,
         admin_note: adminNote,
       });

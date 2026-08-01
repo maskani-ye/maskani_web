@@ -84,7 +84,7 @@ export default function AdminUsersPage() {
 
   const toggleServiceProvider = async (u: User) => {
     try {
-      const res = await api.patch<User>(`/admin/users/${u.id}/`, { is_service_provider: !u.is_service_provider });
+      const res = await api.patch<User>(`/admin/accounts/users/${u.id}/`, { is_service_provider: !u.is_service_provider });
       toast.success(res.data.is_service_provider ? "تم الترقية لمزود خدمة" : "تم إلغاء ترقية مزود الخدمة");
       setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
       if (selected?.id === res.data.id) setSelected(res.data);
@@ -93,7 +93,7 @@ export default function AdminUsersPage() {
 
   const toggleVerified = async (u: User) => {
     try {
-      const res = await api.patch<User>(`/admin/users/${u.id}/`, { is_verified: !u.is_verified });
+      const res = await api.patch<User>(`/admin/accounts/users/${u.id}/`, { is_verified: !u.is_verified });
       toast.success(res.data.is_verified ? "تم التوثيق" : "تم إلغاء التوثيق");
       setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
       if (selected?.id === res.data.id) setSelected(res.data);
@@ -104,7 +104,7 @@ export default function AdminUsersPage() {
     if (u.role === role) return;
     setSaving(true);
     try {
-      const res = await api.patch<User>(`/admin/users/${u.id}/`, { role });
+      const res = await api.patch<User>(`/admin/accounts/users/${u.id}/`, { role });
       toast.success(res.data.role === "admin" ? "تمت الترقية لمشرف" : "تم التحويل لمستخدم عادي");
       setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
       if (selected?.id === res.data.id) setSelected(res.data);
@@ -114,7 +114,7 @@ export default function AdminUsersPage() {
 
   const toggleActive = async (u: User) => {
     try {
-      const res = await api.patch<User>(`/admin/users/${u.id}/`, { is_active: !u.is_active });
+      const res = await api.patch<User>(`/admin/accounts/users/${u.id}/`, { is_active: !u.is_active });
       toast.success(res.data.is_active ? "تم تفعيل الحساب" : "تم تعليق الحساب");
       setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
       if (selected?.id === res.data.id) setSelected(res.data);
@@ -126,7 +126,7 @@ export default function AdminUsersPage() {
     setDeleting(true);
     try {
       // Soft delete: backend returns 200 with the deactivated user body.
-      const res = await api.delete<User>(`/admin/users/${deleteTarget.id}/`);
+      const res = await api.delete<User>(`/admin/accounts/users/${deleteTarget.id}/`);
       const updated = res.data ?? { ...deleteTarget, is_active: false };
       toast.success("تم تعطيل المستخدم");
       setUsers((prev) => prev.map((u) => u.id === deleteTarget.id ? updated : u));

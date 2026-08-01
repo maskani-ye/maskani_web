@@ -119,7 +119,7 @@ export default function AdminUserReportsPage() {
     setSaving(true);
     try {
       const res = await api.patch<UserReport>(
-        `/admin/user-reports/${action.report.id}/`, { status: action.status }
+        `/admin/social/user-reports/${action.report.id}/`, { status: action.status }
       );
       toast.success(action.status === "reviewed" ? "تم وضع علامة تمت المراجعة" : "تم رفض البلاغ");
       setItems((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));

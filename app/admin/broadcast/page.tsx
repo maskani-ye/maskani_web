@@ -39,7 +39,7 @@ export default function AdminBroadcastPage() {
     setSending(true);
     try {
       const res = await api.post<{ message: string; count: number }>(
-        "/admin/broadcast/", { title, body, target }
+        "/admin/dashboard/broadcast/", { title, body, target }
       );
       toast.success(`تم إرسال التعميم إلى ${res.data.count.toLocaleString("ar-YE")} مستخدم`);
       setTitle("");

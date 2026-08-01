@@ -115,10 +115,10 @@ export default function AdminServiceCategoriesPage() {
     setSaving(true);
     try {
       if (modal.editing) {
-        await api.patch(`/admin/service-categories/${modal.editing.id}/`, payload);
+        await api.patch(`/admin/services/categories/${modal.editing.id}/`, payload);
         toast.success("تم تعديل الصنف");
       } else {
-        await api.post("/admin/service-categories/", payload);
+        await api.post("/admin/services/categories/", payload);
         toast.success("تم إضافة الصنف");
       }
       closeModal();
@@ -129,7 +129,7 @@ export default function AdminServiceCategoriesPage() {
 
   const toggleActive = async (cat: ServiceCategoryItem) => {
     try {
-      const res = await api.patch<ServiceCategoryItem>(`/admin/service-categories/${cat.id}/`, { is_active: !cat.is_active });
+      const res = await api.patch<ServiceCategoryItem>(`/admin/services/categories/${cat.id}/`, { is_active: !cat.is_active });
       setCategories((prev) => prev.map((c) => (c.id === cat.id ? { ...c, ...res.data } : c)));
       toast.success(cat.is_active ? "تم تعطيل الصنف" : "تم تفعيل الصنف");
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -139,7 +139,7 @@ export default function AdminServiceCategoriesPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await api.delete(`/admin/service-categories/${deleteTarget.id}/`);
+      await api.delete(`/admin/services/categories/${deleteTarget.id}/`);
       toast.success("تم حذف الصنف");
       setDeleteTarget(null);
       fetchCategories(offset);

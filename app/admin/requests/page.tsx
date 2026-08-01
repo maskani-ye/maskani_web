@@ -97,7 +97,7 @@ export default function AdminRequestsPage() {
       if (activeFilter) params.is_active    = activeFilter;
 
       const res = await api.get<{ count: number; results: AdminRequest[] }>(
-        "/admin/requests/", { params }
+        "/admin/demands/", { params }
       );
       setRequests(res.data.results);
       setTotal(res.data.count);
@@ -114,7 +114,7 @@ export default function AdminRequestsPage() {
   // ── Toggle active ───────────────────────────────────────────────────────────
   const toggleActive = async (req: AdminRequest) => {
     try {
-      const res = await api.patch<AdminRequest>(`/admin/requests/${req.id}/`, {
+      const res = await api.patch<AdminRequest>(`/admin/demands/${req.id}/`, {
         is_active: !req.is_active,
       });
       setRequests((prev) => prev.map((r) => (r.id === req.id ? res.data : r)));
@@ -130,7 +130,7 @@ export default function AdminRequestsPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await api.delete(`/admin/requests/${deleteTarget.id}/`);
+      await api.delete(`/admin/demands/${deleteTarget.id}/`);
       setRequests((prev) => prev.filter((r) => r.id !== deleteTarget.id));
       setTotal((t) => t - 1);
       if (selected?.id === deleteTarget.id) setSelected(null);
