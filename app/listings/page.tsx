@@ -145,12 +145,12 @@ function ListingsContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">الإعلانات العقارية</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">الإعلانات العقارية</h1>
           <p className="text-gray-500 text-sm mt-1">{total} إعلان متاح</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* مبدّل قائمة / خريطة */}
           <div className="flex rounded-xl border border-gray-200 bg-white p-1">
             <button
@@ -182,7 +182,7 @@ function ListingsContent() {
       </div>
 
       {/* Search Bar */}
-      <div className="flex gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <Input
           placeholder="ابحث بالعنوان أو الحي..."
           value={filters.search}
@@ -199,7 +199,7 @@ function ListingsContent() {
           ]}
           value={filters.ordering}
           onChange={(e) => handleFilterChange("ordering", e.target.value)}
-          className="w-44"
+          className="w-full sm:w-44"
         />
       </div>
 
