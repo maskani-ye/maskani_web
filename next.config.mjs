@@ -12,6 +12,15 @@ const nextConfig = {
     ],
     formats: ["image/avif", "image/webp"],
   },
+  async headers() {
+    return [
+      {
+        // apple-app-site-association بلا امتداد → نضبط نوعه JSON صراحةً.
+        source: "/.well-known/apple-app-site-association",
+        headers: [{ key: "Content-Type", value: "application/json" }],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

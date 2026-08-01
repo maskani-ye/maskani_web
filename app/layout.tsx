@@ -7,6 +7,7 @@ import { AuthGateProvider } from "@/context/AuthGate";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://maskani.homes"),
   title: {
     default: "مسكني — المنصة العقارية الاجتماعية",
     template: "%s | مسكني",
@@ -17,8 +18,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: "مسكني — المنصة العقارية الاجتماعية",
     description: "ابحث عن عقارك المثالي",
-    locale: "ar_SA",
+    siteName: "مسكني",
+    locale: "ar_AR",
     type: "website",
+    images: [{ url: "/icon.png", width: 512, height: 512, alt: "مسكني" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "مسكني — المنصة العقارية الاجتماعية",
+    description: "ابحث عن عقارك المثالي",
+    images: ["/icon.png"],
   },
 };
 
