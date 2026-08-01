@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { formatPrice, formatRelativeTime, propertyTypeName } from "@/lib/utils";
 import type { ClientRequest, RequestOffer, Listing, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -27,6 +28,7 @@ export default function RequestDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const { requireAuth } = useAuthGate();
   const [request, setRequest] = useState<ClientRequest | null>(null);
   const [offers, setOffers] = useState<RequestOffer[]>([]);
   const [myListings, setMyListings] = useState<Listing[]>([]);
@@ -41,7 +43,7 @@ export default function RequestDetailPage() {
 
   // "مراسلة" — بدء/فتح محادثة خاصة (DM) مع صاحب الطلب.
   const startConversation = async () => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     if (!request) return;
     setStartingChat(true);
     try {
@@ -86,7 +88,7 @@ export default function RequestDetailPage() {
   }, [user, contactPhone]);
 
   const submitOffer = async () => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     if (!message.trim()) { toast.error("اكتب رسالة العرض"); return; }
     if (!contactPhone.trim()) { toast.error("أدخل رقم التواصل"); return; }
     setSubmitting(true);
@@ -240,7 +242,7 @@ export default function RequestDetailPage() {
           {!user ? (
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500">سجّل الدخول لتقديم عرض على هذا الطلب</p>
-              <Link href="/auth/login"><Button size="sm" variant="outline">تسجيل الدخول</Button></Link>
+              <Button size="sm" variant="outline" onClick={() => requireAuth()}>تسجيل الدخول</Button>
             </div>
           ) : !request.is_active ? (
             <p className="text-sm text-gray-500">هذا الطلب مغلق ولا يقبل عروضاً جديدة.</p>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import type { City, PropertyTypeItem } from "@/types";
 import { Button } from "@/components/ui/Button";
 import {
@@ -16,6 +17,7 @@ import { toast } from "sonner";
 
 export default function CreateListingPage() {
   const { user, loading: authLoading } = useAuth();
+  const { requireAuth } = useAuthGate();
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
   const [propertyTypes, setPropertyTypes] = useState<PropertyTypeItem[]>([]);
@@ -24,7 +26,7 @@ export default function CreateListingPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !user) router.push("/auth/login");
+    if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
   }, [user, authLoading, router]);
 
   useEffect(() => {

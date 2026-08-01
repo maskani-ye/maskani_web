@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import type { City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -34,6 +35,7 @@ const CURRENCY_OPTS = [
 
 export default function CreateRequestPage() {
   const { user, loading: authLoading } = useAuth();
+  const { requireAuth } = useAuthGate();
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
   const [saving, setSaving] = useState(false);
@@ -52,7 +54,7 @@ export default function CreateRequestPage() {
   });
 
   useEffect(() => {
-    if (!authLoading && !user) router.push("/auth/login");
+    if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
   }, [user, authLoading, router]);
 
   useEffect(() => {

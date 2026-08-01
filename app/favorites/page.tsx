@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { formatPrice } from "@/lib/utils";
 import type { Listing, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -21,6 +22,7 @@ interface FavoriteItem {
 
 export default function FavoritesPage() {
   const { user, loading: authLoading } = useAuth();
+  const { requireAuth } = useAuthGate();
   const router = useRouter();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -29,7 +31,7 @@ export default function FavoritesPage() {
   const LIMIT = 20;
 
   useEffect(() => {
-    if (!authLoading && !user) router.push("/auth/login");
+    if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
   }, [user, authLoading, router]);
 
   const fetchFavorites = async (off = 0) => {

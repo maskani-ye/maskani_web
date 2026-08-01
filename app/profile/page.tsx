@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import type { Listing, PaginatedResponse, City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -36,6 +37,7 @@ const ROLE_COLORS: Record<string, "green" | "yellow" | "blue" | "gold" | "red" |
 
 export default function ProfilePage() {
   const { user, logout, refreshUser, loading: authLoading } = useAuth();
+  const { requireAuth } = useAuthGate();
   const router = useRouter();
   const [tab, setTab] = useState<"info" | "listings">("info");
   const [form, setForm] = useState({ full_name: "", bio: "", phone: "", city: "" });
@@ -52,7 +54,7 @@ export default function ProfilePage() {
   const [verifSubmitting, setVerifSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !user) router.push("/auth/login");
+    if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
   }, [user, authLoading, router]);
 
   useEffect(() => {

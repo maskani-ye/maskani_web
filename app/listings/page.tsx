@@ -16,6 +16,7 @@ import {
   Map as MapIcon, List as ListIcon, AddCircle,
 } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
 import { toast } from "sonner";
 import ListingsMap from "@/components/map/ListingsMap";
@@ -38,6 +39,7 @@ function ListingsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
+  const { requireAuth } = useAuthGate();
   const { cityId, setCity } = useCity();
 
   const [listings, setListings] = useState<Listing[]>([]);
@@ -102,7 +104,7 @@ function ListingsContent() {
 
   const toggleFavorite = async (id: number, e: React.MouseEvent) => {
     e.preventDefault();
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     try {
       const { data } = await api.post(`/social/favorites/${id}/toggle/`);
       setFavorites((prev) => {
@@ -172,7 +174,7 @@ function ListingsContent() {
             <SliderHorizontal className="h-4 w-4" />
             الفلاتر
           </Button>
-          <Button size="sm" onClick={() => user ? router.push("/listings/create") : router.push("/auth/login")}>
+          <Button size="sm" onClick={() => requireAuth(() => router.push("/listings/create"))}>
             <AddCircle className="h-4 w-4" />
             أضف إعلان
           </Button>

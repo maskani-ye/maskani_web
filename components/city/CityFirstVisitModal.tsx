@@ -1,37 +1,35 @@
 "use client";
 
 // ─── CityFirstVisitModal ────────────────────────────────────────────────────
-// عند أول زيارة بلا مدينة محفوظة (للزائر أيضاً) يُعرض مودال لاختيار المدينة —
-// مطابق لسلوك التطبيق (Flutter). يُعرض مرّة واحدة فقط: نُثبّت علماً في
-// localStorage حتى لا يتكرّر إزعاجاً. القرار يُتّخذ داخل useEffect (بعد التحميل)
-// لتفادي عدم تطابق SSR/hydration ولاحترام أي مدينة محفوظة مسبقاً.
+// اختيار المدينة **إجباري** عند أول زيارة بلا مدينة محفوظة (للزائر أيضاً) —
+// مطابق لسلوك التطبيق. المودال لا يُغلق ولا يوجد «كل المدن»: يجب اختيار مدينة
+// للمتابعة. البوابة الوحيدة هي وجود مدينة محفوظة؛ فطالما لا مدينة يُعاد العرض
+// عند كل تحميل. القرار داخل useEffect (بعد التحميل) لتفادي عدم تطابق SSR.
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
 import { useCity } from "@/context/CityContext";
 import { Dialog } from "@/components/ui/Dialog";
-import { MapPoint, Magnifer, Global } from "@solar-icons/react";
+import { MapPoint, Magnifer } from "@solar-icons/react";
 import type { City } from "@/types";
 
 const CITY_KEY = "maskani_selected_city";
-const PROMPTED_KEY = "maskani_city_prompted";
 
 export function CityFirstVisitModal() {
-  const { setCity } = useCity();
+  const { cityId, setCity } = useCity();
   const [open, setOpen] = useState(false);
   const [cities, setCities] = useState<City[]>([]);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    // القرار بعد التحميل فقط: لا نعرض إن سبق اختيار مدينة أو سبق العرض.
+    // إجباري: نعرض ما لم تكن هناك مدينة محفوظة. لا علَم «تم العرض» — الحسم
+    // الوحيد هو وجود مدينة (فلا مهرب من الاختيار).
     let hasCity = false;
-    let prompted = false;
     try {
       hasCity = !!localStorage.getItem(CITY_KEY);
-      prompted = !!localStorage.getItem(PROMPTED_KEY);
     } catch {
       return; // localStorage غير متاح — لا نعرض
     }
-    if (hasCity || prompted) return;
+    if (hasCity) return;
 
     api
       .get<{ results?: City[] }>("/cities/", { params: { offset: 0, limit: 100 } })
@@ -45,22 +43,8 @@ export function CityFirstVisitModal() {
       .catch(() => {});
   }, []);
 
-  const markPrompted = () => {
-    try {
-      localStorage.setItem(PROMPTED_KEY, "1");
-    } catch {
-      /* تجاهل */
-    }
-  };
-
-  const dismiss = () => {
-    markPrompted();
-    setOpen(false);
-  };
-
   const choose = (c: City) => {
     setCity(String(c.id), c.name_ar);
-    markPrompted();
     setOpen(false);
   };
 
@@ -74,21 +58,24 @@ export function CityFirstVisitModal() {
     );
   }, [cities, query]);
 
-  if (!open) return null;
+  // لا نعرض إن أُغلق أو إن صار هناك مدينة مختارة (أمان إضافي)
+  if (!open || cityId) return null;
 
   return (
     <Dialog
       open={open}
-      onClose={dismiss}
+      onClose={() => {}}
+      dismissable={false}
+      hideClose
       title={
         <span className="flex items-center gap-2">
           <MapPoint className="h-5 w-5 text-primary" />
-          اختر مدينتك
+          اختر مدينتك للمتابعة
         </span>
       }
     >
       <p className="text-sm text-gray-500 mb-3">
-        نعرض لك إعلانات وخدمات مدينتك — يمكنك تغييرها لاحقاً من الأعلى.
+        نعرض لك إعلانات وخدمات مدينتك. اختر مدينتك للمتابعة — يمكنك تغييرها لاحقاً من الأعلى.
       </p>
 
       {/* بحث */}
@@ -103,19 +90,7 @@ export function CityFirstVisitModal() {
         />
       </div>
 
-      {/* كل المدن */}
-      <button
-        type="button"
-        onClick={dismiss}
-        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-start hover:bg-primary/5"
-      >
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-500">
-          <Global className="h-4 w-4" />
-        </span>
-        <span className="text-sm font-medium text-gray-700">كل المدن</span>
-      </button>
-
-      {/* قائمة المدن */}
+      {/* قائمة المدن — لا «كل المدن»: يجب اختيار مدينة */}
       <div className="mt-1 divide-y divide-gray-100">
         {filtered.map((c) => (
           <button

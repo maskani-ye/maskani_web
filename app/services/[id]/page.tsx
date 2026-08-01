@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { serviceCategoryLabels, formatRelativeTime } from "@/lib/utils";
 import type { ServiceProvider, ServiceReview } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -30,6 +31,7 @@ export default function ServiceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const { requireAuth } = useAuthGate();
   const [provider, setProvider] = useState<ServiceProvider | null>(null);
   const [reviews, setReviews] = useState<ServiceReview[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +47,7 @@ export default function ServiceDetailPage() {
 
   // "مراسلة" — بدء/فتح محادثة خاصة (DM) مع مزوّد الخدمة.
   const startConversation = async () => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     if (providerUserId == null) return;
     setStartingChat(true);
     try {
@@ -73,7 +75,7 @@ export default function ServiceDetailPage() {
   }, [id, loadReviews]);
 
   const submitReview = async () => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     if (!comment.trim()) { toast.error("اكتب تعليقاً"); return; }
     setSubmitting(true);
     try {
@@ -220,7 +222,7 @@ export default function ServiceDetailPage() {
               ) : (
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-gray-500">سجّل الدخول لإضافة تقييم</p>
-                  <Link href="/auth/login"><Button size="sm" variant="outline">تسجيل الدخول</Button></Link>
+                  <Button size="sm" variant="outline" onClick={() => requireAuth()}>تسجيل الدخول</Button>
                 </div>
               )}
             </div>

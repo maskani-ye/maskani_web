@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { formatRelativeTime } from "@/lib/utils";
 import type { Conversation, PaginatedResponse } from "@/types";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -19,13 +20,14 @@ const asIcon = (I: ComponentType<{ className?: string }>) => I;
 
 export default function ChatListPage() {
   const { user, loading: authLoading } = useAuth();
+  const { requireAuth } = useAuthGate();
   const router = useRouter();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const firstLoad = useRef(true);
 
   useEffect(() => {
-    if (!authLoading && !user) router.push("/auth/login");
+    if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
   }, [user, authLoading, router]);
 
   useEffect(() => {

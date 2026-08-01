@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/Select";
 import { ShieldWarning, CloudUpload, CloseCircle } from "@solar-icons/react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 
 const FRAUD_TYPES = [
   { value: "fake_listing", label: "إعلان وهمي" },
@@ -22,6 +23,7 @@ const FRAUD_TYPES = [
 
 export default function CreateFraudReportPage() {
   const { user } = useAuth();
+  const { requireAuth } = useAuthGate();
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,7 @@ export default function CreateFraudReportPage() {
   });
 
   useEffect(() => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, [user, router]);
 

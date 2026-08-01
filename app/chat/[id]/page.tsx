@@ -6,6 +6,7 @@ import Link from "next/link";
 import axios from "axios";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { useChatSocket, type ChatAction } from "@/hooks/useChatSocket";
 import { formatRelativeTime } from "@/lib/utils";
 import {
@@ -73,6 +74,7 @@ export default function ChatThreadPage() {
   const conversationId = Number(id);
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { requireAuth } = useAuthGate();
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,7 +94,7 @@ export default function ChatThreadPage() {
   const sendRef = useRef<((action: ChatAction, data?: Record<string, unknown>) => boolean) | null>(null);
 
   useEffect(() => {
-    if (!authLoading && !user) router.push("/auth/login");
+    if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
   }, [user, authLoading, router]);
 
   const scrollToBottom = useCallback(() => {

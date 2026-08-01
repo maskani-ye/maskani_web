@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import type { City, PropertyTypeItem, Listing, ListingImage } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -28,6 +29,7 @@ function ownerId(u: Listing["user"]): number | null {
 export default function EditListingPage() {
   const { id } = useParams<{ id: string }>();
   const { user, loading: authLoading } = useAuth();
+  const { requireAuth } = useAuthGate();
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
   const [propertyTypes, setPropertyTypes] = useState<PropertyTypeItem[]>([]);
@@ -88,7 +90,7 @@ export default function EditListingPage() {
   // انتظر انتهاء المصادقة، ثم تحقّق من الملكية
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { router.push("/auth/login"); return; }
+    if (!user) { requireAuth(undefined, () => router.push("/")); return; }
     (async () => {
       const data = await loadListing();
       if (!data) return;

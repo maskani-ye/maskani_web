@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import {
   formatRelativeTime, fraudTypeLabels, reportStatusLabels,
 } from "@/lib/utils";
@@ -25,6 +26,7 @@ export default function FraudReportDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const { requireAuth } = useAuthGate();
   const [report, setReport] = useState<FraudReport | null>(null);
   const [comments, setComments] = useState<FraudComment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +48,7 @@ export default function FraudReportDetailPage() {
 
   // isCredible=true → مصداقي، false → غير مصداقي، null → سحب التصويت
   const handleVote = async (isCredible: boolean | null) => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     try {
       if (isCredible === null) {
         await api.delete(`/reports/${id}/vote/`);
@@ -60,7 +62,7 @@ export default function FraudReportDetailPage() {
   };
 
   const addComment = async () => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     if (!comment.trim()) return;
     try {
       const { data } = await api.post(`/reports/${id}/comments/`, { text: comment });
@@ -204,7 +206,7 @@ export default function FraudReportDetailPage() {
         ) : (
           <div className="flex items-center justify-between mb-5">
             <p className="text-sm text-gray-500">سجّل الدخول للتعليق</p>
-            <Link href="/auth/login"><Button size="sm" variant="outline">تسجيل الدخول</Button></Link>
+            <Button size="sm" variant="outline" onClick={() => requireAuth()}>تسجيل الدخول</Button>
           </div>
         )}
 

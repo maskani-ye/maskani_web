@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { formatPrice, formatRelativeTime } from "@/lib/utils";
 import type { User, Listing, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -36,6 +37,7 @@ export default function PublicProfilePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user: me } = useAuth();
+  const { requireAuth } = useAuthGate();
   const [profile, setProfile] = useState<PublicUser | null>(null);
   const [listings, setListings] = useState<Listing[]>([]);
   const [ratings, setRatings] = useState<UserRatingItem[]>([]);
@@ -76,7 +78,7 @@ export default function PublicProfilePage() {
   const isSelf = !!me && !!profile && me.id === profile.id;
 
   const startConversation = async () => {
-    if (!me) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     setStartingChat(true);
     try {
       const { data } = await api.post("/chat/conversations/", { recipient_id: Number(id) });
@@ -108,7 +110,7 @@ export default function PublicProfilePage() {
   }, [id, loadRatings]);
 
   const toggleFollow = async () => {
-    if (!me) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     setFollowBusy(true);
     try {
       const { data } = await api.post(`/social/follow/${id}/`);
@@ -120,7 +122,7 @@ export default function PublicProfilePage() {
   };
 
   const submitRating = async () => {
-    if (!me) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     setSubmitting(true);
     try {
       await api.post(`/social/users/${id}/rate/`, { rating, comment });
@@ -277,7 +279,7 @@ export default function PublicProfilePage() {
               ) : (
                 <div className="text-center">
                   <p className="text-sm text-gray-500 mb-3">سجّل الدخول لتقييم المستخدم</p>
-                  <Link href="/auth/login"><Button size="sm" variant="outline" fullWidth>تسجيل الدخول</Button></Link>
+                  <Button size="sm" variant="outline" fullWidth onClick={() => requireAuth()}>تسجيل الدخول</Button>
                 </div>
               )}
             </div>

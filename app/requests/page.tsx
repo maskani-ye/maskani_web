@@ -10,11 +10,13 @@ import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { PenNewSquare, AddCircle, MapPoint, Bed, Dollar, ClockCircle, AltArrowRight } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
 import { toast } from "sonner";
 
 export default function RequestsPage() {
   const { user } = useAuth();
+  const { requireAuth } = useAuthGate();
   const { cityId, setCity } = useCity();
   const router = useRouter();
   const [requests, setRequests] = useState<ClientRequest[]>([]);
@@ -56,7 +58,7 @@ export default function RequestsPage() {
           </h1>
           <p className="text-gray-500 text-sm mt-1">{total} طلب نشط</p>
         </div>
-        <Button onClick={() => user ? router.push("/requests/create") : router.push("/auth/login")}>
+        <Button onClick={() => requireAuth(() => router.push("/requests/create"))}>
           <AddCircle className="h-4 w-4" /> نشر طلب
         </Button>
       </div>

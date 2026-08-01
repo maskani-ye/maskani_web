@@ -14,11 +14,13 @@ import {
 } from "@solar-icons/react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
 import { useRouter } from "next/navigation";
 
 export default function FraudReportsPage() {
   const { user } = useAuth();
+  const { requireAuth } = useAuthGate();
   const { cityId, setCity } = useCity();
   const router = useRouter();
   const [reports, setReports] = useState<FraudReport[]>([]);
@@ -48,7 +50,7 @@ export default function FraudReportsPage() {
 
   const handleVote = async (reportId: number, isCredible: boolean, e: React.MouseEvent) => {
     e.preventDefault();
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     try {
       const { data } = await api.post(`/reports/${reportId}/vote/`, { is_credible: isCredible });
       setReports((prev) => prev.map((r) => r.id === reportId ? { ...r, credibility_score: data.credibility_score } : r));
@@ -73,7 +75,7 @@ export default function FraudReportsPage() {
           </h1>
           <p className="text-gray-500 text-sm mt-1">{total} بلاغ | الشفافية تحمي الجميع</p>
         </div>
-        <Button onClick={() => user ? router.push("/reports/create") : router.push("/auth/login")}>
+        <Button onClick={() => requireAuth(() => router.push("/reports/create"))}>
           <AddCircle className="h-4 w-4" />
           رفع بلاغ
         </Button>

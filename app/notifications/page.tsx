@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { formatRelativeTime } from "@/lib/utils";
 import type { Notification, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -61,6 +62,7 @@ function routeForNotification(n: Notification): string | null {
 
 export default function NotificationsPage() {
   const { user, loading: authLoading } = useAuth();
+  const { requireAuth } = useAuthGate();
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [total, setTotal] = useState(0);
@@ -92,7 +94,7 @@ export default function NotificationsPage() {
   };
 
   useEffect(() => {
-    if (!authLoading && !user) router.push("/auth/login");
+    if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
   }, [user, authLoading, router]);
 
   const fetchNotifications = async (off = 0) => {

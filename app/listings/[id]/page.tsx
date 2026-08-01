@@ -9,6 +9,7 @@ import {
   offerTypeLabels, furnishingLabels, statusColors, statusLabels, propertyTypeName } from "@/lib/utils";
 import type { Listing } from "@/types";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { Button } from "@/components/ui/Button";
 import { StarRating } from "@/components/ui/StarRating";
 import {
@@ -49,6 +50,7 @@ export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const { requireAuth } = useAuthGate();
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<{ notFound: boolean; message: string } | null>(null);
@@ -85,7 +87,7 @@ export default function ListingDetailPage() {
   }, [id, loadListing]);
 
   const handleFavorite = async () => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     try {
       const { data } = await api.post(`/social/favorites/${id}/toggle/`);
       setFavorited(data.favorited);
@@ -95,7 +97,7 @@ export default function ListingDetailPage() {
 
   // مساعد موحّد لبدء/فتح محادثة خاصة (DM) مع مستخدم مع ربطها بالإعلان.
   const startDM = async (recipientId: number) => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     if (!listing) return;
     try {
       const { data } = await api.post("/chat/conversations/", {
@@ -110,7 +112,7 @@ export default function ListingDetailPage() {
 
   // "مراسلة المُعلن" — DM مع صاحب الإعلان.
   const startConversation = async () => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     if (typeof listing?.user !== "object") return;
     setStartingChat(true);
     try {
@@ -122,7 +124,7 @@ export default function ListingDetailPage() {
 
   // "رد خاص" — DM مع كاتب تعليق عام (نمط حراج: تعليق عام + رد خاص بالاسم).
   const startPrivateReply = async (commentId: number, authorId: number) => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     setReplyingTo(commentId);
     try {
       await startDM(authorId);
@@ -137,7 +139,7 @@ export default function ListingDetailPage() {
   };
 
   const handleComment = async () => {
-    if (!user) { router.push("/auth/login"); return; }
+    if (!requireAuth()) return;
     if (!comment.trim()) return;
     try {
       const { data } = await api.post(`/social/listings/${id}/comments/add/`, { text: comment });

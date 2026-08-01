@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import { CityProvider } from "@/context/CityContext";
+import { AuthGateProvider } from "@/context/AuthGate";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 
 export const metadata: Metadata = {
@@ -34,9 +35,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-arabic antialiased bg-cream min-h-screen">
         <AuthProvider>
-          <CityProvider>
-            <LayoutWrapper>{children}</LayoutWrapper>
-          </CityProvider>
+          <AuthGateProvider>
+            <CityProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </CityProvider>
+          </AuthGateProvider>
           <Toaster
             position="top-center"
             richColors
