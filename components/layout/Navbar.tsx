@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
 import {
-  Home2, Magnifer, Buildings2, ShieldWarning, PenNewSquare,
+  Home2, Magnifer, Buildings2, ShieldWarning, ClipboardList, Case,
   Bell, ChatRound, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings, MapPoint,
 } from "@solar-icons/react";
 import { Button } from "@/components/ui/Button";
@@ -19,8 +19,9 @@ import { toast } from "sonner";
 const navLinks = [
   { href: "/listings", label: "الإعلانات", icon: Buildings2 },
   { href: "/services", label: "الخدمات", icon: Settings },
+  { href: "/requests", label: "طلبات عقارية", icon: ClipboardList },
+  { href: "/jobs", label: "طلبات خدمات", icon: Case },
   { href: "/reports", label: "مجتمع الشكاوي", icon: ShieldWarning },
-  { href: "/requests", label: "طلبات العملاء", icon: PenNewSquare },
 ];
 
 export function Navbar() {

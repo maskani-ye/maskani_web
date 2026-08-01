@@ -1,19 +1,20 @@
 "use client";
 
-// شريط تنقّل سفلي app-like — يظهر على الجوّال فقط (md:hidden). مطابق لتبويبات
-// تطبيق Flutter الخمسة: الرئيسية / الإعلانات / الخدمات / الطلبات / حسابي.
+// شريط تنقّل سفلي app-like — يظهر على الجوّال فقط (md:hidden). مطابق لتطبيق Flutter:
+// الرئيسية / الإعلانات / الخدمات / طلبات عقارية / طلبات خدمات / حسابي.
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { cn } from "@/lib/utils";
-import { Home2, Buildings2, Settings, PenNewSquare, User } from "@solar-icons/react";
+import { Home2, Buildings2, Settings, ClipboardList, Case, User } from "@solar-icons/react";
 
 const TABS = [
   { href: "/", label: "الرئيسية", icon: Home2, exact: true },
   { href: "/listings", label: "الإعلانات", icon: Buildings2 },
   { href: "/services", label: "الخدمات", icon: Settings },
-  { href: "/requests", label: "الطلبات", icon: PenNewSquare },
+  { href: "/requests", label: "طلبات عقارية", icon: ClipboardList },
+  { href: "/jobs", label: "طلبات خدمات", icon: Case },
   { href: "/profile", label: "حسابي", icon: User, auth: true },
 ];
 

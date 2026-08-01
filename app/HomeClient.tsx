@@ -20,12 +20,21 @@ const PROPERTY_TYPE_LABELS: Record<string, string> = {
   apartment: "شقة", house: "بيت / فيلا", land: "أرض", commercial: "محل تجاري",
 };
 
+// طلب خدمة (jobs) — نوع محلّي (يصل category ككائن {name_ar,icon}).
+interface ServiceRequest {
+  id: number; title: string; description: string;
+  category: { name_ar?: string; icon?: string } | string;
+  city_name: string; budget_min: string | null; budget_max: string | null;
+  currency: string; offers_count: number;
+}
+
 export default function HomeClient() {
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [services, setServices] = useState<ServiceProvider[] | null>(null);
   const [requests, setRequests] = useState<ClientRequest[] | null>(null);
+  const [serviceReqs, setServiceReqs] = useState<ServiceRequest[] | null>(null);
   const [filters, setFilters] = useState({ city: "", property_type: "", offer_type: "" });
 
   useEffect(() => {
@@ -33,6 +42,7 @@ export default function HomeClient() {
     api.get("/listings/?limit=4&offset=0").then((r) => setListings(r.data.results ?? [])).catch(() => setListings([]));
     api.get("/services/?limit=4&offset=0").then((r) => setServices(r.data.results ?? [])).catch(() => setServices([]));
     api.get("/requests/?limit=4&offset=0").then((r) => setRequests(r.data.results ?? [])).catch(() => setRequests([]));
+    api.get("/jobs/?limit=4&offset=0").then((r) => setServiceReqs(r.data.results ?? [])).catch(() => setServiceReqs([]));
   }, []);
 
   const handleSearch = () => {
@@ -81,6 +91,18 @@ export default function HomeClient() {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-14">
+        {/* ─── الخريطة ────────────────────────────────────────────────────── */}
+        <Link href="/listings?view=map" className="block">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-l from-primary-800 via-primary to-primary-600 text-white p-6 sm:p-7 flex items-center gap-4 card-shadow hover:card-shadow-hover transition-all">
+            <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center flex-shrink-0"><MapPoint weight="Bold" className="h-7 w-7" /></div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg sm:text-xl font-bold">تصفّح العقارات على الخريطة</h2>
+              <p className="text-primary-100 text-sm mt-0.5">اكتشف الإعلانات حسب موقعها الجغرافي</p>
+            </div>
+            <AltArrowLeft className="h-5 w-5 flex-shrink-0" />
+          </div>
+        </Link>
+
         {/* ─── الإعلانات ──────────────────────────────────────────────────── */}
         <HomeSection title="الإعلانات" subtitle="أحدث العقارات للبيع والإيجار" href="/listings">
           <CardGrid loading={listings === null} empty={listings?.length === 0}
@@ -97,11 +119,19 @@ export default function HomeClient() {
           </CardGrid>
         </HomeSection>
 
-        {/* ─── الطلبات ────────────────────────────────────────────────────── */}
-        <HomeSection title="الطلبات" subtitle="عملاء يبحثون عن عقارات — قدّم عرضك" href="/requests">
+        {/* ─── طلبات عقارية (demands) ─────────────────────────────────────── */}
+        <HomeSection title="طلبات عقارية" subtitle="عملاء يبحثون عن عقارات — قدّم عرضك" href="/requests">
           <CardGrid loading={requests === null} empty={requests?.length === 0}
-            emptyIcon={<ClipboardList className="h-10 w-10" />} emptyText="لا توجد طلبات بعد">
+            emptyIcon={<ClipboardList className="h-10 w-10" />} emptyText="لا توجد طلبات عقارية بعد">
             {requests?.slice(0, 4).map((r) => <RequestCard key={r.id} request={r} />)}
+          </CardGrid>
+        </HomeSection>
+
+        {/* ─── طلبات خدمات (jobs) ─────────────────────────────────────────── */}
+        <HomeSection title="طلبات خدمات" subtitle="عملاء يبحثون عن حِرفيين ومزوّدي خدمات" href="/jobs">
+          <CardGrid loading={serviceReqs === null} empty={serviceReqs?.length === 0}
+            emptyIcon={<ClipboardList className="h-10 w-10" />} emptyText="لا توجد طلبات خدمات بعد">
+            {serviceReqs?.slice(0, 4).map((j) => <JobCard key={j.id} job={j} />)}
           </CardGrid>
         </HomeSection>
       </div>
@@ -253,6 +283,32 @@ function RequestCard({ request }: { request: ClientRequest }) {
         </div>
         {budget && <p className="text-primary font-bold text-sm flex items-center gap-1 mb-2"><Wallet className="h-4 w-4" /> {budget}</p>}
         <span className="mt-auto text-xs text-gray-400">{request.offers_count} عرض مُقدَّم</span>
+      </div>
+    </Link>
+  );
+}
+
+// ─── بطاقة طلب خدمة (jobs) ───────────────────────────────────────────────
+function JobCard({ job }: { job: ServiceRequest }) {
+  const cat = categoryOf(job.category);
+  const Icon = getServiceIcon(cat.icon);
+  const budget =
+    job.budget_min && job.budget_max ? `${formatPrice(job.budget_min, job.currency)} — ${formatPrice(job.budget_max, job.currency)}`
+    : job.budget_max ? `حتى ${formatPrice(job.budget_max, job.currency)}`
+    : job.budget_min ? `من ${formatPrice(job.budget_min, job.currency)}` : null;
+  return (
+    <Link href={`/jobs/${job.id}`}>
+      <div className="bg-white rounded-2xl card-shadow hover:card-shadow-hover transition-all duration-200 p-4 cursor-pointer h-full flex flex-col">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0"><Icon className="h-5 w-5" /></div>
+          <div className="min-w-0">
+            <h3 className="font-bold text-gray-900 text-sm line-clamp-1">{job.title}</h3>
+            <p className="text-gray-400 text-xs line-clamp-1">{cat.name}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 text-gray-400 text-xs mb-2"><MapPoint className="h-3.5 w-3.5" /> {job.city_name}</div>
+        {budget && <p className="text-primary font-bold text-sm flex items-center gap-1 mb-2"><Wallet className="h-4 w-4" /> {budget}</p>}
+        <span className="mt-auto text-xs text-gray-400">{job.offers_count} عرض مُقدَّم</span>
       </div>
     </Link>
   );
