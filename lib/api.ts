@@ -18,17 +18,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ─── Response Interceptor: عند 401 — مسح التوكن وإعادة التوجيه للدخول ──────
-// توكنات knox طويلة الأمد ولا تُجدَّد — لا يوجد refresh ولا إعادة محاولة.
+// ─── Response Interceptor: عند 401 — مسح التوكن وإعلام التطبيق (بلا تحويل) ──
+// لا توجد صفحة دخول (حُذفت) — المصادقة عبر نافذة منبثقة في المكان. لذلك لا نُحوّل
+// إطلاقاً (كان يُحوّل لـ/auth/login المحذوفة = 404). نُطلق الحدث فقط إن كان هناك
+// توكن فعلاً (جلسة منتهية)، لا لطلبات الزائر (بلا توكن) حتى لا نُزعجه بلا داعٍ.
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401 && typeof window !== "undefined") {
+    if (
+      error.response?.status === 401 &&
+      typeof window !== "undefined" &&
+      Cookies.get("token")
+    ) {
       Cookies.remove("token");
-      // تفادي حلقة إعادة التوجيه إن كنّا أصلاً على صفحة الدخول.
-      if (!window.location.pathname.startsWith("/auth/login")) {
-        window.location.href = "/auth/login";
-      }
+      window.dispatchEvent(new CustomEvent("maskani:auth-expired"));
     }
     return Promise.reject(error);
   }

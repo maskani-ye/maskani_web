@@ -40,6 +40,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUser();
   }, [refreshUser]);
 
+  // انتهاء الجلسة (401 من معترض api.ts) — نمسح المستخدم في المكان بلا تحويل صفحة.
+  // لا توجد صفحة دخول؛ الأفعال المحمية تفتح نافذة المصادقة عبر requireAuth.
+  useEffect(() => {
+    const onExpired = () => setUser(null);
+    window.addEventListener("maskani:auth-expired", onExpired);
+    return () => window.removeEventListener("maskani:auth-expired", onExpired);
+  }, []);
+
   // تسجيل جهاز الويب للإشعارات عند توفّر مستخدم مُصادَق — يغطّي نجاح الدخول
   // وإقلاع جلسة محفوظة (نمط فلاتر: بعد المصادقة + عند الإقلاع). مرّة لكل مستخدم.
   const pushRegisteredFor = useRef<number | null>(null);
