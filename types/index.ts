@@ -18,6 +18,8 @@ export interface User {
   listings_count: number;
   followers_count: number;
   following_count: number;
+  // true حين لا هاتف — العميل يُرغّب بالإكمال بلا إجبار
+  profile_incomplete?: boolean;
   created_at: string;
 }
 

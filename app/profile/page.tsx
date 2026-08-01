@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import type { Listing, PaginatedResponse } from "@/types";
+import type { Listing, PaginatedResponse, City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
@@ -38,7 +38,8 @@ export default function ProfilePage() {
   const { user, logout, refreshUser, loading: authLoading } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState<"info" | "listings">("info");
-  const [form, setForm] = useState({ full_name: "", bio: "" });
+  const [form, setForm] = useState({ full_name: "", bio: "", phone: "", city: "" });
+  const [cities, setCities] = useState<City[]>([]);
   const [myListings, setMyListings] = useState<Listing[]>([]);
   const [listingsTotal, setListingsTotal] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -55,8 +56,20 @@ export default function ProfilePage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user) setForm({ full_name: user.full_name, bio: user.bio ?? "" });
+    if (user) setForm({
+      full_name: user.full_name,
+      bio: user.bio ?? "",
+      phone: user.phone ?? "",
+      city: user.city != null ? String(user.city) : "",
+    });
   }, [user]);
+
+  // قائمة المدن لإكمال/تعديل المدينة
+  useEffect(() => {
+    api.get<{ results?: City[] }>("/cities/", { params: { offset: 0, limit: 100 } })
+      .then((r) => setCities(r.data.results ?? []))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (tab === "listings" && user) fetchMyListings();
@@ -100,7 +113,14 @@ export default function ProfilePage() {
   const saveProfile = async () => {
     setSaving(true);
     try {
-      await api.patch("/auth/me/", form);
+      const payload: Record<string, unknown> = {
+        full_name: form.full_name,
+        bio: form.bio,
+      };
+      // الهاتف/المدينة اختياريان — نرسلهما فقط عند وجود قيمة (إكمال بلا إجبار).
+      if (form.phone.trim()) payload.phone = form.phone.trim();
+      if (form.city) payload.city = Number(form.city);
+      await api.patch("/auth/me/", payload);
       await refreshUser();
       toast.success("تم تحديث الملف الشخصي");
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -253,6 +273,31 @@ export default function ProfilePage() {
                 value={form.full_name}
                 onChange={(e) => setForm((p) => ({ ...p, full_name: e.target.value }))}
               />
+              {user.profile_incomplete && (
+                <p className="text-xs text-primary bg-primary/5 rounded-lg px-3 py-2">
+                  أكمل رقم هاتفك ومدينتك ليتمكّن أصحاب العقارات من التواصل معك (اختياري).
+                </p>
+              )}
+              <Input
+                label="رقم الهاتف"
+                value={form.phone}
+                dir="ltr"
+                placeholder="+9677xxxxxxxx"
+                onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">المدينة</label>
+                <select
+                  value={form.city}
+                  onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white"
+                >
+                  <option value="">بدون مدينة</option>
+                  {cities.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name_ar}</option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">نبذة تعريفية</label>
                 <textarea

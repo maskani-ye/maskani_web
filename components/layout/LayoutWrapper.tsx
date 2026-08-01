@@ -5,6 +5,7 @@ import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
 import { CityFirstVisitModal } from "@/components/city/CityFirstVisitModal";
+import { ProfileCompletionBanner } from "@/components/account/ProfileCompletionBanner";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,6 +21,8 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       {/* أول زيارة بلا مدينة → مودال اختيار المدينة (للزائر أيضاً، مرّة واحدة) */}
       <CityFirstVisitModal />
       <Navbar />
+      {/* ترغيب لطيف (لا إجبار) لإكمال الهاتف/المدينة للمستخدم المسجّل غير المكتمل */}
+      <ProfileCompletionBanner />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>
