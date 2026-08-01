@@ -109,20 +109,11 @@ export function Navbar() {
                 aria-expanded={cityOpen}
               >
                 <MapPoint className="h-4 w-4 text-primary" />
-                <span className="max-w-28 truncate">{selectedCityName || "كل المدن"}</span>
+                <span className="max-w-28 truncate">{selectedCityName || "اختر مدينة"}</span>
                 <AltArrowDown className="h-4 w-4 text-gray-400" />
               </button>
               {cityOpen && (
                 <div className="absolute left-0 mt-2 w-52 max-h-80 overflow-y-auto bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
-                  <button
-                    onClick={() => { setCity("", ""); setCityOpen(false); }}
-                    className={cn(
-                      "flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm w-full text-right",
-                      !cityId ? "text-primary font-bold" : "text-gray-700"
-                    )}
-                  >
-                    كل المدن
-                  </button>
                   {cities.map((c) => (
                     <button
                       key={c.id}
@@ -229,7 +220,7 @@ export function Navbar() {
                 }}
                 className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 focus:border-primary focus:outline-none"
               >
-                <option value="">كل المدن</option>
+                <option value="" disabled hidden>اختر مدينة</option>
                 {cities.map((c) => (
                   <option key={c.id} value={String(c.id)}>{c.name_ar}</option>
                 ))}
