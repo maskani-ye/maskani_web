@@ -2,16 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { formatPrice, offerTypeLabels } from "@/lib/utils";
-import type { Listing, City, ServiceProvider, ClientRequest } from "@/types";
+import type { Listing, ServiceProvider, ClientRequest } from "@/types";
 import { Button } from "@/components/ui/Button";
-import { Select } from "@/components/ui/Select";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { getServiceIcon } from "@/lib/serviceIcons";
 import {
-  Magnifer, Buildings2, ShieldWarning, AltArrowLeft, MapPoint, Bed, Ruler, Eye,
+  Buildings2, ShieldWarning, AltArrowLeft, MapPoint, Bed, Ruler, Eye,
   Star, UsersGroupRounded, Wallet, ClipboardList,
 } from "@solar-icons/react";
 import { motion } from "framer-motion";
@@ -29,29 +27,17 @@ interface ServiceRequest {
 }
 
 export default function HomeClient() {
-  const router = useRouter();
-  const [cities, setCities] = useState<City[]>([]);
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [services, setServices] = useState<ServiceProvider[] | null>(null);
   const [requests, setRequests] = useState<ClientRequest[] | null>(null);
   const [serviceReqs, setServiceReqs] = useState<ServiceRequest[] | null>(null);
-  const [filters, setFilters] = useState({ city: "", property_type: "", offer_type: "" });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
     api.get("/listings/?limit=4&offset=0").then((r) => setListings(r.data.results ?? [])).catch(() => setListings([]));
     api.get("/services/?limit=4&offset=0").then((r) => setServices(r.data.results ?? [])).catch(() => setServices([]));
     api.get("/requests/?limit=4&offset=0").then((r) => setRequests(r.data.results ?? [])).catch(() => setRequests([]));
     api.get("/jobs/?limit=4&offset=0").then((r) => setServiceReqs(r.data.results ?? [])).catch(() => setServiceReqs([]));
   }, []);
-
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (filters.city) params.set("city", filters.city);
-    if (filters.property_type) params.set("property_type", filters.property_type);
-    if (filters.offer_type) params.set("offer_type", filters.offer_type);
-    router.push(`/listings?${params.toString()}`);
-  };
 
   return (
     <div>
@@ -72,20 +58,6 @@ export default function HomeClient() {
             <p className="text-primary-100 text-base md:text-xl max-w-2xl mx-auto">
               منصة عقارية اجتماعية — إعلانات، خدمات، طلبات، ومجتمع لمكافحة الاحتيال
             </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-white rounded-3xl p-4 sm:p-5 shadow-2xl max-w-4xl mx-auto"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-              <Select options={cities.map((c) => ({ value: c.id, label: c.name_ar }))} value={filters.city}
-                onChange={(e) => setFilters((p) => ({ ...p, city: e.target.value }))} placeholder="المدينة" />
-              <Select options={Object.entries(PROPERTY_TYPE_LABELS).map(([value, label]) => ({ value, label }))}
-                value={filters.property_type} onChange={(e) => setFilters((p) => ({ ...p, property_type: e.target.value }))} placeholder="نوع العقار" />
-              <Select options={Object.entries(offerTypeLabels).map(([value, label]) => ({ value, label }))}
-                value={filters.offer_type} onChange={(e) => setFilters((p) => ({ ...p, offer_type: e.target.value }))} placeholder="نوع العرض" />
-              <Button onClick={handleSearch} size="lg" className="w-full"><Magnifer className="h-4 w-4" /> بحث</Button>
-            </div>
           </motion.div>
         </div>
       </section>
