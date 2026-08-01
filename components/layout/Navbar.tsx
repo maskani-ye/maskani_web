@@ -235,7 +235,8 @@ export function Navbar() {
                 ))}
               </select>
             </div>
-            {navLinks.map((link) => {
+            {/* التنقّل الأساسي على الجوّال في الشريط السفلي — هنا نُبقي فقط ما ليس فيه */}
+            {navLinks.filter((l) => l.href === "/reports").map((link) => {
               const Icon = link.icon;
               return (
                 <Link

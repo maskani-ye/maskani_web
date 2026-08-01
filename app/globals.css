@@ -23,6 +23,8 @@ body {
   background-color: var(--cream);
   color: #1a1a1a;
   min-height: 100vh;
+  /* حماية من التمرير الأفقي على الجوّال (90% من المستخدمين) */
+  overflow-x: hidden;
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────────── */
