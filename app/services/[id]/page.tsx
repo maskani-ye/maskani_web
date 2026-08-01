@@ -10,6 +10,7 @@ import { serviceCategoryLabels, formatRelativeTime } from "@/lib/utils";
 import type { ServiceProvider, ServiceReview } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { StarRating } from "@/components/ui/StarRating";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
@@ -116,6 +117,7 @@ export default function ServiceDetailPage() {
         <Link href="/services" className="hover:text-primary">الخدمات</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
         <span className="text-gray-700 font-medium line-clamp-1">{provider.title}</span>
+        <ShareButton title={provider.title} text={`خدمة على مسكني: ${provider.title}`} className="mr-auto w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center hover:bg-primary/10 transition-colors" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

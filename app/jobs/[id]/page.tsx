@@ -16,6 +16,7 @@ import {
   Phone, AltArrowRight, ChatRound, ChatRoundDots,
 } from "@solar-icons/react";
 import { toast } from "sonner";
+import { ShareButton } from "@/components/ui/ShareButton";
 
 const asIcon = (I: ComponentType<{ className?: string }>) => I;
 
@@ -151,6 +152,7 @@ export default function JobDetailPage() {
         <Link href="/jobs" className="hover:text-primary">طلبات الخدمات</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
         <span className="text-gray-700 font-medium">تفاصيل الطلب</span>
+        <ShareButton title={request.title} text={`طلب خدمة على مسكني: ${request.title}`} className="mr-auto w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center hover:bg-primary/10 transition-colors" />
       </div>
 
       <div className="bg-white rounded-2xl card-shadow p-6">
