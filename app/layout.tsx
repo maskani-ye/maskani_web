@@ -13,8 +13,28 @@ export const metadata: Metadata = {
     template: "%s | مسكني",
   },
   description: "منصة عقارية اجتماعية تربط بين صاحب العقار والعميل — بيع، إيجار، خدمات، ومجتمع لمكافحة الاحتيال العقاري",
-  keywords: ["عقارات", "بيع", "إيجار", "شقق", "فلل", "أراضي", "مسكني"],
+  keywords: [
+    "عقارات", "عقارات اليمن", "بيع", "إيجار", "شقق للإيجار", "شقق للبيع",
+    "فلل", "أراضي", "محلات تجارية", "خدمات عقارية", "مقاول", "سبّاك", "كهربائي",
+    "طلبات عقارية", "بلاغات احتيال عقاري", "مسكني", "maskani",
+  ],
   authors: [{ name: "مسكني" }],
+  applicationName: "مسكني",
+  alternates: { canonical: "/" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
   openGraph: {
     title: "مسكني — المنصة العقارية الاجتماعية",
     description: "ابحث عن عقارك المثالي",
@@ -43,6 +63,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-arabic antialiased bg-cream min-h-screen">
+        {/* بيانات منظّمة للموقع (Organization + WebSite مع مربّع بحث) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                name: "مسكني",
+                url: "https://maskani.homes",
+                logo: "https://maskani.homes/icon.png",
+                description: "منصة عقارية اجتماعية في اليمن — بيع، إيجار، خدمات، ومكافحة الاحتيال العقاري",
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                name: "مسكني",
+                url: "https://maskani.homes",
+                inLanguage: "ar",
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: { "@type": "EntryPoint", urlTemplate: "https://maskani.homes/listings?search={query}" },
+                  "query-input": "required name=query",
+                },
+              },
+            ]),
+          }}
+        />
         <AuthProvider>
           <AuthGateProvider>
             <CityProvider>
