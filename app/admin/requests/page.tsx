@@ -163,7 +163,7 @@ export default function AdminRequestsPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <ChatRound className="h-6 w-6 text-primary" />
-            طلبات العملاء
+            طلبات عقارية
           </h1>
           <p className="text-sm text-gray-500 mt-1">{total.toLocaleString("ar-YE")} طلب إجمالاً</p>
         </div>

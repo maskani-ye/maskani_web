@@ -187,7 +187,7 @@ export default function AdminDashboardPage() {
       trend: { value: `+${stats.new_fraud_7d}`, direction: "up" as const }, sub: "هذا الأسبوع" },
     { label: "قيد المراجعة",      value: stats.pending_fraud,  icon: Eye,
       sub: `${stats.verified_fraud} موثّق • ${stats.rejected_fraud} مرفوض` },
-    { label: "طلبات العملاء",     value: stats.requests_count, icon: PenNewSquare },
+    { label: "طلبات عقارية",     value: stats.requests_count, icon: PenNewSquare },
     { label: "مزودو الخدمة",      value: stats.services_count, icon: GraphNewUp },
   ];
 

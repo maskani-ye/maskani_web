@@ -19,7 +19,7 @@ const NAV = [
   { href: "/admin/verification",       label: "طلبات التوثيق",   icon: ShieldCheck },
   { href: "/admin/listings",           label: "الإعلانات",       icon: Buildings2 },
   { href: "/admin/properties",         label: "أنواع العقارات",  icon: MapPoint },
-  { href: "/admin/requests",           label: "طلبات العملاء",   icon: ChatRound },
+  { href: "/admin/requests",           label: "طلبات عقارية",   icon: ChatRound },
   { href: "/admin/conversations",      label: "المحادثات",       icon: ChatRoundDots },
   { href: "/admin/broadcast",          label: "الإشعارات",       icon: Bell },
   { href: "/admin/reports",            label: "البلاغات",        icon: ShieldWarning },

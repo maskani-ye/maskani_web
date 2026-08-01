@@ -19,15 +19,23 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: "$",
 };
 
-export function formatPrice(price: string | number, currency: string): string {
+export function formatPrice(price: string | number | null | undefined, currency?: string | null): string {
   const num = typeof price === "string" ? parseFloat(price) : price;
+  if (num == null || isNaN(num)) return "—";
+  // عملة غير صالحة/فارغة → افتراضي YER (تفادي: "Currency code is required with currency style").
+  const cur = (currency || "YER").toUpperCase();
   const localeMap: Record<string, string> = { SAR: "ar-SA", YER: "ar-YE", USD: "en-US" };
-  const locale = localeMap[currency] ?? "ar-SA";
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currency,
-    maximumFractionDigits: 0,
-  }).format(num);
+  const locale = localeMap[cur] ?? "ar-SA";
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: cur,
+      maximumFractionDigits: 0,
+    }).format(num);
+  } catch {
+    // رمز عملة غير معياري (ISO) → صيغة رقمية بسيطة + الرمز.
+    return `${num.toLocaleString("ar")} ${CURRENCY_SYMBOLS[cur] ?? cur}`;
+  }
 }
 
 export function formatRelativeTime(date: string): string {
