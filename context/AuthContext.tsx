@@ -10,22 +10,13 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   loginWithGoogle: (idToken: string) => Promise<GoogleAuthResult>;
-  completeGoogle: (data: GoogleCompleteData) => Promise<GoogleAuthResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
-interface GoogleCompleteData {
-  idToken: string;
-  phone: string;
-  city?: number;
-  full_name?: string;
-}
-
-// نتيجة تدفق جوجل — إما دخول ناجح، أو حساب جديد يحتاج استكمال بياناته
-export type GoogleAuthResult =
-  | { status: "success"; user: User }
-  | { status: "needs_completion"; email: string; full_name: string };
+// الباك يُصدر توكناً دائماً عند الدخول بجوجل (ينشئ الحساب فوراً بلا هاتف) —
+// لا حالة needs_completion ولا شاشة إكمال؛ الإكمال اختياري لاحقاً من الملف.
+export type GoogleAuthResult = { status: "success"; user: User };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -71,23 +62,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithGoogle = async (idToken: string): Promise<GoogleAuthResult> => {
     const { data } = await api.post("/auth/google/", { id_token: idToken });
-    if (data?.needs_completion) {
-      return {
-        status: "needs_completion",
-        email: data.email ?? "",
-        full_name: data.full_name ?? "",
-      };
-    }
-    return finalizeAuth(data);
-  };
-
-  const completeGoogle = async (form: GoogleCompleteData): Promise<GoogleAuthResult> => {
-    const { data } = await api.post("/auth/google/complete/", {
-      id_token: form.idToken,
-      phone: form.phone,
-      ...(form.city != null ? { city: form.city } : {}),
-      ...(form.full_name ? { full_name: form.full_name } : {}),
-    });
     return finalizeAuth(data);
   };
 
@@ -102,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, loginWithGoogle, completeGoogle, logout, refreshUser }}
+      value={{ user, loading, loginWithGoogle, logout, refreshUser }}
     >
       {children}
     </AuthContext.Provider>

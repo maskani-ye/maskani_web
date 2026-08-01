@@ -54,7 +54,7 @@ export default function AdminPropertyTypesPage() {
 
   // Guard
   useEffect(() => {
-    if (!authLoading && (!user || user.role !== "admin")) router.push("/auth/login");
+    if (!authLoading && (!user || user.role !== "admin")) router.push("/");
   }, [user, authLoading, router]);
 
   const fetchTypes = useCallback(async (off = 0) => {

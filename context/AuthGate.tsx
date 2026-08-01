@@ -1,7 +1,7 @@
 "use client";
 
 // ─── AuthGate ────────────────────────────────────────────────────────────────
-// بوابة مصادقة «زائر-أولاً» مطابقة للتطبيق: بدل التوجيه إلى صفحة /auth/login،
+// بوابة مصادقة «زائر-أولاً» مطابقة للتطبيق: بدل فتح صفحة دخول،
 // تُعرض نافذة مصادقة (Google) منبثقة عند طلب فعل/صفحة محمية. الزائر يتصفّح بحرّية،
 // وتظهر النافذة فقط عند الحاجة. requireAuth(onSuccess?, onCancel?) تُعيد true إن
 // كان مسجّلاً (وتشغّل onSuccess)، وإلا تفتح النافذة وتُعيد false.
@@ -9,8 +9,6 @@ import React, { createContext, useCallback, useContext, useRef, useState } from 
 import { useAuth } from "@/context/AuthContext";
 import { Dialog } from "@/components/ui/Dialog";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { PENDING_GOOGLE_KEY } from "@/components/auth/GoogleOneTap";
-import { useRouter } from "next/navigation";
 import { HomeSmile } from "@solar-icons/react";
 import { toast } from "sonner";
 
@@ -23,7 +21,6 @@ const AuthGateContext = createContext<AuthGateType | null>(null);
 
 export function AuthGateProvider({ children }: { children: React.ReactNode }) {
   const { user, loginWithGoogle } = useAuth();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const pending = useRef<{ onSuccess?: () => void; onCancel?: () => void }>({});
@@ -52,21 +49,7 @@ export function AuthGateProvider({ children }: { children: React.ReactNode }) {
   const handleCredential = async (idToken: string) => {
     setBusy(true);
     try {
-      const result = await loginWithGoogle(idToken);
-      if (result.status === "needs_completion") {
-        // احتياط (لا يحدث مع الباك الحالي): مرّر البيانات لصفحة الإكمال.
-        try {
-          sessionStorage.setItem(
-            PENDING_GOOGLE_KEY,
-            JSON.stringify({ id_token: idToken, email: result.email, full_name: result.full_name })
-          );
-        } catch {
-          /* تجاهل */
-        }
-        setOpen(false);
-        router.push("/auth/login");
-        return;
-      }
+      await loginWithGoogle(idToken);
       toast.success("تم تسجيل الدخول");
       const cb = pending.current.onSuccess;
       pending.current = {};

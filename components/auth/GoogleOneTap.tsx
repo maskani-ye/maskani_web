@@ -58,20 +58,9 @@ export function GoogleOneTap() {
           callback: async (response) => {
             if (!response?.credential) return;
             try {
-              const result = await loginWithGoogle(response.credential);
-              if (result.status === "success") {
-                window.location.reload();
-              } else {
-                sessionStorage.setItem(
-                  PENDING_GOOGLE_KEY,
-                  JSON.stringify({
-                    idToken: response.credential,
-                    email: result.email,
-                    full_name: result.full_name,
-                  }),
-                );
-                router.push("/auth/login");
-              }
+              // الباك يُصدر توكناً دائماً (لا needs_completion) — ندخل ونحدّث.
+              await loginWithGoogle(response.credential);
+              window.location.reload();
             } catch {
               /* تجاهل — يبقى الزائر متصفّحاً */
             }

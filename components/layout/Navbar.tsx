@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
 import {
   Home2, Magnifer, Buildings2, ShieldWarning, PenNewSquare,
@@ -24,6 +25,7 @@ const navLinks = [
 
 export function Navbar() {
   const { user, logout } = useAuth();
+  const { requireAuth } = useAuthGate();
   const { cityId, cityName, setCity } = useCity();
   const router = useRouter();
   const pathname = usePathname();
@@ -194,9 +196,7 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link href="/auth/login">
-                  <Button size="sm">دخول</Button>
-                </Link>
+                <Button size="sm" onClick={() => requireAuth()}>دخول</Button>
               </>
             )}
           </div>
@@ -251,9 +251,7 @@ export function Navbar() {
             })}
             {!user ? (
               <div className="flex gap-2 pt-2 px-4">
-                <Link href="/auth/login" className="flex-1">
-                  <Button fullWidth size="sm">دخول</Button>
-                </Link>
+                <Button fullWidth size="sm" onClick={() => { setMobileOpen(false); requireAuth(); }}>دخول</Button>
               </div>
             ) : (
               <div className="pt-2 px-4 space-y-2">

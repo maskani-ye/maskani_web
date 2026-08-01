@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useAuthGate } from "@/context/AuthGate";
 import { Drawer } from "@/components/ui/Drawer";
 import {
   GraphNewUp, UsersGroupRounded, ShieldWarning, MapPoint,
@@ -34,12 +35,16 @@ function isActive(href: string, pathname: string) {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
+  const { requireAuth } = useAuthGate();
   const router   = useRouter();
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== "admin")) router.push("/auth/login");
+    if (loading) return;
+    // زائر → نافذة الدخول المنبثقة (لا شاشة دخول)؛ مستخدم غير مشرف → الرئيسية.
+    if (!user) { requireAuth(undefined, () => router.push("/")); return; }
+    if (user.role !== "admin") router.push("/");
   }, [user, loading, router]);
 
   // أغلق الدرج عند التنقّل بين الصفحات
@@ -54,7 +59,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const handleLogout = async () => {
     await logout();
-    router.push("/auth/login");
+    router.push("/");
   };
 
   // ─── محتوى الشريط الجانبي (يُعاد استخدامه في الدرج على الجوال) ───────────────
