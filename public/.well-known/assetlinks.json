@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "ar.dev.maskani",
+      "sha256_cert_fingerprints": [
+        "C6:F7:AB:FF:9D:49:DA:0A:90:1A:12:FB:47:28:AB:F1:33:CE:42:54:3E:57:FE:D5:76:94:90:08:CF:95:28:59"
+      ]
+    }
+  }
+]
