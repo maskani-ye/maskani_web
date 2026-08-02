@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { formatRelativeTime } from "@/lib/utils";
 import type {
   AdminConversation, AdminConversationMessage, ChatParticipant, PaginatedResponse,
@@ -60,7 +61,7 @@ export default function AdminConversationsPage() {
       const params: Record<string, string> = { limit: String(LIMIT), offset: String(off) };
       if (search) params.search = search;
       const res = await api.get<PaginatedResponse<AdminConversation>>(
-        "/admin/conversations/", { params }
+        ep.admin.conversations, { params }
       );
       setConversations(res.data.results);
       setTotal(res.data.count);
@@ -79,7 +80,7 @@ export default function AdminConversationsPage() {
     setLoadingMsgs(true);
     try {
       const res = await api.get<PaginatedResponse<AdminConversationMessage>>(
-        `/admin/conversations/${id}/messages/`,
+        ep.admin.conversationMessages(id),
         { params: { limit: String(MSG_LIMIT), offset: String(off) } }
       );
       setMsgTotal(res.data.count);
@@ -105,7 +106,7 @@ export default function AdminConversationsPage() {
     if (!deleteConvTarget) return;
     setDeletingConv(true);
     try {
-      await api.delete(`/admin/chat/conversations/${deleteConvTarget.id}/`);
+      await api.delete(ep.admin.conversation(deleteConvTarget.id));
       toast.success("تم حذف المحادثة");
       setConversations((prev) => prev.filter((c) => c.id !== deleteConvTarget.id));
       setTotal((t) => Math.max(0, t - 1));
@@ -123,7 +124,7 @@ export default function AdminConversationsPage() {
     if (!deleteMsgTarget || !selected) return;
     setDeletingMsg(true);
     try {
-      await api.delete(`/admin/chat/conversations/${selected.id}/messages/${deleteMsgTarget.id}/`);
+      await api.delete(ep.admin.conversationMessage(selected.id, deleteMsgTarget.id));
       toast.success("تم حذف الرسالة");
       setMessages((prev) => prev.filter((m) => m.id !== deleteMsgTarget.id));
       setMsgTotal((t) => Math.max(0, t - 1));

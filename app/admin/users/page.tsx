@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { User, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -58,7 +59,7 @@ export default function AdminUsersPage() {
       if (search)      params.search    = search;
       if (roleFilter)  params.role      = roleFilter;
       if (activeFilter) params.is_active = activeFilter;
-      const res = await api.get<PaginatedResponse<User>>("/admin/users/", { params });
+      const res = await api.get<PaginatedResponse<User>>(ep.admin.users, { params });
       setUsers(res.data.results);
       setTotal(res.data.count);
       setOffset(off);
@@ -84,7 +85,7 @@ export default function AdminUsersPage() {
 
   const toggleServiceProvider = async (u: User) => {
     try {
-      const res = await api.patch<User>(`/admin/accounts/users/${u.id}/`, { is_service_provider: !u.is_service_provider });
+      const res = await api.patch<User>(ep.admin.user(u.id), { is_service_provider: !u.is_service_provider });
       toast.success(res.data.is_service_provider ? "تم الترقية لمزود خدمة" : "تم إلغاء ترقية مزود الخدمة");
       setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
       if (selected?.id === res.data.id) setSelected(res.data);
@@ -93,7 +94,7 @@ export default function AdminUsersPage() {
 
   const toggleVerified = async (u: User) => {
     try {
-      const res = await api.patch<User>(`/admin/accounts/users/${u.id}/`, { is_verified: !u.is_verified });
+      const res = await api.patch<User>(ep.admin.user(u.id), { is_verified: !u.is_verified });
       toast.success(res.data.is_verified ? "تم التوثيق" : "تم إلغاء التوثيق");
       setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
       if (selected?.id === res.data.id) setSelected(res.data);
@@ -104,7 +105,7 @@ export default function AdminUsersPage() {
     if (u.role === role) return;
     setSaving(true);
     try {
-      const res = await api.patch<User>(`/admin/accounts/users/${u.id}/`, { role });
+      const res = await api.patch<User>(ep.admin.user(u.id), { role });
       toast.success(res.data.role === "admin" ? "تمت الترقية لمشرف" : "تم التحويل لمستخدم عادي");
       setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
       if (selected?.id === res.data.id) setSelected(res.data);
@@ -114,7 +115,7 @@ export default function AdminUsersPage() {
 
   const toggleActive = async (u: User) => {
     try {
-      const res = await api.patch<User>(`/admin/accounts/users/${u.id}/`, { is_active: !u.is_active });
+      const res = await api.patch<User>(ep.admin.user(u.id), { is_active: !u.is_active });
       toast.success(res.data.is_active ? "تم تفعيل الحساب" : "تم تعليق الحساب");
       setUsers((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));
       if (selected?.id === res.data.id) setSelected(res.data);
@@ -126,7 +127,7 @@ export default function AdminUsersPage() {
     setDeleting(true);
     try {
       // Soft delete: backend returns 200 with the deactivated user body.
-      const res = await api.delete<User>(`/admin/accounts/users/${deleteTarget.id}/`);
+      const res = await api.delete<User>(ep.admin.user(deleteTarget.id));
       const updated = res.data ?? { ...deleteTarget, is_active: false };
       toast.success("تم تعطيل المستخدم");
       setUsers((prev) => prev.map((u) => u.id === deleteTarget.id ? updated : u));
@@ -235,7 +236,7 @@ export default function AdminUsersPage() {
                           <img src={u.avatar} className="w-8 h-8 rounded-full object-cover" alt="" />
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
-                            {u.full_name.charAt(0)}
+                            {(u.full_name ?? "؟").charAt(0)}
                           </div>
                         )}
                         <div>
@@ -298,7 +299,7 @@ export default function AdminUsersPage() {
                 <img src={selected.avatar} className="w-16 h-16 rounded-full object-cover mb-3" alt="" />
               ) : (
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl mb-3">
-                  {selected.full_name.charAt(0)}
+                  {(selected.full_name ?? "؟").charAt(0)}
                 </div>
               )}
               <h2 className="font-bold text-gray-900">{selected.full_name}</h2>

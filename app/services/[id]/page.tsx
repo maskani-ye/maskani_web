@@ -114,6 +114,8 @@ export default function ServiceDetailPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+        <Link href="/" className="hover:text-primary">الرئيسية</Link>
+        <AltArrowRight className="h-3.5 w-3.5" />
         <Link href="/services" className="hover:text-primary">الخدمات</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
         <span className="text-gray-700 font-medium line-clamp-1">{provider.title}</span>

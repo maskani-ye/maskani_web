@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
+import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
 
 interface ServiceCategory { id: number; name_ar: string }
 interface CityItem { id: number; name_ar?: string; name?: string }
@@ -92,7 +93,10 @@ export default function CreateJobPage() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">الوصف *</label>
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <label className="block text-sm font-medium text-gray-700">الوصف *</label>
+            <SuggestDescriptionButton kind="job" title={form.title} fields={{ "المدينة": form.city }} onSuggest={(d) => setForm((f) => ({ ...f, description: d }))} />
+          </div>
           <textarea rows={4} className={`${field} resize-none`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="صف الخدمة التي تحتاجها بالتفصيل..." />
         </div>
         <div>

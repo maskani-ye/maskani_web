@@ -20,6 +20,7 @@ import {
   CheckCircle, CloseCircle, GalleryAdd, Phone, Copy,
 } from "@solar-icons/react";
 import { toast } from "sonner";
+import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
 
 // خريطة الاختيار تُحمَّل ديناميكياً (Leaflet يحتاج window).
 const LocationPickerMap = dynamic(() => import("@/components/map/LocationPickerMap"), {
@@ -359,7 +360,10 @@ function StepBasics({
         </button>
         {detailsOpen && (
           <div className="px-3.5 pb-4 border-t border-gray-100 pt-3">
-            <SectionLabel text="الوصف" />
+            <div className="flex items-center justify-between gap-2">
+              <SectionLabel text="الوصف" />
+              <SuggestDescriptionButton kind="listing" title={form.title} fields={{ "السعر": form.price, "المساحة": form.area, "الغرف": form.rooms }} onSuggest={(d) => setField("description", d)} />
+            </div>
             <textarea
               className={`${inputCls} resize-none`}
               rows={3}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import type { PaginatedResponse, ServiceCategoryRef } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -60,7 +61,7 @@ export default function AdminServicesPage() {
       if (search)       params.search    = search;
       if (catFilter)    params.category  = catFilter;
       if (activeFilter) params.is_active = activeFilter;
-      const res = await api.get<PaginatedResponse<AdminService>>("/admin/services/", { params });
+      const res = await api.get<PaginatedResponse<AdminService>>(ep.admin.services, { params });
       setServices(res.data.results);
       setTotal(res.data.count);
       setOffset(off);
@@ -90,7 +91,7 @@ export default function AdminServicesPage() {
   // ── actions ────────────────────────────────────────────────────────────────
   const toggleActive = async (s: AdminService) => {
     try {
-      const res = await api.patch<AdminService>(`/admin/services/${s.id}/`, { is_active: !s.is_active });
+      const res = await api.patch<AdminService>(ep.admin.service(s.id), { is_active: !s.is_active });
       const updated = res.data;
       setServices((prev) => prev.map((x) => x.id === updated.id ? updated : x));
       if (selected?.id === updated.id) setSelected(updated);
@@ -102,7 +103,7 @@ export default function AdminServicesPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await api.delete(`/admin/services/${deleteTarget.id}/`);
+      await api.delete(ep.admin.service(deleteTarget.id));
       toast.success("تم حذف مزود الخدمة");
       setServices((prev) => prev.filter((x) => x.id !== deleteTarget.id));
       setTotal((t) => t - 1);

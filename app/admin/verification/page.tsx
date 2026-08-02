@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, type ComponentType } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -95,7 +96,7 @@ export default function AdminVerificationPage() {
       const params: Record<string, string | number> = { offset: off, limit: LIMIT };
       if (statusFilter) params.status = statusFilter;
       const res = await api.get<PaginatedResponse<VerificationRequest>>(
-        "/admin/verification-requests/", { params }
+        ep.admin.verificationRequests, { params }
       );
       setItems(res.data.results);
       setTotal(res.data.count);
@@ -128,7 +129,7 @@ export default function AdminVerificationPage() {
     setApproving(true);
     try {
       const res = await api.patch<VerificationRequest>(
-        `/admin/accounts/verification-requests/${approveTarget.id}/`, { status: "approved" }
+        ep.admin.verificationRequest(approveTarget.id), { status: "approved" }
       );
       toast.success("تم توثيق الحساب");
       applyUpdate(res.data);
@@ -142,7 +143,7 @@ export default function AdminVerificationPage() {
     setRejecting(true);
     try {
       const res = await api.patch<VerificationRequest>(
-        `/admin/accounts/verification-requests/${rejectTarget.id}/`,
+        ep.admin.verificationRequest(rejectTarget.id),
         { status: "rejected", review_note: rejectNote.trim() }
       );
       toast.success("تم رفض الطلب");

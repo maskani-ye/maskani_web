@@ -3,6 +3,7 @@
 // لوحة إدارة «طلبات الخدمة» (jobs / ServiceRequest) — مسار admin_v1 حصراً.
 import { useState, useEffect, useCallback } from "react";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -47,7 +48,7 @@ export default function AdminJobsPage() {
       if (search) params.search = search;
       if (activeFilter) params.is_active = activeFilter;
       const res = await api.get<{ count: number; results: AdminServiceRequest[] }>(
-        "/admin/jobs/", { params }
+        ep.admin.jobs, { params }
       );
       setItems(res.data.results);
       setTotal(res.data.count);
@@ -62,7 +63,7 @@ export default function AdminJobsPage() {
 
   const toggleActive = async (r: AdminServiceRequest) => {
     try {
-      const res = await api.patch<AdminServiceRequest>(`/admin/jobs/${r.id}/`, { is_active: !r.is_active });
+      const res = await api.patch<AdminServiceRequest>(ep.admin.job(r.id), { is_active: !r.is_active });
       setItems((prev) => prev.map((x) => (x.id === r.id ? res.data : x)));
       toast.success(res.data.is_active ? "تم تفعيل الطلب" : "تم إيقاف الطلب");
     } catch (err) {
@@ -74,7 +75,7 @@ export default function AdminJobsPage() {
     if (!deleteTarget) return;
     setBusy(true);
     try {
-      await api.delete(`/admin/jobs/${deleteTarget.id}/`);
+      await api.delete(ep.admin.job(deleteTarget.id));
       setItems((prev) => prev.filter((x) => x.id !== deleteTarget.id));
       setDeleteTarget(null);
       toast.success("تم حذف الطلب");

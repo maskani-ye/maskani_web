@@ -89,7 +89,7 @@ const config: Config = {
         border: "#E5E7EB",
       },
       fontFamily: {
-        arabic: ["Cairo", "Tajawal", "sans-serif"],
+        arabic: ["var(--font-cairo)", "Cairo", "Tajawal", "sans-serif"],
       },
       borderRadius: {
         "2xl": "1rem",

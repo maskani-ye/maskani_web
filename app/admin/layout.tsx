@@ -11,11 +11,12 @@ import {
   Buildings2, Settings, Home2, ChatRound, ChatRoundDots, Widget,
   City, Logout2, HamburgerMenu, CloseCircle,
   ShieldCheck, DangerTriangle, Bell,
-  Case,
+  Case, ChartSquare,
 } from "@solar-icons/react";
 
 const NAV = [
   { href: "/admin",                    label: "لوحة التحكم",     icon: GraphNewUp },
+  { href: "/admin/analytics",          label: "التحليلات",       icon: ChartSquare },
   { href: "/admin/users",              label: "المستخدمون",      icon: UsersGroupRounded },
   { href: "/admin/verification",       label: "طلبات التوثيق",   icon: ShieldCheck },
   { href: "/admin/listings",           label: "الإعلانات",       icon: Buildings2 },
@@ -104,7 +105,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="px-4 py-4 border-t border-gray-100 space-y-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0">
-            {user.full_name.charAt(0)}
+            {(user.full_name ?? "؟").charAt(0)}
           </div>
           <div className="min-w-0">
             <p className="text-xs font-semibold text-gray-800 truncate">{user.full_name}</p>

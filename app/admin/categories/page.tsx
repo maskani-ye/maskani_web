@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { ServiceCategoryItem, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -60,7 +61,7 @@ export default function AdminServiceCategoriesPage() {
   const fetchCategories = useCallback(async (off = 0) => {
     setLoading(true);
     try {
-      const res = await api.get<PaginatedResponse<ServiceCategoryItem>>("/admin/service-categories/", {
+      const res = await api.get<PaginatedResponse<ServiceCategoryItem>>(ep.admin.serviceCategories, {
         params: { offset: off, limit: LIMIT },
       });
       setCategories(res.data.results ?? []);
@@ -115,10 +116,10 @@ export default function AdminServiceCategoriesPage() {
     setSaving(true);
     try {
       if (modal.editing) {
-        await api.patch(`/admin/services/categories/${modal.editing.id}/`, payload);
+        await api.patch(ep.admin.serviceCategory(modal.editing.id), payload);
         toast.success("تم تعديل الصنف");
       } else {
-        await api.post("/admin/services/categories/", payload);
+        await api.post(ep.admin.serviceCategories, payload);
         toast.success("تم إضافة الصنف");
       }
       closeModal();
@@ -129,7 +130,7 @@ export default function AdminServiceCategoriesPage() {
 
   const toggleActive = async (cat: ServiceCategoryItem) => {
     try {
-      const res = await api.patch<ServiceCategoryItem>(`/admin/services/categories/${cat.id}/`, { is_active: !cat.is_active });
+      const res = await api.patch<ServiceCategoryItem>(ep.admin.serviceCategory(cat.id), { is_active: !cat.is_active });
       setCategories((prev) => prev.map((c) => (c.id === cat.id ? { ...c, ...res.data } : c)));
       toast.success(cat.is_active ? "تم تعطيل الصنف" : "تم تفعيل الصنف");
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -139,7 +140,7 @@ export default function AdminServiceCategoriesPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await api.delete(`/admin/services/categories/${deleteTarget.id}/`);
+      await api.delete(ep.admin.serviceCategory(deleteTarget.id));
       toast.success("تم حذف الصنف");
       setDeleteTarget(null);
       fetchCategories(offset);

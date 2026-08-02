@@ -16,6 +16,9 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbList, sectionLabel } from "@/lib/seo";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { useRouter } from "next/navigation";
 
 export default function FraudReportsPage() {
@@ -66,6 +69,8 @@ export default function FraudReportsPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <JsonLd data={breadcrumbList([{ name: "الرئيسية", path: "/" }, { name: sectionLabel("reports"), path: "/reports" }])} />
+      <Breadcrumbs items={[{ name: "الرئيسية", href: "/" }, { name: sectionLabel("reports") }]} />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

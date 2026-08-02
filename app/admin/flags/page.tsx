@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, type ComponentType } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -91,7 +92,7 @@ export default function AdminUserReportsPage() {
       const params: Record<string, string | number> = { offset: off, limit: LIMIT };
       if (statusFilter) params.status = statusFilter;
       const res = await api.get<PaginatedResponse<UserReport>>(
-        "/admin/user-reports/", { params }
+        ep.admin.userReports, { params }
       );
       setItems(res.data.results);
       setTotal(res.data.count);
@@ -119,7 +120,7 @@ export default function AdminUserReportsPage() {
     setSaving(true);
     try {
       const res = await api.patch<UserReport>(
-        `/admin/social/user-reports/${action.report.id}/`, { status: action.status }
+        ep.admin.userReport(action.report.id), { status: action.status }
       );
       toast.success(action.status === "reviewed" ? "تم وضع علامة تمت المراجعة" : "تم رفض البلاغ");
       setItems((prev) => prev.map((x) => x.id === res.data.id ? res.data : x));

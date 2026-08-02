@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import { formatRelativeTime, fraudTypeLabels, reportStatusColors, reportStatusLabels } from "@/lib/utils";
 import type { FraudReport, PaginatedResponse } from "@/types";
@@ -79,7 +80,7 @@ export default function AdminReportsPage() {
     if (!selected) return;
     setUpdatingStatus(true);
     try {
-      await api.patch(`/admin/reports/${selected.id}/update/`, {
+      await api.patch(ep.admin.reportUpdate(selected.id), {
         status: newStatus,
         admin_note: adminNote,
       });

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { PropertyTypeItem, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -60,7 +61,7 @@ export default function AdminPropertyTypesPage() {
   const fetchTypes = useCallback(async (off = 0) => {
     setLoading(true);
     try {
-      const res = await api.get<PaginatedResponse<PropertyTypeItem>>("/admin/property-types/", {
+      const res = await api.get<PaginatedResponse<PropertyTypeItem>>(ep.admin.propertyTypes, {
         params: { offset: off, limit: LIMIT },
       });
       setTypes(res.data.results ?? []);
@@ -115,10 +116,10 @@ export default function AdminPropertyTypesPage() {
     setSaving(true);
     try {
       if (modal.editing) {
-        await api.patch(`/admin/listings/property-types/${modal.editing.id}/`, payload);
+        await api.patch(ep.admin.propertyType(modal.editing.id), payload);
         toast.success("تم تعديل نوع العقار");
       } else {
-        await api.post("/admin/listings/property-types/", payload);
+        await api.post(ep.admin.propertyTypes, payload);
         toast.success("تم إضافة نوع العقار");
       }
       closeModal();
@@ -129,7 +130,7 @@ export default function AdminPropertyTypesPage() {
 
   const toggleActive = async (t: PropertyTypeItem) => {
     try {
-      const res = await api.patch<PropertyTypeItem>(`/admin/listings/property-types/${t.id}/`, { is_active: !t.is_active });
+      const res = await api.patch<PropertyTypeItem>(ep.admin.propertyType(t.id), { is_active: !t.is_active });
       setTypes((prev) => prev.map((c) => (c.id === t.id ? { ...c, ...res.data } : c)));
       toast.success(t.is_active ? "تم تعطيل النوع" : "تم تفعيل النوع");
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -139,7 +140,7 @@ export default function AdminPropertyTypesPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await api.delete(`/admin/listings/property-types/${deleteTarget.id}/`);
+      await api.delete(ep.admin.propertyType(deleteTarget.id));
       toast.success("تم حذف نوع العقار");
       setDeleteTarget(null);
       fetchTypes(offset);

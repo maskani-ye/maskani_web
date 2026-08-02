@@ -4,10 +4,13 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
+import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
+import { AddCircle, TrashBinTrash, PenNewSquare, CloseCircle } from "@solar-icons/react";
 
 interface ServiceCategory { id: number; name_ar: string; icon?: string | null }
 interface CityItem { id: number; name_ar?: string; name?: string }
@@ -15,7 +18,7 @@ interface PortfolioItem { id: number; title?: string; image: string }
 interface MyService {
   id: number;
   title: string;
-  category: { id: number } | number | null;
+  category: { id: number; name_ar?: string } | number | null;
   description: string;
   experience_years: number | null;
   contact_phone: string;
@@ -34,51 +37,46 @@ const emptyForm = {
   cities: [] as number[],
 };
 
-export default function MyServicePage() {
+const field = "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
+
+export default function MyServicesPage() {
   const { user, loading: authLoading } = useAuth();
   const { requireAuth } = useAuthGate();
   const router = useRouter();
 
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [cities, setCities] = useState<CityItem[]>([]);
-  const [form, setForm] = useState(emptyForm);
-  const [existing, setExisting] = useState<MyService | null>(null);
-  const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
+  const [services, setServices] = useState<MyService[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<MyService | null>(null);
+  const [form, setForm] = useState(emptyForm);
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    api.get("/services/categories/").then((r) => setCategories(r.data.results ?? r.data ?? [])).catch(() => {});
-    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
+    api.get(ep.serviceCategories).then((r) => setCategories(r.data.results ?? r.data ?? [])).catch(() => {});
+    api.get(ep.cities).then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, []);
 
   const loadMine = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try {
-      const { data } = await api.get<MyService>("/services/my/");
-      setExisting(data);
-      setPortfolio(data.portfolio ?? []);
-      setForm({
-        title: data.title ?? "",
-        category: (typeof data.category === "object" && data.category ? data.category.id : (data.category as number)) ?? "",
-        description: data.description ?? "",
-        experience_years: data.experience_years ?? "",
-        contact_phone: data.contact_phone ?? "",
-        contact_whatsapp: data.contact_whatsapp ?? "",
-        cities: data.cities ?? [],
-      });
+      // /services/my/ يُرجع قائمة (قد تكون متعددة) — بلا ترقيم
+      const { data } = await api.get<MyService[] | { results: MyService[] }>(ep.servicesMine);
+      const list = Array.isArray(data) ? data : data.results ?? [];
+      setServices(list);
+      setShowForm(list.length === 0); // لا خدمات بعد → افتح نموذج الإنشاء
     } catch (err) {
-      // 404 = لا توجد خدمة بعد → وضع الإنشاء
-      if ((err as { response?: { status?: number } })?.response?.status !== 404) {
-        toast.error(getErrorMessage(err));
-      }
-      setExisting(null);
+      toast.error(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -87,6 +85,29 @@ export default function MyServicePage() {
   useEffect(() => {
     if (!authLoading && user) loadMine();
   }, [authLoading, user, loadMine]);
+
+  const openCreate = () => {
+    setEditing(null);
+    setForm(emptyForm);
+    setPortfolio([]);
+    setShowForm(true);
+  };
+
+  const openEdit = (s: MyService) => {
+    setEditing(s);
+    setPortfolio(s.portfolio ?? []);
+    setForm({
+      title: s.title ?? "",
+      category: (typeof s.category === "object" && s.category ? s.category.id : (s.category as number)) ?? "",
+      description: s.description ?? "",
+      experience_years: s.experience_years ?? "",
+      contact_phone: s.contact_phone ?? "",
+      contact_whatsapp: s.contact_whatsapp ?? "",
+      cities: s.cities ?? [],
+    });
+    setShowForm(true);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const toggleCity = (id: number) =>
     setForm((f) => ({
@@ -110,29 +131,42 @@ export default function MyServicePage() {
       cities: form.cities,
     };
     try {
-      if (existing) {
-        await api.patch("/services/my/", body);
-        toast.success("تم تحديث خدمتك");
+      if (editing) {
+        await api.patch(ep.serviceUpdate(editing.id), body);
+        toast.success("تم تحديث الخدمة");
       } else {
-        const { data } = await api.post<MyService>("/services/create/", body);
-        toast.success("تم إنشاء خدمتك");
-        router.push(`/services/${data.id}`);
-        return;
+        await api.post(ep.serviceCreate, body);
+        toast.success("تم إنشاء الخدمة");
       }
+      setShowForm(false);
+      setEditing(null);
       loadMine();
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setSaving(false); }
   };
 
+  const remove = async (s: MyService) => {
+    if (!confirm(`حذف خدمة «${s.title}»؟`)) return;
+    setDeletingId(s.id);
+    try {
+      await api.delete(ep.serviceDelete(s.id));
+      toast.success("تم حذف الخدمة");
+      if (editing?.id === s.id) { setShowForm(false); setEditing(null); }
+      loadMine();
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setDeletingId(null); }
+  };
+
   const addPortfolio = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
-    if (!file) return;
+    if (!file || !editing) return;
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append("image", file);
-      const { data } = await api.post<PortfolioItem>("/services/portfolio/add/", fd, {
+      fd.append("provider", String(editing.id)); // أيّ خدمة (المستخدم قد يملك عدّة)
+      const { data } = await api.post<PortfolioItem>(ep.portfolioAdd, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setPortfolio((p) => [...p, data]);
@@ -143,7 +177,7 @@ export default function MyServicePage() {
 
   const deletePortfolio = async (id: number) => {
     try {
-      await api.delete(`/services/portfolio/${id}/delete/`);
+      await api.delete(ep.portfolioDelete(id));
       setPortfolio((p) => p.filter((x) => x.id !== id));
     } catch (err) { toast.error(getErrorMessage(err)); }
   };
@@ -152,103 +186,127 @@ export default function MyServicePage() {
     return <div className="max-w-2xl mx-auto px-4 py-8"><div className="h-96 bg-gray-100 animate-pulse rounded-2xl" /></div>;
   }
 
-  if (user && !user.is_service_provider && !existing) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-lg font-bold text-gray-900 mb-2">إنشاء خدمة</h1>
-        <p className="text-sm text-gray-500 mb-5">حسابك ليس مزوّد خدمة بعد. تواصل مع الإدارة لتفعيل مزوّد الخدمة.</p>
-        <Link href="/services"><Button variant="outline">العودة للخدمات</Button></Link>
-      </div>
-    );
-  }
-
-  const field = "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
+  const catName = (s: MyService) =>
+    typeof s.category === "object" && s.category ? s.category.name_ar ?? "" :
+    categories.find((c) => c.id === s.category)?.name_ar ?? "";
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-xl font-bold text-gray-900 mb-6">{existing ? "إدارة خدمتي" : "إنشاء خدمة"}</h1>
-
-      <div className="bg-white rounded-2xl card-shadow p-5 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">اسم الخدمة/النشاط *</label>
-          <input className={field} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">التخصص *</label>
-          <select className={`${field} h-11 bg-white`} value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value ? Number(e.target.value) : "" }))}>
-            <option value="">اختر التخصص</option>
-            {categories.map((c) => <option key={c.id} value={c.id}>{c.name_ar}</option>)}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">الوصف</label>
-          <textarea rows={3} className={`${field} resize-none`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="اكتب وصفاً لخدمتك..." />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">سنوات الخبرة</label>
-            <input type="number" min={0} className={field} value={form.experience_years} onChange={(e) => setForm((f) => ({ ...f, experience_years: e.target.value ? Number(e.target.value) : "" }))} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">رقم التواصل *</label>
-            <input className={field} value={form.contact_phone} onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))} placeholder="7XXXXXXXX" />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">واتساب (اختياري)</label>
-          <input className={field} value={form.contact_whatsapp} onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))} placeholder="7XXXXXXXX" />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">مدن الخدمة * (اختر واحدة أو أكثر)</label>
-          <div className="flex flex-wrap gap-2">
-            {cities.map((c) => {
-              const on = form.cities.includes(c.id);
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => toggleCity(c.id)}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${on ? "bg-primary text-white border-primary" : "bg-white text-gray-600 border-gray-200 hover:border-primary/40"}`}
-                >
-                  {c.name_ar ?? c.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <Button onClick={save} loading={saving} fullWidth>{existing ? "حفظ التغييرات" : "إنشاء الخدمة"}</Button>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-bold text-gray-900">خدماتي</h1>
+        {!showForm && (
+          <Button onClick={openCreate}><AddCircle className="h-4 w-4" /> أضف خدمة</Button>
+        )}
       </div>
 
-      {existing && (
-        <div className="bg-white rounded-2xl card-shadow p-5 mt-5">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-bold text-gray-800">معرض الأعمال</h2>
-            <label className="text-sm text-primary font-medium cursor-pointer">
-              {uploading ? "جارٍ الرفع..." : "+ إضافة صورة"}
-              <input type="file" accept="image/*" className="hidden" onChange={addPortfolio} disabled={uploading} />
-            </label>
+      {/* قائمة خدماتي */}
+      {services.length > 0 && (
+        <div className="space-y-3 mb-6">
+          {services.map((s) => (
+            <div key={s.id} className="bg-white rounded-2xl card-shadow p-4 flex items-center gap-3">
+              <Link href={`/services/${s.id}`} className="flex-1 min-w-0">
+                <p className="font-bold text-gray-900 truncate">{s.title}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{catName(s)}</p>
+              </Link>
+              <button onClick={() => openEdit(s)} className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center text-gray-500 hover:text-primary" title="تعديل">
+                <PenNewSquare className="h-4 w-4" />
+              </button>
+              <button onClick={() => remove(s)} disabled={deletingId === s.id} className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-red-50 flex items-center justify-center text-gray-500 hover:text-red-600 disabled:opacity-50" title="حذف">
+                <TrashBinTrash className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* نموذج إنشاء/تعديل */}
+      {showForm && (
+        <div className="bg-white rounded-2xl card-shadow p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold text-gray-800">{editing ? "تعديل الخدمة" : "خدمة جديدة"}</h2>
+            {services.length > 0 && (
+              <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-gray-400 hover:text-gray-600">
+                <CloseCircle className="h-5 w-5" />
+              </button>
+            )}
           </div>
-          {portfolio.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-6">لا توجد صور بعد</p>
-          ) : (
-            <div className="grid grid-cols-3 gap-3">
-              {portfolio.map((p) => (
-                <div key={p.id} className="relative group rounded-xl overflow-hidden bg-gray-100 aspect-square">
-                  <img src={p.image} alt={p.title ?? ""} className="w-full h-full object-cover" />
-                  <button
-                    onClick={() => deletePortfolio(p.id)}
-                    className="absolute top-1 left-1 bg-black/50 text-white rounded-full w-6 h-6 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    ✕
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">اسم الخدمة/النشاط *</label>
+            <input className={field} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">التخصص *</label>
+            <select className={`${field} h-11 bg-white`} value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value ? Number(e.target.value) : "" }))}>
+              <option value="">اختر التخصص</option>
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name_ar}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between gap-2 mb-1.5">
+              <label className="block text-sm font-medium text-gray-700">الوصف</label>
+              <SuggestDescriptionButton kind="service" title={form.title} onSuggest={(d) => setForm((f) => ({ ...f, description: d }))} />
+            </div>
+            <textarea rows={3} className={`${field} resize-none`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="اكتب وصفاً لخدمتك..." />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">سنوات الخبرة</label>
+              <input type="number" min={0} className={field} value={form.experience_years} onChange={(e) => setForm((f) => ({ ...f, experience_years: e.target.value ? Number(e.target.value) : "" }))} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">رقم التواصل *</label>
+              <input className={field} value={form.contact_phone} onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))} placeholder="7XXXXXXXX" />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">واتساب (اختياري)</label>
+            <input className={field} value={form.contact_whatsapp} onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))} placeholder="7XXXXXXXX" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">مدن الخدمة * (اختر واحدة أو أكثر)</label>
+            <div className="flex flex-wrap gap-2">
+              {cities.map((c) => {
+                const on = form.cities.includes(c.id);
+                return (
+                  <button key={c.id} type="button" onClick={() => toggleCity(c.id)}
+                    className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${on ? "bg-primary text-white border-primary" : "bg-white text-gray-600 border-gray-200 hover:border-primary/40"}`}>
+                    {c.name_ar ?? c.name}
                   </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <Button onClick={save} loading={saving} fullWidth>{editing ? "حفظ التغييرات" : "إنشاء الخدمة"}</Button>
+
+          {/* معرض الأعمال — عند التعديل فقط */}
+          {editing && (
+            <div className="border-t border-gray-100 pt-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-gray-800">معرض الأعمال</h3>
+                <label className="text-sm text-primary font-medium cursor-pointer">
+                  {uploading ? "جارٍ الرفع..." : "+ إضافة صورة"}
+                  <input type="file" accept="image/*" className="hidden" onChange={addPortfolio} disabled={uploading} />
+                </label>
+              </div>
+              {portfolio.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-4">لا توجد صور بعد</p>
+              ) : (
+                <div className="grid grid-cols-3 gap-3">
+                  {portfolio.map((p) => (
+                    <div key={p.id} className="relative group rounded-xl overflow-hidden bg-gray-100 aspect-square">
+                      <img src={p.image} alt={p.title ?? ""} className="w-full h-full object-cover" />
+                      <button onClick={() => deletePortfolio(p.id)} className="absolute top-1 left-1 bg-black/50 text-white rounded-full w-6 h-6 text-xs opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>

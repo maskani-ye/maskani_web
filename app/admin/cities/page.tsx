@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { Country, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -63,8 +64,8 @@ export default function AdminCitiesPage() {
     setLoading(true);
     try {
       const [cRes, citRes] = await Promise.all([
-        api.get<PaginatedResponse<Country>>("/cities/countries/"),
-        api.get<PaginatedResponse<City>>("/cities/", { params: { limit: 100, offset: 0 } }),
+        api.get<PaginatedResponse<Country>>(ep.admin.countries),
+        api.get<PaginatedResponse<City>>(ep.admin.cities, { params: { limit: 100, offset: 0 } }),
       ]);
       setCountries(cRes.data.results ?? []);
       setCities(citRes.data.results ?? []);
@@ -104,10 +105,10 @@ export default function AdminCitiesPage() {
     setSaving(true);
     try {
       if (cityModal.editing) {
-        await api.patch(`/cities/${cityModal.editing.id}/`, cityForm);
+        await api.patch(ep.admin.city(cityModal.editing.id), cityForm);
         toast.success("تم تعديل المدينة");
       } else {
-        await api.post("/cities/", cityForm);
+        await api.post(ep.admin.cities, cityForm);
         toast.success("تم إضافة المدينة");
       }
       setCityModal({ open: false, editing: null });
@@ -118,7 +119,7 @@ export default function AdminCitiesPage() {
 
   const toggleCityActive = async (city: City) => {
     try {
-      await api.patch(`/cities/${city.id}/`, { is_active: !city.is_active });
+      await api.patch(ep.admin.city(city.id), { is_active: !city.is_active });
       toast.success(city.is_active ? "تم تعطيل المدينة" : "تم تفعيل المدينة");
       fetchData();
     } catch (err) { toast.error(getErrorMessage(err)); }
@@ -126,7 +127,7 @@ export default function AdminCitiesPage() {
 
   const deleteCity = async (id: number) => {
     try {
-      await api.delete(`/cities/${id}/`);
+      await api.delete(ep.admin.city(id));
       toast.success("تم حذف المدينة");
       setDeleteConfirm(null);
       fetchData();
@@ -152,10 +153,10 @@ export default function AdminCitiesPage() {
     setSaving(true);
     try {
       if (countryModal.editing) {
-        await api.patch(`/cities/countries/${countryModal.editing.id}/`, countryForm);
+        await api.patch(ep.admin.country(countryModal.editing.id), countryForm);
         toast.success("تم تعديل الدولة");
       } else {
-        await api.post("/cities/countries/", countryForm);
+        await api.post(ep.admin.countries, countryForm);
         toast.success("تم إضافة الدولة");
       }
       setCountryModal({ open: false, editing: null });
@@ -166,7 +167,7 @@ export default function AdminCitiesPage() {
 
   const deleteCountry = async (id: number) => {
     try {
-      await api.delete(`/cities/countries/${id}/`);
+      await api.delete(ep.admin.country(id));
       toast.success("تم حذف الدولة");
       setDeleteConfirm(null);
       fetchData();

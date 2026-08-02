@@ -10,6 +10,9 @@ import { StarRating } from "@/components/ui/StarRating";
 import { Settings, User, CheckCircle, MapPoint, Phone } from "@solar-icons/react";
 import { toast } from "sonner";
 import { useCity } from "@/context/CityContext";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbList, sectionLabel } from "@/lib/seo";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 
@@ -41,6 +44,8 @@ export default function ServicesPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <JsonLd data={breadcrumbList([{ name: "الرئيسية", path: "/" }, { name: sectionLabel("services"), path: "/services" }])} />
+      <Breadcrumbs items={[{ name: "الرئيسية", href: "/" }, { name: sectionLabel("services") }]} />
       <div className="mb-6 flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -94,7 +99,7 @@ export default function ServicesPage() {
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
                     {p.user_avatar ? (
-                      <img src={p.user_avatar} alt="" className="w-full h-full object-cover" />
+                      <img src={p.user_avatar} alt={p.title || "مزوّد خدمة"} className="w-full h-full object-cover" />
                     ) : (
                       <User className="h-6 w-6 text-primary" />
                     )}

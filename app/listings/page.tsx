@@ -18,6 +18,9 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbList, sectionLabel } from "@/lib/seo";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { toast } from "sonner";
 import ListingsMap from "@/components/map/ListingsMap";
 import { cityCoords, YEMEN_CENTER, DEFAULT_ZOOM } from "@/components/map/constants";
@@ -144,6 +147,7 @@ function ListingsContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <Breadcrumbs items={[{ name: "الرئيسية", href: "/" }, { name: sectionLabel("listings") }]} />
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
@@ -320,7 +324,7 @@ function ListingsContent() {
               <div className="bg-white rounded-2xl card-shadow hover:card-shadow-hover transition-all duration-200 overflow-hidden cursor-pointer group">
                 <div className="relative h-44 bg-gray-100 overflow-hidden">
                   {listing.main_image ? (
-                    <Image src={listing.main_image} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <Image src={listing.main_image} alt={`${listing.title} — ${propertyTypeName(listing.property_type)}${listing.city_name ? " في " + listing.city_name : ""}`} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <Buildings2 className="h-12 w-12 text-gray-300" />
@@ -382,8 +386,17 @@ function ListingsContent() {
 
 export default function ListingsPage() {
   return (
-    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-gray-400">جاري التحميل...</div>}>
-      <ListingsContent />
-    </Suspense>
+    <>
+      {/* مسار التنقّل خارج حدود Suspense كي يُصيَّر خادمياً (useSearchParams يُؤجّل المحتوى) */}
+      <JsonLd
+        data={breadcrumbList([
+          { name: "الرئيسية", path: "/" },
+          { name: sectionLabel("listings"), path: "/listings" },
+        ])}
+      />
+      <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-gray-400">جاري التحميل...</div>}>
+        <ListingsContent />
+      </Suspense>
+    </>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { formatPrice } from "@/lib/utils";
 import type { PaginatedResponse, PropertyTypeRef } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -75,7 +76,7 @@ export default function AdminListingsPage() {
       if (offerFilter)  params.offer_type    = offerFilter;
       if (typeFilter)   params.property_type = typeFilter;
       if (activeFilter) params.is_active     = activeFilter;
-      const res = await api.get<PaginatedResponse<AdminListing>>("/admin/listings/", { params });
+      const res = await api.get<PaginatedResponse<AdminListing>>(ep.admin.listings, { params });
       setListings(res.data.results);
       setTotal(res.data.count);
       setOffset(off);
@@ -105,7 +106,7 @@ export default function AdminListingsPage() {
   // ── actions ────────────────────────────────────────────────────────────────
   const toggleActive = async (l: AdminListing) => {
     try {
-      const res = await api.patch<AdminListing>(`/admin/listings/${l.id}/`, { is_active: !l.is_active });
+      const res = await api.patch<AdminListing>(ep.admin.listing(l.id), { is_active: !l.is_active });
       const updated = res.data;
       setListings((prev) => prev.map((x) => x.id === updated.id ? updated : x));
       if (selected?.id === updated.id) setSelected(updated);
@@ -118,7 +119,7 @@ export default function AdminListingsPage() {
     setDeleting(true);
     try {
       // Soft delete: backend returns 200 with the deactivated listing body.
-      const res = await api.delete<AdminListing>(`/admin/listings/${deleteTarget.id}/`);
+      const res = await api.delete<AdminListing>(ep.admin.listing(deleteTarget.id));
       const updated = res.data ?? { ...deleteTarget, is_active: false };
       toast.success("تم إيقاف الإعلان");
       setListings((prev) => prev.map((x) => x.id === deleteTarget.id ? updated : x));

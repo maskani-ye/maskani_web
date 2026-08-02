@@ -13,6 +13,7 @@ import { Select } from "@/components/ui/Select";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { PenNewSquare, AltArrowRight } from "@solar-icons/react";
 import { toast } from "sonner";
+import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
 
 const PROPERTY_TYPE_OPTS = [
   { value: "apartment", label: "شقة" },
@@ -143,7 +144,10 @@ export default function CreateRequestPage() {
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-gray-700 mb-1.5 block">مواصفات إضافية</label>
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <label className="text-sm font-semibold text-gray-700 block">مواصفات إضافية</label>
+            <SuggestDescriptionButton kind="request" title={"طلب عقاري"} fields={{ "النوع": form.property_type, "العرض": form.offer_type, "الحي": form.neighborhood }} onSuggest={(d) => setField("additional_specs", d)} />
+          </div>
           <textarea
             value={form.additional_specs}
             onChange={(e) => setField("additional_specs", e.target.value)}

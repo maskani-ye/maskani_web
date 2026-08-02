@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, type ComponentType } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import {
   UsersGroupRounded, Buildings2, ShieldWarning, PenNewSquare,
@@ -92,7 +93,7 @@ export default function AdminDashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get<AdminStats>("/admin/dashboard/stats/");
+      const res = await api.get<AdminStats>(ep.admin.stats);
       setStats(res.data);
     } catch (err) {
       setError(getErrorMessage(err));

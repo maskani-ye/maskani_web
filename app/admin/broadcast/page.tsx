@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -39,7 +40,7 @@ export default function AdminBroadcastPage() {
     setSending(true);
     try {
       const res = await api.post<{ message: string; count: number }>(
-        "/admin/dashboard/broadcast/", { title, body, target }
+        ep.admin.broadcast, { title, body, target }
       );
       toast.success(`تم إرسال التعميم إلى ${res.data.count.toLocaleString("ar-YE")} مستخدم`);
       setTitle("");

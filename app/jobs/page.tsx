@@ -12,6 +12,9 @@ import { Settings, AddCircle, MapPoint, Dollar, ClockCircle, AltArrowRight } fro
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbList, sectionLabel } from "@/lib/seo";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { toast } from "sonner";
 
 interface ServiceCategory { id: number; name_ar: string }
@@ -61,6 +64,8 @@ export default function JobsPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <JsonLd data={breadcrumbList([{ name: "الرئيسية", path: "/" }, { name: sectionLabel("jobs"), path: "/jobs" }])} />
+      <Breadcrumbs items={[{ name: "الرئيسية", href: "/" }, { name: sectionLabel("jobs") }]} />
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">

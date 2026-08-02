@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints as ep } from "@/lib/endpoints";
 import { formatRelativeTime, formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -97,7 +98,7 @@ export default function AdminRequestsPage() {
       if (activeFilter) params.is_active    = activeFilter;
 
       const res = await api.get<{ count: number; results: AdminRequest[] }>(
-        "/admin/demands/", { params }
+        ep.admin.demands, { params }
       );
       setRequests(res.data.results);
       setTotal(res.data.count);
@@ -114,7 +115,7 @@ export default function AdminRequestsPage() {
   // ── Toggle active ───────────────────────────────────────────────────────────
   const toggleActive = async (req: AdminRequest) => {
     try {
-      const res = await api.patch<AdminRequest>(`/admin/demands/${req.id}/`, {
+      const res = await api.patch<AdminRequest>(ep.admin.demand(req.id), {
         is_active: !req.is_active,
       });
       setRequests((prev) => prev.map((r) => (r.id === req.id ? res.data : r)));
@@ -130,7 +131,7 @@ export default function AdminRequestsPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await api.delete(`/admin/demands/${deleteTarget.id}/`);
+      await api.delete(ep.admin.demand(deleteTarget.id));
       setRequests((prev) => prev.filter((r) => r.id !== deleteTarget.id));
       setTotal((t) => t - 1);
       if (selected?.id === deleteTarget.id) setSelected(null);
@@ -374,7 +375,7 @@ export default function AdminRequestsPage() {
                 <_Row
                   icon={<ClockCircle className="h-3.5 w-3.5" />}
                   label="ينتهي"
-                  value={selected.expires_at.split("T")[0]}
+                  value={selected.expires_at?.split("T")[0] ?? "—"}
                 />
                 <_Row
                   icon={<ChatRound className="h-3.5 w-3.5" />}

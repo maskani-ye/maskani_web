@@ -247,7 +247,7 @@ export default function ListingDetailPage() {
                     onClick={() => setActiveImage(i)}
                     className={`flex-shrink-0 w-16 h-14 rounded-xl overflow-hidden border-2 transition-all ${i === activeImage ? "border-primary" : "border-transparent"}`}
                   >
-                    <img src={img.image} alt="" className="w-full h-full object-cover" />
+                    <img src={img.image} alt={`${listing.title} — صورة ${i + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
