@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, type ComponentType } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
+import { trackVisitEvent } from "@/lib/track";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { serviceCategoryLabels, formatRelativeTime } from "@/lib/utils";
@@ -50,6 +51,7 @@ export default function ServiceDetailPage() {
   const startConversation = async () => {
     if (!requireAuth()) return;
     if (providerUserId == null) return;
+    trackVisitEvent("chat_started", { targetType: "service", targetId: id });
     setStartingChat(true);
     try {
       const { data } = await api.post("/chat/conversations/", { recipient_id: providerUserId });
@@ -265,14 +267,22 @@ export default function ServiceDetailPage() {
               </Button>
             )}
             {provider.contact_phone && (
-              <a href={`tel:${provider.contact_phone}`}>
+              <a
+                href={`tel:${provider.contact_phone}`}
+                onClick={() => trackVisitEvent("call_click", { targetType: "service", targetId: id })}
+              >
                 <Button fullWidth variant="primary">
                   <Phone className="h-4 w-4" /> اتصال
                 </Button>
               </a>
             )}
             {wa && (
-              <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer">
+              <a
+                href={`https://wa.me/${wa}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackVisitEvent("whatsapp_click", { targetType: "service", targetId: id })}
+              >
                 <Button fullWidth variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
                   <ChatSquare className="h-4 w-4" /> واتساب
                 </Button>

@@ -26,9 +26,15 @@ const PLATFORM_LABELS: Record<string, string> = { web: "ويب", app: "تطبي�
 const DEVICE_LABELS: Record<string, string> = { mobile: "جوال", desktop: "حاسوب", tablet: "لوحي", bot: "زاحف" };
 
 interface Bucket { key: string; count: number; }
+interface Target { target_type: string; target_id: number; title: string; count: number; }
+interface Engagement {
+  sessions: number; pages_per_session: number; bounce_rate: number;
+  new_visitors: number; returning_visitors: number;
+  dau: number; wau: number; mau: number;
+}
 interface Summary {
   range: { from: string; to: string };
-  totals: { visits: number; visitors: number; humans: number; bots: number; registered: number };
+  totals: { visits: number; visitors: number; humans: number; bots: number; registered: number; events: number };
   by_day: { day: string; humans: number; bots: number }[];
   by_source: Bucket[];
   by_platform: Bucket[];
@@ -36,10 +42,26 @@ interface Summary {
   by_browser: Bucket[];
   by_country: Bucket[];
   top_paths: Bucket[];
+  by_event: Bucket[];
+  top_targets: Target[];
+  engagement: Engagement;
+  by_utm_source: Bucket[];
+  by_utm_campaign: Bucket[];
   crawlers: Bucket[];
 }
 
 const label = (m: Record<string, string>, k: string) => m[k] ?? (k || "غير معروف");
+
+const EVENT_LABELS: Record<string, string> = {
+  contact_click: "نقر تواصل", whatsapp_click: "واتساب", call_click: "اتصال",
+  chat_started: "بدء محادثة", listing_created: "إنشاء إعلان", service_created: "إنشاء خدمة",
+  request_created: "إنشاء طلب عقاري", job_created: "إنشاء طلب خدمة", offer_submitted: "إرسال عرض",
+  favorite_added: "إضافة مفضلة", follow_user: "متابعة", search: "بحث", share_click: "مشاركة",
+  review_submitted: "تقييم", report_created: "بلاغ",
+};
+const TARGET_LABELS: Record<string, string> = {
+  listing: "إعلان", service: "خدمة", request: "طلب عقاري", job: "طلب خدمة", user: "مستخدم", report: "بلاغ",
+};
 
 export default function AnalyticsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -194,6 +216,25 @@ export default function AnalyticsPage() {
         ))}
       </div>
 
+      {/* Engagement & retention strip */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
+        {[
+          { l: "أحداث تحويل", v: (data?.totals.events ?? 0).toLocaleString("ar-YE") },
+          { l: "الجلسات", v: (data?.engagement?.sessions ?? 0).toLocaleString("ar-YE") },
+          { l: "صفحات/جلسة", v: (data?.engagement?.pages_per_session ?? 0).toLocaleString("ar-YE") },
+          { l: "معدّل الارتداد", v: `${Math.round((data?.engagement?.bounce_rate ?? 0) * 100)}%` },
+          { l: "زوّار جدد", v: (data?.engagement?.new_visitors ?? 0).toLocaleString("ar-YE") },
+          { l: "زوّار عائدون", v: (data?.engagement?.returning_visitors ?? 0).toLocaleString("ar-YE") },
+          { l: "نشِط أسبوعياً", v: (data?.engagement?.wau ?? 0).toLocaleString("ar-YE") },
+          { l: "نشِط شهرياً", v: (data?.engagement?.mau ?? 0).toLocaleString("ar-YE") },
+        ].map((m) => (
+          <div key={m.l} className="bg-white rounded-2xl card-shadow p-4">
+            <p className="text-xl font-bold text-gray-900 tabular-nums">{loading ? "…" : m.v}</p>
+            <p className="text-xs text-gray-500 mt-1">{m.l}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Time series */}
       <div className="mb-6">
         <ChartCard
@@ -262,6 +303,34 @@ export default function AnalyticsPage() {
 
         <_ListCard title="أكثر الصفحات زيارةً" icon={Routing} items={data?.top_paths ?? []} loading={loading} />
         <_ListCard title="زواحف محرّكات البحث" icon={DangerTriangle} items={data?.crawlers ?? []} loading={loading} emptyText="لا زواحف بعد" />
+      </div>
+
+      {/* Row: conversion events + engaged entities + campaigns (UTM) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <_ListCard
+          title="أحداث التحويل"
+          icon={ChartSquare}
+          loading={loading}
+          emptyText="لا أحداث بعد"
+          items={(data?.by_event ?? []).map((b) => ({ key: label(EVENT_LABELS, b.key), count: b.count }))}
+        />
+        <_ListCard
+          title="أكثر الكيانات تفاعلاً"
+          icon={Eye}
+          loading={loading}
+          emptyText="لا تفاعل بعد"
+          items={(data?.top_targets ?? []).map((t) => ({
+            key: `${label(TARGET_LABELS, t.target_type)}: ${t.title || `#${t.target_id}`}`,
+            count: t.count,
+          }))}
+        />
+        <_ListCard
+          title="حملات التسويق (UTM)"
+          icon={Routing}
+          loading={loading}
+          emptyText="لا حملات موسومة"
+          items={data?.by_utm_source ?? []}
+        />
       </div>
     </div>
   );

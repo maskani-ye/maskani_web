@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage, getErrorStatus } from "@/lib/api";
+import { trackVisitEvent } from "@/lib/track";
 import {
   formatPrice, formatRelativeTime,
   offerTypeLabels, furnishingLabels, statusColors, statusLabels, propertyTypeName } from "@/lib/utils";
@@ -114,6 +115,7 @@ export default function ListingDetailPage() {
   const startConversation = async () => {
     if (!requireAuth()) return;
     if (typeof listing?.user !== "object") return;
+    trackVisitEvent("chat_started", { targetType: "listing", targetId: listing.id });
     setStartingChat(true);
     try {
       await startDM(listing.user.id);
@@ -418,7 +420,10 @@ export default function ListingDetailPage() {
                 </Button>
               )}
               {listing.contact_phone && (
-                <a href={`tel:${listing.contact_phone}`}>
+                <a
+                  href={`tel:${listing.contact_phone}`}
+                  onClick={() => trackVisitEvent("call_click", { targetType: "listing", targetId: listing.id })}
+                >
                   <Button fullWidth variant="primary">
                     <Phone className="h-4 w-4" />
 
@@ -427,7 +432,12 @@ export default function ListingDetailPage() {
                 </a>
               )}
               {listing.contact_whatsapp && (
-                <a href={`https://wa.me/${listing.contact_whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={`https://wa.me/${listing.contact_whatsapp.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackVisitEvent("whatsapp_click", { targetType: "listing", targetId: listing.id })}
+                >
                   <Button fullWidth variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
                     <ChatSquare className="h-4 w-4" />
                     واتساب
