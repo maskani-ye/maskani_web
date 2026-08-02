@@ -99,6 +99,15 @@ export const endpoints = {
     // analytics (تحليلات الزيارات)
     analyticsSummary: `${ADMIN}/analytics/summary/`,
     analyticsVisits: `${ADMIN}/analytics/visits/`,
+
+    // helpdesk (مركز المساعدة)
+    helpdeskSessions: `${ADMIN}/helpdesk/sessions/`,
+    helpdeskSession: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/`,
+    helpdeskSessionMessages: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/messages/`,
+    helpdeskReply: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/reply/`,
+    helpdeskResolve: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/resolve/`,
+    helpdeskClose: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/close/`,
+    helpdeskFlowNodes: `${ADMIN}/helpdesk/flow-nodes/`,
   },
 } as const;
 

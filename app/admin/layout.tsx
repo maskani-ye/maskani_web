@@ -11,7 +11,7 @@ import {
   Buildings2, Settings, Home2, ChatRound, ChatRoundDots, Widget,
   City, Logout2, HamburgerMenu, CloseCircle,
   ShieldCheck, DangerTriangle, Bell,
-  Case, ChartSquare,
+  Case, ChartSquare, HeadphonesRound,
 } from "@solar-icons/react";
 
 const NAV = [
@@ -24,6 +24,7 @@ const NAV = [
   { href: "/admin/requests",           label: "طلبات عقارية",   icon: ChatRound },
   { href: "/admin/jobs",               label: "طلبات الخدمة",   icon: Case },
   { href: "/admin/conversations",      label: "المحادثات",       icon: ChatRoundDots },
+  { href: "/admin/helpdesk",           label: "مركز المساعدة",   icon: HeadphonesRound },
   { href: "/admin/broadcast",          label: "الإشعارات",       icon: Bell },
   { href: "/admin/reports",            label: "البلاغات",        icon: ShieldWarning },
   { href: "/admin/flags",              label: "بلاغات المستخدمين", icon: DangerTriangle },
