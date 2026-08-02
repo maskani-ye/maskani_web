@@ -33,6 +33,14 @@ export const endpoints = {
   aiSuggestDescription: "/ai/suggest-description/",
   analyticsTrack: "/analytics/track/",
   appConfig: "/settings/app-config/",
+
+  // ── helpdesk (مركز المساعدة — العميل) ──
+  helpdeskOpen: "/helpdesk/sessions/open/",
+  helpdeskActive: "/helpdesk/sessions/active/",
+  helpdeskMessages: (id: Id) => `/helpdesk/sessions/${id}/messages/`,
+  helpdeskSelectOption: (id: Id) => `/helpdesk/sessions/${id}/select-option/`,
+  helpdeskSendMessage: (id: Id) => `/helpdesk/sessions/${id}/send-message/`,
+  helpdeskClose: (id: Id) => `/helpdesk/sessions/${id}/close/`,
   serviceCreate: "/services/create/",
   serviceUpdate: (id: Id) => `/services/${id}/update/`,
   serviceDelete: (id: Id) => `/services/${id}/delete/`,
