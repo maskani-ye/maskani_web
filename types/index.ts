@@ -78,6 +78,9 @@ export interface Listing {
   longitude: string | null;
   price: string;
   currency: Currency;
+  previous_price?: string | null;
+  price_reduced?: boolean;
+  is_promoted?: boolean;
   area: string | null;
   rooms: number | null;
   bathrooms: number | null;

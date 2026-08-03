@@ -330,10 +330,16 @@ function ListingsContent() {
                       <Buildings2 className="h-12 w-12 text-gray-300" />
                     </div>
                   )}
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
                     <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${listing.offer_type === "sale" ? "bg-primary text-white" : "bg-gold text-white"}`}>
                       {offerTypeLabels[listing.offer_type]}
                     </span>
+                    {listing.is_promoted && (
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-gold text-white">مميّز</span>
+                    )}
+                    {listing.price_reduced && (
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-green-600 text-white">انخفض السعر</span>
+                    )}
                   </div>
                   <button
                     onClick={(e) => toggleFavorite(listing.id, e)}
