@@ -9,6 +9,8 @@ const nextConfig = {
       { protocol: "https", hostname: "api.maskani.homes" },
       // وسائط Cloudflare R2 (المخزن السحابي الافتراضي).
       { protocol: "https", hostname: "**.r2.dev" },
+      // نطاق الموقع نفسه — تُخدَم منه الصورة الافتراضية (placeholder.webp).
+      { protocol: "https", hostname: "maskani.homes" },
     ],
     formats: ["image/avif", "image/webp"],
   },
