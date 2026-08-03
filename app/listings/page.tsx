@@ -25,13 +25,6 @@ import { toast } from "sonner";
 import ListingsMap from "@/components/map/ListingsMap";
 import { cityCoords, YEMEN_CENTER, DEFAULT_ZOOM } from "@/components/map/constants";
 
-const PROPERTY_TYPE_OPTS = [
-  { value: "apartment", label: "شقة" },
-  { value: "house", label: "بيت / فيلا" },
-  { value: "land", label: "أرض" },
-  { value: "commercial", label: "محل تجاري" },
-];
-
 const OFFER_TYPE_OPTS = [
   { value: "sale", label: "للبيع" },
   { value: "rent_monthly", label: "إيجار شهري" },
@@ -50,6 +43,7 @@ function ListingsContent() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState<City[]>([]);
+  const [propertyTypeOpts, setPropertyTypeOpts] = useState<{ value: string; label: string }[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [view, setView] = useState<"list" | "map">(searchParams.get("view") === "map" ? "map" : "list");
@@ -69,6 +63,13 @@ function ListingsContent() {
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
+    // أنواع العقارات من المرجع المُدار — نفلتر بالمعرّف (id) لا بالاسم/enum.
+    api.get<{ results?: { id: number; name_ar: string }[] } | { id: number; name_ar: string }[]>("/listings/property-types/")
+      .then((r) => {
+        const list = Array.isArray(r.data) ? r.data : r.data.results ?? [];
+        setPropertyTypeOpts(list.map((p) => ({ value: String(p.id), label: p.name_ar })));
+      })
+      .catch(() => {});
   }, []);
 
   // المدينة يملكها السياق العام (CityContext) — مصدر واحد. عند فتح الصفحة برابط
@@ -242,7 +243,7 @@ function ListingsContent() {
           />
           <Select
             label="نوع العقار"
-            options={PROPERTY_TYPE_OPTS}
+            options={propertyTypeOpts}
             value={filters.property_type}
             onChange={(e) => handleFilterChange("property_type", e.target.value)}
             placeholder="الكل"
