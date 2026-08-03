@@ -70,7 +70,7 @@ export default function AnalyticsPage() {
   const [funnel, setFunnel] = useState<{ key: string; label: string; sessions: number; rate_from_top: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<"preset" | "custom">("preset");
-  const [days, setDays] = useState(30);
+  const [days, setDays] = useState(1);
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [platform, setPlatform] = useState("");
