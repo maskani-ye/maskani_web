@@ -13,7 +13,7 @@ import { Select } from "@/components/ui/Select";
 import {
   Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed,
   Ruler, Eye, Heart, AltArrowRight, AltArrowLeft,
-  Map as MapIcon, List as ListIcon, AddCircle,
+  Map as MapIcon, List as ListIcon, AddCircle, Bookmark,
 } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
@@ -100,6 +100,21 @@ function ListingsContent() {
   // إعادة الصفحة للأولى عند تبديل المدينة العامة (من الشريط أو الفلتر)
   useEffect(() => { setPage(1); }, [cityId]);
 
+  const saveSearch = async () => {
+    if (!requireAuth()) return;
+    const clean: Record<string, string> = {};
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v && k !== "ordering") clean[k] = v;
+    });
+    if (cityId) clean.city = cityId;
+    try {
+      await api.post("/listings/saved-searches/", { name: "", filters: clean, notify: true });
+      toast.success("تم حفظ البحث. سنُنبّهك بالمطابقات الجديدة.");
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
+  };
+
   const handleFilterChange = (key: string, value: string) => {
     setFilters((p) => ({ ...p, [key]: value }));
     setPage(1);
@@ -177,6 +192,10 @@ function ListingsContent() {
           <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
             <SliderHorizontal className="h-4 w-4" />
             الفلاتر
+          </Button>
+          <Button variant="outline" size="sm" onClick={saveSearch} title="احفظ هذا البحث لتصلك تنبيهات المطابقة">
+            <Bookmark className="h-4 w-4" />
+            احفظ البحث
           </Button>
           <Button size="sm" onClick={() => requireAuth(() => router.push("/listings/create"))}>
             <AddCircle className="h-4 w-4" />

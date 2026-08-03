@@ -14,7 +14,7 @@ import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   Buildings2, Heart, Bell, MapPoint,
-  PenNewSquare, CheckCircle, Logout, ShieldCheck, CloudUpload, CloseCircle, ClockCircle,
+  PenNewSquare, CheckCircle, Logout, ShieldCheck, CloudUpload, CloseCircle, ClockCircle, Magnifer,
 } from "@solar-icons/react";
 
 interface VerificationRequest {
@@ -199,6 +199,10 @@ export default function ProfilePage() {
         <Link href="/requests" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
           <PenNewSquare className="h-6 w-6 text-blue-500" />
           <span className="text-xs font-medium text-gray-700">الطلبات</span>
+        </Link>
+        <Link href="/saved-searches" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
+          <Magnifer className="h-6 w-6 text-primary" />
+          <span className="text-xs font-medium text-gray-700">عمليات البحث</span>
         </Link>
       </div>
 
