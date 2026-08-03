@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
-import { serviceCategoryLabels } from "@/lib/utils";
-import type { ServiceProvider, PaginatedResponse, City } from "@/types";
+import { endpoints as ep } from "@/lib/endpoints";
+import type { ServiceProvider, PaginatedResponse, City, ServiceCategoryItem } from "@/types";
 import { Select } from "@/components/ui/Select";
 import { StarRating } from "@/components/ui/StarRating";
 import { Settings, User, CheckCircle, MapPoint, Phone } from "@solar-icons/react";
@@ -22,10 +22,15 @@ export default function ServicesPage() {
   const [providers, setProviders] = useState<ServiceProvider[]>([]);
   const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState<City[]>([]);
+  const [categories, setCategories] = useState<ServiceCategoryItem[]>([]);
   const [filters, setFilters] = useState({ category: "" });
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
+    // التصنيفات من المرجع المُدار (نفس مصدر التطبيق) — نفلتر بالمعرّف (id).
+    api.get<PaginatedResponse<ServiceCategoryItem> | ServiceCategoryItem[]>(ep.serviceCategories)
+      .then((r) => setCategories(Array.isArray(r.data) ? r.data : r.data.results ?? []))
+      .catch(() => {});
   }, []);
 
   const fetchProviders = useCallback(async () => {
@@ -64,9 +69,9 @@ export default function ServicesPage() {
       {/* Category Filter Chips */}
       <div className="flex gap-2 flex-wrap mb-5">
         <button onClick={() => setFilters((p) => ({ ...p, category: "" }))} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!filters.category ? "bg-primary text-white" : "bg-white text-gray-600 border border-gray-200 hover:border-primary"}`}>الكل</button>
-        {Object.entries(serviceCategoryLabels).map(([v, l]) => (
-          <button key={v} onClick={() => setFilters((p) => ({ ...p, category: v }))} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${filters.category === v ? "bg-primary text-white" : "bg-white text-gray-600 border border-gray-200 hover:border-primary"}`}>
-            {l}
+        {categories.map((c) => (
+          <button key={c.id} onClick={() => setFilters((p) => ({ ...p, category: String(c.id) }))} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${filters.category === String(c.id) ? "bg-primary text-white" : "bg-white text-gray-600 border border-gray-200 hover:border-primary"}`}>
+            {c.name_ar}
           </button>
         ))}
       </div>
@@ -110,7 +115,7 @@ export default function ServicesPage() {
                       {p.user_verified && <CheckCircle className="h-3.5 w-3.5 text-primary flex-shrink-0" />}
                     </div>
                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-                      {serviceCategoryLabels[p.category]}
+                      {typeof p.category === "object" ? p.category?.name_ar : p.category}
                     </span>
                   </div>
                 </div>

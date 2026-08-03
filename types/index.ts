@@ -157,7 +157,9 @@ export interface ServiceProvider {
   user_name?: string;
   user_avatar?: string | null;
   user_verified?: boolean;
-  category: ServiceCategory;
+  // الباك اند يُرجِعها ككائن متداخل (من مرجع ServiceCategory المُدار)؛
+  // نُبقي السلسلة للتوافق الرجعي.
+  category: ServiceCategoryRef | ServiceCategory;
   title: string;
   description: string;
   experience_years: number;
