@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import {
-  Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed,
+  Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed, Bath,
   Ruler, Eye, Heart, AltArrowRight, AltArrowLeft,
   Map as MapIcon, List as ListIcon, AddCircle, Bookmark,
 } from "@solar-icons/react";
@@ -349,8 +349,9 @@ function ListingsContent() {
                       <Buildings2 className="h-12 w-12 text-gray-300" />
                     </div>
                   )}
+                  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/25 to-transparent pointer-events-none" />
                   <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
-                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${listing.offer_type === "sale" ? "bg-primary text-white" : "bg-gold text-white"}`}>
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full shadow-sm ${listing.offer_type === "sale" ? "bg-primary text-white" : "bg-gold text-white"}`}>
                       {offerTypeLabels[listing.offer_type]}
                     </span>
                     {listing.is_promoted && (
@@ -380,6 +381,7 @@ function ListingsContent() {
                   </div>
                   <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
                     {listing.rooms && <span className="flex items-center gap-0.5"><Bed className="h-3.5 w-3.5 text-primary" /> {listing.rooms}</span>}
+                    {listing.bathrooms != null && <span className="flex items-center gap-0.5"><Bath className="h-3.5 w-3.5 text-primary" /> {listing.bathrooms}</span>}
                     {listing.area && <span className="flex items-center gap-0.5"><Ruler className="h-3.5 w-3.5 text-primary" /> {listing.area}م²</span>}
                     <span className="flex items-center gap-0.5 mr-auto"><Eye className="h-3.5 w-3.5" /> {listing.views_count}</span>
                   </div>

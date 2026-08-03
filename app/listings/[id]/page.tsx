@@ -404,6 +404,19 @@ export default function ListingDetailPage() {
 
           {/* Price Card */}
           <div className="bg-white rounded-2xl card-shadow p-5 sticky top-20">
+            {(listing.is_promoted || listing.price_reduced) && (
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {listing.is_promoted && (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-gold text-white">مميّز</span>
+                )}
+                {listing.price_reduced && (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-green-600 text-white">انخفض السعر</span>
+                )}
+              </div>
+            )}
+            {listing.price_reduced && listing.previous_price && (
+              <p className="text-sm text-gray-400 line-through">{formatPrice(listing.previous_price, listing.currency)}</p>
+            )}
             <p className="text-3xl font-extrabold text-primary mb-1">{formatPrice(listing.price, listing.currency)}</p>
             {listing.offer_type !== "sale" && (
               <p className="text-sm text-gray-400">{listing.offer_type === "rent_monthly" ? "شهرياً" : "سنوياً"}</p>
