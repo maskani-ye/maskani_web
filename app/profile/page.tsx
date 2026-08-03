@@ -9,6 +9,7 @@ import { useAuthGate } from "@/context/AuthGate";
 import type { Listing, PaginatedResponse, City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { PhoneField } from "@/components/ui/PhoneField";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
@@ -284,12 +285,10 @@ export default function ProfilePage() {
                   أكمل رقم هاتفك ومدينتك ليتمكّن أصحاب العقارات من التواصل معك (اختياري).
                 </p>
               )}
-              <Input
+              <PhoneField
                 label="رقم الهاتف"
                 value={form.phone}
-                dir="ltr"
-                placeholder="+9677xxxxxxxx"
-                onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                onChange={(v) => setForm((p) => ({ ...p, phone: v }))}
               />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">المدينة</label>

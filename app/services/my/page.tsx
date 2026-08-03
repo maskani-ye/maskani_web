@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
+import { PhoneField } from "@/components/ui/PhoneField";
 import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
 import { AddCircle, TrashBinTrash, PenNewSquare, CloseCircle } from "@solar-icons/react";
 
@@ -259,13 +260,13 @@ export default function MyServicesPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">رقم التواصل *</label>
-              <input className={field} value={form.contact_phone} onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))} placeholder="7XXXXXXXX" />
+              <PhoneField label="" value={form.contact_phone} onChange={(v) => setForm((f) => ({ ...f, contact_phone: v }))} />
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">واتساب (اختياري)</label>
-            <input className={field} value={form.contact_whatsapp} onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))} placeholder="7XXXXXXXX" />
+            <PhoneField label="" value={form.contact_whatsapp} onChange={(v) => setForm((f) => ({ ...f, contact_whatsapp: v }))} />
           </div>
 
           <div>
