@@ -106,6 +106,7 @@ export const endpoints = {
 
     // analytics (تحليلات الزيارات)
     analyticsSummary: `${ADMIN}/analytics/summary/`,
+    analyticsFunnel: `${ADMIN}/analytics/funnel/`,
     analyticsVisits: `${ADMIN}/analytics/visits/`,
 
     // helpdesk (مركز المساعدة)

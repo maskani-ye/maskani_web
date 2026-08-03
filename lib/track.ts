@@ -58,9 +58,11 @@ export type TrackTarget = {
   targetType?: "listing" | "service" | "request" | "job" | "user" | "report";
   targetId?: number | string;
   path?: string;
+  /** خصائص حرّة (مثل نصّ البحث، نطاق السعر) — يُعقّمها الخادم ويحدّ حجمها. */
+  props?: Record<string, string | number | boolean>;
 };
 
-/** حدث تحويل/تفاعل (contact_click, whatsapp_click, chat_started, …). */
+/** حدث تحويل/تفاعل (contact_click, whatsapp_click, chat_started, search, …). */
 export function trackVisitEvent(eventName: string, opts?: TrackTarget) {
   send({
     kind: "event",
@@ -69,5 +71,6 @@ export function trackVisitEvent(eventName: string, opts?: TrackTarget) {
       opts?.path ?? (typeof location !== "undefined" ? location.pathname : ""),
     target_type: opts?.targetType,
     target_id: opts?.targetId,
+    ...(opts?.props ? { props: opts.props } : {}),
   });
 }

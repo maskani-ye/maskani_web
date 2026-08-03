@@ -67,6 +67,7 @@ export default function AnalyticsPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [data, setData] = useState<Summary | null>(null);
+  const [funnel, setFunnel] = useState<{ key: string; label: string; sessions: number; rate_from_top: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<"preset" | "custom">("preset");
   const [days, setDays] = useState(30);
@@ -98,8 +99,13 @@ export default function AnalyticsPage() {
         };
       }
       if (platform) params.platform = platform;
-      const res = await api.get<Summary>(ep.admin.analyticsSummary, { params });
-      setData(res.data);
+      const [sumRes, funRes] = await Promise.all([
+        api.get<Summary>(ep.admin.analyticsSummary, { params }),
+        api.get<{ stages: { key: string; label: string; sessions: number; rate_from_top: number }[] }>(
+          ep.admin.analyticsFunnel, { params }),
+      ]);
+      setData(sumRes.data);
+      setFunnel(funRes.data?.stages ?? []);
     } catch (err) {
       toast.error(getErrorMessage(err));
     } finally {
@@ -330,6 +336,20 @@ export default function AnalyticsPage() {
           loading={loading}
           emptyText="لا حملات موسومة"
           items={data?.by_utm_source ?? []}
+        />
+      </div>
+
+      {/* Conversion funnel: تصفّح → تواصل → محادثة → عرض */}
+      <div className="grid grid-cols-1 mt-6">
+        <_ListCard
+          title="قُمع التحويل (جلسات)"
+          icon={Routing}
+          loading={loading}
+          emptyText="لا بيانات قُمع بعد"
+          items={funnel.map((s) => ({
+            key: `${s.label} · ${Math.round((s.rate_from_top ?? 0) * 100)}%`,
+            count: s.sessions,
+          }))}
         />
       </div>
     </div>
