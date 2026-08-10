@@ -4,7 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    // وسائط الباك اند (صور الإعلانات/الخدمات/الأفاتار) تُخدَم من هذا النطاق.
+    // وسائط الباك اند (صور العقارات/الخدمات/الأفاتار) تُخدَم من هذا النطاق.
     remotePatterns: [
       { protocol: "https", hostname: "api.maskani.homes" },
       // وسائط Cloudflare R2 (المخزن السحابي الافتراضي).
@@ -21,6 +21,24 @@ const nextConfig = {
         source: "/.well-known/apple-app-site-association",
         headers: [{ key: "Content-Type", value: "application/json" }],
       },
+    ];
+  },
+  async redirects() {
+    // بعد إعادة تسمية الكيان listing → property، نحوّل المسارات القديمة (روابط
+    // محفوظة/مفهرسة في Google) إلى الجديدة تحويلاً دائماً (301) حفاظاً على SEO.
+    return [
+      // توحيد النطاق: www → apex (301) — يمنع ازدواج المحتوى («صفحة بديلة canonical»)
+      // ويُوحّد إشارات الفهرسة على https://maskani.homes.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.maskani.homes" }],
+        destination: "https://maskani.homes/:path*",
+        permanent: true,
+      },
+      { source: "/listings", destination: "/properties", permanent: true },
+      { source: "/listings/:path*", destination: "/properties/:path*", permanent: true },
+      { source: "/admin/listings", destination: "/admin/properties", permanent: true },
+      { source: "/admin/listings/:path*", destination: "/admin/properties/:path*", permanent: true },
     ];
   },
 };
