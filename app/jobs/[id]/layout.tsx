@@ -28,7 +28,8 @@ export async function generateMetadata(
     title,
     description,
     alternates: { canonical: `${BASE}/jobs/${id}` },
-    openGraph: { title, description, type: "article", url: `${BASE}/jobs/${id}` },
+    openGraph: { title, description, images: [{ url: `${BASE}/og.webp` }], type: "article", url: `${BASE}/jobs/${id}` },
+    twitter: { card: "summary_large_image", title, description, images: [`${BASE}/og.webp`] },
   };
 }
 

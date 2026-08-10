@@ -25,14 +25,14 @@ export async function generateMetadata(
   const description: string | undefined =
     s.meta_description || (s.description || "").slice(0, 160) || undefined;
   const keywords: string | undefined = s.meta_keywords || undefined;
-  const img = s.portfolio?.[0]?.image || s.user_avatar || undefined;
+  const img = s.portfolio?.[0]?.image || s.user_avatar || `${BASE}/og.webp`;
   return {
     title,
     description,
     keywords,
     alternates: { canonical: `${BASE}/services/${id}` },
-    openGraph: { title, description, images: img ? [{ url: img }] : undefined, type: "profile", url: `${BASE}/services/${id}` },
-    twitter: { card: "summary", title, description, images: img ? [img] : undefined },
+    openGraph: { title, description, images: [{ url: img }], type: "profile", url: `${BASE}/services/${id}` },
+    twitter: { card: "summary_large_image", title, description, images: [img] },
   };
 }
 

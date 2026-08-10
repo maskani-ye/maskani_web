@@ -15,36 +15,41 @@ const ADMIN = "/admin";
 export const endpoints = {
   // ══════════════ عام (واجهة المستخدم) ══════════════
   cities: "/cities/",
-  listings: "/listings/",
-  listing: (id: Id) => `/listings/${id}/`,
-  listingsMap: "/listings/map/",
-  propertyTypes: "/listings/property-types/",
-  bumpListing: (id: Id) => `/listings/${id}/bump/`,
-  listingStatus: (id: Id) => `/listings/${id}/status/`,
-  savedSearches: "/listings/saved-searches/",
-  savedSearch: (id: Id) => `/listings/saved-searches/${id}/`,
+  properties: "/properties/",
+  property: (id: Id) => `/properties/${id}/`,
+  similarProperties: (id: Id) => `/properties/${id}/similar/`,
+  propertiesMap: "/properties/map/",
+  propertyTypes: "/properties/property-types/",
+  bumpProperty: (id: Id) => `/properties/${id}/bump/`,
+  propertyStatus: (id: Id) => `/properties/${id}/status/`,
+  savedSearches: "/properties/saved-searches/",
+  savedSearch: (id: Id) => `/properties/saved-searches/${id}/`,
   services: "/services/",
   service: (id: Id) => `/services/${id}/`,
   serviceCategories: "/services/categories/",
   requests: "/requests/",
   request: (id: Id) => `/requests/${id}/`,
+  requestMatches: (id: Id) => `/requests/${id}/matches/`,
   jobs: "/jobs/",
   job: (id: Id) => `/jobs/${id}/`,
+  jobMatches: (id: Id) => `/jobs/${id}/matches/`,
   reports: "/reports/",
   report: (id: Id) => `/reports/${id}/`,
 
   // ── عام: AI + تتبّع + إعدادات ──
   aiSuggestDescription: "/ai/suggest-description/",
+  aiImproveText: "/ai/improve-text/",
+  aiSearchFilters: "/ai/search-filters/",
+  aiChatSuggestions: "/ai/chat-suggestions/",
+  aiAskProperty: "/ai/ask-property/",
+  aiHelpdeskAnswer: "/ai/helpdesk-answer/",
   analyticsTrack: "/analytics/track/",
   appConfig: "/settings/app-config/",
 
-  // ── helpdesk (مركز المساعدة — العميل) ──
-  helpdeskOpen: "/helpdesk/sessions/open/",
-  helpdeskActive: "/helpdesk/sessions/active/",
-  helpdeskMessages: (id: Id) => `/helpdesk/sessions/${id}/messages/`,
-  helpdeskSelectOption: (id: Id) => `/helpdesk/sessions/${id}/select-option/`,
-  helpdeskSendMessage: (id: Id) => `/helpdesk/sessions/${id}/send-message/`,
-  helpdeskClose: (id: Id) => `/helpdesk/sessions/${id}/close/`,
+  // ── helpdesk (محرّك الفلو الشبكي — العميل) ──
+  helpdeskStart: "/helpdesk/session/",
+  helpdeskSession: (id: Id) => `/helpdesk/session/${id}/`,
+  helpdeskEvent: (id: Id) => `/helpdesk/session/${id}/event/`,
   serviceCreate: "/services/create/",
   serviceUpdate: (id: Id) => `/services/${id}/update/`,
   serviceDelete: (id: Id) => `/services/${id}/delete/`,
@@ -59,6 +64,23 @@ export const endpoints = {
     broadcast: `${ADMIN}/dashboard/broadcast/`,
     auditLog: `${ADMIN}/dashboard/audit-log/`,
     legal: (slug: string) => `${ADMIN}/dashboard/legal/${slug}/`,
+    seoReport: `${ADMIN}/dashboard/seo-report/`,
+    // blog
+    blog: `${ADMIN}/blog/`,
+    blogItem: (id: number) => `${ADMIN}/blog/${id}/`,
+    blogCategories: `${ADMIN}/blog/categories/`,
+    blogCategoryItem: (id: number) => `${ADMIN}/blog/categories/${id}/`,
+    blogGenerate: `${ADMIN}/blog/generate/`,
+    // الذكاء الاصطناعي (مفاتيح OpenRouter)
+    aiKeys: `${ADMIN}/ai/keys/`,
+    aiKey: (id: number) => `${ADMIN}/ai/keys/${id}/`,
+    aiKeySetActive: (id: number) => `${ADMIN}/ai/keys/${id}/set-active/`,
+    aiKeyUsage: (id: number) => `${ADMIN}/ai/keys/${id}/usage/`,
+    aiUsage: `${ADMIN}/ai/keys/usage/`,
+    aiProviders: `${ADMIN}/ai/providers/`,
+    aiProvider: (id: number) => `${ADMIN}/ai/providers/${id}/`,
+    notificationTemplates: `${ADMIN}/notifications/templates/`,
+    notificationTemplate: (id: Id) => `${ADMIN}/notifications/templates/${id}/`,
 
     // accounts
     users: `${ADMIN}/accounts/users/`,
@@ -66,11 +88,11 @@ export const endpoints = {
     verificationRequests: `${ADMIN}/accounts/verification-requests/`,
     verificationRequest: (id: Id) => `${ADMIN}/accounts/verification-requests/${id}/`,
 
-    // listings
-    listings: `${ADMIN}/listings/`,
-    listing: (id: Id) => `${ADMIN}/listings/${id}/`,
-    propertyTypes: `${ADMIN}/listings/property-types/`,
-    propertyType: (id: Id) => `${ADMIN}/listings/property-types/${id}/`,
+    // properties
+    properties: `${ADMIN}/properties/`,
+    property: (id: Id) => `${ADMIN}/properties/${id}/`,
+    propertyTypes: `${ADMIN}/properties/property-types/`,
+    propertyType: (id: Id) => `${ADMIN}/properties/property-types/${id}/`,
 
     // services
     services: `${ADMIN}/services/`,
@@ -111,16 +133,20 @@ export const endpoints = {
     // analytics (تحليلات الزيارات)
     analyticsSummary: `${ADMIN}/analytics/summary/`,
     analyticsFunnel: `${ADMIN}/analytics/funnel/`,
+    analyticsRealtime: `${ADMIN}/analytics/realtime/`,
+    analyticsRetention: `${ADMIN}/analytics/retention/`,
     analyticsVisits: `${ADMIN}/analytics/visits/`,
+    analyticsVisitsExport: `${ADMIN}/analytics/visits/export/`,
 
-    // helpdesk (مركز المساعدة)
+    // helpdesk (محرّك الفلو الشبكي — الإدارة)
+    helpdeskGraph: `${ADMIN}/helpdesk/graph/`,
+    helpdeskActions: `${ADMIN}/helpdesk/actions/`,
+    helpdeskAction: (id: Id) => `${ADMIN}/helpdesk/actions/${id}/`,
+    helpdeskActionTest: (id: Id) => `${ADMIN}/helpdesk/actions/${id}/test/`,
     helpdeskSessions: `${ADMIN}/helpdesk/sessions/`,
-    helpdeskSession: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/`,
     helpdeskSessionMessages: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/messages/`,
     helpdeskReply: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/reply/`,
-    helpdeskResolve: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/resolve/`,
     helpdeskClose: (id: Id) => `${ADMIN}/helpdesk/sessions/${id}/close/`,
-    helpdeskFlowNodes: `${ADMIN}/helpdesk/flow-nodes/`,
   },
 } as const;
 

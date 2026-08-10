@@ -23,12 +23,12 @@ export async function generateMetadata(
   if (!r || r === "NOT_FOUND") return {};
   const title = r.title || "بلاغ احتيال";
   const description = (r.description || "").slice(0, 160) || undefined;
-  const img = r.first_image || r.images?.[0]?.image || undefined;
+  const img = r.first_image || r.images?.[0]?.image || `${BASE}/og.webp`;
   return {
     title,
     description,
     alternates: { canonical: `${BASE}/reports/${id}` },
-    openGraph: { title, description, images: img ? [{ url: img }] : undefined, type: "article", url: `${BASE}/reports/${id}` },
+    openGraph: { title, description, images: [{ url: img }], type: "article", url: `${BASE}/reports/${id}` },
   };
 }
 
