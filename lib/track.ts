@@ -19,12 +19,31 @@ export function visitorId(): string {
   }
 }
 
+/** المدينة (المحافظة) المختارة عالميًا من localStorage — أدقّ جغرافيا من IP
+ *  لتطبيق أحادي الدولة (IP يُخطئ توطين مستخدمي اليمن). المفتاح نفسه في CityContext. */
+function selectedCityId(): string {
+  try {
+    const raw = localStorage.getItem("maskani_selected_city");
+    if (!raw) return "";
+    const parsed = JSON.parse(raw);
+    return parsed && parsed.id != null ? String(parsed.id) : "";
+  } catch {
+    return "";
+  }
+}
+
 function send(body: Record<string, unknown>) {
   try {
+    const cityId = selectedCityId();
     fetch(`${API}/analytics/track/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_id: visitorId(), platform: "web", ...body }),
+      body: JSON.stringify({
+        session_id: visitorId(),
+        platform: "web",
+        ...(cityId ? { city_id: cityId } : {}),
+        ...body,
+      }),
       keepalive: true,
     }).catch(() => {});
   } catch {
@@ -55,7 +74,7 @@ export function trackPageview(path: string, extra?: Record<string, unknown>) {
 }
 
 export type TrackTarget = {
-  targetType?: "listing" | "service" | "request" | "job" | "user" | "report";
+  targetType?: "property" | "service" | "request" | "job" | "user" | "report";
   targetId?: number | string;
   path?: string;
   /** خصائص حرّة (مثل نصّ البحث، نطاق السعر) — يُعقّمها الخادم ويحدّ حجمها. */
