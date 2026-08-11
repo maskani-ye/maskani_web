@@ -39,6 +39,11 @@ const config: Config = {
           900: "#FF6F00",
         },
         cream: "#F6F6FB",
+        // نصّ رئيسي (كحلي عميق Gathern) — كان مُستخدَماً بلا تعريف (text-ink) فيسقط بصمت
+        ink: {
+          DEFAULT: "#050536",
+          light: "#3A3A63",
+        },
 
         // ─── Semantic tokens (additive) ────────────────────────────────
         // Consistent with the brand green/gold/cream. Use as bg-success-50,
