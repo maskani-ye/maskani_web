@@ -5,7 +5,7 @@
 //  كل تبعية Leaflet محبوسة داخل components/map/ فقط.
 // ─────────────────────────────────────────────────────────────────────────
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { listingIcon } from "./leafletSetup";
+import { propertyIcon } from "./leafletSetup";
 
 import "leaflet/dist/leaflet.css";
 
@@ -41,7 +41,7 @@ export default function LocationPickerMap({ lat, lng, center, onPick }: Location
     >
       <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains={TILE_SUBDOMAINS} maxZoom={20} />
       <ClickCapture onPick={onPick} />
-      {hasMarker && <Marker position={[lat, lng]} icon={listingIcon} />}
+      {hasMarker && <Marker position={[lat, lng]} icon={propertyIcon} />}
     </MapContainer>
   );
 }

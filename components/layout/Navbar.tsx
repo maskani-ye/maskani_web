@@ -17,10 +17,9 @@ import type { City } from "@/types";
 import { toast } from "sonner";
 
 const navLinks = [
-  { href: "/listings", label: "الإعلانات", icon: Buildings2 },
+  { href: "/properties", label: "العقارات", icon: Buildings2 },
   { href: "/services", label: "الخدمات", icon: Settings },
-  { href: "/requests", label: "طلبات عقارية", icon: ClipboardList },
-  { href: "/jobs", label: "طلبات خدمات", icon: Case },
+  { href: "/requests", label: "الطلبات", icon: ClipboardList },
   { href: "/reports", label: "مجتمع الشكاوي", icon: ShieldWarning },
 ];
 

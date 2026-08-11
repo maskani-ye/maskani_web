@@ -7,6 +7,7 @@ import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -136,15 +137,8 @@ export default function AdminUserReportsPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <DangerTriangle className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">بلاغات المستخدمين</h1>
-            <p className="text-sm text-gray-500">{total.toLocaleString("ar-YE")} بلاغ</p>
-          </div>
-        </div>
+        <PageHeader icon={<DangerTriangle />} title="بلاغات المستخدمين"
+          subtitle={`${total.toLocaleString("ar-YE")} بلاغ`} />
       </div>
 
       {/* Filters */}

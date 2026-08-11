@@ -8,6 +8,7 @@ import { useAuthGate } from "@/context/AuthGate";
 import { formatRelativeTime } from "@/lib/utils";
 import type { Notification, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { toast } from "sonner";
 import { Bell, CheckCircle } from "@solar-icons/react";
 
@@ -15,7 +16,7 @@ const PREF_CATEGORIES: { key: string; label: string }[] = [
   { key: "messages", label: "الرسائل" },
   { key: "offers", label: "العروض" },
   { key: "social", label: "التفاعل الاجتماعي" },
-  { key: "listings", label: "الإعلانات" },
+  { key: "properties", label: "العقارات" },
   { key: "reports", label: "البلاغات" },
   { key: "verification", label: "التوثيق" },
   { key: "system", label: "إشعارات النظام" },
@@ -27,16 +28,16 @@ function routeForNotification(n: Notification): string | null {
   const d = n.data || {};
   const pick = (...keys: string[]) => keys.map((k) => d[k]).find(Boolean) ?? null;
   const conv = pick("conversation_id", "conversation");
-  const listing = pick("listing_id", "listing");
+  const property = pick("property_id", "property");
   const job = pick("service_request_id");
   const request = pick("request_id", "request");
   const report = pick("report_id", "fraud_report_id", "report");
   const user = pick("user_id", "user", "follower_id", "rater_id");
   switch (n.notification_type) {
     case "new_message": if (conv) return `/chat/${conv}`; break;
-    case "new_listing":
+    case "new_property":
     case "new_comment":
-    case "listing_interest": if (listing) return `/listings/${listing}`; break;
+    case "property_interest": if (property) return `/properties/${property}`; break;
     case "new_service_request": if (job) return `/jobs/${job}`; break;
     case "new_offer":
     case "request_offer":
@@ -52,7 +53,7 @@ function routeForNotification(n: Notification): string | null {
     case "verification_rejected": return "/profile";
   }
   if (conv) return `/chat/${conv}`;
-  if (listing) return `/listings/${listing}`;
+  if (property) return `/properties/${property}`;
   if (job) return `/jobs/${job}`;
   if (request) return `/requests/${request}`;
   if (report) return `/reports/${report}`;
@@ -134,24 +135,17 @@ export default function NotificationsPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <Bell className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">الإشعارات</h1>
-            {unread > 0 && <p className="text-xs text-primary font-medium">{unread} غير مقروء</p>}
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {unread > 0 && (
-            <Button onClick={markAllRead} variant="outline" size="sm">
-              <CheckCircle className="h-4 w-4" /> تعليم الكل مقروء
-            </Button>
-          )}
-          <Button onClick={openPrefs} variant="ghost" size="sm">التفضيلات</Button>
-        </div>
+      <div className="mb-6">
+        <PageHeader icon={<Bell />} title="الإشعارات"
+          subtitle={unread > 0 ? `${unread} غير مقروء` : undefined}
+          actions={<>
+            {unread > 0 && (
+              <Button onClick={markAllRead} variant="outline" size="sm">
+                <CheckCircle className="h-4 w-4" /> تعليم الكل مقروء
+              </Button>
+            )}
+            <Button onClick={openPrefs} variant="ghost" size="sm">التفضيلات</Button>
+          </>} />
       </div>
 
       {prefsOpen && (

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbList, SITE_URL } from "@/lib/seo";
 import { Card } from "@/components/ui/Card";
-import { ToolMeta, TOOLS } from "@/lib/toolsMeta";
+import { ToolMeta, TOOLS, TOOL_ARTICLES } from "@/lib/toolsMeta";
 
 // غلاف خادميّ لصفحة أداة — كل المحتوى (h1، المقدّمة، خطوات العمل، الأسئلة الشائعة،
 // JSON-LD) مُصيَّر خادميًّا في HTML الخام للفهرسة؛ الحاسبة التفاعلية (client) تُمرَّر
@@ -31,6 +31,7 @@ export function ToolPage({ tool, children }: { tool: ToolMeta; children: ReactNo
     })),
   };
   const others = TOOLS.filter((t) => t.slug !== tool.slug).slice(0, 4);
+  const articles = TOOL_ARTICLES[tool.slug] ?? [];
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
@@ -76,6 +77,20 @@ export function ToolPage({ tool, children }: { tool: ToolMeta; children: ReactNo
           ))}
         </div>
       </section>
+
+      {articles.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-lg font-bold text-ink mb-3">مقالات ذات صلة</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {articles.map((a) => (
+              <Link key={a.slug} href={`/blog/${a.slug}`} className="rounded-xl border border-gray-200 bg-white p-4 hover:border-primary transition-colors">
+                <p className="font-bold text-ink text-sm leading-snug">{a.title}</p>
+                <span className="inline-block mt-2 text-primary text-xs font-semibold">اقرأ المقال ←</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section>
         <h2 className="text-lg font-bold text-ink mb-3">أدوات أخرى</h2>

@@ -7,7 +7,8 @@ import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { formatPrice, formatRelativeTime } from "@/lib/utils";
-import type { User, Listing, PaginatedResponse } from "@/types";
+import { PropertyCard } from "@/components/properties/PropertyCard";
+import type { User, Property, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { StarRating } from "@/components/ui/StarRating";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -39,7 +40,7 @@ export default function PublicProfilePage() {
   const { user: me } = useAuth();
   const { requireAuth } = useAuthGate();
   const [profile, setProfile] = useState<PublicUser | null>(null);
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [ratings, setRatings] = useState<UserRatingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [following, setFollowing] = useState(false);
@@ -102,8 +103,8 @@ export default function PublicProfilePage() {
       .catch(() => toast.error("لم يتم العثور على المستخدم"))
       .finally(() => setLoading(false));
 
-    api.get<PaginatedResponse<Listing>>("/listings/", { params: { user: id, offset: 0, limit: 20 } })
-      .then((r) => setListings(r.data.results))
+    api.get<PaginatedResponse<Property>>("/properties/", { params: { user: id, offset: 0, limit: 20 } })
+      .then((r) => setProperties(r.data.results))
       .catch(() => {});
 
     loadRatings();
@@ -148,7 +149,7 @@ export default function PublicProfilePage() {
   if (!profile) return (
     <div className="text-center py-20">
       <p className="text-gray-500 text-lg">المستخدم غير موجود</p>
-      <Link href="/listings"><Button className="mt-4">العودة للإعلانات</Button></Link>
+      <Link href="/properties"><Button className="mt-4">العودة للعقارات</Button></Link>
     </div>
   );
 
@@ -207,8 +208,8 @@ export default function PublicProfilePage() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mt-5 pt-5 border-t border-gray-100">
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{profile.listings_count}</p>
-            <p className="text-xs text-gray-500">إعلان</p>
+            <p className="text-xl font-bold text-gray-900">{profile.properties_count}</p>
+            <p className="text-xs text-gray-500">عقار</p>
           </div>
           <div className="text-center">
             <p className="text-xl font-bold text-gray-900">{profile.average_rating ?? "—"}</p>
@@ -222,32 +223,18 @@ export default function PublicProfilePage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Listings */}
+        {/* Properties */}
         <div className="lg:col-span-2 space-y-5">
           <div className="bg-white rounded-2xl card-shadow p-6">
             <h2 className="font-bold text-gray-800 mb-4 flex items-center gap-1.5">
-              <Buildings2 className="h-5 w-5 text-primary" /> إعلانات {profile.full_name}
+              <Buildings2 className="h-5 w-5 text-primary" /> عقارات {profile.full_name}
             </h2>
-            {listings.length === 0 ? (
-              <EmptyState icon={asIcon(Buildings2)} title="لا توجد إعلانات" />
+            {properties.length === 0 ? (
+              <EmptyState icon={asIcon(Buildings2)} title="لا توجد عقارات" />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {listings.map((l) => (
-                  <Link key={l.id} href={`/listings/${l.id}`}>
-                    <div className="bg-cream rounded-2xl overflow-hidden group hover:card-shadow transition-all">
-                      <div className="relative h-32 bg-gray-100">
-                        {l.main_image ? (
-                          <img src={l.main_image} alt={l.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center"><Buildings2 className="h-8 w-8 text-gray-300" /></div>
-                        )}
-                      </div>
-                      <div className="p-3">
-                        <h3 className="text-sm font-semibold text-gray-800 truncate">{l.title}</h3>
-                        <p className="text-sm font-bold text-primary mt-0.5">{formatPrice(l.price, l.currency)}</p>
-                      </div>
-                    </div>
-                  </Link>
+                {properties.map((l) => (
+                  <PropertyCard key={l.id} property={l} />
                 ))}
               </div>
             )}

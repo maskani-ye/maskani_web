@@ -1,192 +1,123 @@
 "use client";
 
-// مركز المساعدة (العميل — ويب): محادثة دعم موجَّهة تعرض نفس أنواع رسائل التطبيق
-// (welcome/options/text/handoff) مع أزرار الخيارات وشريط إدخال عند التحويل للموظف.
+// مركز المساعدة (العميل) — يستعمل عناصر عرض المحادثة المشتركة (HelpdeskChat)
+// فيبقى التصميم متطابقًا 100% مع تطبيق الجوال ومع لوحة الإدارة. يقرأ مغلّفات
+// محرّك الفلو الجديد مباشرةً، ويتفاعل عبر WebSocket (بديل REST).
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
-import { useAuth } from "@/context/AuthContext";
+import { useHelpdeskSocket } from "@/hooks/useHelpdeskSocket";
+import { HelpAssistant } from "@/components/ai/HelpAssistant";
+import { HelpdeskMessageRow, TypingDots, type HdMessage, type HdBtn, type Envelope } from "@/components/helpdesk/HelpdeskChat";
+import { HeadphonesRound, Refresh, Plain } from "@solar-icons/react";
 import { toast } from "sonner";
-import { HeadphonesRound, ChatRoundLine, Plain } from "@solar-icons/react";
-
-interface HdChoice { id: string; label: string; description?: string }
-interface HdSession { id: string; status: string }
-interface HdMessage {
-  id: string; seq: number; direction: string; content: string;
-  payload: { type?: string; payload?: Record<string, unknown> };
-}
-
-function inner(m: HdMessage): Record<string, unknown> {
-  return m.payload?.payload ?? {};
-}
-function msgText(m: HdMessage): string {
-  const p = inner(m);
-  return (p.text as string) || (p.message as string) || (p.question as string) || m.content || "";
-}
-function msgChoices(m: HdMessage): HdChoice[] {
-  const raw = (inner(m).choices as Array<Record<string, unknown>>) ?? [];
-  return raw.map((c) => ({ id: `${c.id ?? ""}`, label: `${c.label ?? ""}`, description: `${c.description ?? ""}` }));
-}
 
 export default function HelpPage() {
-  const { user, loading: authLoading } = useAuth();
-  const [session, setSession] = useState<HdSession | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<HdMessage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
-  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [text, setText] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const awaitingAgent = session?.status === "awaiting_agent";
-
-  const reload = useCallback(async (sid: string) => {
-    const [{ data: msgs }, { data: s }] = await Promise.all([
-      api.get(ep.helpdeskMessages(sid)),
-      api.post(ep.helpdeskOpen, {}),
-    ]);
-    setMessages(msgs ?? []);
-    setSession(s);
-  }, []);
-
-  const boot = useCallback(async () => {
+  const start = useCallback(async () => {
     setLoading(true);
     try {
-      const { data: s } = await api.post(ep.helpdeskOpen, {});
-      setSession(s);
-      const { data: msgs } = await api.get(ep.helpdeskMessages(s.id));
-      setMessages(msgs ?? []);
-    } catch (e) {
-      toast.error(getErrorMessage(e));
-    } finally {
-      setLoading(false);
-    }
+      const { data } = await api.post<{ session: { id: string }; messages: HdMessage[] }>(ep.helpdeskStart, {});
+      setSessionId(data.session.id);
+      setMessages(data.messages ?? []);
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setLoading(false); }
   }, []);
 
-  useEffect(() => {
-    if (!authLoading && user) boot();
-    else if (!authLoading) setLoading(false);
-  }, [authLoading, user, boot]);
+  // جلسة واحدة تُبنى/تُستأنف عند **فتح الصفحة فقط** (get-or-create): جديدة إن كانت
+  // السابقة مقفلة، وإلا تُستأنف. لا إنشاء تلقائي بعد الإنهاء (تفاديًا لتكاثر الجلسات).
+  useEffect(() => { start(); }, [start]);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  const append = useCallback((m: HdMessage) => {
+    setMessages((prev) => (prev.some((x) => x.id === m.id && x.id > 0) ? prev : [...prev, m]));
+  }, []);
 
-  const choose = async (c: HdChoice) => {
-    if (!session || sending) return;
-    setSending(true);
-    try {
-      await api.post(ep.helpdeskSelectOption(session.id), { node_id: c.id, label: c.label });
-      await reload(session.id);
-    } catch (e) {
-      toast.error(getErrorMessage(e));
-    } finally {
-      setSending(false);
+  const socket = useHelpdeskSocket({
+    sessionId,
+    enabled: !!sessionId,
+    onMessage: (m) => { append(m as unknown as HdMessage); setBusy(false); },
+  });
+
+  // أحداث المستخدم (نقر زرّ/تأكيد/نص) عبر REST دائمًا — طلب/استجابة موثوق يعيد
+  // مغلّفات الردّ. الـWebSocket مخصّص لدفع ردود الموظّف الحيّة فقط (عبر onMessage).
+  const send = async (event: Record<string, unknown>, optimistic?: string) => {
+    if (!sessionId || busy) return;
+    setBusy(true);
+    if (optimistic) {
+      setMessages((m) => [...m, { id: -Date.now(), sender: "user", payload: { type: "user_text", body: optimistic } }]);
     }
+    try {
+      const { data } = await api.post<{ messages: Envelope[] }>(ep.helpdeskEvent(sessionId), event);
+      const wrapped: HdMessage[] = (data.messages ?? []).map((e) => ({ id: e.seq ?? -Date.now(), sender: "bot", payload: e }));
+      setMessages((m) => [...m, ...wrapped]);
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setBusy(false); }
   };
 
-  const send = async () => {
-    const text = input.trim();
-    if (!session || !text || sending) return;
-    setSending(true);
-    setInput("");
-    try {
-      await api.post(ep.helpdeskSendMessage(session.id), { content: text });
-      await reload(session.id);
-    } catch (e) {
-      toast.error(getErrorMessage(e));
-    } finally {
-      setSending(false);
-    }
+  const clickButton = (b: HdBtn, itemId?: string) =>
+    send({ type: "button_click", button_id: b.id, item_id: itemId }, b.label);
+  const confirm = (yes: boolean) =>
+    yes ? send({ type: "confirm" }, "نعم، تابع") : send({ type: "cancel" }, "لا");
+  const sendText = () => {
+    const t = text.trim();
+    if (!t) return;
+    setText("");
+    send({ type: "message", body: t }, t);
   };
-
-  if (!authLoading && !user) {
-    return (
-      <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <HeadphonesRound className="h-12 w-12 text-primary mx-auto mb-3" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">مركز المساعدة</h1>
-        <p className="text-gray-500 mb-6">سجّل الدخول لبدء محادثة مع فريق الدعم.</p>
-        <Link href="/auth/login" className="inline-block bg-primary text-white rounded-xl px-6 py-2.5 font-semibold">
-          تسجيل الدخول
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-          <HeadphonesRound className="h-5 w-5 text-primary" />
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 bg-primary/10 rounded-2xl flex items-center justify-center">
+            <HeadphonesRound weight="Bold" className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">مركز المساعدة</h1>
+            <p className="text-xs text-gray-400">{socket.connected ? "متصل" : "…"} · فريق مسكني</p>
+          </div>
         </div>
-        <h1 className="text-xl font-bold text-gray-900">مركز المساعدة</h1>
+        <button onClick={() => send({ type: "restart" })} title="إعادة البدء"
+          className="text-gray-400 hover:text-primary p-2 rounded-lg hover:bg-primary/5">
+          <Refresh className="h-5 w-5" />
+        </button>
       </div>
 
-      <div className="bg-white rounded-2xl card-shadow p-4 min-h-[60vh] flex flex-col">
-        <div className="flex-1 space-y-3">
+      <HelpAssistant />
+
+      <div className="bg-cream rounded-3xl card-shadow p-3 sm:p-4 min-h-[58vh] flex flex-col">
+        <div className="flex-1 space-y-1.5 overflow-y-auto pb-2">
           {loading ? (
-            <p className="text-center text-gray-400 py-10">جارِ التحميل…</p>
+            <p className="text-center text-gray-400 py-16">جارٍ التحميل…</p>
           ) : (
-            messages.map((m) => {
-              const isUser = m.direction === "user";
-              const isAgent = m.direction === "agent";
-              const choices = msgChoices(m);
-              return (
-                <div key={m.id}>
-                  <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
-                      isUser ? "bg-primary text-white"
-                        : isAgent ? "bg-gold/15 text-gray-800"
-                        : "bg-gray-100 text-gray-700"
-                    }`}>
-                      {!isUser && (
-                        <span className="flex items-center gap-1 text-[11px] opacity-70 mb-0.5">
-                          <ChatRoundLine className="h-3 w-3" />
-                          {isAgent ? "فريق الدعم" : "المساعد"}
-                        </span>
-                      )}
-                      {msgText(m)}
-                    </div>
-                  </div>
-                  {choices.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2 justify-start">
-                      {choices.map((c) => (
-                        <button
-                          key={c.id}
-                          disabled={sending}
-                          onClick={() => choose(c)}
-                          className="text-sm font-semibold text-primary bg-primary/10 hover:bg-primary/20 disabled:opacity-50 rounded-full px-4 py-1.5"
-                        >
-                          {c.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })
+            <>
+              {messages.map((m, i) => (
+                <HelpdeskMessageRow key={`${m.id}-${m.payload.seq ?? ""}`} m={m}
+                  onButton={clickButton} onConfirm={confirm} busy={busy} isLatest={i === messages.length - 1} />
+              ))}
+              {busy && <TypingDots />}
+              <div ref={bottomRef} />
+            </>
           )}
-          <div ref={bottomRef} />
         </div>
 
-        {awaitingAgent && (
-          <div className="flex items-center gap-2 pt-3 mt-3 border-t border-gray-100">
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") send(); }}
-              placeholder="اكتب رسالتك لفريق الدعم…"
-              className="flex-1 h-10 rounded-xl border border-gray-200 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
-            <button
-              onClick={send}
-              disabled={sending || !input.trim()}
-              className="h-10 w-10 rounded-xl bg-primary text-white flex items-center justify-center disabled:opacity-50"
-            >
-              <Plain className="h-4 w-4" />
-            </button>
-          </div>
-        )}
+        <div className="mt-2 flex items-center gap-2 bg-white rounded-full border border-gray-100 px-2 py-1.5 shadow-sm">
+          <input value={text} onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") sendText(); }}
+            placeholder="اكتب رسالتك…"
+            className="flex-1 bg-transparent outline-none text-sm px-3 text-gray-800 placeholder:text-gray-400" />
+          <button onClick={sendText} disabled={busy || !text.trim()}
+            className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center disabled:opacity-40 hover:bg-primary/90">
+            <Plain className="h-4 w-4 -scale-x-100" />
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -6,9 +6,13 @@ import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
+import { useCity } from "@/context/CityContext";
 import { Button } from "@/components/ui/Button";
+import { PhoneField } from "@/components/ui/PhoneField";
+import { MoneyInput } from "@/components/ui/MoneyInput";
 import { toast } from "sonner";
 import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
+import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
 
 interface ServiceCategory { id: number; name_ar: string }
 interface CityItem { id: number; name_ar?: string; name?: string }
@@ -16,6 +20,7 @@ interface CityItem { id: number; name_ar?: string; name?: string }
 export default function CreateJobPage() {
   const { user, loading: authLoading } = useAuth();
   const { requireAuth } = useAuthGate();
+  const { cityId: globalCityId } = useCity();
   const router = useRouter();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [cities, setCities] = useState<CityItem[]>([]);
@@ -45,6 +50,16 @@ export default function CreateJobPage() {
     if (user?.phone && !form.contact_phone) setForm((f) => ({ ...f, contact_phone: user.phone }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  // المدينة الافتراضية: المدينة العالمية ثم مدينة المستخدم (قابلة للتغيير).
+  useEffect(() => {
+    setForm((f) => {
+      if (f.city) return f;
+      const def = globalCityId ? Number(globalCityId) : (user?.city ? Number(user.city) : "");
+      return def ? { ...f, city: def } : f;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, globalCityId]);
 
   const save = async () => {
     if (!form.title.trim() || !form.category || !form.city || !form.description.trim()) {
@@ -96,6 +111,9 @@ export default function CreateJobPage() {
           <div className="flex items-center justify-between gap-2 mb-1.5">
             <label className="block text-sm font-medium text-gray-700">الوصف *</label>
             <SuggestDescriptionButton kind="job" title={form.title} fields={{ "المدينة": form.city }} onSuggest={(d) => setForm((f) => ({ ...f, description: d }))} />
+            {form.description?.trim().length >= 10 && (
+              <ImproveTextButton kind="job" text={form.description} onImprove={(d) => setForm((f) => ({ ...f, description: d }))} />
+            )}
           </div>
           <textarea rows={4} className={`${field} resize-none`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="صف الخدمة التي تحتاجها بالتفصيل..." />
         </div>
@@ -109,11 +127,11 @@ export default function CreateJobPage() {
         <div className="grid grid-cols-3 gap-3">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">أدنى ميزانية</label>
-            <input type="number" min={0} className={field} value={form.budget_min} onChange={(e) => setForm((f) => ({ ...f, budget_min: e.target.value }))} />
+            <MoneyInput value={form.budget_min} onChange={(raw) => setForm((f) => ({ ...f, budget_min: raw }))} placeholder="اختياري" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">أقصى ميزانية</label>
-            <input type="number" min={0} className={field} value={form.budget_max} onChange={(e) => setForm((f) => ({ ...f, budget_max: e.target.value }))} />
+            <MoneyInput value={form.budget_max} onChange={(raw) => setForm((f) => ({ ...f, budget_max: raw }))} placeholder="اختياري" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">العملة</label>
@@ -129,10 +147,7 @@ export default function CreateJobPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1.5">مدة الطلب (أيام)</label>
             <input type="number" min={1} max={90} className={field} value={form.duration_days} onChange={(e) => setForm((f) => ({ ...f, duration_days: Number(e.target.value) || 30 }))} />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">رقم التواصل</label>
-            <input className={field} value={form.contact_phone} onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))} dir="ltr" placeholder="7XXXXXXXX" />
-          </div>
+          <PhoneField label="رقم التواصل" value={form.contact_phone} onChange={(v) => setForm((f) => ({ ...f, contact_phone: v }))} />
         </div>
         <Button onClick={save} loading={saving} fullWidth>نشر الطلب</Button>
       </div>

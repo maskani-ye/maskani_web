@@ -160,11 +160,11 @@ export function routeForData(data: Record<string, string>): string | null {
       const c = id("conversation_id", "conversation");
       return c ? `/chat/${c}` : "/chat";
     }
-    case "new_listing":
+    case "new_property":
     case "new_comment":
-    case "listing_interest": {
-      const l = id("listing_id", "listing");
-      return l ? `/listings/${l}` : "/listings";
+    case "property_interest": {
+      const l = id("property_id", "property");
+      return l ? `/properties/${l}` : "/properties";
     }
     case "new_offer":
     case "request_offer":

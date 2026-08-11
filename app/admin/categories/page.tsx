@@ -7,6 +7,7 @@ import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { ServiceCategoryItem, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { ServiceIcon } from "@/lib/serviceIcons";
@@ -155,15 +156,8 @@ export default function AdminServiceCategoriesPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <Widget className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">أصناف الخدمات</h1>
-            <p className="text-sm text-gray-500">{total.toLocaleString("ar-YE")} صنف</p>
-          </div>
-        </div>
+        <PageHeader icon={<Widget />} title="أصناف الخدمات"
+          subtitle={`${total.toLocaleString("ar-YE")} صنف`} />
         <Button onClick={openAdd}>
           <AddCircle className="h-4 w-4" />
           إضافة صنف

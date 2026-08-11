@@ -10,33 +10,35 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // لوحة Gathern — بنفسجي أساسي
         primary: {
-          DEFAULT: "#2D6A4F",
-          50: "#f0f7f4",
-          100: "#d9ede5",
-          200: "#b5dacb",
-          300: "#85bfa9",
-          400: "#559d85",
-          500: "#2D6A4F",
-          600: "#25573f",
-          700: "#1e4534",
-          800: "#19382a",
-          900: "#132d22",
+          DEFAULT: "#4F2396",
+          50: "#F4F0FB",
+          100: "#E6DCF6",
+          200: "#CDB9ED",
+          300: "#A98FDE",
+          400: "#7E5BC9",
+          500: "#4F2396",
+          600: "#431D80",
+          700: "#371869",
+          800: "#2B1352",
+          900: "#200E3E",
         },
+        // أكسنت كهرماني (Gathern) — تقييم/تمييز
         gold: {
-          DEFAULT: "#D4A017",
-          50: "#fdf9ec",
-          100: "#faf0c9",
-          200: "#f4df8f",
-          300: "#ecc84c",
-          400: "#D4A017",
-          500: "#b88410",
-          600: "#9a6c0d",
-          700: "#7c560b",
-          800: "#644509",
-          900: "#503807",
+          DEFAULT: "#FFC107",
+          50: "#FFF8E1",
+          100: "#FFECB3",
+          200: "#FFE082",
+          300: "#FFD54F",
+          400: "#FFCA28",
+          500: "#FFC107",
+          600: "#FFB300",
+          700: "#FFA000",
+          800: "#FF8F00",
+          900: "#FF6F00",
         },
-        cream: "#F8F6F0",
+        cream: "#F6F6FB",
 
         // ─── Semantic tokens (additive) ────────────────────────────────
         // Consistent with the brand green/gold/cream. Use as bg-success-50,
@@ -51,13 +53,13 @@ const config: Config = {
           700: "#15803D",
         },
         warning: {
-          DEFAULT: "#D4A017", // aligned to brand gold
-          50: "#FDF9EC",
-          100: "#FAF0C9",
-          200: "#F4DF8F",
-          500: "#B88410",
-          600: "#9A6C0D",
-          700: "#7C560B",
+          DEFAULT: "#FFC107", // aligned to brand gold (Gathern amber)
+          50: "#FFF8E1",
+          100: "#FFECB3",
+          200: "#FFE082",
+          500: "#FFB300",
+          600: "#FFA000",
+          700: "#FF8F00",
         },
         danger: {
           DEFAULT: "#DC2626",
@@ -94,6 +96,10 @@ const config: Config = {
       borderRadius: {
         "2xl": "1rem",
         "3xl": "1.5rem",
+      },
+      boxShadow: {
+        card: "0 2px 16px rgba(45, 106, 79, 0.08)",
+        "card-hover": "0 8px 32px rgba(45, 106, 79, 0.16)",
       },
     },
   },

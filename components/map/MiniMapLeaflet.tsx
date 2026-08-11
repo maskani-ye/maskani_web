@@ -1,12 +1,12 @@
 "use client";
 // ─────────────────────────────────────────────────────────────────────────
-//  خريطة مصغّرة غير تفاعلية بعلامة واحدة (لصفحة تفاصيل الإعلان).
+//  خريطة مصغّرة غير تفاعلية بعلامة واحدة (لصفحة تفاصيل العقار).
 //
 //  ⚠️  للتبديل إلى Google Maps JS مستقبلاً: أعد كتابة هذا الملف فقط بنفس الـ
 //      props. لا شيء من Leaflet يتسرّب خارج مجلد components/map/.
 // ─────────────────────────────────────────────────────────────────────────
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
-import { listingIcon } from "./leafletSetup";
+import { propertyIcon } from "./leafletSetup";
 
 import "leaflet/dist/leaflet.css";
 
@@ -34,7 +34,7 @@ export default function MiniMapLeaflet({ lat, lng, zoom = 15 }: MiniMapLeafletPr
       className="maskani-map h-full w-full rounded-2xl z-0"
     >
       <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains={TILE_SUBDOMAINS} maxZoom={20} />
-      <Marker position={[lat, lng]} icon={listingIcon} />
+      <Marker position={[lat, lng]} icon={propertyIcon} />
     </MapContainer>
   );
 }

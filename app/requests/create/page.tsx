@@ -6,14 +6,18 @@ import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
+import { useCity } from "@/context/CityContext";
 import type { City } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { PhoneField } from "@/components/ui/PhoneField";
+import { MoneyInput } from "@/components/ui/MoneyInput";
 import { PenNewSquare, AltArrowRight } from "@solar-icons/react";
 import { toast } from "sonner";
 import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
+import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
 
 const PROPERTY_TYPE_OPTS = [
   { value: "apartment", label: "شقة" },
@@ -37,6 +41,7 @@ const CURRENCY_OPTS = [
 export default function CreateRequestPage() {
   const { user, loading: authLoading } = useAuth();
   const { requireAuth } = useAuthGate();
+  const { cityId: globalCityId } = useCity();
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
   const [saving, setSaving] = useState(false);
@@ -65,6 +70,15 @@ export default function CreateRequestPage() {
   useEffect(() => {
     if (user?.phone) setForm((p) => (p.contact_phone ? p : { ...p, contact_phone: user.phone }));
   }, [user]);
+
+  // المدينة الافتراضية: المدينة العالمية المختارة ثم مدينة المستخدم (قابلة للتغيير).
+  useEffect(() => {
+    setForm((p) => {
+      if (p.city) return p;
+      const def = globalCityId || (user?.city ? String(user.city) : "");
+      return def ? { ...p, city: def } : p;
+    });
+  }, [user, globalCityId]);
 
   const setField = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -111,14 +125,9 @@ export default function CreateRequestPage() {
         <span className="text-gray-700 font-medium">طلب جديد</span>
       </div>
 
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-          <PenNewSquare className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">نشر طلب عقار</h1>
-          <p className="text-gray-500 text-sm">اكتب ما تبحث عنه ودع أصحاب العقارات يتواصلون معك</p>
-        </div>
+      <div className="mb-6">
+        <PageHeader icon={<PenNewSquare />} title="نشر طلب عقار"
+          subtitle="اكتب ما تبحث عنه ودع أصحاب العقارات يتواصلون معك" />
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-3xl card-shadow p-6 space-y-5">
@@ -133,8 +142,14 @@ export default function CreateRequestPage() {
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          <Input label="أقل ميزانية" type="number" placeholder="0" value={form.budget_min} onChange={(e) => setField("budget_min", e.target.value)} />
-          <Input label="أعلى ميزانية" type="number" placeholder="غير محدد" value={form.budget_max} onChange={(e) => setField("budget_max", e.target.value)} />
+          <div>
+            <label className="text-sm font-semibold text-gray-700 mb-1.5 block">أقل ميزانية</label>
+            <MoneyInput value={form.budget_min} onChange={(raw) => setField("budget_min", raw)} placeholder="اختياري" />
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-gray-700 mb-1.5 block">أعلى ميزانية</label>
+            <MoneyInput value={form.budget_max} onChange={(raw) => setField("budget_max", raw)} placeholder="اختياري" />
+          </div>
           <Select label="العملة" options={CURRENCY_OPTS} value={form.currency} onChange={(e) => setField("currency", e.target.value)} />
         </div>
 
@@ -147,6 +162,9 @@ export default function CreateRequestPage() {
           <div className="flex items-center justify-between gap-2 mb-1.5">
             <label className="text-sm font-semibold text-gray-700 block">مواصفات إضافية</label>
             <SuggestDescriptionButton kind="request" title={"طلب عقاري"} fields={{ "النوع": form.property_type, "العرض": form.offer_type, "الحي": form.neighborhood }} onSuggest={(d) => setField("additional_specs", d)} />
+            {form.additional_specs?.trim().length >= 10 && (
+              <ImproveTextButton kind="request" text={form.additional_specs} onImprove={(d) => setField("additional_specs", d)} />
+            )}
           </div>
           <textarea
             value={form.additional_specs}

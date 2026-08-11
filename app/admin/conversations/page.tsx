@@ -8,6 +8,7 @@ import type {
   AdminConversation, AdminConversationMessage, ChatParticipant, PaginatedResponse,
 } from "@/types";
 import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -148,13 +149,8 @@ export default function AdminConversationsPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ChatRoundDots className="h-6 w-6 text-primary" />
-            المحادثات
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">{total.toLocaleString("ar-YE")} محادثة إجمالاً</p>
-        </div>
+        <PageHeader icon={<ChatRoundDots />} title="المحادثات"
+          subtitle={`${total.toLocaleString("ar-YE")} محادثة إجمالاً`} />
       </div>
 
       {/* Filters */}
@@ -220,7 +216,7 @@ export default function AdminConversationsPage() {
                         {c.unread_count > 0 && (
                           <Badge variant="green">{c.unread_count} غير مقروءة</Badge>
                         )}
-                        {c.listing && <Badge variant="blue">إعلان #{c.listing}</Badge>}
+                        {c.property && <Badge variant="blue">عقار #{c.property}</Badge>}
                       </div>
                       <p className="text-xs text-gray-500 mt-1 line-clamp-1">
                         {c.last_message
@@ -296,7 +292,7 @@ export default function AdminConversationsPage() {
                 {selected.unread_count > 0 && (
                   <Badge variant="green">{selected.unread_count} غير مقروءة</Badge>
                 )}
-                {selected.listing && <Badge variant="blue">إعلان #{selected.listing}</Badge>}
+                {selected.property && <Badge variant="blue">عقار #{selected.property}</Badge>}
               </div>
 
               {/* Messages */}

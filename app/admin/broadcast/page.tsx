@@ -6,6 +6,7 @@ import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import { Card } from "@/components/ui/Card";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { toast } from "sonner";
@@ -53,14 +54,9 @@ export default function AdminBroadcastPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-          <Bell className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">تعميم جماعي</h1>
-          <p className="text-sm text-gray-500">إرسال إشعار لكل المستخدمين أو لشريحة محددة</p>
-        </div>
+      <div className="mb-6">
+        <PageHeader icon={<Bell />} title="تعميم جماعي"
+          subtitle="إرسال إشعار لكل المستخدمين أو لشريحة محددة" />
       </div>
 
       <Card className="space-y-5">

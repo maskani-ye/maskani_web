@@ -4,6 +4,7 @@ export type UserRole = "user" | "admin";
 export interface User {
   id: number;
   phone: string;
+  email: string;
   full_name: string;
   role: UserRole;
   is_service_provider: boolean;
@@ -15,7 +16,7 @@ export interface User {
   city_name: string | null;
   average_rating: number | null;
   ratings_count: number;
-  listings_count: number;
+  properties_count: number;
   followers_count: number;
   following_count: number;
   // true حين لا هاتف — العميل يُرغّب بالإكمال بلا إجبار
@@ -42,34 +43,36 @@ export interface City {
   country_name: string;
   latitude?: string | null;
   longitude?: string | null;
+  image?: string | null;
   is_active?: boolean;
 }
 
-// ─── Listings ─────────────────────────────────────────────────────────────
+// ─── Properties ─────────────────────────────────────────────────────────────
 export type PropertyType = "apartment" | "house" | "land" | "commercial";
 export type OfferType = "sale" | "rent_monthly" | "rent_yearly";
 export type Currency = "SAR" | "YER" | "USD";
 export type FurnishingType = "furnished" | "unfurnished" | "semi_furnished";
-export type ListingStatus = "available" | "reserved" | "sold_rented";
+export type PropertyStatus = "available" | "reserved" | "sold_rented";
 
-export interface ListingImage {
+export interface PropertyImage {
   id: number;
   image: string;
   is_main: boolean;
   order: number;
 }
 
-export interface Listing {
+export interface Property {
   id: number;
   user: number | User;
   user_name?: string;
   user_verified?: boolean;
   title: string;
   description: string;
-  property_type: PropertyType;
+  // الخادم يُرجعها ككائن متداخل {id,name_ar,icon} (PropertyType أصبح جدولاً/FK).
+  property_type: PropertyTypeRef;
   offer_type: OfferType;
   furnishing: FurnishingType | null;
-  status: ListingStatus;
+  status: PropertyStatus;
   city: number;
   city_name?: string;
   neighborhood: string;
@@ -102,7 +105,7 @@ export interface Listing {
   views_count: number;
   favorites_count: number;
   main_image: string | null;
-  images?: ListingImage[];
+  images?: PropertyImage[];
   created_at: string;
   updated_at: string;
 }
@@ -116,10 +119,10 @@ export interface PropertyTypeItem {
   icon: string;
   is_active: boolean;
   order: number;
-  listings_count?: number;
+  properties_count?: number;
 }
 
-// نسخة مصغّرة تأتي متداخلة داخل الإعلان
+// نسخة مصغّرة تأتي متداخلة داخل العقار
 export interface PropertyTypeRef {
   id: number;
   name_ar: string;
@@ -194,7 +197,7 @@ export interface ServiceReview {
 }
 
 // ─── Fraud Reports ────────────────────────────────────────────────────────
-export type FraudType = "fake_listing" | "scam" | "fake_owner" | "double_rent" | "deposit_theft" | "other";
+export type FraudType = "fake_property" | "scam" | "fake_owner" | "double_rent" | "deposit_theft" | "other";
 export type ReportStatus = "pending" | "verified" | "rejected";
 
 export interface FraudReport {
@@ -235,6 +238,7 @@ export interface ClientRequest {
   id: number;
   client: number;
   client_name: string;
+  title: string;
   property_type: string;
   offer_type: string;
   city: number;
@@ -260,8 +264,8 @@ export interface RequestOffer {
   offered_by_name: string;
   offered_by_verified: boolean;
   offered_by_avatar: string | null;
-  listing: number | null;
-  listing_details?: Listing;
+  property: number | null;
+  property_details?: Property;
   message: string;
   contact_phone: string;
   is_read: boolean;
@@ -338,7 +342,7 @@ export interface Message {
 export interface Conversation {
   id: number;
   other_participant: ChatParticipant;
-  listing: number | null;
+  property: number | null;
   last_message: Pick<Message, "body" | "created_at"> & Partial<Message> | null;
   unread_count: number;
   created_at: string;
@@ -358,7 +362,7 @@ export interface AdminConversation {
   id: number;
   participant_a: ChatParticipant;
   participant_b: ChatParticipant;
-  listing: number | null;
+  property: number | null;
   last_message: AdminConversationLastMessage | null;
   messages_count: number;
   unread_count: number;

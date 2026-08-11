@@ -1,7 +1,7 @@
 "use client";
 
 // شريط تنقّل سفلي app-like — يظهر على الجوّال فقط (md:hidden). مطابق لتطبيق Flutter:
-// الرئيسية / الإعلانات / الخدمات / طلبات عقارية / طلبات خدمات / حسابي.
+// الرئيسية / العقارات / الخدمات / الطلبات / حسابي.
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -11,10 +11,9 @@ import { Home2, Buildings2, Settings, ClipboardList, Case, User } from "@solar-i
 
 const TABS = [
   { href: "/", label: "الرئيسية", icon: Home2, exact: true },
-  { href: "/listings", label: "الإعلانات", icon: Buildings2 },
+  { href: "/properties", label: "العقارات", icon: Buildings2 },
   { href: "/services", label: "الخدمات", icon: Settings },
-  { href: "/requests", label: "طلبات عقارية", icon: ClipboardList },
-  { href: "/jobs", label: "طلبات خدمات", icon: Case },
+  { href: "/requests", label: "الطلبات", icon: ClipboardList },
   { href: "/profile", label: "حسابي", icon: User, auth: true },
 ];
 

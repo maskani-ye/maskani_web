@@ -7,6 +7,7 @@ import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { PropertyTypeItem, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { ServiceIcon } from "@/lib/serviceIcons";
@@ -145,7 +146,7 @@ export default function AdminPropertyTypesPage() {
       setDeleteTarget(null);
       fetchTypes(offset);
     } catch (err) {
-      // الـ backend يمنع الحذف إن كان مرتبطاً بإعلانات — نُظهر رسالته
+      // الـ backend يمنع الحذف إن كان مرتبطاً بعقارات — نُظهر رسالته
       toast.error(getErrorMessage(err));
     } finally { setDeleting(false); }
   };
@@ -155,15 +156,8 @@ export default function AdminPropertyTypesPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <Widget className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">أنواع العقارات</h1>
-            <p className="text-sm text-gray-500">{total.toLocaleString("ar-YE")} نوع</p>
-          </div>
-        </div>
+        <PageHeader icon={<Widget />} title="أنواع العقارات"
+          subtitle={`${total.toLocaleString("ar-YE")} نوع`} />
         <Button onClick={openAdd}>
           <AddCircle className="h-4 w-4" />
           إضافة نوع
@@ -207,8 +201,8 @@ export default function AdminPropertyTypesPage() {
                   </td>
                   <td className="py-3 px-4 font-semibold text-gray-800">
                     {t.name_ar}
-                    {typeof t.listings_count === "number" && (
-                      <span className="text-xs text-gray-400 font-normal mr-2">({t.listings_count} إعلان)</span>
+                    {typeof t.properties_count === "number" && (
+                      <span className="text-xs text-gray-400 font-normal mr-2">({t.properties_count} عقار)</span>
                     )}
                   </td>
                   <td className="py-3 px-4 text-gray-500 hidden sm:table-cell">{t.name_en || "—"}</td>
@@ -313,9 +307,9 @@ export default function AdminPropertyTypesPage() {
         <Modal title="تأكيد الحذف" onClose={() => setDeleteTarget(null)}>
           <p className="text-gray-600 text-sm mb-6">
             سيتم حذف النوع <strong>{deleteTarget.name_ar}</strong> نهائياً.
-            {typeof deleteTarget.listings_count === "number" && deleteTarget.listings_count > 0 && (
+            {typeof deleteTarget.properties_count === "number" && deleteTarget.properties_count > 0 && (
               <span className="block mt-2 text-red-500">
-                يوجد {deleteTarget.listings_count} إعلان مرتبط بهذا النوع — قد يمنع النظام الحذف.
+                يوجد {deleteTarget.properties_count} عقار مرتبط بهذا النوع — قد يمنع النظام الحذف.
               </span>
             )}
           </p>

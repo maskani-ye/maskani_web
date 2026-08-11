@@ -128,3 +128,33 @@ export const TOOLS: ToolMeta[] = [
 ];
 
 export const toolBySlug = (slug: string) => TOOLS.find((t) => t.slug === slug);
+
+// المقالات المخصّصة لكل حاسبة (3 لكل واحدة) — عنقود مواضيعيّ للـSEO. كل حاسبة
+// تربط مقالاتها، وكل مقالة تربط حاسبتها ومقالتيها الشقيقتين (ربط داخليّ متبادل).
+export const TOOL_ARTICLES: Record<string, { slug: string; title: string }[]> = {
+  "construction-cost": [
+    { slug: "cost-per-square-meter-yemen", title: "سعر المتر المربّع للبناء في اليمن: ما الذي يحدّده؟" },
+    { slug: "reduce-construction-cost", title: "كيف تخفّض تكلفة البناء دون التفريط في الجودة؟" },
+    { slug: "construction-budget-planning", title: "تخطيط ميزانية البناء: من التقدير إلى مراحل الصرف" },
+  ],
+  "rental-yield": [
+    { slug: "good-rental-yield-yemen", title: "ما العائد الإيجاريّ الجيّد في اليمن؟" },
+    { slug: "increase-rental-income", title: "كيف ترفع دخل عقارك الإيجاريّ؟" },
+    { slug: "gross-vs-net-rental-yield", title: "العائد الإجماليّ مقابل الصافي: الفرق العمليّ" },
+  ],
+  "installment": [
+    { slug: "property-down-payment-guide", title: "الدفعة المقدّمة عند شراء العقار: كم تدفع ولماذا؟" },
+    { slug: "installment-contract-clauses", title: "بنود عقد البيع بالتقسيط التي تحميك" },
+    { slug: "installment-vs-cash-purchase", title: "الشراء نقدًا أم بالتقسيط؟ موازنة عملية" },
+  ],
+  "rent-affordability": [
+    { slug: "rent-budget-planning", title: "كيف تضع ميزانية سكن واقعية؟" },
+    { slug: "hidden-rent-costs", title: "التكاليف الخفيّة للإيجار التي يغفلها الكثيرون" },
+    { slug: "rent-vs-buy-decision", title: "الإيجار أم الشراء؟ متى يكون كلٌّ منهما أفضل" },
+  ],
+  "area-converter": [
+    { slug: "yemen-land-units-explained", title: "وحدات قياس الأراضي في اليمن: اللبنة والقصبة والمعاد" },
+    { slug: "measure-land-before-buying", title: "كيف تتحقّق من مساحة الأرض قبل الشراء؟" },
+    { slug: "land-price-calculation", title: "حساب سعر الأرض حسب المساحة والموقع" },
+  ],
+};

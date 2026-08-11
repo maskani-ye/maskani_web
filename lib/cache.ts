@@ -20,7 +20,7 @@ class ApiCache {
     STATS:        60 * 60 * 1000,   // 1 h  — admin stats dashboard
     CITY_LIST:    24 * 60 * 60 * 1000, // 24 h — cities never change
     USER_LIST:    30 * 1000,        // 30 s — users change often
-    LISTING_LIST: 60 * 1000,        // 1 min
+    PROPERTY_LIST: 60 * 1000,        // 1 min
     FRAUD_LIST:   60 * 1000,        // 1 min
     REQUEST_LIST: 60 * 1000,        // 1 min
     SERVICE_LIST: 2 * 60 * 1000,    // 2 min

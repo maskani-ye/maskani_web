@@ -1,14 +1,14 @@
 "use client";
 
 // زر «اقتراح وصف» بالذكاء الاصطناعي — يملأ حقل الوصف من العنوان والحقول.
-// يُستخدم في نماذج إنشاء الإعلان/الخدمة/الطلب. آمن: يتطلّب العنوان فقط.
+// يُستخدم في نماذج إنشاء العقار/الخدمة/الطلب. آمن: يتطلّب العنوان فقط.
 import { useState } from "react";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import { toast } from "sonner";
 import { MagicStick, Refresh } from "@solar-icons/react";
 
-type Kind = "listing" | "service" | "request" | "job";
+type Kind = "property" | "service" | "request" | "job";
 
 export function SuggestDescriptionButton({
   kind,

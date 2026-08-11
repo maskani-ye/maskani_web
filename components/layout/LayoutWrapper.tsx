@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "./Navbar";
 import { BottomNav } from "./BottomNav";
 import { Footer } from "./Footer";
+import { FloatingHelp } from "./FloatingHelp";
 import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
 import { CityFirstVisitModal } from "@/components/city/CityFirstVisitModal";
 import { ProfileCompletionBanner } from "@/components/account/ProfileCompletionBanner";
@@ -28,6 +29,8 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       <ProfileCompletionBanner />
       <main className="flex-1">{children}</main>
       <Footer />
+      {/* زرّ عائم لمركز المساعدة */}
+      <FloatingHelp />
       {/* شريط تنقّل سفلي app-like — جوّال فقط (يُخفى في المحادثة المفتوحة) */}
       {!isChatConversation && <BottomNav />}
     </div>

@@ -5,6 +5,7 @@ import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import { formatRelativeTime, formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -161,13 +162,8 @@ export default function AdminRequestsPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ChatRound className="h-6 w-6 text-primary" />
-            طلبات عقارية
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">{total.toLocaleString("ar-YE")} طلب إجمالاً</p>
-        </div>
+        <PageHeader icon={<ChatRound />} title="طلبات عقارية"
+          subtitle={`${total.toLocaleString("ar-YE")} طلب إجمالاً`} />
       </div>
 
       {/* Filters */}

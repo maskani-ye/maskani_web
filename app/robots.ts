@@ -14,7 +14,7 @@ export default function robots(): MetadataRoute.Robots {
           "/favorites",
           "/notifications",
           "/services/my",
-          "/listings/create",
+          "/properties/create",
           "/requests/create",
           "/jobs/create",
           "/reports/create",

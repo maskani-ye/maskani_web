@@ -7,6 +7,7 @@ import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { User, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
@@ -143,15 +144,8 @@ export default function AdminUsersPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <UsersGroupRounded className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">إدارة المستخدمين</h1>
-            <p className="text-sm text-gray-500">{total.toLocaleString("ar-YE")} مستخدم</p>
-          </div>
-        </div>
+        <PageHeader icon={<UsersGroupRounded />} title="إدارة المستخدمين"
+          subtitle={`${total.toLocaleString("ar-YE")} مستخدم`} />
       </div>
 
       {/* Filters */}
@@ -310,8 +304,8 @@ export default function AdminUsersPage() {
             {/* Stats */}
             <div className="grid grid-cols-2 gap-2 mb-5">
               <div className="bg-gray-50 rounded-xl p-2.5 text-center">
-                <p className="text-lg font-bold text-gray-900">{selected.listings_count}</p>
-                <p className="text-xs text-gray-500">إعلان</p>
+                <p className="text-lg font-bold text-gray-900">{selected.properties_count}</p>
+                <p className="text-xs text-gray-500">عقار</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-2.5 text-center">
                 <p className="text-lg font-bold text-gray-900">{selected.average_rating ?? "—"}</p>

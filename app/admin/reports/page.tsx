@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { formatRelativeTime, fraudTypeLabels, reportStatusColors, reportStatusLabels } from "@/lib/utils";
 import type { FraudReport, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { toast } from "sonner";
 import {
@@ -104,13 +105,8 @@ export default function AdminReportsPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ShieldWarning className="h-6 w-6 text-red-500" />
-            إدارة بلاغات الاحتيال
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">{total} بلاغ إجمالي</p>
-        </div>
+        <PageHeader icon={<ShieldWarning />} title="إدارة بلاغات الاحتيال"
+          subtitle={`${total} بلاغ إجمالي`} />
         <div className="flex gap-2">
           {["pending", "verified", "rejected"].map((s) => (
             <button

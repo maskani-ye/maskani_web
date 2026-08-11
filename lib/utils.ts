@@ -19,9 +19,12 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: "$",
 };
 
+// نصّ موحّد لغياب السعر — «السعر عند التواصل» يشجّع على النقر/التواصل.
+export const PRICE_ON_REQUEST = "السعر عند التواصل";
+
 export function formatPrice(price: string | number | null | undefined, currency?: string | null): string {
   const num = typeof price === "string" ? parseFloat(price) : price;
-  if (num == null || isNaN(num)) return "—";
+  if (num == null || isNaN(num)) return PRICE_ON_REQUEST;
   // عملة غير صالحة/فارغة → افتراضي YER (تفادي: "Currency code is required with currency style").
   const cur = (currency || "YER").toUpperCase();
   const localeMap: Record<string, string> = { SAR: "ar-SA", YER: "ar-YE", USD: "en-US" };
@@ -88,7 +91,7 @@ export const statusColors: Record<string, string> = {
 };
 
 export const fraudTypeLabels: Record<string, string> = {
-  fake_listing: "إعلان وهمي",
+  fake_property: "عقار وهمي",
   scam: "احتيال / نصب",
   fake_owner: "انتحال صفة المالك",
   double_rent: "تأجير مزدوج",

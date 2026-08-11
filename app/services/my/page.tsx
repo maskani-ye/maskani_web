@@ -8,10 +8,13 @@ import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
+import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
 import { AddCircle, TrashBinTrash, PenNewSquare, CloseCircle } from "@solar-icons/react";
+import { compressImage } from "@/lib/imageCompression";
 
 interface ServiceCategory { id: number; name_ar: string; icon?: string | null }
 interface CityItem { id: number; name_ar?: string; name?: string }
@@ -57,6 +60,7 @@ export default function MyServicesPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [confirmTarget, setConfirmTarget] = useState<MyService | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
@@ -146,13 +150,17 @@ export default function MyServicesPage() {
     finally { setSaving(false); }
   };
 
-  const remove = async (s: MyService) => {
-    if (!confirm(`حذف خدمة «${s.title}»؟`)) return;
+  const remove = (s: MyService) => setConfirmTarget(s);
+
+  const confirmRemove = async () => {
+    const s = confirmTarget;
+    if (!s) return;
     setDeletingId(s.id);
     try {
       await api.delete(ep.serviceDelete(s.id));
       toast.success("تم حذف الخدمة");
       if (editing?.id === s.id) { setShowForm(false); setEditing(null); }
+      setConfirmTarget(null);
       loadMine();
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setDeletingId(null); }
@@ -165,7 +173,7 @@ export default function MyServicesPage() {
     setUploading(true);
     try {
       const fd = new FormData();
-      fd.append("image", file);
+      fd.append("image", await compressImage(file));
       fd.append("provider", String(editing.id)); // أيّ خدمة (المستخدم قد يملك عدّة)
       const { data } = await api.post<PortfolioItem>(ep.portfolioAdd, fd, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -249,6 +257,9 @@ export default function MyServicesPage() {
             <div className="flex items-center justify-between gap-2 mb-1.5">
               <label className="block text-sm font-medium text-gray-700">الوصف</label>
               <SuggestDescriptionButton kind="service" title={form.title} onSuggest={(d) => setForm((f) => ({ ...f, description: d }))} />
+              {form.description?.trim().length >= 10 && (
+                <ImproveTextButton kind="service" text={form.description} onImprove={(d) => setForm((f) => ({ ...f, description: d }))} />
+              )}
             </div>
             <textarea rows={3} className={`${field} resize-none`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="اكتب وصفاً لخدمتك..." />
           </div>
@@ -312,6 +323,17 @@ export default function MyServicesPage() {
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!confirmTarget}
+        title="حذف الخدمة"
+        message={confirmTarget ? `هل تريد حذف خدمة «${confirmTarget.title}»؟` : undefined}
+        confirmLabel="حذف"
+        variant="danger"
+        loading={deletingId != null}
+        onConfirm={confirmRemove}
+        onCancel={() => setConfirmTarget(null)}
+      />
     </div>
   );
 }

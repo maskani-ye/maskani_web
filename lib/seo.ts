@@ -6,19 +6,19 @@ export const SITE_URL = "https://maskani.homes";
 export const SITE_NAME = "مسكني";
 
 // ─── بيانات وصفية لكل قسم (تُستهلَك من app/<section>/layout.tsx) ────────────────
-type SectionKey = "listings" | "services" | "requests" | "jobs" | "reports";
+type SectionKey = "properties" | "services" | "requests" | "jobs" | "reports";
 
 const SECTIONS: Record<
   SectionKey,
   { title: string; description: string; keywords: string[] }
 > = {
-  listings: {
-    title: "إعلانات عقارية في اليمن — بيع وإيجار شقق وفلل وأراضٍ",
+  properties: {
+    title: "عقارات في اليمن — بيع وإيجار شقق وفلل وأراضٍ",
     description:
-      "تصفّح آلاف الإعلانات العقارية في اليمن: شقق وفلل وأراضٍ ومحلات للبيع والإيجار، مع فلترة بالمدينة والنوع والسعر والمساحة، وعرضها على الخريطة.",
+      "تصفّح آلاف العقارات في اليمن: شقق وفلل وأراضٍ ومحلات للبيع والإيجار، مع فلترة بالمدينة والنوع والسعر والمساحة، وعرضها على الخريطة.",
     keywords: [
       "عقارات اليمن", "شقق للبيع", "شقق للإيجار", "فلل للبيع", "أراضي للبيع",
-      "محلات تجارية", "عقارات صنعاء", "عقارات عدن", "عقارات تعز", "إعلانات عقارية",
+      "محلات تجارية", "عقارات صنعاء", "عقارات عدن", "عقارات تعز", "عقارات",
     ],
   },
   services: {
@@ -97,7 +97,7 @@ export function citySlug(nameEn: string): string {
 
 export function sectionLabel(key: SectionKey): string {
   return {
-    listings: "الإعلانات",
+    properties: "العقارات",
     services: "الخدمات",
     requests: "الطلبات العقارية",
     jobs: "طلبات الخدمات",
@@ -157,15 +157,15 @@ export const homeFaq = {
       name: "هل استخدام مسكني مجاني؟",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "نعم، إنشاء الحساب ونشر الإعلانات وتصفّح العقارات والتواصل مع أصحابها مجاني بالكامل، ولا توجد أي عمولات أو مدفوعات على المنصّة.",
+        text: "نعم، إنشاء الحساب ونشر العقارات وتصفّح العقارات والتواصل مع أصحابها مجاني بالكامل، ولا توجد أي عمولات أو مدفوعات على المنصّة.",
       },
     },
     {
       "@type": "Question",
-      name: "كيف أضيف إعلاناً عقارياً؟",
+      name: "كيف أضيف عقاراً عقارياً؟",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "سجّل الدخول عبر حساب Google، ثم اضغط «أضف إعلاناً» واملأ تفاصيل العقار (النوع، السعر، المساحة، المدينة) مع الصور وتحديد الموقع على الخريطة — وينشر إعلانك مباشرة.",
+        text: "سجّل الدخول عبر حساب Google، ثم اضغط «أضف عقاراً» واملأ تفاصيل العقار (النوع، السعر، المساحة، المدينة) مع الصور وتحديد الموقع على الخريطة — وينشر عقارك مباشرة.",
       },
     },
     {
@@ -186,3 +186,26 @@ export const homeFaq = {
     },
   ],
 };
+
+// ─── JSON-LD لمقال المدونة (BlogPosting) — لبطاقات نتائج غنيّة ─────────────────
+export function blogPosting(a: {
+  title: string; slug: string; excerpt: string; image?: string | null;
+  published?: string | null; updated?: string | null; author?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: a.title,
+    description: a.excerpt,
+    image: a.image ? [a.image] : [`${SITE_URL}/og.webp`],
+    ...(a.published ? { datePublished: a.published } : {}),
+    dateModified: a.updated || a.published || undefined,
+    author: { "@type": "Organization", name: a.author || SITE_NAME },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/og.webp` },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${a.slug}` },
+  };
+}

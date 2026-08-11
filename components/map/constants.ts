@@ -4,8 +4,8 @@
 // ─────────────────────────────────────────────────────────────────────────
 import type { Currency, OfferType, PropertyType } from "@/types";
 
-/** شكل نتيجة نقطة الخريطة القادمة من GET /listings/map/ */
-export interface MapListing {
+/** شكل نتيجة نقطة الخريطة القادمة من GET /properties/map/ */
+export interface MapProperty {
   id: number;
   latitude: number;
   longitude: number;
@@ -19,7 +19,7 @@ export interface MapListing {
 export interface MapResponse {
   count: number;
   truncated: boolean;
-  results: MapListing[];
+  results: MapProperty[];
 }
 
 /** المركز الافتراضي — صنعاء، اليمن */

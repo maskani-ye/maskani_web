@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, type ComponentType } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -9,7 +10,7 @@ import {
   UsersGroupRounded, Buildings2, ShieldWarning, PenNewSquare,
   Eye, GraphNewUp, Bell, CheckCircle, MapPoint, AltArrowUp,
   DangerTriangle, Refresh, ChartSquare, ChatRoundDots, ShieldCheck,
-  Letter, UserCross,
+  Letter, UserCross, Routing,
   Case,
 } from "@solar-icons/react";
 import {
@@ -17,11 +18,13 @@ import {
   PieChart, Pie, Cell, LineChart, Line, CartesianGrid,
 } from "recharts";
 import { StatCard } from "@/components/ui/StatCard";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ChartCard } from "@/components/ui/ChartCard";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
+import { brand, chartPalette } from "@/lib/theme";
 import { toast } from "sonner";
 
 // ─── Types (تطابق 1:1 مع GET /admin/stats/) ─────────────────────────────────
@@ -32,8 +35,8 @@ interface AdminStats {
   inactive_users: number;
   verified_count: number;
   service_providers_count: number;
-  listings_count: number;   // الإعلانات النشطة فقط (is_active=True)
-  listings_total: number;
+  properties_count: number;   // العقارات النشطة فقط (is_active=True)
+  properties_total: number;
   fraud_count: number;
   pending_fraud: number;
   verified_fraud: number;
@@ -44,17 +47,17 @@ interface AdminStats {
   conversations_count: number;
   messages_count: number;
   new_users_7d: number;
-  new_listings_7d: number;
+  new_properties_7d: number;
   new_fraud_7d: number;
   roles: { role: string; count: number }[];
   offer_types: { offer_type: string; count: number }[];
   property_types: { property_type__name_ar: string; count: number }[];
-  listings_by_status: { status: string; count: number }[];
+  properties_by_status: { status: string; count: number }[];
   top_cities: { city__name_ar: string; count: number }[];
   daily_users: { day: string; count: number }[];
 }
 
-const COLORS = ["#2D6A4F", "#D4A017", "#EF4444", "#3B82F6", "#8B5CF6"];
+const COLORS = [...chartPalette];
 
 const roleLabels: Record<string, string> = { user: "مستخدم", admin: "مشرف" };
 const offerLabels: Record<string, string> = {
@@ -173,7 +176,7 @@ export default function AdminDashboardPage() {
           <EmptyState
             icon={asIcon(ChartSquare)}
             title="لا توجد بيانات بعد"
-            message="ستظهر الإحصائيات هنا فور تسجيل المستخدمين وإضافة الإعلانات."
+            message="ستظهر الإحصائيات هنا فور تسجيل المستخدمين وإضافة العقارات."
           />
         </Card>
       </div>
@@ -184,8 +187,8 @@ export default function AdminDashboardPage() {
   const kpis = [
     { label: "إجمالي المستخدمين", value: stats.users_count,   icon: UsersGroupRounded,
       trend: { value: `+${stats.new_users_7d}`, direction: "up" as const }, sub: "هذا الأسبوع" },
-    { label: "الإعلانات النشطة",  value: stats.listings_count, icon: Buildings2,
-      trend: { value: `+${stats.new_listings_7d}`, direction: "up" as const }, sub: "هذا الأسبوع" },
+    { label: "العقارات النشطة",  value: stats.properties_count, icon: Buildings2,
+      trend: { value: `+${stats.new_properties_7d}`, direction: "up" as const }, sub: "هذا الأسبوع" },
     { label: "بلاغات الاحتيال",   value: stats.fraud_count,    icon: ShieldWarning,
       trend: { value: `+${stats.new_fraud_7d}`, direction: "up" as const }, sub: "هذا الأسبوع" },
     { label: "قيد المراجعة",      value: stats.pending_fraud,  icon: Eye,
@@ -201,18 +204,24 @@ export default function AdminDashboardPage() {
   const propertyData = (stats.property_types ?? []).map((p) => ({ name: p.property_type__name_ar ?? "غير محدد", value: p.count }));
   const citiesData   = (stats.top_cities ?? []).map((c) => ({ name: c.city__name_ar, value: c.count }));
   const dailyData    = (stats.daily_users ?? []).map((d) => ({ name: d.day?.slice(5), value: d.count }));
-  const statusData   = (stats.listings_by_status ?? []).map((s) => ({ name: statusLabels[s.status] ?? s.status, value: s.count }));
+  const statusData   = (stats.properties_by_status ?? []).map((s) => ({ name: statusLabels[s.status] ?? s.status, value: s.count }));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">لوحة الإدارة</h1>
-          <p className="text-gray-500 text-sm mt-1">مرحباً {user?.full_name}</p>
-        </div>
-        <div className="text-xs bg-green-50 text-green-600 px-3 py-1.5 rounded-full flex items-center gap-1 font-medium">
-          <CheckCircle className="h-3.5 w-3.5" /> البيانات مباشرة من الخادم
+      <div className="flex items-center justify-between mb-8 gap-3 flex-wrap">
+        <PageHeader icon={<GraphNewUp />} title="لوحة الإدارة"
+          subtitle={`مرحباً ${user?.full_name ?? ""}`} />
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/helpdesk/flow"
+            className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3.5 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
+          >
+            <Routing className="h-4 w-4" /> تدفّق محادثات البوت
+          </Link>
+          <div className="text-xs bg-green-50 text-green-600 px-3 py-1.5 rounded-full flex items-center gap-1 font-medium">
+            <CheckCircle className="h-3.5 w-3.5" /> البيانات مباشرة من الخادم
+          </div>
         </div>
       </div>
 
@@ -254,7 +263,7 @@ export default function AdminDashboardPage() {
             <XAxis dataKey="name" tick={axisTick} />
             <YAxis tick={axisTick} allowDecimals={false} />
             <Tooltip contentStyle={tooltipStyle} />
-            <Line type="monotone" dataKey="value" stroke="#2D6A4F" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="value" stroke={brand.primary} strokeWidth={2} dot={false} />
           </LineChart>
         </ChartCard>
 
@@ -281,7 +290,7 @@ export default function AdminDashboardPage() {
       {/* Charts — Row 2 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <ChartCard
-          title="الإعلانات حسب الحالة"
+          title="العقارات حسب الحالة"
           icon={Buildings2}
           height={180}
           empty={statusData.length === 0}
@@ -295,7 +304,7 @@ export default function AdminDashboardPage() {
         </ChartCard>
 
         <ChartCard
-          title="الإعلانات حسب نوع العرض"
+          title="العقارات حسب نوع العرض"
           icon={Buildings2}
           height={180}
           empty={offersData.length === 0}
@@ -304,12 +313,12 @@ export default function AdminDashboardPage() {
             <XAxis type="number" tick={axisTick} allowDecimals={false} />
             <YAxis dataKey="name" type="category" tick={axisTick} width={80} />
             <Tooltip contentStyle={tooltipStyle} />
-            <Bar dataKey="value" fill="#D4A017" radius={[0, 6, 6, 0]} />
+            <Bar dataKey="value" fill={brand.gold} radius={[0, 6, 6, 0]} />
           </BarChart>
         </ChartCard>
 
         <ChartCard
-          title="الإعلانات حسب نوع العقار"
+          title="العقارات حسب نوع العقار"
           icon={Buildings2}
           height={180}
           empty={propertyData.length === 0}

@@ -4,7 +4,7 @@
 
 Next.js 14 App Router + TypeScript + Tailwind CSS + RTL عربي — **تطبيق مستخدم عام + لوحة إدارة**
 
-> تطبيق ويب كامل للمستخدمين العاديين (إعلانات/خدمات/شكاوى/طلبات/شات) **ولوحة إدارة** لأصحاب `role === 'admin'`. تسجيل الدخول **بـ Google حصراً** للجميع، والتوكن **knox** (لا JWT).
+> تطبيق ويب كامل للمستخدمين العاديين (عقارات/خدمات/شكاوى/طلبات/شات) **ولوحة إدارة** لأصحاب `role === 'admin'`. تسجيل الدخول **بـ Google حصراً** للجميع، والتوكن **knox** (لا JWT).
 
 ## تشغيل المشروع
 
@@ -23,11 +23,11 @@ npm run lint
 ### 1. الترقيم الصفحي
 ```ts
 // ✅ صحيح — offset/limit دائماً
-api.get('/listings/', { params: { offset: 0, limit: 20 } })
-api.get('/listings/', { params: { offset: 20, limit: 20 } })  // الصفحة التالية
+api.get('/properties/', { params: { offset: 0, limit: 20 } })
+api.get('/properties/', { params: { offset: 20, limit: 20 } })  // الصفحة التالية
 
 // ❌ خطأ
-api.get('/listings/', { params: { page: 2 } })
+api.get('/properties/', { params: { page: 2 } })
 ```
 
 ### 2. مكوّن Badge
@@ -57,9 +57,10 @@ axios.create(...)   // بدون استخدام api.ts
 className="text-primary bg-cream"
 
 // Design tokens
-primary = #2D6A4F    // أخضر زيتوني
-gold    = #D4A017    // ذهبي
-cream   = #F8F6F0    // خلفية
+primary = #4F2396    // بنفسجي Gathern
+gold    = #FFC107    // كهرماني (أكسنت)
+cream   = #F6F6FB    // خلفية
+ink     = #050536    // نصّ رئيسي (كحلي)
 ```
 
 ---
@@ -72,14 +73,24 @@ maskani_web/
 │   ├── layout.tsx            # RTL + Cairo font + AuthProvider
 │   ├── globals.css           # Tailwind + glass utilities
 │   ├── auth/                 # login + register
-│   └── admin/                # لوحة الإدارة (كل شيء هنا)
-│       ├── layout.tsx        # Sidebar + Header
-│       ├── page.tsx          # Dashboard — إحصائيات
-│       ├── users/            # إدارة المستخدمين
-│       ├── listings/         # إدارة الإعلانات
-│       ├── fraud-reports/    # إدارة الشكاوي
-│       ├── requests/         # عرض الطلبات
-│       └── services/         # عرض مزودي الخدمات
+│   └── admin/                # لوحة الإدارة (role === 'admin') — مجمّعة حسب الوظيفة
+│       ├── layout.tsx        # Sidebar (NAV_GROUPS) + Header
+│       ├── page.tsx          # لوحة التحكم — إحصائيات
+│       ├── analytics/        # التحليلات            [نظرة عامة]
+│       ├── users/            # المستخدمون           [المستخدمون]
+│       ├── verification/     # طلبات التوثيق        [المستخدمون]
+│       ├── properties/         # العقارات            [العقارات]
+│       ├── requests/         # طلبات عقارية         [العقارات]
+│       ├── services/         # مزودو الخدمة         [الخدمات]
+│       ├── jobs/             # طلبات الخدمة         [الخدمات]
+│       ├── conversations/    # المحادثات            [التواصل]
+│       ├── helpdesk/         # مركز المساعدة        [التواصل]
+│       ├── broadcast/        # الإشعارات (بثّ جماعي) [التواصل]
+│       ├── reports/          # البلاغات             [الرقابة والسلامة]
+│       ├── flags/            # بلاغات المستخدمين    [الرقابة والسلامة]
+│       ├── property-types/   # أنواع العقارات       [الإعدادات والبيانات]
+│       ├── categories/       # أصناف الخدمات        [الإعدادات والبيانات]
+│       └── cities/           # المدن والدول         [الإعدادات والبيانات]
 ├── components/
 │   ├── ui/                   # Button, Input, Select, Badge, Card, StarRating
 │   └── layout/               # Sidebar, Header
@@ -131,15 +142,21 @@ maskani_web/
 
 ## Sidebar Navigation
 
+الشريط الجانبي (`app/admin/layout.tsx`) مجمّع حسب التخصّص/الوظيفة عبر `NAV_GROUPS`
+(كل مجموعة `{ title, items }`، وكل عنصر `{ href, label, icon }`). القائمة المسطّحة
+`NAV = NAV_GROUPS.flatMap(g => g.items)` تُشتقّ منها لتحديد العنصر النشط وعنوان الصفحة.
+**نفس التقسيم مطبّق في تطبيق الإدارة (Flutter) على شاشة الهوم** (`dashboard_screen.dart`
+عبر `_sections`) و`nav_items.dart` — أبقِهما متطابقين. الترتيب ثابت:
+
 ```ts
-// ترتيب ثابت — لا تغيير
-[
-  { href: '/admin',              label: 'لوحة التحكم',    icon: LayoutDashboard },
-  { href: '/admin/users',        label: 'المستخدمون',     icon: Users },
-  { href: '/admin/listings',     label: 'الإعلانات',      icon: Home },
-  { href: '/admin/fraud-reports',label: 'الشكاوي',        icon: AlertTriangle },
-  { href: '/admin/requests',     label: 'طلبات العملاء',  icon: FileText },
-  { href: '/admin/services',     label: 'مزودو الخدمات',  icon: Briefcase },
+const NAV_GROUPS = [
+  { title: 'نظرة عامة',          items: [ '/admin' لوحة التحكم, '/admin/analytics' التحليلات ] },
+  { title: 'المستخدمون',         items: [ '/admin/users' المستخدمون, '/admin/verification' طلبات التوثيق ] },
+  { title: 'العقارات',           items: [ '/admin/properties' العقارات, '/admin/requests' طلبات عقارية ] },
+  { title: 'الخدمات',            items: [ '/admin/services' مزودو الخدمة, '/admin/jobs' طلبات الخدمة ] },
+  { title: 'التواصل',            items: [ '/admin/conversations' المحادثات, '/admin/helpdesk' مركز المساعدة, '/admin/broadcast' الإشعارات ] },
+  { title: 'الرقابة والسلامة',   items: [ '/admin/reports' البلاغات, '/admin/flags' بلاغات المستخدمين ] },
+  { title: 'الإعدادات والبيانات', items: [ '/admin/property-types' أنواع العقارات, '/admin/categories' أصناف الخدمات, '/admin/cities' المدن والدول ] },
 ]
 ```
 
@@ -155,9 +172,9 @@ GET  /api/v1/admin/stats/
 GET  /api/v1/admin/users/          // ?offset=&limit=&search=
 PATCH /api/v1/admin/users/{id}/    // تعديل role, is_verified, is_service_provider
 
-// Listings
-GET  /api/v1/admin/listings/       // ?offset=&limit=
-PATCH /api/v1/admin/listings/{id}/ // تغيير status
+// Properties
+GET  /api/v1/admin/properties/       // ?offset=&limit=
+PATCH /api/v1/admin/properties/{id}/ // تغيير status
 
 // Fraud Reports
 GET  /api/v1/admin/fraud-reports/  // ?offset=&limit=&status=

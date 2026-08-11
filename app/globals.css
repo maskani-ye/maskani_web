@@ -5,9 +5,9 @@
 /* خط Cairo يُحمَّل مرة واحدة عبر <link> في app/layout.tsx (لا تكرّره هنا) */
 
 :root {
-  --primary: #2D6A4F;
-  --gold: #D4A017;
-  --cream: #F8F6F0;
+  --primary: #4F2396; /* بنفسجي Gathern */
+  --gold: #FFC107; /* أكسنت كهرماني */
+  --cream: #F6F6FB;
 }
 
 * {
@@ -21,7 +21,7 @@ html {
 body {
   font-family: "Cairo", "Tajawal", sans-serif;
   background-color: var(--cream);
-  color: #1a1a1a;
+  color: #050536;
   min-height: 100vh;
   /* حماية من التمرير الأفقي على الجوّال (90% من المستخدمين) */
   overflow-x: hidden;
@@ -30,28 +30,30 @@ body {
 /* ─── Scrollbar ─────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #2D6A4F40; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #2D6A4F; }
+::-webkit-scrollbar-thumb { background: #4F239640; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4F2396; }
 
 /* ─── Selection ──────────────────────────────────────────────────── */
-::selection { background-color: #2D6A4F20; }
+::selection { background-color: #4F239620; }
 
 /* ─── Focus outline ─────────────────────────────────────────────── */
-:focus-visible { outline: 2px solid #2D6A4F; outline-offset: 2px; }
+:focus-visible { outline: 2px solid #4F2396; outline-offset: 2px; }
 
 /* ─── Utilities ──────────────────────────────────────────────────── */
 @layer utilities {
   .text-balance { text-wrap: balance; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
   .glass {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
   .card-shadow {
-    box-shadow: 0 2px 16px rgba(45, 106, 79, 0.08);
+    box-shadow: 0 2px 16px rgba(79, 35, 150, 0.08);
   }
   .card-shadow-hover {
-    box-shadow: 0 8px 32px rgba(45, 106, 79, 0.16);
+    box-shadow: 0 8px 32px rgba(79, 35, 150, 0.16);
   }
 }
 
@@ -66,19 +68,30 @@ body {
 /* تجمّعات العلامات بلون العلامة التجارية */
 .marker-cluster-small,
 .marker-cluster-medium,
-.marker-cluster-large { background-color: rgba(45, 106, 79, 0.25); }
+.marker-cluster-large { background-color: rgba(79, 35, 150, 0.25); }
 .marker-cluster-small div,
 .marker-cluster-medium div,
 .marker-cluster-large div {
-  background-color: #2D6A4F;
+  background-color: #4F2396;
   color: #fff;
   font-weight: 700;
   font-family: "Cairo", "Tajawal", sans-serif;
 }
 
 /* نافذة العلامة (popup) */
-.leaflet-popup-content-wrapper { border-radius: 1rem; box-shadow: 0 8px 32px rgba(45,106,79,0.16); }
+.leaflet-popup-content-wrapper { border-radius: 1rem; box-shadow: 0 8px 32px rgba(79,35,150,0.16); }
 .leaflet-popup-content { margin: 0.5rem; }
 
 /* الإسناد + أدوات التحكّم بمحاذاة RTL-aware */
 .leaflet-control-attribution { font-family: "Cairo", "Tajawal", sans-serif; font-size: 10px; direction: ltr; }
+
+/* ─── محتوى مقال المدونة (article-body) ─────────────────────────────── */
+.article-body h2 { font-size: 1.3rem; font-weight: 800; color: #050536; margin: 1.9rem 0 0.6rem; }
+.article-body p { margin: 0.85rem 0; }
+.article-body ul, .article-body ol { margin: 0.85rem 0; padding-inline-start: 1.5rem; }
+.article-body ul { list-style: disc; }
+.article-body ol { list-style: decimal; }
+.article-body li { margin: 0.4rem 0; }
+.article-body a { color: #4F2396; text-decoration: underline; font-weight: 600; }
+.article-body a:hover { color: #371869; }
+.article-body strong { color: #050536; font-weight: 700; }

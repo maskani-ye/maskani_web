@@ -6,13 +6,14 @@ import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
-import type { Listing, PaginatedResponse, City } from "@/types";
+import type { Property, PaginatedResponse, City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
+import { compressImage } from "@/lib/imageCompression";
 import {
   Buildings2, Heart, Bell, MapPoint,
   PenNewSquare, CheckCircle, Logout, ShieldCheck, CloudUpload, CloseCircle, ClockCircle, Magnifer,
@@ -40,13 +41,13 @@ export default function ProfilePage() {
   const { user, logout, refreshUser, loading: authLoading } = useAuth();
   const { requireAuth } = useAuthGate();
   const router = useRouter();
-  const [tab, setTab] = useState<"info" | "listings">("info");
+  const [tab, setTab] = useState<"info" | "properties">("info");
   const [form, setForm] = useState({ full_name: "", bio: "", phone: "", city: "" });
   const [cities, setCities] = useState<City[]>([]);
-  const [myListings, setMyListings] = useState<Listing[]>([]);
-  const [listingsTotal, setListingsTotal] = useState(0);
+  const [myProperties, setMyProperties] = useState<Property[]>([]);
+  const [propertiesTotal, setPropertiesTotal] = useState(0);
   const [saving, setSaving] = useState(false);
-  const [loadingListings, setLoadingListings] = useState(false);
+  const [loadingProperties, setLoadingProperties] = useState(false);
 
   // ── طلب توثيق الحساب ──
   const [verif, setVerif] = useState<VerificationRequest | null>(null);
@@ -75,7 +76,7 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (tab === "listings" && user) fetchMyListings();
+    if (tab === "properties" && user) fetchMyProperties();
   }, [tab, user]);
 
   // اجلب حالة طلب التوثيق الحالي (404 = لا يوجد طلب)
@@ -91,7 +92,7 @@ export default function ProfilePage() {
     try {
       const fd = new FormData();
       if (verifNote) fd.append("note", verifNote);
-      if (verifDoc) fd.append("document", verifDoc);
+      if (verifDoc) fd.append("document", await compressImage(verifDoc));
       const { data } = await api.post<VerificationRequest>("/verification/request/", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -103,14 +104,14 @@ export default function ProfilePage() {
     finally { setVerifSubmitting(false); }
   };
 
-  const fetchMyListings = async () => {
-    setLoadingListings(true);
+  const fetchMyProperties = async () => {
+    setLoadingProperties(true);
     try {
-      const res = await api.get<PaginatedResponse<Listing>>("/listings/my/", { params: { limit: 20, offset: 0 } });
-      setMyListings(res.data.results);
-      setListingsTotal(res.data.count);
+      const res = await api.get<PaginatedResponse<Property>>("/properties/my/", { params: { limit: 20, offset: 0 } });
+      setMyProperties(res.data.results);
+      setPropertiesTotal(res.data.count);
     } catch { /* silent */ }
-    finally { setLoadingListings(false); }
+    finally { setLoadingProperties(false); }
   };
 
   const saveProfile = async () => {
@@ -173,8 +174,8 @@ export default function ProfilePage() {
         {/* Quick stats */}
         <div className="grid grid-cols-3 gap-3 mt-5 pt-5 border-t border-gray-100">
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{user.listings_count}</p>
-            <p className="text-xs text-gray-500">إعلان</p>
+            <p className="text-xl font-bold text-gray-900">{user.properties_count}</p>
+            <p className="text-xs text-gray-500">عقار</p>
           </div>
           <div className="text-center">
             <p className="text-xl font-bold text-gray-900">{user.average_rating ?? "—"}</p>
@@ -261,13 +262,13 @@ export default function ProfilePage() {
       {/* Tabs */}
       <div className="bg-white rounded-2xl card-shadow overflow-hidden">
         <div className="flex border-b border-gray-100">
-          {(["info", "listings"] as const).map((t) => (
+          {(["info", "properties"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={`flex-1 py-3 text-sm font-medium transition-colors ${tab === t ? "text-primary border-b-2 border-primary" : "text-gray-500 hover:text-gray-700"}`}
             >
-              {t === "info" ? "البيانات" : "إعلاناتي"}
+              {t === "info" ? "البيانات" : "عقاراتي"}
             </button>
           ))}
         </div>
@@ -290,6 +291,17 @@ export default function ProfilePage() {
                 value={form.phone}
                 onChange={(v) => setForm((p) => ({ ...p, phone: v }))}
               />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">البريد الإلكتروني</label>
+                {/* البريد من جوجل — للعرض فقط، غير قابل للتعديل. */}
+                <input
+                  type="email"
+                  value={user.email ?? ""}
+                  disabled
+                  dir="ltr"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">المدينة</label>
                 <select
@@ -317,21 +329,21 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {tab === "listings" && (
+          {tab === "properties" && (
             <div>
-              {loadingListings ? (
+              {loadingProperties ? (
                 <div className="space-y-3">
                   {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-20 bg-gray-100 animate-pulse rounded-xl" />)}
                 </div>
-              ) : myListings.length === 0 ? (
+              ) : myProperties.length === 0 ? (
                 <div className="text-center py-12 text-gray-400">
                   <Buildings2 className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">لا توجد إعلانات بعد</p>
+                  <p className="text-sm">لا توجد عقارات بعد</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {myListings.map((l) => (
-                    <Link key={l.id} href={`/listings/${l.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                  {myProperties.map((l) => (
+                    <Link key={l.id} href={`/properties/${l.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
                       <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-100">
                         {l.main_image
                           ? <img src={l.main_image} className="w-full h-full object-cover" alt="" />
@@ -345,8 +357,8 @@ export default function ProfilePage() {
                       <Badge variant={l.is_active ? "green" : "gray"}>{l.is_active ? "نشط" : "موقوف"}</Badge>
                     </Link>
                   ))}
-                  {listingsTotal > 20 && (
-                    <p className="text-center text-xs text-gray-400 pt-2">يُعرض 20 من {listingsTotal} إعلان</p>
+                  {propertiesTotal > 20 && (
+                    <p className="text-center text-xs text-gray-400 pt-2">يُعرض 20 من {propertiesTotal} عقار</p>
                   )}
                 </div>
               )}

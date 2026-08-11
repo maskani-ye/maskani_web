@@ -7,6 +7,7 @@ import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Dialog } from "@/components/ui/Dialog";
@@ -160,15 +161,8 @@ export default function AdminVerificationPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">طلبات التوثيق</h1>
-            <p className="text-sm text-gray-500">{total.toLocaleString("ar-YE")} طلب</p>
-          </div>
-        </div>
+        <PageHeader icon={<ShieldCheck />} title="طلبات التوثيق"
+          subtitle={`${total.toLocaleString("ar-YE")} طلب`} />
       </div>
 
       {/* Filters */}

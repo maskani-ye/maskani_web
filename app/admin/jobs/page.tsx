@@ -6,10 +6,15 @@ import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import { formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Case, MapPoint, TrashBinMinimalistic, CheckCircle, CloseCircle } from "@solar-icons/react";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import {
+  Case, MapPoint, TrashBinMinimalistic, CheckCircle, CloseCircle,
+  UserRounded, Wallet, ChatRound,
+} from "@solar-icons/react";
 import { toast } from "sonner";
 
 interface AdminServiceRequest {
@@ -89,58 +94,77 @@ export default function AdminJobsPage() {
   const budgetOf = (r: AdminServiceRequest) =>
     r.budget_min && r.budget_max ? `${formatPrice(r.budget_min, r.currency)} — ${formatPrice(r.budget_max, r.currency)}`
     : r.budget_max ? `حتى ${formatPrice(r.budget_max, r.currency)}`
-    : r.budget_min ? `من ${formatPrice(r.budget_min, r.currency)}` : "—";
+    : r.budget_min ? `من ${formatPrice(r.budget_min, r.currency)}` : "غير محدّد";
+
+  const pages = Math.ceil(total / LIMIT);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Case className="h-6 w-6 text-primary" /> طلبات الخدمة
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">{total} طلب خدمة</p>
-      </div>
+    <div className="max-w-5xl mx-auto space-y-6">
+      {/* ── الترويسة ── */}
+      <PageHeader icon={<Case />} title="طلبات الخدمة"
+        subtitle={`${total.toLocaleString("ar")} طلب خدمة`} />
 
-      <div className="flex flex-col sm:flex-row gap-3">
+      {/* ── التولبار ── */}
+      <div className="bg-white rounded-2xl card-shadow p-4 flex flex-col sm:flex-row gap-3">
         <Input placeholder="ابحث بالعنوان أو العميل..." value={search}
           onChange={(e) => { setOffset(0); setSearch(e.target.value); }} className="flex-1" />
         <Select
-          options={[{ value: "", label: "الكل" }, { value: "true", label: "نشط" }, { value: "false", label: "متوقّف" }]}
+          options={[{ value: "", label: "كل الحالات" }, { value: "true", label: "نشط" }, { value: "false", label: "متوقّف" }]}
           value={activeFilter} onChange={(e) => { setOffset(0); setActiveFilter(e.target.value); }}
-          className="w-full sm:w-44" />
+          className="w-full sm:w-48" />
       </div>
 
+      {/* ── القائمة ── */}
       <div className="bg-white rounded-2xl card-shadow overflow-hidden">
         {loading ? (
-          <div className="p-10 text-center text-gray-400">جارٍ التحميل...</div>
+          <div className="divide-y divide-gray-100">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-4 p-4 animate-pulse">
+                <div className="w-11 h-11 rounded-xl bg-gray-100 shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3.5 bg-gray-100 rounded w-1/3" />
+                  <div className="h-3 bg-gray-50 rounded w-2/3" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : items.length === 0 ? (
-          <div className="p-10 text-center text-gray-400">لا توجد طلبات خدمة</div>
+          <div className="py-16 flex flex-col items-center text-center">
+            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
+              <Case className="h-7 w-7 text-gray-300" />
+            </div>
+            <p className="text-gray-500 font-medium">لا توجد طلبات خدمة</p>
+            <p className="text-sm text-gray-400 mt-0.5">جرّب تغيير البحث أو الفلتر</p>
+          </div>
         ) : (
           <div className="divide-y divide-gray-100">
             {items.map((r) => (
-              <div key={r.id} className="flex items-center gap-4 p-4">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${r.is_active ? "bg-primary/10" : "bg-gray-100"}`}>
+              <div key={r.id} className="flex items-center gap-4 p-4 hover:bg-gray-50/70 transition-colors">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${r.is_active ? "bg-primary/10" : "bg-gray-100"}`}>
                   <Case className={`h-5 w-5 ${r.is_active ? "text-primary" : "text-gray-400"}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-bold text-gray-900 text-sm line-clamp-1">{r.title}</h3>
                     <Badge variant={r.is_active ? "success" : "default"}>{r.is_active ? "نشط" : "متوقّف"}</Badge>
+                    {r.category_name && (
+                      <span className="text-[11px] font-medium bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{r.category_name}</span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-500 mt-1 flex-wrap">
-                    <span>{r.client_name}</span>
-                    {r.category_name && <span className="bg-gray-100 px-2 py-0.5 rounded-full">{r.category_name}</span>}
-                    {r.city_name && <span className="flex items-center gap-1"><MapPoint className="h-3 w-3" /> {r.city_name}</span>}
-                    <span className="text-primary font-semibold">{budgetOf(r)}</span>
-                    <span>{r.offers_count} عرض</span>
+                  <div className="flex items-center gap-3.5 text-xs text-gray-500 mt-1.5 flex-wrap">
+                    <span className="flex items-center gap-1"><UserRounded className="h-3.5 w-3.5 text-gray-400" /> {r.client_name}</span>
+                    {r.city_name && <span className="flex items-center gap-1"><MapPoint className="h-3.5 w-3.5 text-gray-400" /> {r.city_name}</span>}
+                    <span className="flex items-center gap-1 text-primary font-semibold"><Wallet className="h-3.5 w-3.5" /> {budgetOf(r)}</span>
+                    <span className="flex items-center gap-1"><ChatRound className="h-3.5 w-3.5 text-gray-400" /> {r.offers_count} عرض</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0">
                   <button onClick={() => toggleActive(r)} title={r.is_active ? "إيقاف" : "تفعيل"}
-                    className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center">
+                    className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center transition-colors">
                     {r.is_active ? <CloseCircle className="h-4 w-4 text-gray-500" /> : <CheckCircle className="h-4 w-4 text-primary" />}
                   </button>
                   <button onClick={() => setDeleteTarget(r)} title="حذف"
-                    className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center">
+                    className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors">
                     <TrashBinMinimalistic className="h-4 w-4 text-red-500" />
                   </button>
                 </div>
@@ -150,26 +174,26 @@ export default function AdminJobsPage() {
         )}
       </div>
 
-      {total > LIMIT && (
+      {/* ── الترقيم ── */}
+      {pages > 1 && (
         <div className="flex items-center justify-between">
           <Button variant="outline" size="sm" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - LIMIT))}>السابق</Button>
-          <span className="text-sm text-gray-500">{Math.floor(offset / LIMIT) + 1} / {Math.ceil(total / LIMIT)}</span>
+          <span className="text-sm text-gray-500 tabular-nums">{Math.floor(offset / LIMIT) + 1} / {pages}</span>
           <Button variant="outline" size="sm" disabled={offset + LIMIT >= total} onClick={() => setOffset(offset + LIMIT)}>التالي</Button>
         </div>
       )}
 
-      {deleteTarget && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setDeleteTarget(null)}>
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-bold text-gray-900 mb-2">حذف طلب الخدمة؟</h3>
-            <p className="text-sm text-gray-500 mb-5">«{deleteTarget.title}» — لا يمكن التراجع.</p>
-            <div className="flex gap-3">
-              <Button variant="outline" fullWidth onClick={() => setDeleteTarget(null)}>إلغاء</Button>
-              <Button variant="danger" fullWidth loading={busy} onClick={confirmDelete}>حذف</Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        icon={<TrashBinMinimalistic className="h-6 w-6 text-red-500" />}
+        title="حذف طلب الخدمة؟"
+        message={deleteTarget ? `«${deleteTarget.title}» — لا يمكن التراجع عن هذا الإجراء.` : ""}
+        variant="danger"
+        confirmLabel="حذف"
+        loading={busy}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

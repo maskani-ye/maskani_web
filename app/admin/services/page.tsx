@@ -5,6 +5,7 @@ import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import type { PaginatedResponse, ServiceCategoryRef } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ServiceIcon } from "@/lib/serviceIcons";
@@ -118,14 +119,9 @@ export default function AdminServicesPage() {
     <div className="px-4 sm:px-6 py-8">
 
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-          <Settings className="h-5 w-5 text-purple-600" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">إدارة مزودي الخدمة</h1>
-          <p className="text-sm text-gray-500">{total.toLocaleString("ar-YE")} مزود خدمة</p>
-        </div>
+      <div className="mb-6">
+        <PageHeader icon={<Settings />} title="إدارة مزودي الخدمة"
+          subtitle={`${total.toLocaleString("ar-YE")} مزود خدمة`} />
       </div>
 
       {/* Filters */}

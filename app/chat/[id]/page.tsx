@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MessageAttachments } from "@/components/chat/MessageAttachments";
 import { VoiceRecorder } from "@/components/chat/VoiceRecorder";
+import { ChatSuggestions } from "@/components/ai/ChatSuggestions";
 import { toast } from "sonner";
 import { ChatRoundDots, User as UserIcon, AltArrowRight, Buildings2, Paperclip, Plain, CheckRead } from "@solar-icons/react";
 
@@ -444,9 +445,9 @@ export default function ChatThreadPage() {
               <p className="font-bold text-gray-900 truncate">{other.full_name}</p>
               {otherTyping ? (
                 <span className="text-xs text-primary animate-pulse">يكتب الآن…</span>
-              ) : conversation?.listing != null ? (
+              ) : conversation?.property != null ? (
                 <span className="flex items-center gap-1 text-xs text-primary">
-                  <Buildings2 className="h-3.5 w-3.5" /> بخصوص إعلان
+                  <Buildings2 className="h-3.5 w-3.5" /> بخصوص عقار
                 </span>
               ) : null}
             </div>
@@ -456,10 +457,10 @@ export default function ChatThreadPage() {
             <Skeleton className="h-4 w-28" />
           </div>
         )}
-        {conversation?.listing != null && (
-          <Link href={`/listings/${conversation.listing}`}>
+        {conversation?.property != null && (
+          <Link href={`/properties/${conversation.property}`}>
             <Button variant="outline" size="sm">
-              <Buildings2 className="h-4 w-4" /> الإعلان
+              <Buildings2 className="h-4 w-4" /> العقار
             </Button>
           </Link>
         )}
@@ -519,8 +520,15 @@ export default function ChatThreadPage() {
         <div ref={bottomRef} />
       </div>
 
+      {/* اقتراح ردود بالذكاء الاصطناعي */}
+      {!isRecording && messages.length > 0 && (
+        <div className="mt-3 shrink-0">
+          <ChatSuggestions messages={messages} userId={user?.id} onPick={(t) => setBody(t)} />
+        </div>
+      )}
+
       {/* Send box */}
-      <div className="mt-4 bg-white rounded-2xl card-shadow p-3 flex items-end gap-2 shrink-0">
+      <div className="mt-2 bg-white rounded-2xl card-shadow p-3 flex items-end gap-2 shrink-0">
         <input
           ref={fileInputRef}
           type="file"

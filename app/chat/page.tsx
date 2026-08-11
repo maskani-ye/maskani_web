@@ -9,6 +9,7 @@ import { useAuthGate } from "@/context/AuthGate";
 import { formatRelativeTime } from "@/lib/utils";
 import type { Conversation, PaginatedResponse } from "@/types";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/Badge";
 import { toast } from "sonner";
@@ -54,14 +55,8 @@ export default function ChatListPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-          <ChatRoundDots className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">المحادثات</h1>
-          <p className="text-sm text-gray-500">رسائلك المباشرة</p>
-        </div>
+      <div className="mb-6">
+        <PageHeader icon={<ChatRoundDots />} title="المحادثات" subtitle="رسائلك المباشرة" />
       </div>
 
       <div className="bg-white rounded-2xl card-shadow overflow-hidden">
@@ -81,7 +76,7 @@ export default function ChatListPage() {
           <EmptyState
             icon={asIcon(ChatRoundDots)}
             title="لا توجد محادثات"
-            message="ابدأ محادثة من صفحة إعلان أو ملف مستخدم"
+            message="ابدأ محادثة من صفحة عقار أو ملف مستخدم"
           />
         ) : (
           <div className="divide-y divide-gray-50">

@@ -7,6 +7,7 @@ import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import type { PaginatedResponse } from "@/types";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { toast } from "sonner";
 import { Magnifer, Bell, TrashBinTrash, AltArrowLeft } from "@solar-icons/react";
 
@@ -31,7 +32,7 @@ function summarize(f: Record<string, string | number>): string {
   if (f.price_min) parts.push(`من ${f.price_min}`);
   if (f.price_max) parts.push(`إلى ${f.price_max}`);
   if (f.rooms_min) parts.push(`${f.rooms_min}+ غرف`);
-  return parts.length ? parts.join(" · ") : "كل الإعلانات";
+  return parts.length ? parts.join(" · ") : "كل العقارات";
 }
 
 export default function SavedSearchesPage() {
@@ -80,14 +81,14 @@ export default function SavedSearchesPage() {
     Object.entries(f).forEach(([k, v]) => {
       if (v !== null && v !== undefined && `${v}` !== "") qs.set(k, `${v}`);
     });
-    router.push(`/listings?${qs.toString()}`);
+    router.push(`/properties?${qs.toString()}`);
   };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Magnifer className="h-6 w-6 text-primary" weight="Bold" />
-        <h1 className="text-xl font-bold text-gray-800">عمليات البحث المحفوظة</h1>
+      <div className="mb-6">
+        <PageHeader icon={<Magnifer />} title="عمليات البحث المحفوظة"
+          subtitle="نبّهك عند وصول عقارات جديدة تطابق بحثك" />
       </div>
 
       {loading ? (
@@ -101,7 +102,7 @@ export default function SavedSearchesPage() {
           <Magnifer className="h-14 w-14 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 mb-1">لا عمليات بحث محفوظة</p>
           <p className="text-sm text-gray-400">
-            احفظ فلاتر البحث من صفحة الإعلانات لتصلك تنبيهات بالإعلانات الجديدة المطابقة.
+            احفظ فلاتر البحث من صفحة العقارات لتصلك تنبيهات بالعقارات الجديدة المطابقة.
           </p>
         </div>
       ) : (

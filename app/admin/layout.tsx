@@ -11,27 +11,77 @@ import {
   Buildings2, Settings, Home2, ChatRound, ChatRoundDots, Widget,
   City, Logout2, HamburgerMenu, CloseCircle,
   ShieldCheck, DangerTriangle, Bell,
-  Case, ChartSquare, HeadphonesRound,
+  Case, ChartSquare, HeadphonesRound, MagniferBug, NotebookBookmark, HashtagSquare, Stars,
 } from "@solar-icons/react";
 
-const NAV = [
-  { href: "/admin",                    label: "لوحة التحكم",     icon: GraphNewUp },
-  { href: "/admin/analytics",          label: "التحليلات",       icon: ChartSquare },
-  { href: "/admin/users",              label: "المستخدمون",      icon: UsersGroupRounded },
-  { href: "/admin/verification",       label: "طلبات التوثيق",   icon: ShieldCheck },
-  { href: "/admin/listings",           label: "الإعلانات",       icon: Buildings2 },
-  { href: "/admin/properties",         label: "أنواع العقارات",  icon: MapPoint },
-  { href: "/admin/requests",           label: "طلبات عقارية",   icon: ChatRound },
-  { href: "/admin/jobs",               label: "طلبات الخدمة",   icon: Case },
-  { href: "/admin/conversations",      label: "المحادثات",       icon: ChatRoundDots },
-  { href: "/admin/helpdesk",           label: "مركز المساعدة",   icon: HeadphonesRound },
-  { href: "/admin/broadcast",          label: "الإشعارات",       icon: Bell },
-  { href: "/admin/reports",            label: "البلاغات",        icon: ShieldWarning },
-  { href: "/admin/flags",              label: "بلاغات المستخدمين", icon: DangerTriangle },
-  { href: "/admin/cities",             label: "المدن والدول",    icon: City },
-  { href: "/admin/categories",         label: "أصناف الخدمات",   icon: Widget },
-  { href: "/admin/services",           label: "مزودو الخدمة",    icon: Settings },
+// عناصر التنقّل مجمّعة حسب التخصّص/الوظيفة. الترتيب ثابت ومطابق لتطبيق الإدارة.
+const NAV_GROUPS = [
+  {
+    title: "نظرة عامة",
+    items: [
+      { href: "/admin",           label: "لوحة التحكم", icon: GraphNewUp },
+      { href: "/admin/analytics", label: "التحليلات",   icon: ChartSquare },
+      { href: "/admin/seo",       label: "الفهرسة وSEO", icon: MagniferBug },
+    ],
+  },
+  {
+    title: "المستخدمون",
+    items: [
+      { href: "/admin/users",        label: "المستخدمون",    icon: UsersGroupRounded },
+      { href: "/admin/verification", label: "طلبات التوثيق", icon: ShieldCheck },
+    ],
+  },
+  {
+    title: "العقارات",
+    items: [
+      { href: "/admin/properties", label: "العقارات",    icon: Buildings2 },
+      { href: "/admin/requests", label: "طلبات عقارية", icon: ChatRound },
+    ],
+  },
+  {
+    title: "الخدمات",
+    items: [
+      { href: "/admin/services", label: "مزودو الخدمة", icon: Settings },
+      { href: "/admin/jobs",     label: "طلبات الخدمة", icon: Case },
+    ],
+  },
+  {
+    title: "التواصل",
+    items: [
+      { href: "/admin/conversations", label: "المحادثات",     icon: ChatRoundDots },
+      { href: "/admin/helpdesk",      label: "مركز المساعدة", icon: HeadphonesRound },
+      { href: "/admin/broadcast",     label: "الإشعارات",     icon: Bell },
+      { href: "/admin/notification-templates", label: "قوالب الإشعارات", icon: Bell },
+    ],
+  },
+  {
+    title: "الرقابة والسلامة",
+    items: [
+      { href: "/admin/reports", label: "البلاغات",         icon: ShieldWarning },
+      { href: "/admin/flags",   label: "بلاغات المستخدمين", icon: DangerTriangle },
+    ],
+  },
+  {
+    title: "الإعدادات والبيانات",
+    items: [
+      { href: "/admin/property-types", label: "أنواع العقارات", icon: MapPoint },
+      { href: "/admin/categories", label: "أصناف الخدمات",  icon: Widget },
+      { href: "/admin/cities",     label: "المدن والدول",   icon: City },
+      { href: "/admin/ai",         label: "الذكاء الاصطناعي", icon: Stars },
+    ],
+  },
+  {
+    // قسم ثانوي — في آخر القائمة (ليس أساسياً)
+    title: "المدونة",
+    items: [
+      { href: "/admin/blog",            label: "المقالات",   icon: NotebookBookmark },
+      { href: "/admin/blog/categories", label: "التصنيفات", icon: HashtagSquare },
+    ],
+  },
 ];
+
+// قائمة مسطّحة مشتقّة — تُستخدم لتحديد العنصر النشط وعنوان الصفحة.
+const NAV = NAV_GROUPS.flatMap((g) => g.items);
 
 function isActive(href: string, pathname: string) {
   return href === "/admin" ? pathname === href : pathname.startsWith(href);
@@ -80,26 +130,36 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </div>
 
-      {/* التنقّل */}
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-        {NAV.map(({ href, label, icon: Icon }) => {
-          const active = isActive(href, pathname);
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={onNavigate}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                active
-                  ? "bg-primary/10 text-primary"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              {label}
-            </Link>
-          );
-        })}
+      {/* التنقّل — مجمّع حسب الوظيفة */}
+      <nav className="flex-1 py-4 px-3 overflow-y-auto">
+        {NAV_GROUPS.map((group, gi) => (
+          <div key={group.title} className={gi === 0 ? "" : "mt-5"}>
+            <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-400">
+              {group.title}
+            </p>
+            <div className="space-y-1">
+              {group.items.map(({ href, label, icon: Icon }) => {
+                // الأطول تطابقاً فقط يُبرَز (وإلا أُبرِزت /admin/blog مع /admin/blog/categories معاً)
+                const active = href === activeItem?.href;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={onNavigate}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      active
+                        ? "bg-primary/10 text-primary"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* معلومات المشرف + تسجيل الخروج */}

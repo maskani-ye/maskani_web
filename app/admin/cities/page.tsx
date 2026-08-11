@@ -7,8 +7,10 @@ import { endpoints as ep } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import type { Country, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { toast } from "sonner";
+import { compressImage } from "@/lib/imageCompression";
 import {
   MapPoint, AddCircle, CloseCircle, Magnifer,
   Buildings2, Global, CheckCircle, DangerCircle,
@@ -51,6 +53,7 @@ export default function AdminCitiesPage() {
   const [cityModal, setCityModal] = useState<{ open: boolean; editing: City | null }>({ open: false, editing: null });
   const [countryModal, setCountryModal] = useState<{ open: boolean; editing: Country | null }>({ open: false, editing: null });
   const [cityForm, setCityForm] = useState<CityForm>(emptyCityForm);
+  const [cityImage, setCityImage] = useState<File | null>(null);
   const [countryForm, setCountryForm] = useState<CountryForm>(emptyCountryForm);
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: "city" | "country"; id: number } | null>(null);
@@ -65,7 +68,7 @@ export default function AdminCitiesPage() {
     try {
       const [cRes, citRes] = await Promise.all([
         api.get<PaginatedResponse<Country>>(ep.admin.countries),
-        api.get<PaginatedResponse<City>>(ep.admin.cities, { params: { limit: 100, offset: 0 } }),
+        api.get<PaginatedResponse<City>>(ep.admin.cities, { params: { limit: 100, offset: 0, _t: Date.now() } }),
       ]);
       setCountries(cRes.data.results ?? []);
       setCities(citRes.data.results ?? []);
@@ -89,11 +92,13 @@ export default function AdminCitiesPage() {
   // ── City CRUD ──────────────────────────────────────────────────────────
   const openAddCity = () => {
     setCityForm({ ...emptyCityForm, country: filterCountry || (countries[0]?.id ?? "") });
+    setCityImage(null);
     setCityModal({ open: true, editing: null });
   };
 
   const openEditCity = (city: City) => {
     setCityForm({ name_ar: city.name_ar, name_en: city.name_en, region: city.region, country: city.country, is_active: true });
+    setCityImage(null);
     setCityModal({ open: true, editing: city });
   };
 
@@ -104,11 +109,19 @@ export default function AdminCitiesPage() {
     }
     setSaving(true);
     try {
+      // مع صورة → multipart FormData؛ بلا صورة → JSON عادي.
+      let payload: FormData | typeof cityForm = cityForm;
+      if (cityImage) {
+        const fd = new FormData();
+        Object.entries(cityForm).forEach(([k, v]) => fd.append(k, String(v)));
+        fd.append("image", await compressImage(cityImage));
+        payload = fd;
+      }
       if (cityModal.editing) {
-        await api.patch(ep.admin.city(cityModal.editing.id), cityForm);
+        await api.patch(ep.admin.city(cityModal.editing.id), payload);
         toast.success("تم تعديل المدينة");
       } else {
-        await api.post(ep.admin.cities, cityForm);
+        await api.post(ep.admin.cities, payload);
         toast.success("تم إضافة المدينة");
       }
       setCityModal({ open: false, editing: null });
@@ -179,13 +192,8 @@ export default function AdminCitiesPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <MapPoint className="h-6 w-6 text-primary" />
-            إدارة المدن والدول
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">{cities.length} مدينة — {countries.length} دولة</p>
-        </div>
+        <PageHeader icon={<MapPoint />} title="إدارة المدن والدول"
+          subtitle={`${cities.length} مدينة — ${countries.length} دولة`} />
         <Button onClick={tab === "cities" ? openAddCity : openAddCountry}>
           <AddCircle className="h-4 w-4" />
           {tab === "cities" ? "إضافة مدينة" : "إضافة دولة"}
@@ -262,6 +270,26 @@ export default function AdminCitiesPage() {
               <Input label="الاسم بالإنجليزية *" value={cityForm.name_en} onChange={(e) => setCityForm((p) => ({ ...p, name_en: e.target.value }))} />
             </div>
             <Input label="المنطقة / المحافظة" value={cityForm.region} onChange={(e) => setCityForm((p) => ({ ...p, region: e.target.value }))} />
+            {/* ── صورة المحافظة (معلم بارز) — تظهر في هوم التطبيق/الويب ── */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">صورة المحافظة</label>
+              <div className="flex items-center gap-3">
+                {(cityImage || cityModal.editing?.image) && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={cityImage ? URL.createObjectURL(cityImage) : (cityModal.editing?.image ?? "")}
+                    alt=""
+                    className="w-16 h-16 rounded-xl object-cover border border-gray-200 flex-shrink-0"
+                  />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setCityImage(e.target.files?.[0] ?? null)}
+                  className="text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-primary/10 file:text-primary file:px-3 file:py-1.5 file:text-sm file:font-semibold file:cursor-pointer"
+                />
+              </div>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">الدولة *</label>
               <select
@@ -351,6 +379,7 @@ function CitiesTable({ cities, onEdit, onToggle, onDelete }: {
         <thead>
           <tr className="bg-gray-50 text-gray-500 text-xs">
             <th className="text-right py-3 px-4 font-semibold">#</th>
+            <th className="text-right py-3 px-4 font-semibold">الصورة</th>
             <th className="text-right py-3 px-4 font-semibold">الاسم بالعربية</th>
             <th className="text-right py-3 px-4 font-semibold">الاسم بالإنجليزية</th>
             <th className="text-right py-3 px-4 font-semibold">المنطقة</th>
@@ -363,6 +392,16 @@ function CitiesTable({ cities, onEdit, onToggle, onDelete }: {
           {cities.map((city, i) => (
             <tr key={city.id} className="hover:bg-gray-50/50 transition-colors">
               <td className="py-3 px-4 text-gray-400">{i + 1}</td>
+              <td className="py-3 px-4">
+                {city.image ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={city.image} alt={city.name_ar} className="w-12 h-12 rounded-lg object-cover border border-gray-200" />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300">
+                    <MapPoint className="h-5 w-5" />
+                  </div>
+                )}
+              </td>
               <td className="py-3 px-4 font-semibold text-gray-800">{city.name_ar}</td>
               <td className="py-3 px-4 text-gray-500">{city.name_en}</td>
               <td className="py-3 px-4 text-gray-500">{city.region || "—"}</td>

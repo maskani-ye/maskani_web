@@ -68,7 +68,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#2D6A4F",
+  themeColor: "#4F2396",
   width: "device-width",
   initialScale: 1,
 };
@@ -100,7 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 inLanguage: "ar",
                 potentialAction: {
                   "@type": "SearchAction",
-                  target: { "@type": "EntryPoint", urlTemplate: "https://maskani.homes/listings?search={query}" },
+                  target: { "@type": "EntryPoint", urlTemplate: "https://maskani.homes/properties?search={query}" },
                   "query-input": "required name=query",
                 },
               },
