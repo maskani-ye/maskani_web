@@ -13,6 +13,11 @@ import {
   VerifiedCheck,
   UsersGroupRounded,
   Smartphone,
+  BellBing,
+  TagPrice,
+  Bookmark,
+  Bolt,
+  MedalStar,
 } from "@solar-icons/react";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL, breadcrumbList } from "@/lib/seo";
@@ -46,6 +51,15 @@ const FEATURES = [
   { icon: ShieldWarning, title: "مجتمع ضدّ الاحتيال", desc: "بلاغات وتصويت مجتمعي لكشف عمليات النصب قبل وقوعها." },
   { icon: ChatRoundLine, title: "محادثة مباشرة", desc: "تواصل فوري بينك وبين صاحب العقار — بلا وسيط." },
   { icon: MapPointWave, title: "خرائط تفاعلية", desc: "استعرض العقارات على الخريطة وحدّد الموقع بدقّة." },
+];
+
+const WHY = [
+  { icon: BellBing, title: "تنبيهات فورية تسبق الجميع", desc: "بمجرد نزول عقار يطابق معاييرك يصلك إشعار لحظيّ — فتكون أوّل من يتواصل مع صاحبه." },
+  { icon: TagPrice, title: "تنبيه انخفاض السعر", desc: "نُعلمك فور تخفيض سعر عقار تتابعه، لتقتنص الفرصة في وقتها المناسب." },
+  { icon: Bookmark, title: "عمليات بحث محفوظة", desc: "احفظ معايير بحثك مرّة واحدة، ودع مسكني يبحث ويرشّح لك نيابةً عنك باستمرار." },
+  { icon: Bolt, title: "أسرع وأخفّ من المتصفّح", desc: "تصفّح سلس، فتح فوري، وتواصل بضغطة واحدة — تجربة مصمّمة للهاتف." },
+  { icon: MedalStar, title: "سمعة تبنيها بمرور الوقت", desc: "تقييمات ومتابعون وثقة تتراكم مع كل تعامل، فتصبح طرفاً موثوقاً في السوق." },
+  { icon: UsersGroupRounded, title: "مجتمعك العقاري", desc: "تابِع من يهمّك، شارك في كشف الاحتيال، وكن جزءاً من مجتمع يحمي بعضه." },
 ];
 
 const HIGHLIGHTS = [
@@ -114,11 +128,11 @@ export default function DownloadPage() {
             <img src="/icon.png" alt="أيقونة تطبيق مسكني" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight text-balance">
-            حمّل تطبيق مسكني
+            كن أوّل من يعرف بالعقار المناسب
           </h1>
           <p className="text-primary-100 mt-4 max-w-2xl mx-auto leading-relaxed">
-            منصّة عقارية اجتماعية لليمن — عقارات، خدمات، طلبات، ومجتمع لمكافحة الاحتيال،
-            بتواصل مباشر بين صاحب العقار والعميل. بلا وسطاء ولا مدفوعات.
+            العقارات الجيّدة لا تنتظر. مع تطبيق مسكني تصلك تنبيهات فورية لحظة نزول عقار
+            يطابق بحثك أو انخفاض سعره — فتتواصل مع صاحبه مباشرةً قبل الجميع. بلا وسطاء ولا مدفوعات.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
@@ -166,6 +180,46 @@ export default function DownloadPage() {
               <p className="text-sm text-muted mt-1.5 leading-relaxed">{f.desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Why install — persuasion / loyalty */}
+      <section className="bg-gradient-to-b from-primary to-primary-700 text-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-balance">
+            لماذا التطبيق أفضل من المتصفّح؟
+          </h2>
+          <p className="text-primary-100 text-center mt-3 max-w-2xl mx-auto leading-relaxed">
+            في سوق سريع، السبق يصنع الفرق. التطبيق يبقى معك في جيبك ويعمل نيابةً عنك — فلا تفوتك فرصة.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+            {WHY.map((w) => (
+              <div key={w.title} className="rounded-2xl bg-white/10 backdrop-blur-sm p-5 ring-1 ring-white/10">
+                <div className="w-11 h-11 rounded-xl bg-gold/20 flex items-center justify-center mb-4">
+                  <w.icon weight="Bold" className="h-6 w-6 text-gold" />
+                </div>
+                <h3 className="font-bold text-white">{w.title}</h3>
+                <p className="text-sm text-primary-100 mt-1.5 leading-relaxed">{w.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 rounded-2xl bg-white/10 ring-1 ring-white/10 p-6 sm:p-7 text-center max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl font-bold text-white leading-relaxed text-balance">
+              مسكني ليس تطبيقاً تفتحه مرّة وتنساه — بل مجتمعك العقاري الذي تتابع فيه، وتُتابَع،
+              وتبني سمعتك وثقة الآخرين بك يوماً بعد يوم.
+            </p>
+            <a
+              href={OPT_IN}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-2xl bg-gold text-ink font-bold px-7 py-3.5 mt-6 shadow-lg hover:bg-gold-400 transition-colors"
+            >
+              <Smartphone weight="Bold" className="h-5 w-5" />
+              نزّل مسكني الآن مجاناً
+            </a>
+          </div>
         </div>
       </section>
 
