@@ -21,6 +21,7 @@ import {
 } from "@solar-icons/react";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL, breadcrumbList } from "@/lib/seo";
+import { TesterEnroll } from "@/components/download/TesterEnroll";
 
 export const metadata: Metadata = {
   title: "حمّل تطبيق مسكني للأندرويد | عقارات وخدمات اليمن",
@@ -234,6 +235,9 @@ export default function DownloadPage() {
             <h2 className="text-2xl font-extrabold text-ink">ثبّت التطبيق بثلاث خطوات</h2>
             <p className="text-muted mt-2">أكملها مرّة واحدة بنفس حساب Google، ثم حدّث التطبيق تلقائياً من المتجر.</p>
           </div>
+
+          {/* الطريقة الأسرع — تفعيل تلقائي (يظهر فقط عند تفعيل الميزة) */}
+          <TesterEnroll />
 
           <ol className="space-y-4">
             {STEPS.map((s) => (
