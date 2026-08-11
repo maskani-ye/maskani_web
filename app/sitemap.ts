@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { citySlug } from "@/lib/seo";
+import { getBlogCategories } from "@/lib/blogCategories";
+import { TOOLS } from "@/lib/toolsMeta";
 
 const BASE = "https://maskani.homes";
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
@@ -44,26 +46,49 @@ async function cities(): Promise<{ slug: string }[]> {
   }
 }
 
+// يجلب مقالات المدونة (slug + آخر تحديث) لخريطة الموقع.
+async function blogArticles(): Promise<{ slug: string; updated: string | null }[]> {
+  try {
+    const res = await fetch(`${API}/blog/?limit=1000&offset=0`, { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+    return ((await res.json()).results ?? []).map(
+      (a: { slug: string; published_at?: string }) => ({ slug: a.slug, updated: a.published_at || null }),
+    );
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticEntries: MetadataRoute.Sitemap = [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "daily", priority: 1 },
-    { url: `${BASE}/listings`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE}/properties`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${BASE}/services`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE}/requests`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE}/jobs`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE}/reports`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    ...TOOLS.map((t) => ({
+      url: `${BASE}/tools/${t.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.65,
+    })),
     { url: `${BASE}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  const [listings, services, requests, jobs, reports, cityList] = await Promise.all([
-    rows("/listings/"),
+  const [properties, services, requests, jobs, reports, cityList, blog, blogCats] = await Promise.all([
+    rows("/properties/"),
     rows("/services/"),
     rows("/requests/"),
     rows("/jobs/"),
     rows("/reports/"),
     cities(),
+    blogArticles(),
+    getBlogCategories(),
   ]);
 
   const build = (
@@ -81,18 +106,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...(withImages && x.image ? { images: [x.image] } : {}),
     }));
 
-  // صفحات هبوط المدن — /listings/city/<slug>
+  // صفحات هبوط المدن — /properties/city/<slug>
   const cityEntries: MetadataRoute.Sitemap = cityList.map((c) => ({
-    url: `${BASE}/listings/city/${c.slug}`,
+    url: `${BASE}/properties/city/${c.slug}`,
     lastModified: now,
     changeFrequency: "daily",
     priority: 0.75,
   }));
 
+  const blogEntries: MetadataRoute.Sitemap = blog.map((b) => ({
+    url: `${BASE}/blog/${b.slug}`,
+    lastModified: b.updated ? new Date(b.updated) : now,
+    changeFrequency: "monthly",
+    priority: 0.65,
+  }));
+
+  const blogCategoryEntries: MetadataRoute.Sitemap = blogCats.map((c) => ({
+    url: `${BASE}/blog/category/${c.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
   return [
     ...staticEntries,
     ...cityEntries,
-    ...build(listings, "/listings", "daily", 0.7, true),
+    ...blogEntries,
+    ...blogCategoryEntries,
+    ...build(properties, "/properties", "daily", 0.7, true),
     ...build(services, "/services", "weekly", 0.6),
     ...build(requests, "/requests", "weekly", 0.5),
     ...build(jobs, "/jobs", "weekly", 0.5),

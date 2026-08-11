@@ -62,6 +62,7 @@ export function Footer() {
                 { href: "/reports", label: "مجتمع الشكاوي" },
                 { href: "/requests", label: "طلبات عقارية" },
                 { href: "/blog", label: "المدونة" },
+                { href: "/tools", label: "أدوات وحاسبات" },
                 { href: "/help", label: "مركز المساعدة" },
                 { href: "/download", label: "حمّل التطبيق" },
               ].map((link) => (
