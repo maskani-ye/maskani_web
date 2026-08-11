@@ -1,6 +1,22 @@
 import Link from "next/link";
 import { Home2, Shield, Buildings2 } from "@solar-icons/react";
 
+// روابط صفحات هبوط المحافظات — تظهر في فوتر كل صفحة (ربط داخلي سيتوايد يمرّر
+// قوّة الزحف لصفحات المدن «المُكتشَفة وغير المفهرَسة» ويقلّل عمق النقر إليها).
+const GOVERNORATES = [
+  { slug: "sanaa", name: "صنعاء" }, { slug: "aden", name: "عدن" },
+  { slug: "taiz", name: "تعز" }, { slug: "al-hudaydah", name: "الحديدة" },
+  { slug: "ibb", name: "إب" }, { slug: "hadramout", name: "حضرموت" },
+  { slug: "dhamar", name: "ذمار" }, { slug: "hajjah", name: "حجة" },
+  { slug: "amran", name: "عمران" }, { slug: "marib", name: "مأرب" },
+  { slug: "al-bayda", name: "البيضاء" }, { slug: "lahij", name: "لحج" },
+  { slug: "abyan", name: "أبين" }, { slug: "saada", name: "صعدة" },
+  { slug: "shabwah", name: "شبوة" }, { slug: "raymah", name: "ريمة" },
+  { slug: "al-mahwit", name: "المحويت" }, { slug: "al-dhale-e", name: "الضالع" },
+  { slug: "al-jawf", name: "الجوف" }, { slug: "al-mahrah", name: "المهرة" },
+  { slug: "socotra", name: "سقطرى" },
+];
+
 export function Footer() {
   return (
     <footer className="bg-primary text-white mt-16">
@@ -24,10 +40,10 @@ export function Footer() {
             <h4 className="font-bold text-white mb-4">الخدمات</h4>
             <ul className="space-y-2">
               {[
-                { href: "/listings?offer_type=sale", label: "عقارات للبيع" },
-                { href: "/listings?offer_type=rent_monthly", label: "إيجار شهري" },
-                { href: "/listings?offer_type=rent_yearly", label: "إيجار سنوي" },
-                { href: "/listings?property_type=land", label: "أراضي" },
+                { href: "/properties?offer_type=sale", label: "عقارات للبيع" },
+                { href: "/properties?offer_type=rent_monthly", label: "إيجار شهري" },
+                { href: "/properties?offer_type=rent_yearly", label: "إيجار سنوي" },
+                { href: "/properties?property_type=land", label: "أراضي" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-primary-200 hover:text-white text-sm transition-colors">
@@ -45,6 +61,8 @@ export function Footer() {
                 { href: "/services", label: "خدمات عقارية" },
                 { href: "/reports", label: "مجتمع الشكاوي" },
                 { href: "/requests", label: "طلبات عقارية" },
+                { href: "/blog", label: "المدونة" },
+                { href: "/help", label: "مركز المساعدة" },
                 { href: "/download", label: "حمّل التطبيق" },
               ].map((link) => (
                 <li key={link.href}>
@@ -65,13 +83,30 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2 text-primary-200 text-sm">
                 <Buildings2 className="h-4 w-4 text-gold" />
-                <span>آلاف الإعلانات العقارية</span>
+                <span>آلاف العقارات</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-primary-600 mt-8 pt-6 flex flex-col gap-4">
+        {/* تصفّح حسب المحافظة — ربط داخلي سيتوايد لصفحات هبوط المدن */}
+        <nav aria-label="تصفّح العقارات حسب المحافظة" className="border-t border-primary-600 mt-8 pt-6">
+          <h4 className="font-bold text-white mb-3 text-sm">تصفّح العقارات حسب المحافظة</h4>
+          <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
+            {GOVERNORATES.map((g) => (
+              <li key={g.slug}>
+                <Link
+                  href={`/properties/city/${g.slug}`}
+                  className="text-primary-200 hover:text-white text-sm transition-colors"
+                >
+                  عقارات {g.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="border-t border-primary-600 mt-6 pt-6 flex flex-col gap-4">
           {/* روابط قانونية */}
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <Link
