@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import { getServiceIcon } from "@/lib/serviceIcons";
+import { DownloadAppBadge } from "@/components/download/DownloadAppBadge";
 import {
   Buildings2, ShieldWarning, AltArrowLeft, MapPoint, Magnifer,
   Star, UsersGroupRounded, ClipboardList, Home2,
@@ -78,6 +79,9 @@ export default function HomeClient() {
             <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto">
               عقارات، خدمات، وطلبات — ومجتمع يحميك من الاحتيال العقاري
             </p>
+            <div className="mt-7 flex justify-center">
+              <DownloadAppBadge variant="light" />
+            </div>
           </motion.div>
         </div>
       </section>
