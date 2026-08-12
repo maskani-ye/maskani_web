@@ -87,11 +87,6 @@ export default function HomeClient() {
         <HeroSearch cities={cities} />
       </div>
 
-      {/* ─── شريط الأقسام السريعة ────────────────────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-8">
-        <CategoryStrip />
-      </div>
-
       {/* ─── المدن (وجهات بأسلوب Gathern + بوردر أكتيف) ───────────────────── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10">
         <CitiesStrip cities={cities} />
@@ -305,34 +300,6 @@ function CitiesStrip({ cities }: { cities: City[] }) {
         })}
       </div>
     </section>
-  );
-}
-
-// ─── شريط الأقسام السريعة ────────────────────────────────────────────────
-const CATEGORIES = [
-  { href: "/properties", label: "العقارات", Icon: Buildings2 },
-  { href: "/services", label: "الخدمات", Icon: UsersGroupRounded },
-  { href: "/requests", label: "طلبات عقارية", Icon: ClipboardList },
-  { href: "/jobs", label: "طلبات خدمات", Icon: Home2 },
-  { href: "/properties?view=map", label: "الخريطة", Icon: MapPoint },
-];
-
-function CategoryStrip() {
-  return (
-    <div className="flex gap-3 overflow-x-auto pb-2 sm:justify-center scrollbar-none">
-      {CATEGORIES.map(({ href, label, Icon }) => (
-        <Link
-          key={label}
-          href={href}
-          className="group flex flex-col items-center gap-2 flex-shrink-0 w-24 sm:w-28"
-        >
-          <div className="w-14 h-14 rounded-2xl bg-white card-shadow flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-200">
-            <Icon weight="Bold" className="h-6 w-6" />
-          </div>
-          <span className="text-xs font-semibold text-gray-700 group-hover:text-primary transition-colors">{label}</span>
-        </Link>
-      ))}
-    </div>
   );
 }
 
