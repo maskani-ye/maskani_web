@@ -22,6 +22,7 @@ export const endpoints = {
   propertyMatchingRequests: (id: Id) => `/properties/${id}/matching-requests/`,
   propertiesMap: "/properties/map/",
   propertyTypes: "/properties/property-types/",
+  neighborhoods: "/cities/neighborhoods/",
   bumpProperty: (id: Id) => `/properties/${id}/bump/`,
   // «نعم، ما زال متاحًا» — الردّ المباشر على تذكير الانتهاء.
   confirmPropertyAvailability: (id: Id) => `/properties/${id}/confirm-availability/`,

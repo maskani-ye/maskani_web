@@ -82,6 +82,9 @@ export interface Property {
   city: number;
   city_name?: string;
   neighborhood: string;
+  // مرجع الحيّ (اختياري) — عليه تقع الفلترة والتصفّح؛ النصّ يبقى كما كتبه الناشر.
+  neighborhood_ref?: number | null;
+  neighborhood_name?: string | null;
   address: string;
   latitude: string | null;
   longitude: string | null;

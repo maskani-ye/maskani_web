@@ -6,6 +6,7 @@ import { Select } from "@/components/ui/Select";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { MoneyInput } from "@/components/ui/MoneyInput";
 import { CURRENCIES } from "@/lib/utils";
+import { NeighborhoodInput } from "@/components/properties/NeighborhoodInput";
 import {
   Layers, TagPrice, Leaf, Box, Shield, WiFiRouter, CloudBolt, Bolt, Paw,
 } from "@solar-icons/react";
@@ -26,6 +27,8 @@ export interface PropertyFormState {
   furnishing: string;
   city: string;
   neighborhood: string;
+  // مرجع الحيّ إن طابق المكتوبُ حياً مسجّلاً — يبقى الاسم نصّاً حرّاً دائماً.
+  neighborhood_ref: string;
   address: string;
   contact_phone: string;
   contact_whatsapp: string;
@@ -45,7 +48,7 @@ export interface PropertyFormState {
 export const emptyPropertyForm: PropertyFormState = {
   title: "", description: "", property_type: "", offer_type: "sale",
   price: "", currency: "YER", area: "", rooms: "", bathrooms: "", floor: "",
-  total_floors: "", furnishing: "", city: "", neighborhood: "", address: "",
+  total_floors: "", furnishing: "", city: "", neighborhood: "", neighborhood_ref: "", address: "",
   contact_phone: "", contact_whatsapp: "", status: "available",
   has_elevator: false, has_parking: false, has_garden: false, has_pool: false,
   has_security: false, has_internet: false, has_ac: false, has_generator: false,
@@ -192,7 +195,14 @@ export function PropertyFormFields({ form, setField, cities, propertyTypes }: Pr
           placeholder="اختر المدينة"
           required
         />
-        <Input label="الحي" placeholder="اسم الحي" value={form.neighborhood} onChange={(e) => setField("neighborhood", e.target.value)} />
+        <NeighborhoodInput
+          cityId={form.city}
+          value={form.neighborhood}
+          onChange={(name, refId) => {
+            setField("neighborhood", name);
+            setField("neighborhood_ref", refId);
+          }}
+        />
       </div>
 
       <Input label="العنوان التفصيلي" placeholder="الشارع، أقرب معلم..." value={form.address} onChange={(e) => setField("address", e.target.value)} />
@@ -257,6 +267,7 @@ export function buildPropertyFormData(form: PropertyFormState, images: File[]): 
   fd.append("status", form.status);
   if (form.furnishing) fd.append("furnishing", form.furnishing);
   if (form.neighborhood) fd.append("neighborhood", form.neighborhood);
+  if (form.neighborhood_ref) fd.append("neighborhood_ref", form.neighborhood_ref);
   if (form.address) fd.append("address", form.address);
   if (form.contact_phone) fd.append("contact_phone", form.contact_phone);
   if (form.contact_whatsapp) fd.append("contact_whatsapp", form.contact_whatsapp);
@@ -279,6 +290,7 @@ export function buildPropertyPatch(form: PropertyFormState): Record<string, unkn
     status: form.status,
     furnishing: form.furnishing || null,
     neighborhood: form.neighborhood,
+    neighborhood_ref: form.neighborhood_ref ? Number(form.neighborhood_ref) : null,
     address: form.address,
     contact_phone: form.contact_phone,
     contact_whatsapp: form.contact_whatsapp,
