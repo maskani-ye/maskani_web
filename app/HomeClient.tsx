@@ -13,7 +13,7 @@ import { PropertyCard } from "@/components/properties/PropertyCard";
 import { getServiceIcon } from "@/lib/serviceIcons";
 import {
   Buildings2, ShieldWarning, AltArrowLeft, MapPoint,
-  Star, UsersGroupRounded, ClipboardList, Home2,
+  Star, UsersGroupRounded, ClipboardList, Home2, Eye,
 } from "@solar-icons/react";
 import { motion } from "framer-motion";
 
@@ -291,6 +291,7 @@ function StatsSection({ stats }: { stats: Record<string, number> }) {
     { key: "jobs", label: "طلب خدمة", Icon: Home2 },
     { key: "users", label: "عضو", Icon: Star },
     { key: "cities", label: "محافظة", Icon: MapPoint },
+    { key: "visits", label: "زيارة للمنصّة", Icon: Eye },
   ];
   return (
     <section className="bg-gradient-to-br from-primary-800 to-primary-600 rounded-3xl px-4 sm:px-8 py-10 text-white overflow-hidden">
@@ -298,7 +299,7 @@ function StatsSection({ stats }: { stats: Record<string, number> }) {
         <h2 className="text-2xl sm:text-3xl font-extrabold">مسكني بالأرقام</h2>
         <p className="text-white/70 text-sm mt-1">مجتمع عقاري يمنيّ يكبر كل يوم</p>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 max-w-6xl mx-auto">
         {items.map(({ key, label, Icon }) => (
           <div key={key} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 flex flex-col items-center text-center border border-white/10">
             <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center mb-3">
