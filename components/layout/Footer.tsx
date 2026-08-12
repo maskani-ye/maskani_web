@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Home2, Shield, Buildings2 } from "@solar-icons/react";
+import { DownloadAppBadge } from "@/components/download/DownloadAppBadge";
 
 // روابط صفحات هبوط المحافظات — تظهر في فوتر كل صفحة (ربط داخلي سيتوايد يمرّر
 // قوّة الزحف لصفحات المدن «المُكتشَفة وغير المفهرَسة» ويقلّل عمق النقر إليها).
@@ -33,6 +34,9 @@ export function Footer() {
             <p className="text-primary-200 text-sm leading-relaxed">
               منصة عقارية اجتماعية تربط بين صاحب العقار والعميل. بيع، إيجار، خدمات، ومجتمع لمكافحة الاحتيال.
             </p>
+            <div className="mt-5">
+              <DownloadAppBadge variant="light" />
+            </div>
           </div>
 
           {/* Links */}
