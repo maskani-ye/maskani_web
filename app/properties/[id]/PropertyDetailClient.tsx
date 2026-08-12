@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import MiniMap from "@/components/map/MiniMap";
+import { MatchingRequests } from "@/components/properties/MatchingRequests";
 
 const featuresList = [
   { key: "has_elevator", label: "مصعد", icon: Layers },
@@ -408,6 +409,11 @@ export default function PropertyDetailClient(
                 <PenNewSquare className="h-4 w-4" /> تعديل العقار
               </Button>
             </Link>
+          )}
+
+          {/* الباحثون المطابقون — للمالك وحده (المسار محميّ في الخادم أيضاً) */}
+          {typeof property.user === "object" && user?.id === property.user.id && (
+            <MatchingRequests propertyId={property.id} />
           )}
 
           {/* Price Card */}

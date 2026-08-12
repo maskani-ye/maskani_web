@@ -162,7 +162,8 @@ export function routeForData(data: Record<string, string>): string | null {
     }
     case "new_property":
     case "new_comment":
-    case "property_interest": {
+    case "property_interest":
+    case "demand_match": {
       const l = id("property_id", "property");
       return l ? `/properties/${l}` : "/properties";
     }

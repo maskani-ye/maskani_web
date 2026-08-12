@@ -18,6 +18,8 @@ export const endpoints = {
   properties: "/properties/",
   property: (id: Id) => `/properties/${id}/`,
   similarProperties: (id: Id) => `/properties/${id}/similar/`,
+  // الطلبات المطابقة لعقار — لمالكه (الاتجاه المعاكس للمطابقة).
+  propertyMatchingRequests: (id: Id) => `/properties/${id}/matching-requests/`,
   propertiesMap: "/properties/map/",
   propertyTypes: "/properties/property-types/",
   bumpProperty: (id: Id) => `/properties/${id}/bump/`,
