@@ -23,6 +23,8 @@ const asIcon = (I: ComponentType<{ className?: string }>) => I;
 
 interface PublicUser extends User {
   is_following?: boolean;
+  // «يردّ عادةً خلال ساعة» — يحسبه الخادم من الشات ويُخفيه عند قلّة العيّنة.
+  response_label?: string | null;
 }
 interface UserRatingItem {
   id: number;
@@ -177,6 +179,11 @@ export default function PublicProfilePage() {
             {profile.city_name && (
               <p className="flex items-center gap-1 text-sm text-gray-500 mt-1">
                 <MapPoint className="h-3.5 w-3.5" /> {profile.city_name}
+              </p>
+            )}
+            {profile.response_label && (
+              <p className="flex items-center gap-1 text-sm text-primary font-medium mt-1">
+                <ChatRoundDots className="h-3.5 w-3.5" /> {profile.response_label}
               </p>
             )}
             {profile.bio && <p className="text-sm text-gray-600 mt-2 leading-relaxed">{profile.bio}</p>}

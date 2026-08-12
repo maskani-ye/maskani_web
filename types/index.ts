@@ -66,6 +66,7 @@ export interface Property {
   user: number | User;
   user_name?: string;
   user_verified?: boolean;
+  user_response_label?: string | null;
   title: string;
   description: string;
   // الخادم يُرجعها ككائن متداخل {id,name_ar,icon} (PropertyType أصبح جدولاً/FK).

@@ -494,6 +494,14 @@ export default function PropertyDetailClient(
                     {property.user.average_rating && (
                       <StarRating rating={property.user.average_rating} size="sm" />
                     )}
+                    {/* مؤشّر الاستجابة — محسوب من بيانات الشات لا من ادّعاء
+                        المُعلِن. الخادم يخفيه حين تكون العيّنة غير كافية. */}
+                    {property.user_response_label && (
+                      <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                        <ChatRoundDots className="h-3 w-3 text-primary" />
+                        {property.user_response_label}
+                      </p>
+                    )}
                   </div>
                 </div>
               </Link>
