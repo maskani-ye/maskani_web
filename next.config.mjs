@@ -35,6 +35,8 @@ const nextConfig = {
         destination: "https://maskani.homes/:path*",
         permanent: true,
       },
+      // صفحة /download أُلغيت — أزرار التحميل صارت في الفوتر. نحوّل الرابط القديم للرئيسية.
+      { source: "/download", destination: "/", permanent: true },
       { source: "/listings", destination: "/properties", permanent: true },
       { source: "/listings/:path*", destination: "/properties/:path*", permanent: true },
       { source: "/admin/listings", destination: "/admin/properties", permanent: true },
