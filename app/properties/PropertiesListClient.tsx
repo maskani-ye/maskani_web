@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { api, getErrorMessage } from "@/lib/api";
-import { formatPrice, offerTypeLabels, propertyTypeName } from "@/lib/utils";
+import { CURRENCIES, DEFAULT_CURRENCY, formatPrice, offerTypeLabels, propertyTypeName } from "@/lib/utils";
 import type { Property, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -56,6 +56,9 @@ function PropertiesContent() {
     offer_type: searchParams.get("offer_type") || "",
     price_min: searchParams.get("price_min") || "",
     price_max: searchParams.get("price_max") || "",
+    // عملة المدى السعري — يفسّرها الخادم ويحوّلها قبل المقارنة، فلا تُقارَن
+    // عملات مختلفة على رقمها الخام.
+    price_currency: searchParams.get("price_currency") || DEFAULT_CURRENCY,
     rooms_min: searchParams.get("rooms_min") || "",
     has_parking: searchParams.get("has_parking") || "",
     has_elevator: searchParams.get("has_elevator") || "",
@@ -141,6 +144,7 @@ function PropertiesContent() {
     setFilters((p) => ({
       ...p,
       property_type: "", offer_type: "", price_min: "", price_max: "",
+      price_currency: DEFAULT_CURRENCY,
       rooms_min: "", has_parking: "", has_elevator: "", furnishing: "",
     }));
     if (cityId) setCity("", "");
@@ -149,7 +153,7 @@ function PropertiesContent() {
 
   // عدد الفلاتر الفعّالة (عدا البحث النصّي والترتيب) — لعرض شارة/إعادة تعيين.
   const activeFilterCount =
-    Object.entries(filters).filter(([k, v]) => v && k !== "search" && k !== "ordering").length +
+    Object.entries(filters).filter(([k, v]) => v && k !== "search" && k !== "ordering" && k !== "price_currency").length +
     (cityId ? 1 : 0);
 
   const toggleFavorite = async (id: number, e: React.MouseEvent) => {
@@ -355,6 +359,12 @@ function PropertiesContent() {
             placeholder="غير محدد"
             value={filters.price_max}
             onChange={(e) => handleFilterChange("price_max", e.target.value)}
+          />
+          <Select
+            label="عملة السعر"
+            options={CURRENCIES.map((c) => ({ value: c.value, label: c.label }))}
+            value={filters.price_currency}
+            onChange={(e) => handleFilterChange("price_currency", e.target.value)}
           />
           <Input
             label="عدد الغرف (الحد الأدنى)"

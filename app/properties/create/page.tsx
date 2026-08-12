@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
 import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
 import { compressImages } from "@/lib/imageCompression";
+import { CURRENCIES } from "@/lib/utils";
 
 // خريطة الاختيار تُحمَّل ديناميكياً (Leaflet يحتاج window).
 const LocationPickerMap = dynamic(() => import("@/components/map/LocationPickerMap"), {
@@ -38,12 +39,6 @@ const OFFER_TYPES: Record<string, string> = {
   rent_monthly: "إيجار شهري",
   rent_yearly: "إيجار سنوي",
 };
-
-const CURRENCIES: { value: string; symbol: string; label: string }[] = [
-  { value: "YER", symbol: "ر.ي", label: "ريال يمني" },
-  { value: "SAR", symbol: "ر.س", label: "ريال سعودي" },
-  { value: "USD", symbol: "$", label: "دولار" },
-];
 
 const FURNISHING: Record<string, string> = {
   furnished: "مفروشة",

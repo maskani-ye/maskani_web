@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { MoneyInput } from "@/components/ui/MoneyInput";
+import { CURRENCIES } from "@/lib/utils";
 import {
   Layers, TagPrice, Leaf, Box, Shield, WiFiRouter, CloudBolt, Bolt, Paw,
 } from "@solar-icons/react";
@@ -70,11 +71,8 @@ const OFFER_TYPE_OPTS = [
   { value: "rent_yearly", label: "إيجار سنوي" },
 ];
 
-const CURRENCY_OPTS = [
-  { value: "YER", label: "ريال يمني" },
-  { value: "SAR", label: "ريال سعودي" },
-  { value: "USD", label: "دولار" },
-];
+// المصدر الموحّد للعملات — لا تُكرَّر القائمة في المكوّنات.
+const CURRENCY_OPTS = CURRENCIES.map((c) => ({ value: c.value, label: c.label }));
 
 const FURNISHING_OPTS = [
   { value: "furnished", label: "مفروشة" },

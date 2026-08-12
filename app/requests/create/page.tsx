@@ -18,6 +18,7 @@ import { PenNewSquare, AltArrowRight } from "@solar-icons/react";
 import { toast } from "sonner";
 import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
 import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
+import { CURRENCIES } from "@/lib/utils";
 
 const PROPERTY_TYPE_OPTS = [
   { value: "apartment", label: "شقة" },
@@ -32,11 +33,8 @@ const OFFER_TYPE_OPTS = [
   { value: "rent_yearly", label: "إيجار سنوي" },
   { value: "any", label: "أي نوع" },
 ];
-const CURRENCY_OPTS = [
-  { value: "YER", label: "ريال يمني" },
-  { value: "SAR", label: "ريال سعودي" },
-  { value: "USD", label: "دولار" },
-];
+// المصدر الموحّد للعملات — لا تُكرَّر القائمة في الصفحات.
+const CURRENCY_OPTS = CURRENCIES.map((c) => ({ value: c.value, label: c.label }));
 
 export default function CreateRequestPage() {
   const { user, loading: authLoading } = useAuth();

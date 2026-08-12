@@ -19,6 +19,17 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: "$",
 };
 
+// المصدر الوحيد لقائمة العملات في الويب — الترتيب مقصود: اليمن أولاً (السوق
+// الأساسي)، ويطابق `Currency` في الباك اند و`Currency` في تطبيقَي Flutter.
+export const CURRENCIES: { value: string; symbol: string; label: string }[] = [
+  { value: "YER", symbol: CURRENCY_SYMBOLS.YER, label: CURRENCY_LABELS.YER },
+  { value: "SAR", symbol: CURRENCY_SYMBOLS.SAR, label: CURRENCY_LABELS.SAR },
+  { value: "USD", symbol: CURRENCY_SYMBOLS.USD, label: CURRENCY_LABELS.USD },
+];
+
+// العملة الافتراضية — يجب أن تطابق `Currency.YER` في الباك اند.
+export const DEFAULT_CURRENCY = "YER";
+
 // نصّ موحّد لغياب السعر — «السعر عند التواصل» يشجّع على النقر/التواصل.
 export const PRICE_ON_REQUEST = "السعر عند التواصل";
 
