@@ -8,14 +8,17 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const CURRENCY_LABELS: Record<string, string> = {
+  // الريال اليمني عملتان: صنعاء وعدن (الفرق ثلاثة أضعاف في سعر الصرف).
+  YER: "ريال يمني (صنعاء)",
+  YEA: "ريال يمني (عدن)",
   SAR: "ريال سعودي",
-  YER: "ريال يمني",
   USD: "دولار",
 };
 
 export const CURRENCY_SYMBOLS: Record<string, string> = {
-  SAR: "ر.س",
   YER: "ر.ي",
+  YEA: "ر.ي (عدن)",
+  SAR: "ر.س",
   USD: "$",
 };
 
@@ -23,6 +26,7 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
 // الأساسي)، ويطابق `Currency` في الباك اند و`Currency` في تطبيقَي Flutter.
 export const CURRENCIES: { value: string; symbol: string; label: string }[] = [
   { value: "YER", symbol: CURRENCY_SYMBOLS.YER, label: CURRENCY_LABELS.YER },
+  { value: "YEA", symbol: CURRENCY_SYMBOLS.YEA, label: CURRENCY_LABELS.YEA },
   { value: "SAR", symbol: CURRENCY_SYMBOLS.SAR, label: CURRENCY_LABELS.SAR },
   { value: "USD", symbol: CURRENCY_SYMBOLS.USD, label: CURRENCY_LABELS.USD },
 ];
@@ -38,6 +42,7 @@ export function formatPrice(price: string | number | null | undefined, currency?
   if (num == null || isNaN(num)) return PRICE_ON_REQUEST;
   // عملة غير صالحة/فارغة → افتراضي YER (تفادي: "Currency code is required with currency style").
   const cur = (currency || "YER").toUpperCase();
+  // YEA (ريال عدن) رمز داخلي لا يعرفه Intl — يسقط عمداً إلى صيغة الرمز أدناه.
   const localeMap: Record<string, string> = { SAR: "ar-SA", YER: "ar-YE", USD: "en-US" };
   const locale = localeMap[cur] ?? "ar-SA";
   try {
