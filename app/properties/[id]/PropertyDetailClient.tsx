@@ -25,6 +25,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import MiniMap from "@/components/map/MiniMap";
 import { MatchingRequests } from "@/components/properties/MatchingRequests";
 import { AvailabilityPrompt } from "@/components/properties/AvailabilityPrompt";
+import { TrustSignals } from "@/components/properties/TrustSignals";
 
 const featuresList = [
   { key: "has_elevator", label: "مصعد", icon: Layers },
@@ -517,6 +518,9 @@ export default function PropertyDetailClient(
               </Link>
             )}
           </div>
+
+          {/* إشارات التحقّق — وصف محايد يبني عليه الباحث قراره */}
+          <TrustSignals property={property} />
         </div>
       </div>
     </div>

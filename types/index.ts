@@ -69,6 +69,9 @@ export interface Property {
   user_response_label?: string | null;
   expires_at?: string | null;
   availability_confirmed_at?: string | null;
+  // إشارات ثقة يحسبها الخادم (بديل التحقّق بالرسائل القصيرة).
+  phone_listings_count?: number | null;
+  trust_note?: string | null;
   title: string;
   description: string;
   // الخادم يُرجعها ككائن متداخل {id,name_ar,icon} (PropertyType أصبح جدولاً/FK).
