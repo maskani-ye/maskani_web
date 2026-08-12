@@ -23,6 +23,8 @@ export const endpoints = {
   propertiesMap: "/properties/map/",
   propertyTypes: "/properties/property-types/",
   bumpProperty: (id: Id) => `/properties/${id}/bump/`,
+  // «نعم، ما زال متاحًا» — الردّ المباشر على تذكير الانتهاء.
+  confirmPropertyAvailability: (id: Id) => `/properties/${id}/confirm-availability/`,
   propertyStatus: (id: Id) => `/properties/${id}/status/`,
   savedSearches: "/properties/saved-searches/",
   savedSearch: (id: Id) => `/properties/saved-searches/${id}/`,

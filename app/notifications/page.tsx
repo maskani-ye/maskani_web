@@ -39,7 +39,8 @@ function routeForNotification(n: Notification): string | null {
     case "new_comment":
     case "property_interest": if (property) return `/properties/${property}`; break;
     // مطابقة عكسية: الوجهة صفحة العقار حيث يظهر قسم «طلبات تطابق عقارك».
-    case "demand_match": if (property) return `/properties/${property}`; break;
+    case "demand_match":
+    case "property_expiring": if (property) return `/properties/${property}`; break;
     case "new_service_request": if (job) return `/jobs/${job}`; break;
     case "new_offer":
     case "request_offer":

@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import MiniMap from "@/components/map/MiniMap";
 import { MatchingRequests } from "@/components/properties/MatchingRequests";
+import { AvailabilityPrompt } from "@/components/properties/AvailabilityPrompt";
 
 const featuresList = [
   { key: "has_elevator", label: "مصعد", icon: Layers },
@@ -409,6 +410,15 @@ export default function PropertyDetailClient(
                 <PenNewSquare className="h-4 w-4" /> تعديل العقار
               </Button>
             </Link>
+          )}
+
+          {/* «هل ما زال متاحًا؟» — للمالك حين يقترب انتهاء العرض */}
+          {typeof property.user === "object" && user?.id === property.user.id && (
+            <AvailabilityPrompt
+              propertyId={property.id}
+              expiresAt={property.expires_at}
+              onDone={loadProperty}
+            />
           )}
 
           {/* الباحثون المطابقون — للمالك وحده (المسار محميّ في الخادم أيضاً) */}
