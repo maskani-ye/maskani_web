@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import { getServiceIcon } from "@/lib/serviceIcons";
 import {
-  Buildings2, ShieldWarning, AltArrowLeft, MapPoint, Magnifer,
+  Buildings2, ShieldWarning, AltArrowLeft, MapPoint,
   Star, UsersGroupRounded, ClipboardList, Home2,
 } from "@solar-icons/react";
 import { motion } from "framer-motion";
@@ -64,7 +64,7 @@ export default function HomeClient() {
         <div className="absolute inset-0 opacity-20 pointer-events-none">
           <div className="absolute bottom-0 left-10 w-56 h-56 rounded-full bg-gold blur-[90px]" />
         </div>
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-16 md:pt-24 pb-28 md:pb-32">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-16 md:pt-24 pb-14 md:pb-16">
           <motion.div
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-center"
@@ -82,9 +82,9 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ─── بطاقة البحث العائمة ─────────────────────────────────────────── */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-20 md:-mt-24 relative z-10">
-        <HeroSearch cities={cities} />
+      {/* ─── شريط الأقسام السريعة ────────────────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-8">
+        <CategoryStrip />
       </div>
 
       {/* ─── المدن (وجهات بأسلوب Gathern + بوردر أكتيف) ───────────────────── */}
@@ -164,52 +164,31 @@ export default function HomeClient() {
 }
 
 // ─── بطاقة البحث العائمة (بأسلوب Gathern) ────────────────────────────────
-function HeroSearch({ cities }: { cities: City[] }) {
-  const router = useRouter();
-  const [q, setQ] = useState("");
-  const [city, setCity] = useState("");
+// ─── شريط الأقسام السريعة ────────────────────────────────────────────────
+const CATEGORIES = [
+  { href: "/properties", label: "العقارات", Icon: Buildings2 },
+  { href: "/services", label: "الخدمات", Icon: UsersGroupRounded },
+  { href: "/requests", label: "طلبات عقارية", Icon: ClipboardList },
+  { href: "/jobs", label: "طلبات خدمات", Icon: Home2 },
+  { href: "/properties?view=map", label: "الخريطة", Icon: MapPoint },
+];
 
-  const onSearch = () => {
-    const params = new URLSearchParams();
-    if (q.trim()) params.set("search", q.trim());
-    if (city) params.set("city", city);
-    router.push(`/properties${params.toString() ? `?${params.toString()}` : ""}`);
-  };
-
+function CategoryStrip() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
-      className="bg-white rounded-3xl shadow-[0_12px_48px_rgba(79,35,150,0.18)] border border-primary/5 p-3 sm:p-3.5"
-    >
-      <div className="flex flex-col sm:flex-row gap-2.5">
-        <div className="flex-1 flex items-center gap-2.5 bg-cream rounded-2xl px-4 py-3.5">
-          <Magnifer className="h-5 w-5 text-gray-400 flex-shrink-0" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && onSearch()}
-            placeholder="ابحث عن شقة، فيلا، أرض…"
-            className="flex-1 bg-transparent outline-none text-gray-900 placeholder:text-gray-400 text-sm min-w-0"
-          />
-        </div>
-        <div className="flex items-center gap-2.5 bg-cream rounded-2xl px-4 py-3.5 sm:w-48">
-          <MapPoint className="h-5 w-5 text-gray-400 flex-shrink-0" />
-          <select
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-gray-900 text-sm cursor-pointer min-w-0"
-          >
-            <option value="">كل المدن</option>
-            {cities.map((c) => (
-              <option key={c.id} value={c.id}>{c.name_ar}</option>
-            ))}
-          </select>
-        </div>
-        <Button size="lg" onClick={onSearch} className="sm:px-8 rounded-2xl">
-          <Magnifer weight="Bold" className="h-5 w-5" /> بحث
-        </Button>
-      </div>
-    </motion.div>
+    <div className="flex gap-3 overflow-x-auto pb-2 sm:justify-center scrollbar-none">
+      {CATEGORIES.map(({ href, label, Icon }) => (
+        <Link
+          key={label}
+          href={href}
+          className="group flex flex-col items-center gap-2 flex-shrink-0 w-24 sm:w-28"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-white card-shadow flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-200">
+            <Icon weight="Bold" className="h-6 w-6" />
+          </div>
+          <span className="text-xs font-semibold text-gray-700 group-hover:text-primary transition-colors">{label}</span>
+        </Link>
+      ))}
+    </div>
   );
 }
 
