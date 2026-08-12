@@ -289,7 +289,6 @@ function StatsSection({ stats }: { stats: Record<string, number> }) {
     { key: "services", label: "مزوّد خدمة", Icon: UsersGroupRounded },
     { key: "demands", label: "طلب عقاري", Icon: ClipboardList },
     { key: "jobs", label: "طلب خدمة", Icon: Home2 },
-    { key: "users", label: "عضو", Icon: Star },
     { key: "cities", label: "محافظة", Icon: MapPoint },
     { key: "visits", label: "زيارة للمنصّة", Icon: Eye },
   ];
@@ -299,7 +298,7 @@ function StatsSection({ stats }: { stats: Record<string, number> }) {
         <h2 className="text-2xl sm:text-3xl font-extrabold">مسكني بالأرقام</h2>
         <p className="text-white/70 text-sm mt-1">مجتمع عقاري يمنيّ يكبر كل يوم</p>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 max-w-6xl mx-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 max-w-6xl mx-auto">
         {items.map(({ key, label, Icon }) => (
           <div key={key} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 flex flex-col items-center text-center border border-white/10">
             <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center mb-3">
