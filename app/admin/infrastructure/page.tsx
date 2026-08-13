@@ -37,6 +37,8 @@ function summarize(s: ServiceStatus): string {
       const mb = ((s.total_bytes as number) ?? 0) / 1048576;
       return `${s.total_files ?? 0} ملف · ${mb.toFixed(1)} م.ب · ${s.backups_count ?? 0} نسخة احتياطية`;
     }
+    case "neon":
+      return `${s.projects_count ?? 0} مشروع · ${s.storage_mb ?? 0} م.ب تخزين · الحصّة الشهرية ${s.compute_hours_quota_monthly ?? 0} ساعة`;
     case "vercel": {
       const last = s.last_production as { state?: string } | null;
       return `آخر نشر: ${last?.state ?? "—"} · ${s.failed_recent ?? 0} فشل حديث`;
