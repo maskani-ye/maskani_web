@@ -7,6 +7,9 @@ import { breadcrumbList, itemList, citySlug, SITE_URL } from "@/lib/seo";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import type { Property } from "@/types";
 
+// إعادة توليد الصفحة كل 5 دقائق — يتبع دورة تحرير الأحياء من اللوحة.
+export const revalidate = 300;
+
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
 interface Neighborhood {
@@ -19,8 +22,10 @@ interface Neighborhood {
 
 async function getNeighborhoods(): Promise<Neighborhood[]> {
   try {
+    // مدّة قصيرة عمداً: الأحياء تُحرَّر من اللوحة (حذف/تعطيل)، وكاش طويل يُبقي
+    // صفحةَ حيٍّ محذوف حيّةً ساعةً كاملة. خمس دقائق تكفي لالتئام ذاتي سريع.
     const res = await fetch(`${API}/cities/neighborhoods/`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 300 },
     });
     if (!res.ok) return [];
     const data = await res.json();
