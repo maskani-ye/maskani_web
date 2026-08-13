@@ -47,11 +47,11 @@ const nextConfig = {
   },
 };
 
-// Sentry يغلّف الإعداد ليرفع خرائط المصدر ويوجّه أحداث المتصفّح عبر نطاقنا
-// (تفاديًا لحاجبات الإعلانات). بلا SENTRY_AUTH_TOKEN يتخطّى رفع الخرائط بهدوء.
+// Sentry يغلّف الإعداد ليرفع خرائط المصدر (بلا SENTRY_AUTH_TOKEN يتخطّاها بهدوء).
+// لا نستخدم tunnelRoute: مسار النفق لا يتولّد مع Turbopack في هذا الإصدار، فتركه
+// يوهم بحماية من حاجبات الإعلانات غير قائمة فعلاً.
 export default withSentryConfig(nextConfig, {
   org: "maskani-61",
   project: "maskani-web",
   silent: true,
-  tunnelRoute: "/monitoring",
 });
