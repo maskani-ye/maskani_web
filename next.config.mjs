@@ -1,3 +1,5 @@
+import { withSentryConfig } from "@sentry/nextjs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -45,4 +47,11 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// Sentry يغلّف الإعداد ليرفع خرائط المصدر ويوجّه أحداث المتصفّح عبر نطاقنا
+// (تفاديًا لحاجبات الإعلانات). بلا SENTRY_AUTH_TOKEN يتخطّى رفع الخرائط بهدوء.
+export default withSentryConfig(nextConfig, {
+  org: "maskani-61",
+  project: "maskani-web",
+  silent: true,
+  tunnelRoute: "/monitoring",
+});
