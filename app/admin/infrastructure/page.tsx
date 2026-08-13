@@ -54,6 +54,20 @@ function summarize(s: ServiceStatus): string {
       const failed = repos.filter((r) => r.last_conclusion === "failure").length;
       return failed ? `${failed} مستودع آخر تشغيله فاشل` : `${repos.length} مستودع — كلها ناجحة`;
     }
+    case "openrouter": {
+      const bal = s.balance as { remaining?: number } | null;
+      const rem = bal?.remaining != null ? `${bal.remaining.toFixed(2)}$ متبقٍ · ` : "";
+      return `${rem}${s.requests_30d ?? 0} طلب · ${s.tokens_30d ?? 0} توكن (30 يومًا)`;
+    }
+    case "firebase":
+      return `${s.devices_active ?? 0} جهاز نشط · ${s.notifications_30d ?? 0} إشعار (30 يومًا)`;
+    case "play": {
+      const apps = (s.apps as { package: string; error?: string }[]) ?? [];
+      const bad = apps.filter((a) => a.error).length;
+      return bad ? `${bad} تطبيق تعذّرت قراءته` : `${apps.length} تطبيق منشور`;
+    }
+    case "gsc":
+      return `${s.clicks_30d ?? 0} نقرة · ${s.impressions_30d ?? 0} ظهور (30 يومًا)`;
     default:
       return "";
   }
