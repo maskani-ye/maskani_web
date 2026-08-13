@@ -68,8 +68,13 @@ const NAV_GROUPS = [
       { href: "/admin/property-types", label: "أنواع العقارات", icon: MapPoint },
       { href: "/admin/categories", label: "أصناف الخدمات",  icon: Widget },
       { href: "/admin/cities",     label: "المدن والدول",   icon: City },
-      { href: "/admin/ai",         label: "الذكاء الاصطناعي", icon: Stars },
-      { href: "/admin/infrastructure", label: "البنية والخدمات", icon: ServerSquare },
+    ],
+  },
+  {
+    title: "البنية والخدمات",
+    items: [
+      { href: "/admin/infrastructure", label: "الخدمات",          icon: ServerSquare },
+      { href: "/admin/ai",             label: "الذكاء الاصطناعي", icon: Stars },
     ],
   },
   {
