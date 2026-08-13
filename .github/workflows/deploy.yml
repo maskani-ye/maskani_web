@@ -34,11 +34,9 @@ jobs:
       - name: Install Vercel CLI
         run: npm i -g vercel@latest
 
-      - name: Pull production env
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      # البناء يجري على **Vercel** لا هنا: توليد الصفحات الثابتة يجلب من
+      # api.maskani.homes، وخوادم GitHub لا تصله ضمن مهلة 60 ثانية فتفشل
+      # الصفحات المولّدة (blog/category · sitemap · terms). خوادم Vercel تصله،
+      # وهي المسار الذي أثبت نجاحه.
+      - name: Deploy to production
+        run: vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
