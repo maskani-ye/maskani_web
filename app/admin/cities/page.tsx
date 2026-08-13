@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { toast } from "sonner";
 import { compressImage } from "@/lib/imageCompression";
+import { NeighborhoodsAdmin } from "@/components/admin/NeighborhoodsAdmin";
 import {
   MapPoint, AddCircle, CloseCircle, Magnifer,
   Buildings2, Global, CheckCircle, DangerCircle,
@@ -42,7 +43,7 @@ export default function AdminCitiesPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  const [tab, setTab] = useState<"cities" | "countries">("cities");
+  const [tab, setTab] = useState<"cities" | "countries" | "neighborhoods">("cities");
   const [countries, setCountries] = useState<Country[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [search, setSearch] = useState("");
@@ -194,25 +195,36 @@ export default function AdminCitiesPage() {
       <div className="flex items-center justify-between mb-6">
         <PageHeader icon={<MapPoint />} title="إدارة المدن والدول"
           subtitle={`${cities.length} مدينة — ${countries.length} دولة`} />
-        <Button onClick={tab === "cities" ? openAddCity : openAddCountry}>
-          <AddCircle className="h-4 w-4" />
-          {tab === "cities" ? "إضافة مدينة" : "إضافة دولة"}
-        </Button>
+        {tab !== "neighborhoods" && (
+          <Button onClick={tab === "cities" ? openAddCity : openAddCountry}>
+            <AddCircle className="h-4 w-4" />
+            {tab === "cities" ? "إضافة مدينة" : "إضافة دولة"}
+          </Button>
+        )}
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit mb-6">
-        {(["cities", "countries"] as const).map((t) => (
+        {(["cities", "countries", "neighborhoods"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${tab === t ? "bg-white text-primary card-shadow" : "text-gray-500 hover:text-gray-700"}`}
           >
-            {t === "cities" ? <span className="flex items-center gap-1.5"><MapPoint className="h-4 w-4" />المدن</span> : <span className="flex items-center gap-1.5"><Global className="h-4 w-4" />الدول</span>}
+            {t === "cities" ? (
+              <span className="flex items-center gap-1.5"><MapPoint className="h-4 w-4" />المدن</span>
+            ) : t === "countries" ? (
+              <span className="flex items-center gap-1.5"><Global className="h-4 w-4" />الدول</span>
+            ) : (
+              <span className="flex items-center gap-1.5"><MapPoint className="h-4 w-4" />الأحياء</span>
+            )}
           </button>
         ))}
       </div>
 
+      {tab === "neighborhoods" && <NeighborhoodsAdmin cities={cities} />}
+
+      {tab !== "neighborhoods" && (<>
       {/* Filters */}
       <div className="bg-white rounded-2xl card-shadow p-4 mb-5 flex flex-wrap gap-3">
         <Input
@@ -260,6 +272,7 @@ export default function AdminCitiesPage() {
           onDelete={(id) => setDeleteConfirm({ type: "country", id })}
         />
       )}
+      </>)}
 
       {/* ── City Modal ── */}
       {cityModal.open && (

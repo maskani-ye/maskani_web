@@ -46,6 +46,21 @@ async function cities(): Promise<{ slug: string }[]> {
   }
 }
 
+// يجلب الأحياء المسجّلة — أعمق طبقة فهرسة بعد المحافظة («عقارات في حي السبل»).
+async function neighborhoods(): Promise<{ slug: string }[]> {
+  try {
+    const res = await fetch(`${API}/cities/neighborhoods/`, { next: { revalidate: 86400 } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const list = Array.isArray(data) ? data : data.results ?? [];
+    return list
+      .map((n: { slug?: string }) => ({ slug: n.slug || "" }))
+      .filter((n: { slug: string }) => n.slug);
+  } catch {
+    return [];
+  }
+}
+
 // يجلب مقالات المدونة (slug + آخر تحديث) لخريطة الموقع.
 async function blogArticles(): Promise<{ slug: string; updated: string | null }[]> {
   try {
@@ -80,13 +95,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  const [properties, services, requests, jobs, reports, cityList, blog, blogCats] = await Promise.all([
+  const [properties, services, requests, jobs, reports, cityList, hoodList, blog, blogCats] = await Promise.all([
     rows("/properties/"),
     rows("/services/"),
     rows("/requests/"),
     rows("/jobs/"),
     rows("/reports/"),
     cities(),
+    neighborhoods(),
     blogArticles(),
     getBlogCategories(),
   ]);
@@ -114,6 +130,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }));
 
+  // صفحات هبوط الأحياء — /properties/neighborhood/<slug>
+  const hoodEntries: MetadataRoute.Sitemap = hoodList.map((n) => ({
+    url: `${BASE}/properties/neighborhood/${encodeURIComponent(n.slug)}`,
+    lastModified: now,
+    changeFrequency: "daily",
+    priority: 0.7,
+  }));
+
   const blogEntries: MetadataRoute.Sitemap = blog.map((b) => ({
     url: `${BASE}/blog/${b.slug}`,
     lastModified: b.updated ? new Date(b.updated) : now,
@@ -131,6 +155,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticEntries,
     ...cityEntries,
+    ...hoodEntries,
     ...blogEntries,
     ...blogCategoryEntries,
     ...build(properties, "/properties", "daily", 0.7, true),

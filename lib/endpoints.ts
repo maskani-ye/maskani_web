@@ -133,6 +133,8 @@ export const endpoints = {
     cities: `${ADMIN}/cities/`,
     city: (id: Id) => `${ADMIN}/cities/${id}/`,
     countries: `${ADMIN}/cities/countries/`,
+    neighborhoods: `${ADMIN}/cities/neighborhoods/`,
+    neighborhood: (id: Id) => `${ADMIN}/cities/neighborhoods/${id}/`,
     country: (id: Id) => `${ADMIN}/cities/countries/${id}/`,
 
     // analytics (تحليلات الزيارات)
