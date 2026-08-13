@@ -15,6 +15,7 @@ import { PenNewSquare, AddCircle, MapPoint, Bed, Dollar, ClockCircle, AltArrowRi
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
+import { useCountry } from "@/context/CountryContext";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbList, sectionLabel } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -24,6 +25,8 @@ export default function RequestsPage() {
   const { user } = useAuth();
   const { requireAuth } = useAuthGate();
   const { cityId, setCity } = useCity();
+  // كل قائمة محصورة بدولة الزائر: سوق واحد في الشاشة لا خليط أسواق.
+  const { code: countryCode } = useCountry();
   const router = useRouter();
   const [requests, setRequests] = useState<ClientRequest[]>([]);
   const [total, setTotal] = useState(0);
@@ -32,7 +35,8 @@ export default function RequestsPage() {
   const [filters, setFilters] = useState({ property_type: "", offer_type: "" });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
+    api.get("/cities/", { params: countryCode ? { country: countryCode } : {} })
+      .then((r) => setCities(r.data.results ?? [])).catch(() => {});
   }, []);
 
   const fetchRequests = useCallback(async () => {
@@ -41,12 +45,13 @@ export default function RequestsPage() {
       const params: Record<string, string> = { offset: "0", limit: "20" };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
       if (cityId) params.city = cityId;
+      if (countryCode) params.country = countryCode;
       const { data } = await api.get<PaginatedResponse<ClientRequest>>("/requests/", { params });
       setRequests(data.results);
       setTotal(data.count);
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
-  }, [filters, cityId]);
+  }, [filters, cityId, countryCode]);
 
   useEffect(() => { fetchRequests(); }, [fetchRequests]);
 

@@ -13,6 +13,7 @@ const cairo = Cairo({
 });
 import { AuthProvider } from "@/context/AuthContext";
 import { CityProvider } from "@/context/CityContext";
+import { CountryProvider } from "@/context/CountryContext";
 import { AuthGateProvider } from "@/context/AuthGate";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 import { Analytics } from "@/components/Analytics";
@@ -110,9 +111,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <AuthProvider>
           <AuthGateProvider>
-            <CityProvider>
+            <CountryProvider>
+              <CityProvider>
               <LayoutWrapper>{children}</LayoutWrapper>
-            </CityProvider>
+              </CityProvider>
+            </CountryProvider>
           </AuthGateProvider>
           <Toaster
             position="top-center"

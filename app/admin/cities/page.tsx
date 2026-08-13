@@ -155,7 +155,7 @@ export default function AdminCitiesPage() {
   };
 
   const openEditCountry = (country: Country) => {
-    setCountryForm({ name_ar: country.name_ar, name_en: country.name_en, code: country.code, is_active: country.is_active });
+    setCountryForm({ name_ar: country.name_ar, name_en: country.name_en, code: country.code, is_active: country.is_active ?? true });
     setCountryModal({ open: true, editing: country });
   };
 

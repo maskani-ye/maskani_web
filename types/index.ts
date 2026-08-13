@@ -30,8 +30,14 @@ export interface Country {
   name_ar: string;
   name_en: string;
   code: string;
-  is_active: boolean;
-  cities: City[];
+  slug: string;
+  flag_emoji: string;
+  phone_code: string;
+  default_currency: string;
+  order?: number;
+  is_active?: boolean;
+  properties_count?: number;
+  cities?: City[];
 }
 
 export interface City {

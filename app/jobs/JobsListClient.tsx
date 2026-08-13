@@ -15,6 +15,7 @@ import { Settings, AddCircle, MapPoint, Dollar, ClockCircle, AltArrowRight } fro
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
+import { useCountry } from "@/context/CountryContext";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbList, sectionLabel } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -37,6 +38,8 @@ export default function JobsPage() {
   const { user } = useAuth();
   const { requireAuth } = useAuthGate();
   const { cityId, setCity } = useCity();
+  // كل قائمة محصورة بدولة الزائر: سوق واحد في الشاشة لا خليط أسواق.
+  const { code: countryCode } = useCountry();
   const router = useRouter();
   const [requests, setRequests] = useState<ServiceRequestItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -46,7 +49,8 @@ export default function JobsPage() {
   const [category, setCategory] = useState("");
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
+    api.get("/cities/", { params: countryCode ? { country: countryCode } : {} })
+      .then((r) => setCities(r.data.results ?? [])).catch(() => {});
     api.get("/services/categories/").then((r) => setCategories(r.data.results ?? r.data ?? [])).catch(() => {});
   }, []);
 
@@ -56,12 +60,13 @@ export default function JobsPage() {
       const params: Record<string, string> = { offset: "0", limit: "20" };
       if (category) params.category = category;
       if (cityId) params.city = cityId;
+      if (countryCode) params.country = countryCode;
       const { data } = await api.get<PaginatedResponse<ServiceRequestItem>>("/jobs/", { params });
       setRequests(data.results);
       setTotal(data.count);
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
-  }, [category, cityId]);
+  }, [category, cityId, countryCode]);
 
   useEffect(() => { fetchRequests(); }, [fetchRequests]);
 

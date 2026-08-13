@@ -15,6 +15,9 @@ const ADMIN = "/admin";
 export const endpoints = {
   // ══════════════ عام (واجهة المستخدم) ══════════════
   cities: "/cities/",
+  countries: "/cities/countries/",
+  country: (slug: string) => `/cities/countries/${slug}/`,
+  detectCountry: "/cities/detect-country/",
   properties: "/properties/",
   property: (id: Id) => `/properties/${id}/`,
   similarProperties: (id: Id) => `/properties/${id}/similar/`,

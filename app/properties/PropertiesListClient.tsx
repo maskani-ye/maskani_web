@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
+import { useCountry } from "@/context/CountryContext";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbList, sectionLabel } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -39,6 +40,8 @@ function PropertiesContent() {
   const { user } = useAuth();
   const { requireAuth } = useAuthGate();
   const { cityId, setCity } = useCity();
+  // كل قائمة محصورة بدولة الزائر: سوق واحد في الشاشة لا خليط أسواق.
+  const { code: countryCode } = useCountry();
 
   const [properties, setProperties] = useState<Property[]>([]);
   const [total, setTotal] = useState(0);
@@ -67,7 +70,8 @@ function PropertiesContent() {
   });
 
   useEffect(() => {
-    api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
+    api.get("/cities/", { params: countryCode ? { country: countryCode } : {} })
+      .then((r) => setCities(r.data.results ?? [])).catch(() => {});
     // أنواع العقارات من المرجع المُدار — نفلتر بالمعرّف (id) لا بالاسم/enum.
     api.get<{ results?: { id: number; name_ar: string }[] } | { id: number; name_ar: string }[]>("/properties/property-types/")
       .then((r) => {
@@ -91,6 +95,7 @@ function PropertiesContent() {
       const params: Record<string, string> = { offset: String((page - 1) * 20), limit: "20" };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
       if (cityId) params.city = cityId;
+      if (countryCode) params.country = countryCode;
       const { data } = await api.get<PaginatedResponse<Property>>("/properties/", { params });
       setProperties(data.results);
       setTotal(data.count);
@@ -99,12 +104,12 @@ function PropertiesContent() {
     } finally {
       setLoading(false);
     }
-  }, [filters, page, cityId]);
+  }, [filters, page, cityId, countryCode]);
 
   useEffect(() => { fetchProperties(); }, [fetchProperties]);
 
   // إعادة الصفحة للأولى عند تبديل المدينة العامة (من الشريط أو الفلتر)
-  useEffect(() => { setPage(1); }, [cityId]);
+  useEffect(() => { setPage(1); }, [cityId, countryCode]);
 
   const saveSearch = async () => {
     if (!requireAuth()) return;

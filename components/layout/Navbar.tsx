@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
+import { useCountry } from "@/context/CountryContext";
 import {
   Home2, Magnifer, Buildings2, ShieldWarning, ClipboardList, Case,
   Bell, ChatRound, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings, MapPoint,
@@ -27,20 +28,23 @@ export function Navbar() {
   const { user, logout } = useAuth();
   const { requireAuth } = useAuthGate();
   const { cityId, cityName, setCity } = useCity();
+  const { code: countryCode, country, countries, setCountry } = useCountry();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
+  const [countryOpen, setCountryOpen] = useState(false);
   const [cities, setCities] = useState<City[]>([]);
   const [chatUnread, setChatUnread] = useState(0);
 
   // قائمة المدن للمُحدِّد العام
   useEffect(() => {
-    api.get("/cities/", { params: { limit: 100 } })
+    api
+      .get("/cities/", { params: { limit: 100, ...(countryCode ? { country: countryCode } : {}) } })
       .then((r) => setCities(r.data.results ?? []))
       .catch(() => {});
-  }, []);
+  }, [countryCode]);
 
   // الاسم المعروض: من السياق، أو من قائمة المدن (لدعم الصيغة القديمة)، وإلا "كل المدن"
   const selectedCityName =
@@ -129,6 +133,41 @@ export function Navbar() {
                 </div>
               )}
             </div>
+
+            {/* مُبدِّل الدولة — يظهر فقط حين نخدم أكثر من دولة؛ بدولة واحدة
+                يكون خيارًا بلا معنى يزحم الشريط. */}
+            {countries.length > 1 && (
+              <div className="relative">
+                <button
+                  onClick={() => setCountryOpen((v) => !v)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-gray-100 text-sm text-gray-700 transition-colors"
+                  aria-haspopup="listbox"
+                  aria-expanded={countryOpen}
+                  aria-label="تغيير الدولة"
+                >
+                  <span>{country?.flag_emoji || "🌍"}</span>
+                  <span className="max-w-24 truncate">{country?.name_ar ?? "الدولة"}</span>
+                  <AltArrowDown className="h-4 w-4 text-gray-400" />
+                </button>
+                {countryOpen && (
+                  <div className="absolute left-0 mt-2 w-52 max-h-80 overflow-y-auto bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                    {countries.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => { setCountry(c); setCountryOpen(false); }}
+                        className={cn(
+                          "flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm w-full text-right",
+                          c.code === countryCode ? "text-primary font-bold" : "text-gray-700",
+                        )}
+                      >
+                        <span>{c.flag_emoji}</span>
+                        {c.name_ar}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {user ? (
               <>
