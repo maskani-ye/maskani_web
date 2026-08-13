@@ -54,8 +54,15 @@ async function neighborhoods(): Promise<{ slug: string }[]> {
     const data = await res.json();
     const list = Array.isArray(data) ? data : data.results ?? [];
     return list
-      .map((n: { slug?: string }) => ({ slug: n.slug || "" }))
-      .filter((n: { slug: string }) => n.slug);
+      .map((n: { slug?: string; properties_count?: number }) => ({
+        slug: n.slug || "",
+        count: n.properties_count ?? 0,
+      }))
+      // نُدرج الأحياء التي تحمل عقاراً واحداً على الأقل فقط: صفحة حيٍّ فارغة
+      // يصنّفها جوجل «اكتُشفت — لم تُفهرَس» وتلتهم ميزانية الزحف، فتؤخّر فهرسة
+      // الصفحات ذات المحتوى. تعود الصفحة إلى الخريطة تلقائياً بأوّل عقار فيها.
+      .filter((n: { slug: string; count: number }) => n.slug && n.count > 0)
+      .map((n: { slug: string }) => ({ slug: n.slug }));
   } catch {
     return [];
   }

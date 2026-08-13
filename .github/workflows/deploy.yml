@@ -40,3 +40,9 @@ jobs:
       # وهي المسار الذي أثبت نجاحه.
       - name: Deploy to production
         run: vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+
+      # إخطار محرّكات البحث بالصفحات فور النشر (IndexNow — Bing/Yandex).
+      # فشلُه لا يُسقط النشر: الموقع منشور أصلاً وهذه خطوة تسويقية لا حرجة.
+      - name: Notify search engines (IndexNow)
+        continue-on-error: true
+        run: node scripts/indexnow.mjs
