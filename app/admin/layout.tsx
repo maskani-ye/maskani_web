@@ -12,6 +12,7 @@ import {
   City, Logout2, HamburgerMenu, CloseCircle,
   ShieldCheck, DangerTriangle, Bell,
   Case, ChartSquare, HeadphonesRound, MagniferBug, NotebookBookmark, HashtagSquare, Stars,
+  ServerSquare,
 } from "@solar-icons/react";
 
 // عناصر التنقّل مجمّعة حسب التخصّص/الوظيفة. الترتيب ثابت ومطابق لتطبيق الإدارة.
@@ -68,6 +69,7 @@ const NAV_GROUPS = [
       { href: "/admin/categories", label: "أصناف الخدمات",  icon: Widget },
       { href: "/admin/cities",     label: "المدن والدول",   icon: City },
       { href: "/admin/ai",         label: "الذكاء الاصطناعي", icon: Stars },
+      { href: "/admin/infrastructure", label: "البنية والخدمات", icon: ServerSquare },
     ],
   },
   {
