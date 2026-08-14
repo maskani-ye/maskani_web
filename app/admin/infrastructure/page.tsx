@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { formatBytes, formatNumber, timeAgo } from "@/components/admin/service-metrics";
 import {
   ServerSquare, Refresh, AltArrowLeft, CheckCircle, CloseCircle, Database, Folder,
-  Rocket, Shield, Global, CodeSquare, Bell, Smartphone, MagniferBug, DangerTriangle,
+  Rocket, Shield, Global, CodeSquare, Bell, Smartphone, MagniferBug, DangerTriangle, Wallet,
 } from "@solar-icons/react";
 import { toast } from "sonner";
 import type { ComponentType } from "react";
@@ -34,14 +34,14 @@ export interface ServiceStatus {
 const ICONS: Record<string, ComponentType<{ className?: string }>> = {
   oracle: Database, aws: ServerSquare, r2: Folder, neon: Database, vercel: Rocket,
   cloudflare: Shield, porkbun: Global, github: CodeSquare, firebase: Bell,
-  play: Smartphone, gsc: MagniferBug, sentry: DangerTriangle,
+  play: Smartphone, gsc: MagniferBug, sentry: DangerTriangle, adsense: Wallet,
 };
 
 /** الأقسام تعكس دور الخدمة في المنصّة لا اسم مزوّدها. */
 const GROUPS: { title: string; keys: string[] }[] = [
   { title: "البنية التحتية", keys: ["oracle", "aws", "r2", "neon"] },
   { title: "النشر والنطاق", keys: ["vercel", "cloudflare", "porkbun", "github"] },
-  { title: "الرصد والجودة", keys: ["sentry"] },
+  { title: "الرصد والدخل", keys: ["sentry", "adsense"] },
   { title: "التطبيقات والنمو", keys: ["firebase", "play", "gsc"] },
 ];
 
@@ -93,6 +93,13 @@ function summarize(s: ServiceStatus): string {
       return `${formatNumber(s.errors_24h as number)} خطأ (24 ساعة) · ${formatNumber(
         s.unresolved as number,
       )} عطل مفتوح · ${s.quota_pct ?? 0}% من الحصّة`;
+    case "adsense": {
+      const mtd = s.month_to_date as { estimated_earnings?: number } | undefined;
+      const d30 = s.last_30d as { estimated_earnings?: number; page_views?: number } | undefined;
+      return `${(mtd?.estimated_earnings ?? 0).toFixed(2)} ${s.currency ?? "USD"} هذا الشهر · ${(
+        d30?.estimated_earnings ?? 0
+      ).toFixed(2)} في 30 يومًا · ${formatNumber(d30?.page_views)} مشاهدة`;
+    }
     case "gsc":
       return `${formatNumber(s.clicks_30d as number)} نقرة · ${formatNumber(
         s.impressions_30d as number,
