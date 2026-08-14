@@ -128,7 +128,7 @@ export default async function CityPropertiesPage(
           عقارات في {city.name_ar}
         </h1>
         <p className="text-gray-600 mt-2 leading-relaxed max-w-3xl">
-          استكشف {count > 0 ? `${count} ` : ""}عقاراً عقارياً في {city.name_ar} على منصّة مسكني —
+          استكشف {count > 0 ? `${count} ` : ""}عقاراً في {city.name_ar} على منصّة مسكني —
           شقق وفلل وأراضٍ ومحلات تجارية للبيع والإيجار، مع الأسعار والصور والموقع على الخريطة،
           وتواصل مباشر مع أصحاب العقارات بلا عمولات.
         </p>
@@ -142,7 +142,7 @@ export default async function CityPropertiesPage(
 
       {items.length === 0 ? (
         <div className="rounded-2xl border border-gray-200 bg-white py-16 text-center text-gray-500">
-          لا توجد عقارات في {city.name_ar} بعد — كن أول من يضيف عقاراً عقارياً هنا.
+          لا توجد عقارات في {city.name_ar} بعد — كن أول من يضيف عقاراً هنا.
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

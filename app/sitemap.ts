@@ -32,6 +32,22 @@ async function rows(path: string): Promise<Row[]> {
   }
 }
 
+// يجلب الدول لبناء صفحات هبوطها — أعلى طبقة في التسلسل الجغرافي، وهي ما
+// يلتقط استعلامات «عقارات <الدولة>» في كل سوق نفتحه.
+async function countries(): Promise<{ slug: string }[]> {
+  try {
+    const res = await fetch(`${API}/cities/countries/?limit=100`, {
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return [];
+    return ((await res.json()).results ?? [])
+      .map((c: { slug?: string }) => ({ slug: c.slug || "" }))
+      .filter((c: { slug: string }) => c.slug);
+  } catch {
+    return [];
+  }
+}
+
 // يجلب المدن لبناء صفحات هبوط المدن (SEO — الذيل الطويل: «عقارات في صنعاء»).
 async function cities(): Promise<{ slug: string }[]> {
   try {
@@ -102,13 +118,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  const [properties, services, requests, jobs, reports, cityList, hoodList, blog, blogCats] = await Promise.all([
+  const [properties, services, requests, jobs, reports, cityList, countryList, hoodList, blog, blogCats] = await Promise.all([
     rows("/properties/"),
     rows("/services/"),
     rows("/requests/"),
     rows("/jobs/"),
     rows("/reports/"),
     cities(),
+    countries(),
     neighborhoods(),
     blogArticles(),
     getBlogCategories(),
@@ -128,6 +145,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority,
       ...(withImages && x.image ? { images: [x.image] } : {}),
     }));
+
+  // صفحات هبوط الدول — /properties/country/<slug>
+  const countryEntries: MetadataRoute.Sitemap = countryList.map((c) => ({
+    url: `${BASE}/properties/country/${c.slug}`,
+    lastModified: now,
+    changeFrequency: "daily",
+    priority: 0.85,
+  }));
 
   // صفحات هبوط المدن — /properties/city/<slug>
   const cityEntries: MetadataRoute.Sitemap = cityList.map((c) => ({
@@ -161,6 +186,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticEntries,
+    ...countryEntries,
     ...cityEntries,
     ...hoodEntries,
     ...blogEntries,
