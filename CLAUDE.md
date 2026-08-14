@@ -90,11 +90,16 @@ maskani_web/
 │       ├── flags/            # بلاغات المستخدمين    [الرقابة والسلامة]
 │       ├── property-types/   # أنواع العقارات       [الإعدادات والبيانات]
 │       ├── categories/       # أصناف الخدمات        [الإعدادات والبيانات]
-│       └── cities/           # المدن والدول         [الإعدادات والبيانات]
+│       ├── cities/           # المدن والدول         [الإعدادات والبيانات]
+│       ├── infrastructure/    # الخدمات (12 مزوّداً)  [البنية والخدمات]
+│       └── ai/                # الذكاء الاصطناعي     [البنية والخدمات]
 ├── components/
 │   ├── ui/                   # Button, Input, Select, Badge, Card, StarRating
 │   └── layout/               # Sidebar, Header
-├── context/AuthContext.tsx   # Auth state global
+├── context/
+│   ├── AuthContext.tsx       # Auth state global
+│   ├── CityContext.tsx       # المدينة المختارة (localStorage)
+│   └── CountryContext.tsx    # الدولة: كشف تلقائي مرّة واحدة ثم اختيار المستخدم
 ├── lib/
 │   ├── api.ts                # Axios + knox Token interceptor (Authorization: Token, بلا refresh)
 │   ├── auth.ts               # knox token cookie helpers (token واحد)
@@ -157,6 +162,7 @@ const NAV_GROUPS = [
   { title: 'التواصل',            items: [ '/admin/conversations' المحادثات, '/admin/helpdesk' مركز المساعدة, '/admin/broadcast' الإشعارات ] },
   { title: 'الرقابة والسلامة',   items: [ '/admin/reports' البلاغات, '/admin/flags' بلاغات المستخدمين ] },
   { title: 'الإعدادات والبيانات', items: [ '/admin/property-types' أنواع العقارات, '/admin/categories' أصناف الخدمات, '/admin/cities' المدن والدول ] },
+  { title: 'البنية والخدمات',    items: [ '/admin/infrastructure' الخدمات (12 مزوّداً بصفحة مقاييس لكل واحد), '/admin/ai' الذكاء الاصطناعي ] },
 ]
 ```
 
@@ -198,11 +204,28 @@ GET  /api/v1/services/             // ?offset=&limit=
 
 ---
 
+## تعدّد الدول
+
+- `CountryProvider` يكشف الدولة **مرّة واحدة فقط** عند غياب اختيار محفوظ (`maskani_selected_country`)، ثم يفوز اختيار المستخدم دائماً — المغترب يتصفّح سوق بلده بلا أن يُعاد ضبطه كل زيارة.
+- مُبدِّل الدولة في `Navbar` يظهر فقط حين تتجاوز الدول واحدة. تبديل الدولة يمسح المدينة المختارة.
+- كل قائمة تمرّر `?country=<ISO>` (العقارات · الخدمات · الطلبات · طلبات الخدمة) وقوائم المدن كذلك.
+- صفحة هبوط لكل دولة: `app/properties/country/[slug]/page.tsx` (+ خريطة الموقع + روابط الفوتر).
+
+## الفيديو
+
+`components/ui/YouTubePlayer.tsx` — مصغّرة وزرّ تشغيل، ولا يُحمَّل iframe إلّا عند النقر
+(`youtube-nocookie`). يُستخدم في صفحات تفاصيل العقار/الخدمة/الطلبين، وحقل الإدخال في
+نماذج النشر. صفحة العقار تُصدر `VideoObject` في البيانات المنظّمة.
+
+## الرصد
+
+Sentry مربوط عبر `instrumentation.ts` (خادم) و`instrumentation-client.ts` (متصفّح)
+بمشروع `maskani-web`. عيّنة الأداء 10% ولا تُرسَل بيانات شخصية.
+
 ## ملاحظات مهمة
 
 - `dir="rtl"` على `<html>` — كل المكونات RTL by default
 - Font: Cairo من Google Fonts
 - أغلب الصفحات Client Components (لا Server Components معقدة)
 - Recharts للرسوم البيانية في Dashboard
-- لا توجد ميزات للمستخدم العادي — التطبيق Flutter فقط
 - لا بوابة دفع بأي شكل
