@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { AdSlot } from "@/components/ads/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
 import { ShareBar } from "@/components/blog/ShareBar";
 import { breadcrumbList, blogPosting, SITE_URL } from "@/lib/seo";
 
@@ -113,11 +115,16 @@ export default async function ArticlePage(
             <ShareBar url={url} title={a.title} />
           </div>
 
+          {/* المدونة هي موضع الكثافة الإعلانية: القارئ جاء للقراءة لا للتصفّح. */}
+          <AdSlot slot={AD_SLOTS.articleTop} />
+
           <div
             className="article-body text-[15px] leading-loose text-gray-800"
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: a.body }}
           />
+
+          <AdSlot slot={AD_SLOTS.articleMid} layout="in-article" format="fluid" />
 
           {a.tags?.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-6 pt-5 border-t border-gray-100">
@@ -126,6 +133,8 @@ export default async function ArticlePage(
               ))}
             </div>
           )}
+
+          <AdSlot slot={AD_SLOTS.articleBottom} />
 
           <div className="mt-6 pt-5 border-t border-gray-100">
             <ShareBar url={url} title={a.title} />

@@ -24,6 +24,8 @@ import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbList, sectionLabel } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { toast } from "sonner";
+import { AdSlot } from "@/components/ads/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
 import PropertiesMap from "@/components/map/PropertiesMap";
 import { cityCoords, YEMEN_CENTER, DEFAULT_ZOOM } from "@/components/map/constants";
 import { SmartSearchBar, type AiFilters } from "@/components/ai/SmartSearchBar";
@@ -456,6 +458,8 @@ function PropertiesContent() {
       )}
       </>
       )}
+      {/* إعلان واحد أسفل القائمة — كثافة خفيفة عمداً في صفحات المنصّة. */}
+      <AdSlot slot={AD_SLOTS.listBottom} />
     </div>
   );
 }

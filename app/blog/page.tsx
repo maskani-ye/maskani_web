@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { AdSlot } from "@/components/ads/AdSlot";
+import { AD_SLOTS } from "@/lib/ads";
 import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { BlogCard, CategoryChips, type BlogCardData } from "@/components/blog/BlogCard";
@@ -97,6 +99,7 @@ export default async function BlogPage(
               {featured.map((a) => <BlogCard key={a.id} a={a} />)}
             </section>
           )}
+          <AdSlot slot={AD_SLOTS.blogList} />
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {grid.map((a) => <BlogCard key={a.id} a={a} />)}
           </section>

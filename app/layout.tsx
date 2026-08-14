@@ -18,6 +18,7 @@ import { AuthGateProvider } from "@/context/AuthGate";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 import { Analytics } from "@/components/Analytics";
 import { VisitTracker } from "@/components/VisitTracker";
+import { AdSenseScript } from "@/components/ads/AdSenseScript";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://maskani.homes"),
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-arabic antialiased bg-cream min-h-screen">
         <Analytics />
         <VisitTracker />
+        <AdSenseScript />
         {/* بيانات منظّمة للموقع (Organization + WebSite مع مربّع بحث) */}
         <script
           type="application/ld+json"
