@@ -20,6 +20,7 @@ import {
   Phone, AltArrowRight, Buildings2, ChatRound, ChatRoundDots,
 } from "@solar-icons/react";
 import { toast } from "sonner";
+import { YouTubePlayer } from "@/components/ui/YouTubePlayer";
 import { ShareButton } from "@/components/ui/ShareButton";
 
 const asIcon = (I: ComponentType<{ className?: string }>) => I;
@@ -196,6 +197,14 @@ export default function RequestDetailClient({ id, initialRequest }: { id: string
           <div className="mb-4">
             <h3 className="font-bold text-gray-800 text-sm mb-1">مواصفات إضافية</h3>
             <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{request.additional_specs}</p>
+          </div>
+        )}
+
+        {/* فيديو الطلب — يوضّح ما يبحث عنه صاحب الطلب أدقّ من نصّ. */}
+        {request.video_url && (
+          <div className="mb-4">
+            <h3 className="font-bold text-gray-800 text-sm mb-1">فيديو</h3>
+            <YouTubePlayer url={request.video_url} title="طلب عقاري" />
           </div>
         )}
 

@@ -5,6 +5,15 @@ import SimilarProperties from "@/components/properties/SimilarProperties";
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 const BASE = "https://maskani.homes";
 
+/** معرّف فيديو يوتيوب — نسخة خادمية خفيفة من منطق المشغّل. */
+function videoIdOf(url?: string | null): string | null {
+  if (!url) return null;
+  const m = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?[^ ]*\bv=|embed\/|shorts\/|live\/|v\/))([A-Za-z0-9_-]{11})/,
+  );
+  return m ? m[1] : null;
+}
+
 const OFFER_LABELS: Record<string, string> = {
   sale: "للبيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
 };
@@ -126,6 +135,22 @@ export default async function Layout(
       }
     : null;
 
+  // VideoObject — يجعل الفيديو مؤهّلاً لظهور مصغّرة مقطع في نتائج جوجل، وهو
+  // أبرز ما يميّز إعلاناً عن آخر في صفحة النتائج.
+  const videoId = videoIdOf(l?.video_url);
+  const videoLd = videoId
+    ? {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        name: `جولة مصوّرة — ${l.title}`,
+        description: (l.meta_description || l.description || l.title || "").slice(0, 300),
+        thumbnailUrl: [`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`],
+        uploadDate: l.created_at || undefined,
+        embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
+        contentUrl: l.video_url,
+      }
+    : null;
+
   const breadcrumb = l
     ? {
         "@context": "https://schema.org",
@@ -145,6 +170,9 @@ export default async function Layout(
       )}
       {realEstate && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstate) }} />
+      )}
+      {videoLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoLd) }} />
       )}
       {breadcrumb && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />

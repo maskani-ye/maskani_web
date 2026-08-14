@@ -21,6 +21,7 @@ import {
   Refresh, DangerTriangle,
 } from "@solar-icons/react";
 import { toast } from "sonner";
+import { YouTubePlayer } from "@/components/ui/YouTubePlayer";
 import { motion, AnimatePresence } from "framer-motion";
 import MiniMap from "@/components/map/MiniMap";
 import { MatchingRequests } from "@/components/properties/MatchingRequests";
@@ -327,6 +328,14 @@ export default function PropertyDetailClient(
               <h3 className="font-bold text-gray-800 mb-2">الوصف</h3>
               <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{property.description}</p>
             </div>
+
+            {/* فيديو الإعلان — يُعرض بعد الوصف مباشرةً حيث يبحث عنه المهتمّ. */}
+            {property.video_url && (
+              <div>
+                <h3 className="font-bold text-gray-800 mb-2">فيديو</h3>
+                <YouTubePlayer url={property.video_url} title={property.title} />
+              </div>
+            )}
 
             <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
               <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {property.views_count} مشاهدة</span>

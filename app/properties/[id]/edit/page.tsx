@@ -66,6 +66,7 @@ export default function EditPropertyPage() {
         neighborhood: data.neighborhood ?? "",
         neighborhood_ref: data.neighborhood_ref ? String(data.neighborhood_ref) : "",
         address: data.address ?? "",
+        video_url: data.video_url ?? "",
         contact_phone: data.contact_phone ?? "",
         contact_whatsapp: data.contact_whatsapp ?? "",
         status: data.status ?? "available",

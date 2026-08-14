@@ -30,6 +30,8 @@ export interface PropertyFormState {
   // مرجع الحيّ إن طابق المكتوبُ حياً مسجّلاً — يبقى الاسم نصّاً حرّاً دائماً.
   neighborhood_ref: string;
   address: string;
+  /** رابط فيديو يوتيوب اختياري — جولة مصوّرة للعقار */
+  video_url: string;
   contact_phone: string;
   contact_whatsapp: string;
   status: string;
@@ -49,6 +51,7 @@ export const emptyPropertyForm: PropertyFormState = {
   title: "", description: "", property_type: "", offer_type: "sale",
   price: "", currency: "YER", area: "", rooms: "", bathrooms: "", floor: "",
   total_floors: "", furnishing: "", city: "", neighborhood: "", neighborhood_ref: "", address: "",
+  video_url: "",
   contact_phone: "", contact_whatsapp: "", status: "available",
   has_elevator: false, has_parking: false, has_garden: false, has_pool: false,
   has_security: false, has_internet: false, has_ac: false, has_generator: false,
@@ -207,6 +210,16 @@ export function PropertyFormFields({ form, setField, cities, propertyTypes }: Pr
 
       <Input label="العنوان التفصيلي" placeholder="الشارع، أقرب معلم..." value={form.address} onChange={(e) => setField("address", e.target.value)} />
 
+      {/* جولة مصوّرة تُغني عن عشرات الصور وتختصر أسئلة المهتمّين. */}
+      <Input
+        label="رابط فيديو يوتيوب (اختياري)"
+        placeholder="https://youtu.be/..."
+        dir="ltr"
+        value={form.video_url}
+        onChange={(e) => setField("video_url", e.target.value)}
+        hint="الصق رابط الفيديو كاملاً — يُعرض داخل صفحة العقار."
+      />
+
       <div className="grid grid-cols-2 gap-4">
         <PhoneField
           label="رقم التواصل"
@@ -269,6 +282,7 @@ export function buildPropertyFormData(form: PropertyFormState, images: File[]): 
   if (form.neighborhood) fd.append("neighborhood", form.neighborhood);
   if (form.neighborhood_ref) fd.append("neighborhood_ref", form.neighborhood_ref);
   if (form.address) fd.append("address", form.address);
+  if (form.video_url) fd.append("video_url", form.video_url);
   if (form.contact_phone) fd.append("contact_phone", form.contact_phone);
   if (form.contact_whatsapp) fd.append("contact_whatsapp", form.contact_whatsapp);
   NUMERIC_OPTIONAL.forEach((k) => { if (form[k]) fd.append(k, form[k]); });
@@ -292,6 +306,7 @@ export function buildPropertyPatch(form: PropertyFormState): Record<string, unkn
     neighborhood: form.neighborhood,
     neighborhood_ref: form.neighborhood_ref ? Number(form.neighborhood_ref) : null,
     address: form.address,
+    video_url: form.video_url,
     contact_phone: form.contact_phone,
     contact_whatsapp: form.contact_whatsapp,
   };

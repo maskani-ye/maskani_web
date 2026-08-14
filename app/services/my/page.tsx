@@ -24,6 +24,7 @@ interface MyService {
   title: string;
   category: { id: number; name_ar?: string } | number | null;
   description: string;
+  video_url: string;
   experience_years: number | null;
   contact_phone: string;
   contact_whatsapp: string;
@@ -35,6 +36,7 @@ const emptyForm = {
   title: "",
   category: "" as number | "",
   description: "",
+  video_url: "",
   experience_years: "" as number | "",
   contact_phone: "",
   contact_whatsapp: "",
@@ -105,6 +107,7 @@ export default function MyServicesPage() {
       title: s.title ?? "",
       category: (typeof s.category === "object" && s.category ? s.category.id : (s.category as number)) ?? "",
       description: s.description ?? "",
+      video_url: s.video_url ?? "",
       experience_years: s.experience_years ?? "",
       contact_phone: s.contact_phone ?? "",
       contact_whatsapp: s.contact_whatsapp ?? "",
@@ -130,6 +133,7 @@ export default function MyServicesPage() {
       title: form.title,
       category: form.category,
       description: form.description,
+      video_url: form.video_url,
       experience_years: form.experience_years === "" ? 0 : form.experience_years,
       contact_phone: form.contact_phone,
       contact_whatsapp: form.contact_whatsapp,
@@ -262,6 +266,17 @@ export default function MyServicesPage() {
               )}
             </div>
             <textarea rows={3} className={`${field} resize-none`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="اكتب وصفاً لخدمتك..." />
+          </div>
+          <div>
+            {/* فيديو أعمال المزوّد — أقنع من وصف مكتوب. */}
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">رابط فيديو يوتيوب (اختياري)</label>
+            <input
+              className={field}
+              dir="ltr"
+              placeholder="https://youtu.be/..."
+              value={form.video_url}
+              onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3">

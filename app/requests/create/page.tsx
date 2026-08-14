@@ -53,6 +53,7 @@ export default function CreateRequestPage() {
     currency: "YER",
     rooms_needed: "",
     additional_specs: "",
+    video_url: "",
     contact_phone: "",
     duration_days: "30",
   });
@@ -100,6 +101,7 @@ export default function CreateRequestPage() {
       if (form.budget_max) payload.budget_max = form.budget_max;
       if (form.rooms_needed) payload.rooms_needed = Number(form.rooms_needed);
       if (form.additional_specs) payload.additional_specs = form.additional_specs;
+      if (form.video_url) payload.video_url = form.video_url;
       if (form.contact_phone) payload.contact_phone = form.contact_phone;
 
       const { data } = await api.post("/requests/create/", payload);
@@ -172,6 +174,14 @@ export default function CreateRequestPage() {
             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
           />
         </div>
+
+        <Input
+          label="رابط فيديو يوتيوب (اختياري)"
+          placeholder="https://youtu.be/..."
+          dir="ltr"
+          value={form.video_url}
+          onChange={(e) => setField("video_url", e.target.value)}
+        />
 
         <PhoneField label="رقم التواصل" value={form.contact_phone} onChange={(v) => setField("contact_phone", v)} />
 

@@ -68,6 +68,8 @@ export interface PropertyImage {
 }
 
 export interface Property {
+  /** رابط فيديو يوتيوب اختياري */
+  video_url?: string | null;
   id: number;
   user: number | User;
   user_name?: string;
@@ -170,6 +172,8 @@ export type ServiceCategory =
   | "painter" | "cleaner" | "maintenance" | "other";
 
 export interface ServiceProvider {
+  /** رابط فيديو يوتيوب اختياري */
+  video_url?: string | null;
   id: number;
   user: number | User;
   user_name?: string;
@@ -250,6 +254,8 @@ export interface FraudComment {
 
 // ─── Client Requests ──────────────────────────────────────────────────────
 export interface ClientRequest {
+  /** رابط فيديو يوتيوب اختياري */
+  video_url?: string | null;
   id: number;
   client: number;
   client_name: string;

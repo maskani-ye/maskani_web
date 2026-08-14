@@ -29,6 +29,7 @@ export default function CreateJobPage() {
     category: "" as number | "",
     title: "",
     description: "",
+    video_url: "",
     city: "" as number | "",
     budget_min: "",
     budget_max: "",
@@ -72,6 +73,7 @@ export default function CreateJobPage() {
         category: form.category,
         title: form.title,
         description: form.description,
+        video_url: form.video_url || undefined,
         city: form.city,
         currency: form.currency,
         duration_days: form.duration_days,
@@ -116,6 +118,16 @@ export default function CreateJobPage() {
             )}
           </div>
           <textarea rows={4} className={`${field} resize-none`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="صف الخدمة التي تحتاجها بالتفصيل..." />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">رابط فيديو يوتيوب (اختياري)</label>
+          <input
+            className={field}
+            dir="ltr"
+            placeholder="https://youtu.be/..."
+            value={form.video_url}
+            onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
+          />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">المدينة *</label>

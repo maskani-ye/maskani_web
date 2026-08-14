@@ -19,6 +19,7 @@ import {
   Star, AltArrowRight, Case, Gallery,
 } from "@solar-icons/react";
 import { toast } from "sonner";
+import { YouTubePlayer } from "@/components/ui/YouTubePlayer";
 
 const asIcon = (I: ComponentType<{ className?: string }>) => I;
 
@@ -181,6 +182,14 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
                   <span>{provider.cities_names.join("، ")}</span>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* فيديو الخدمة — أعمال المزوّد المصوّرة أقنع من وصف مكتوب. */}
+          {provider.video_url && (
+            <div className="bg-white rounded-2xl card-shadow p-6">
+              <h2 className="font-bold text-gray-800 mb-3">فيديو</h2>
+              <YouTubePlayer url={provider.video_url} title={provider.title} />
             </div>
           )}
 

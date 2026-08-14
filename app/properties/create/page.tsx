@@ -473,6 +473,17 @@ function StepLocation({
       <SectionLabel text="العنوان التفصيلي (اختياري)" />
       <input className={inputCls} placeholder="وصف قريب للموقع" value={form.address} onChange={(e) => setField("address", e.target.value)} />
 
+      <div className="h-4" />
+      <SectionLabel text="رابط فيديو يوتيوب (اختياري)" />
+      <input
+        className={inputCls}
+        dir="ltr"
+        placeholder="https://youtu.be/..."
+        value={form.video_url}
+        onChange={(e) => setField("video_url", e.target.value)}
+      />
+      <p className="text-xs text-gray-400 mt-1">جولة مصوّرة داخل العقار تزيد الثقة وتختصر الأسئلة.</p>
+
       <div className="h-5" />
       <SectionLabel text="موقع العقار على الخريطة (اختياري)" />
       <div className="h-56 rounded-2xl overflow-hidden border border-gray-200">

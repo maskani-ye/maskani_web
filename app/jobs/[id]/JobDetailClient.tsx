@@ -19,6 +19,7 @@ import {
   Phone, AltArrowRight, ChatRound, ChatRoundDots,
 } from "@solar-icons/react";
 import { toast } from "sonner";
+import { YouTubePlayer } from "@/components/ui/YouTubePlayer";
 import { ShareButton } from "@/components/ui/ShareButton";
 
 const asIcon = (I: ComponentType<{ className?: string }>) => I;
@@ -38,6 +39,8 @@ export interface ServiceRequest {
   is_active: boolean;
   status: string;
   offers_count: number;
+  /** رابط فيديو يوتيوب اختياري */
+  video_url?: string | null;
   created_at: string;
 }
 interface ServiceOffer {
@@ -206,6 +209,14 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
           <div className="mb-4">
             <h3 className="font-bold text-gray-800 text-sm mb-1">التفاصيل</h3>
             <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{request.description}</p>
+          </div>
+        )}
+
+        {/* فيديو الطلب — بعد التفاصيل حيث يبحث عنه المهتمّ. */}
+        {request.video_url && (
+          <div className="mb-4">
+            <h3 className="font-bold text-gray-800 text-sm mb-1">فيديو</h3>
+            <YouTubePlayer url={request.video_url} title={request.title} />
           </div>
         )}
 
