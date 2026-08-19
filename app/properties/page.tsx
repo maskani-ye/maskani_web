@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import PropertiesListClient from "./PropertiesListClient";
 import PropertiesCityLinks from "@/components/properties/PropertiesCityLinks";
+import LatestProperties from "@/components/properties/LatestProperties";
 import SectionIntro from "@/components/SectionIntro";
 
 // قشرة خادمية رفيعة: كتلة تعريفية فريدة (h1 + وصف) + القائمة التفاعلية (عميل) داخل
@@ -16,6 +17,7 @@ export default function PropertiesPage() {
       <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-gray-400">جارِ التحميل…</div>}>
         <PropertiesListClient />
       </Suspense>
+      <LatestProperties />
       <PropertiesCityLinks />
     </>
   );
