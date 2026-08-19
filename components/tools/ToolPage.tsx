@@ -18,7 +18,10 @@ export function ToolPage({ tool, children }: { tool: ToolMeta; children: ReactNo
     url,
     applicationCategory: tool.category,
     operatingSystem: "Web",
-    offers: { "@type": "Offer", price: "0", priceCurrency: "YER" },
+    // لا `offers` هنا: وجود عرض بيع يجعل جوجل يفحص الصفحة كـ«مقتطف منتج»
+    // فيطالبها بـ aggregateRating و review — تقييماتٍ لا نملكها ولن نختلقها.
+    // `isAccessibleForFree` يقول «مجّانية» بلا استدعاء فحص المنتجات.
+    isAccessibleForFree: true,
     provider: { "@type": "Organization", name: "مسكني", url: SITE_URL },
   };
   const faqLd = {
