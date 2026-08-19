@@ -13,6 +13,7 @@ import { MoneyInput } from "@/components/ui/MoneyInput";
 import { toast } from "sonner";
 import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
 import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
+import { toEnglishDigits } from "@/lib/digits";
 
 interface ServiceCategory { id: number; name_ar: string }
 interface CityItem { id: number; name_ar?: string; name?: string }
@@ -157,7 +158,7 @@ export default function CreateJobPage() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">مدة الطلب (أيام)</label>
-            <input type="number" min={1} max={90} className={field} value={form.duration_days} onChange={(e) => setForm((f) => ({ ...f, duration_days: Number(e.target.value) || 30 }))} />
+            <input type="number" min={1} max={90} className={field} value={form.duration_days} onChange={(e) => setForm((f) => ({ ...f, duration_days: Number(toEnglishDigits(e.target.value)) || 30 }))} />
           </div>
           <PhoneField label="رقم التواصل" value={form.contact_phone} onChange={(v) => setForm((f) => ({ ...f, contact_phone: v }))} />
         </div>

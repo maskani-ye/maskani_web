@@ -15,6 +15,7 @@ import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButt
 import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
 import { AddCircle, TrashBinTrash, PenNewSquare, CloseCircle } from "@solar-icons/react";
 import { compressImage } from "@/lib/imageCompression";
+import { toEnglishDigits } from "@/lib/digits";
 
 interface ServiceCategory { id: number; name_ar: string; icon?: string | null }
 interface CityItem { id: number; name_ar?: string; name?: string }
@@ -282,7 +283,7 @@ export default function MyServicesPage() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">سنوات الخبرة</label>
-              <input type="number" min={0} className={field} value={form.experience_years} onChange={(e) => setForm((f) => ({ ...f, experience_years: e.target.value ? Number(e.target.value) : "" }))} />
+              <input type="number" min={0} className={field} value={form.experience_years} onChange={(e) => setForm((f) => ({ ...f, experience_years: toEnglishDigits(e.target.value) ? Number(toEnglishDigits(e.target.value)) : "" }))} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">رقم التواصل *</label>

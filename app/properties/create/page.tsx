@@ -24,6 +24,7 @@ import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButt
 import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
 import { compressImages } from "@/lib/imageCompression";
 import { CURRENCIES } from "@/lib/utils";
+import { toEnglishDigits } from "@/lib/digits";
 
 // خريطة الاختيار تُحمَّل ديناميكياً (Leaflet يحتاج window).
 const LocationPickerMap = dynamic(() => import("@/components/map/LocationPickerMap"), {
@@ -367,7 +368,7 @@ function StepBasics({
             <div className="h-3" />
             <SectionLabel text="المساحة" />
             <div className="relative">
-              <input className={inputCls} type="number" placeholder="0" value={form.area} onChange={(e) => setField("area", e.target.value)} />
+              <input className={inputCls} type="number" placeholder="0" value={form.area} onChange={(e) => setField("area", toEnglishDigits(e.target.value))} />
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">م²</span>
             </div>
 
@@ -377,16 +378,16 @@ function StepBasics({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <SectionLabel text="الغرف" />
-                    <input className={inputCls} type="number" placeholder="0" value={form.rooms} onChange={(e) => setField("rooms", e.target.value)} />
+                    <input className={inputCls} type="number" placeholder="0" value={form.rooms} onChange={(e) => setField("rooms", toEnglishDigits(e.target.value))} />
                   </div>
                   <div>
                     <SectionLabel text="دورات المياه" />
-                    <input className={inputCls} type="number" placeholder="0" value={form.bathrooms} onChange={(e) => setField("bathrooms", e.target.value)} />
+                    <input className={inputCls} type="number" placeholder="0" value={form.bathrooms} onChange={(e) => setField("bathrooms", toEnglishDigits(e.target.value))} />
                   </div>
                 </div>
                 <div className="h-3" />
                 <SectionLabel text="رقم الدور" />
-                <input className={inputCls} type="number" placeholder="0" value={form.floor} onChange={(e) => setField("floor", e.target.value)} />
+                <input className={inputCls} type="number" placeholder="0" value={form.floor} onChange={(e) => setField("floor", toEnglishDigits(e.target.value))} />
               </>
             )}
 

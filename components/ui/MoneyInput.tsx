@@ -1,4 +1,5 @@
 "use client";
+import { toEnglishDigits } from "@/lib/digits";
 
 /**
  * حقل إدخال مبلغ مالي — يبسّط إدخال الأرقام الكبيرة (مثل الريال اليمني):
@@ -59,7 +60,7 @@ export function MoneyInput({
           dir="ltr"
           placeholder={placeholder}
           value={groupDigits(value)}
-          onChange={(e) => onChange(e.target.value.replace(/\D/g, ""))}
+          onChange={(e) => onChange(toEnglishDigits(e.target.value).replace(/\D/g, ""))}
         />
         {symbol && (
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">{symbol}</span>

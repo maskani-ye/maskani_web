@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AltArrowDown, Magnifer } from "@solar-icons/react";
+import { toEnglishDigits } from "@/lib/digits";
 
 // ─── نموذج الدولة (منقول من تطبيق Flutter) ──────────────────────────────────
 export interface CountryCode {
@@ -178,7 +179,7 @@ export function PhoneField({
             autoFocus={autoFocus}
             disabled={disabled}
             value={local}
-            onChange={(e) => handleLocalChange(e.target.value)}
+            onChange={(e) => handleLocalChange(toEnglishDigits(e.target.value))}
             placeholder={placeholder}
             className="flex-1 min-w-0 px-4 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none text-left"
           />

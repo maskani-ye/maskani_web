@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { toEnglishDigits } from "@/lib/digits";
 import {
   COUNTRIES, GLOBAL_UNITS, ALL_UNITS, unitsOfCountry, countryByCode,
   BASIS_LABEL, type AreaUnit,
@@ -84,7 +85,7 @@ export default function AreaConverter({
       <div>
         <p className="text-sm font-semibold text-gray-700 mb-2">② أدخل المساحة واختر وحدتها</p>
         <div className="flex gap-2">
-          <input value={value} onChange={(e) => setValue(e.target.value)}
+          <input value={value} onChange={(e) => setValue(toEnglishDigits(e.target.value))}
             inputMode="decimal" placeholder="1" aria-label="المساحة"
             className="flex-1 min-w-0 rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg font-bold text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
           <select value={fromKey} onChange={(e) => setFromKey(e.target.value)} aria-label="الوحدة"
@@ -145,7 +146,7 @@ export default function AreaConverter({
               <label key={u.key} className="flex flex-col gap-1">
                 <span className="text-xs font-semibold text-gray-700">{u.name} — م² للوحدة</span>
                 <input value={overrides[u.key] ?? String(u.m2)} inputMode="decimal"
-                  onChange={(e) => setOverrides({ ...overrides, [u.key]: e.target.value })}
+                  onChange={(e) => setOverrides({ ...overrides, [u.key]: toEnglishDigits(e.target.value) })}
                   className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary" />
               </label>
             ))}

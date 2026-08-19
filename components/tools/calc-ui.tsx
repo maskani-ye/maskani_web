@@ -2,6 +2,7 @@
 
 // عناصر واجهة مشتركة للحاسبات — حقل رقميّ، اختيار العملة، وبطاقة النتيجة.
 import { ReactNode } from "react";
+import { toEnglishDigits } from "@/lib/digits";
 
 export const CURRENCIES = ["YER", "SAR", "USD"] as const;
 export type Currency = (typeof CURRENCIES)[number];
@@ -40,7 +41,7 @@ export function NumberField({
         <input
           inputMode="decimal"
           value={value}
-          onChange={(e) => onChange(e.target.value.replace(/[^0-9.]/g, ""))}
+          onChange={(e) => onChange(toEnglishDigits(e.target.value).replace(/[^0-9.]/g, ""))}
           placeholder={placeholder}
           className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
         />
