@@ -101,16 +101,22 @@ export default function HomeClient() {
       </div>
 
       {/* ─── المدن (وجهات بأسلوب Gathern + بوردر أكتيف) ───────────────────── */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10">
+      {/* ارتفاع محجوز: الشريط يصل بعد الجلب، وبلا حجزٍ يدفع كل ما تحته للأسفل
+          (كان أكبر مصدر لقفزات التخطيط في الصفحة). */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10 min-h-[152px] sm:min-h-[178px]">
         <CitiesStrip cities={cities} />
       </div>
 
       {/* ─── عقارات مميّزة — كاروسيل أفقي (الأكثر رواجًا) ─────────────────── */}
-      {featured && featured.length > 0 && (
+      {/* نفس المبدأ: نحجز ارتفاع الصفّ أثناء التحميل، ونطويه فقط حين نتيقّن
+          أنه فارغ — فلا تُزاح الصفحة تحت إصبع القارئ. */}
+      {featured === null ? (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-12 min-h-[300px]" aria-hidden />
+      ) : featured.length > 0 ? (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-12">
           <FeaturedRow properties={featured} />
         </div>
-      )}
+      ) : null}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-14">
         {/* ─── الخريطة ────────────────────────────────────────────────────── */}
