@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import ArticlePlaceLinks from "@/components/blog/ArticlePlaceLinks";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
 import { ShareBar } from "@/components/blog/ShareBar";
@@ -144,10 +145,15 @@ export default async function ArticlePage(
 
       {/* CTA */}
       <div className="mt-6 rounded-2xl bg-primary text-white p-6 text-center">
-        <p className="font-bold text-lg mb-1">ابحث عن عقارك الآن على مسكني</p>
-        <p className="text-white/80 text-sm mb-4">آلاف العقارات في كل محافظات اليمن — تواصل مباشر مع الملّاك بلا عمولات.</p>
-        <Link href="/properties" className="inline-block bg-white text-primary font-bold rounded-xl px-6 py-2.5 hover:bg-white/90 transition-colors">تصفّح العقارات</Link>
+        <p className="font-bold text-lg mb-1">عندك عقار للبيع أو الإيجار؟</p>
+        <p className="text-white/80 text-sm mb-4">انشره مجاناً على مسكني ويصلك الباحث على رقمك مباشرة — بلا وسيط وبلا عمولة.</p>
+        <div className="flex flex-wrap gap-2 justify-center">
+          <Link href="/properties/create" className="inline-block bg-white text-primary font-bold rounded-xl px-6 py-2.5 hover:bg-white/90 transition-colors">أضِف عقارك مجاناً</Link>
+          <Link href="/properties" className="inline-block border border-white/60 text-white font-bold rounded-xl px-6 py-2.5 hover:bg-white/10 transition-colors">تصفّح العقارات</Link>
+        </div>
       </div>
+
+      <ArticlePlaceLinks slug={slug} />
 
       {/* Related */}
       {a.related && a.related.length > 0 && (

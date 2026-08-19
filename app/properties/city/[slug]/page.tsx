@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { breadcrumbList, itemList, citySlug, SITE_URL } from "@/lib/seo";
 import { formatPrice, propertyTypeName, offerTypeLabels } from "@/lib/utils";
 import { PropertyCard } from "@/components/properties/PropertyCard";
+import CityGuideLinks from "@/components/properties/CityGuideLinks";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
@@ -67,11 +68,15 @@ export async function generateMetadata(
   const { slug } = await params;
   const city = await resolveCity(slug);
   if (!city) return {};
+  // محافظة بلا عقار = صفحة رقيقة. نمنع فهرستها مؤقّتاً (مع follow كي تمرّ الروابط)
+  // حتى يُنشر فيها أوّل عقار، فترجع للفهرسة تلقائياً — بلا تدخّل يدويّ.
+  const { count: stock } = await getCityProperties(city.id);
   const title = `شقق وأراضٍ للبيع والإيجار في ${city.name_ar} — أرقام الملاك`;
   const description = `عقارات ${city.name_ar} على مسكني: شقق وفلل وأراضٍ ومحلات بالسعر والصور والموقع، ورقم صاحب العقار مباشرةً — بلا سمسار وبلا عمولة.`;
   return {
     title,
     description,
+    ...(stock === 0 ? { robots: { index: false, follow: true } } : {}),
     keywords: [
       `عقارات ${city.name_ar}`, `شقق للإيجار ${city.name_ar}`, `شقق للبيع ${city.name_ar}`,
       `أراضي ${city.name_ar}`, `فلل ${city.name_ar}`, "عقارات اليمن",
@@ -141,8 +146,21 @@ export default async function CityPropertiesPage(
       </header>
 
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-gray-200 bg-white py-16 text-center text-gray-500">
-          لا توجد عقارات في {city.name_ar} بعد — كن أول من يضيف عقاراً هنا.
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-8 text-center">
+          <p className="text-lg font-bold text-ink mb-2">
+            لا يوجد عقار معروض في {city.name_ar} بعد
+          </p>
+          <p className="text-gray-600 text-sm leading-relaxed max-w-xl mx-auto mb-5">
+            كن أوّل من ينشر هنا: إعلانك سيكون وحيداً في صفحة {city.name_ar} فيراه كل
+            من يبحث عن عقار في المحافظة. النشر مجّاني بلا عمولة، ويصلك الباحث على
+            رقمك مباشرة.
+          </p>
+          <Link
+            href="/properties/create"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary text-white px-6 py-3 text-sm font-bold hover:bg-primary/90 transition-colors"
+          >
+            أضِف عقارك في {city.name_ar} مجاناً
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -151,6 +169,8 @@ export default async function CityPropertiesPage(
           ))}
         </div>
       )}
+
+      <CityGuideLinks cityName={city.name_ar} />
     </div>
   );
 }
