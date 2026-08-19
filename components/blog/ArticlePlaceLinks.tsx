@@ -12,7 +12,7 @@ interface City { id: number; name_ar: string; name_en: string; properties_count?
 // وتمرّر ثقل الروابط الداخلية من الصفحات القوية إلى الضعيفة.
 async function getCities(): Promise<City[]> {
   try {
-    const res = await fetch(`${API}/cities/?limit=1000`, { next: { revalidate: 86400 } });
+    const res = await fetch(`${API}/cities/?limit=1000`, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     return (await res.json()).results ?? [];
   } catch {
