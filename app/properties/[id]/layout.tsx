@@ -14,6 +14,16 @@ function videoIdOf(url?: string | null): string | null {
   return m ? m[1] : null;
 }
 
+/** صورة العقار الرئيسية. تفصيل مهم: استجابة **التفاصيل** لا تحمل `main_image`
+ *  (هو حقل استجابة القائمة فقط) بل `images[]` — فكانت كل صفحة عقار تُصدّر صورة
+ *  الهوية الافتراضية بدل صورة العقار في المشاركة وفي البيانات المنظَّمة. */
+function imageOf(l: any): string | null {
+  if (l?.main_image) return l.main_image;
+  const imgs = Array.isArray(l?.images) ? l.images : [];
+  const main = imgs.find((i: any) => i?.is_main) || imgs[0];
+  return main?.image || null;
+}
+
 /** اسم نوع العقار نصّاً — الحقل `category` يقبل نصّاً فقط، وواجهة الـAPI
  *  تُرجعه كائناً `{id, name_ar, icon}`؛ تمريره كما هو كان يُنتج
  *  «نوع الكائن غير صالح في الحقل category». */
@@ -69,7 +79,7 @@ export async function generateMetadata(
   const keywords: string | undefined = l.meta_keywords || undefined;
   // صورة المشاركة: صورة العقار إن وُجدت، وإلا صورة الهوية الافتراضية — كي لا تظهر
   // البطاقة بلا صورة في السوشيال/فهرسة صور جوجل عند العقارات بلا صور.
-  const ogImage = l.main_image || `${BASE}/og.webp`;
+  const ogImage = imageOf(l) || `${BASE}/og.webp`;
   return {
     title,
     description,
@@ -117,7 +127,7 @@ export default async function Layout(
         description: descriptionOf(l),
         // صورة إلزامية: صورة العقار، وإلا صورة الهوية — «الحقل image غير مضمَّن»
         // كان أخطر تحذير لأنه يمنع ظهور الصفحة أصلاً.
-        image: [l.main_image || `${BASE}/og.webp`],
+        image: [imageOf(l) || `${BASE}/og.webp`],
         datePosted: l.created_at || undefined,
         ...(l.city_name || l.address
           ? {
