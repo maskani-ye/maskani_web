@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCity } from "@/context/CityContext";
 import { api } from "@/lib/api";
@@ -57,8 +58,20 @@ export default function HomeClient() {
       <section className="relative bg-primary-800 text-white overflow-hidden">
         {/* صورة معلم يمني (صنعاء القديمة) عريضة عالية الدقّة كخلفية للهيرو */}
         <div className="absolute inset-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/cities/_hero.webp" alt="" aria-hidden className="w-full h-full object-cover object-center opacity-45" />
+          {/* هذه الصورة هي عنصر LCP للصفحة. كـ<img> خام كانت تُحمَّل بحجمها
+              الكامل (243 ك.ب) وبلا أولوية، فبلغ LCP على الجوّال 9.8 ثانية.
+              next/image يقدّمها بمقاس الجهاز وبصيغة AVIF، و`priority` يحقنها
+              في رأس الصفحة كـpreload بدل انتظار دورها في الطابور. */}
+          <Image
+            src="/cities/_hero.webp"
+            alt=""
+            aria-hidden
+            fill
+            priority
+            sizes="100vw"
+            quality={70}
+            className="object-cover object-center opacity-45"
+          />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 via-primary-800/82 to-primary-900/90" />
         <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -250,23 +263,29 @@ function CitiesStrip({ cities }: { cities: City[] }) {
                 {c.image_popout ? (
                   <>
                     <div className={`absolute bottom-0 inset-x-0 aspect-square rounded-full transition-all duration-200 ${on ? "ring-[3px] ring-primary shadow-[0_4px_16px_rgba(79,35,150,0.35)]" : "ring-1 ring-black/5"}`} />
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    {/* صورة المعلم البارز (215 ك.ب من R2 لعنصر بعرض 76 بكسل). */}
+                    <Image
                       src={c.image_popout}
                       alt={c.name_ar}
+                      width={228}
+                      height={318}
                       loading="lazy"
+                      quality={70}
                       className="absolute bottom-0 inset-x-0 w-full h-auto pointer-events-none select-none origin-bottom group-hover:scale-[1.06] transition-transform duration-300"
                     />
                   </>
                 ) : (
                   <div className={`rounded-full p-[3px] transition-all duration-200 ${on ? "bg-primary shadow-[0_4px_16px_rgba(79,35,150,0.35)]" : "bg-transparent"}`}>
                     <div className="w-[64px] h-[64px] sm:w-[76px] sm:h-[76px] rounded-full overflow-hidden bg-gradient-to-br from-primary-700 to-primary ring-1 ring-black/5">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      {/* دائرة 76 بكسل كانت تُنزّل صورة 90 ك.ب بحجمها الأصلي
+                          × 21 محافظة. next/image يقصّها إلى مقاس العرض. */}
+                      <Image
                         src={c.image || `/cities/${c.id}.webp`}
                         alt={c.name_ar}
+                        width={152}
+                        height={152}
                         loading="lazy"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }}
+                        quality={70}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
