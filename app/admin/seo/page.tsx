@@ -46,6 +46,8 @@ interface SeoReport {
   indexed_count: number; pages_count: number;
   top_queries: TopQuery[]; top_pages?: TopPage[]; recommendations?: Rec[];
   opportunities?: Opportunity[]; ctr_bleeding?: Bleeding[]; previous?: Prev;
+  reach?: { queries_count: number; pages_with_impressions: number; zero_click_queries: number; branded_impressions: number };
+  zero_click?: { query: string; impressions: number; position: number }[];
   countries?: CountryRow[]; devices?: DeviceRow[];
 }
 
@@ -68,6 +70,22 @@ const REASON_TONE: Record<string, string> = {
   other: "bg-slate-300", error: "bg-red-300",
 };
 
+//: ماذا يعني كل سبب، وما العمل — لوحةٌ تعرض مصطلحات جوجل بلا ترجمتها إلى
+//: إجراء تترك المشرف يقرأ ولا يعرف ماذا يفعل.
+const REASON_MEANING: Record<string, string> = {
+  indexed: "الصفحة في فهرس جوجل وقابلة للظهور في النتائج — لا إجراء مطلوب.",
+  crawled_not_indexed: "زارها جوجل ورفض فهرستها: محتوى رقيق أو مكرّر. أضِف محتوى فريداً ثم اطلب الفهرسة.",
+  discovered_not_indexed: "يعرف الرابط ولم يزره بعد: غالباً ضعف الروابط الداخلية أو ميزانية زحف مستهلَكة. اربطها من صفحات قوية.",
+  alternate_canonical: "جوجل اختار نسخة أخرى كأصل. تحقّق من وسم canonical والتكرار بين المسارات.",
+  duplicate: "محتواها يطابق صفحة أخرى — ادمجها أو ميّزها بمحتوى مختلف.",
+  noindex: "ممنوعة الفهرسة بقرارٍ منّا (وسم robots). تأكّد أن المنع مقصود.",
+  redirect: "تحوّل إلى رابط آخر — تأكّد أن الوجهة صحيحة ونهائية.",
+  not_found: "ترجع 404 وهي في خريطة الموقع — أزِلها من الخريطة أو أعِد إحياء الصفحة.",
+  blocked: "محجوبة بـrobots.txt — إن كان الحجب غير مقصود فأزِله.",
+  unknown: "لم يُصنّفها جوجل بعد.",
+  other: "حالة غير مصنّفة.",
+};
+
 const fmtDate = (s?: string | null) =>
   s ? new Date(s).toLocaleString("ar", { dateStyle: "medium", timeStyle: "short" }) : "—";
 const shortPath = (url: string) => { try { return new URL(url).pathname || "/"; } catch { return url; } };
@@ -83,6 +101,9 @@ export default function AdminSeoPage() {
   const [error, setError] = useState<string | null>(null);
   const [resubmitting, setResubmitting] = useState(false);
   const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(null);
+  //: فلترة قائمة الفحص — 157 رابطاً بلا فلتر تعني تمريراً بلا هدف.
+  const [pageFilter, setPageFilter] = useState<"all" | "indexed" | "missing">("all");
+  const [pageSearch, setPageSearch] = useState("");
 
   const run = useCallback(async () => {
     setLoading(true); setError(null);
@@ -168,6 +189,20 @@ export default function AdminSeoPage() {
                  delta={prev?.position && perf?.position ? Math.round(((prev.position - perf.position) / prev.position) * 100) : null} />
           </div>
 
+          {/* ── اتّساع الظهور: كم كلمة وكم صفحة، وكم منها بلا نقرة ── */}
+          {report.reach && (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <MiniStat label="كلمات ظهرنا بها" value={nf(report.reach.queries_count)}
+                        hint={`${nf(report.reach.zero_click_queries)} منها بلا نقرة واحدة`} />
+              <MiniStat label="صفحات ظهرت في البحث" value={nf(report.reach.pages_with_impressions)}
+                        hint={`من ${nf(cov?.sitemap_total ?? 0)} في خريطة الموقع`} />
+              <MiniStat label="ظهور باسم العلامة" value={nf(report.reach.branded_impressions)}
+                        hint={perf?.impressions ? `${Math.round((report.reach.branded_impressions / perf.impressions) * 100)}% من الإجمالي — الباقي اكتشافٌ جديد` : undefined} />
+              <MiniStat label="روابط الخريطة" value={nf(cov?.sitemap_total ?? 0)}
+                        hint={`فُحصت عيّنة ${nf(cov?.inspected ?? 0)}`} />
+            </div>
+          )}
+
           {/* ── التغطية حسب السبب + الاتجاه ── */}
           <div className="grid lg:grid-cols-5 gap-6">
             <Card className="p-6 lg:col-span-3">
@@ -190,6 +225,9 @@ export default function AdminSeoPage() {
                       <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
                         <div className={`h-full rounded-full ${REASON_TONE[b.key] ?? "bg-slate-300"}`} style={{ width: `${pct}%` }} />
                       </div>
+                      {REASON_MEANING[b.key] && (
+                        <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">{REASON_MEANING[b.key]}</p>
+                      )}
                     </div>
                   );
                 })}
@@ -222,13 +260,17 @@ export default function AdminSeoPage() {
           <div className="grid lg:grid-cols-2 gap-6">
             <Card className="p-6">
               <SectionHeader icon={<Link className="h-5 w-5" />} title="أعلى الصفحات ظهوراً" subtitle="الصفحات الأكثر ظهوراً في البحث" />
-              <RankedList rows={(report.top_pages ?? []).map((p) => ({
-                label: shortPath(p.page), impressions: p.impressions, clicks: p.clicks, position: p.position }))} />
+              <RankedList
+                rows={(report.top_pages ?? []).map((p) => ({
+                  label: shortPath(p.page), impressions: p.impressions, clicks: p.clicks, position: p.position }))}
+                hrefOf={(path) => `https://maskani.homes${path === "/" ? "" : path}`} />
             </Card>
             <Card className="p-6">
               <SectionHeader icon={<Magnifer className="h-5 w-5" />} title="أعلى كلمات البحث" subtitle="الكلمات التي يظهر بها موقعك" />
-              <RankedList rows={report.top_queries.map((q) => ({
-                label: q.query, impressions: q.impressions, clicks: q.clicks, position: q.position }))} />
+              <RankedList
+                rows={report.top_queries.map((q) => ({
+                  label: q.query, impressions: q.impressions, clicks: q.clicks, position: q.position }))}
+                hrefOf={(q) => `https://www.google.com/search?q=${encodeURIComponent(q)}`} />
             </Card>
           </div>
 
@@ -270,6 +312,24 @@ export default function AdminSeoPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </Card>
+          )}
+
+          {/* ── كلمات تظهر بلا نقرة واحدة ── */}
+          {(report.zero_click ?? []).length > 0 && (
+            <Card className="p-6">
+              <SectionHeader icon={<CloseCircle className="h-5 w-5" />} title="كلمات تظهر بلا نقرة واحدة"
+                             subtitle="ظهرنا فيها ولم ينقر أحد — إمّا الترتيب متأخّر أو العنوان لا يعد بشيء" />
+              <div className="mt-4 flex flex-wrap gap-2">
+                {report.zero_click!.map((z) => (
+                  <a key={z.query} href={`https://www.google.com/search?q=${encodeURIComponent(z.query)}`}
+                     target="_blank" rel="noopener noreferrer"
+                     className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:border-primary hover:text-primary transition-colors">
+                    {z.query}
+                    <span className="text-[11px] text-gray-400 ms-2 tabular-nums">{nf(z.impressions)} ظهور · #{z.position}</span>
+                  </a>
+                ))}
               </div>
             </Card>
           )}
@@ -366,8 +426,27 @@ export default function AdminSeoPage() {
           <Card className="p-6">
             <SectionHeader icon={<Global className="h-5 w-5" />} title="تفاصيل فحص الروابط"
                            subtitle={`حالة الفهرسة لكل رابط مفحوص (${nf(report.pages.length)})`} />
-            <div className="mt-4 divide-y divide-gray-100 max-h-[420px] overflow-y-auto">
-              {report.pages.map((p) => (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {([
+                { k: "all", label: `الكل (${report.pages.length})` },
+                { k: "indexed", label: `مُفهرَسة (${report.pages.filter((x) => x.indexed).length})` },
+                { k: "missing", label: `غير مُفهرَسة (${report.pages.filter((x) => !x.indexed).length})` },
+              ] as const).map((tab) => (
+                <button key={tab.k} type="button" onClick={() => setPageFilter(tab.k)}
+                  className={`text-xs rounded-xl px-3 py-1.5 font-semibold transition-colors ${
+                    pageFilter === tab.k ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                  {tab.label}
+                </button>
+              ))}
+              <input value={pageSearch} onChange={(e) => setPageSearch(e.target.value)}
+                placeholder="ابحث في المسارات…" dir="ltr"
+                className="ms-auto w-full sm:w-52 rounded-xl border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-primary" />
+            </div>
+            <div className="mt-3 divide-y divide-gray-100 max-h-[420px] overflow-y-auto">
+              {report.pages
+                .filter((p) => pageFilter === "all" || (pageFilter === "indexed" ? p.indexed : !p.indexed))
+                .filter((p) => !pageSearch || shortPath(p.url).includes(pageSearch))
+                .map((p) => (
                 <div key={p.url} className="flex items-center gap-3 py-3 first:pt-0">
                   <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                     p.indexed ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-400"}`}>
@@ -407,8 +486,26 @@ export default function AdminSeoPage() {
                     <Badge variant={m.warnings ? "warning" : "default"}>تحذيرات: {m.warnings}</Badge>
                     <Badge variant="info">روابط مُرسَلة: {m.submitted ?? "—"}</Badge>
                     {m.is_pending && <Badge variant="warning">قيد المعالجة</Badge>}
+                    {(() => {
+                      // قِدَم آخر قراءة مؤشّر صحّة: خريطةٌ لم تُقرأ منذ أسبوع تعني
+                      // أن جوجل خفّض اهتمامه بالموقع أو أن الملف تعطّل.
+                      const days = m.last_downloaded
+                        ? Math.floor((Date.now() - new Date(m.last_downloaded).getTime()) / 86400000)
+                        : null;
+                      if (days == null) return null;
+                      return (
+                        <Badge variant={days > 7 ? "warning" : "success"}>
+                          قُرئت {days === 0 ? "اليوم" : `قبل ${days} يوماً`}
+                        </Badge>
+                      );
+                    })()}
                     <span className="text-xs text-gray-400 ms-auto">آخر قراءة: {fmtDate(m.last_downloaded)}</span>
                   </div>
+                  <p className="text-[11px] text-gray-400 mt-2.5 leading-relaxed">
+                    عدّاد «مُفهرَسة» في هذا الجدول يُبقيه جوجل صفراً غالباً ولا يعني أن صفحاتك
+                    غير مفهرسة — المرجع الصحيح هو بطاقة «تغطية الفهرسة» أعلاه المبنيّة على فحص
+                    كل رابط على حدة.
+                  </p>
                 </div>
               ))}
             </div>
@@ -426,35 +523,95 @@ function Sparkline({ trend }: { trend: TrendPoint[] }) {
   const line = (key: "impressions" | "clicks") => {
     const max = Math.max(1, ...trend.map((t) => t[key]));
     return trend.map((t, i) => {
-      const x = pad + (i / Math.max(1, trend.length - 1)) * (W - pad * 2);
+      const x = pad + (i * (W - pad * 2)) / Math.max(1, trend.length - 1);
       const y = H - pad - (t[key] / max) * (H - pad * 2);
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(" ");
   };
+  // قراءات تُغني الرسم: أفضل يوم، ومتوسّط الأسبوع الأخير مقابل ما قبله — الخطّ
+  // وحده يُري الشكل ولا يُعطي رقماً يُقارَن.
+  const best = trend.reduce((a, b) => (b.impressions > a.impressions ? b : a), trend[0]);
+  const avg = (arr: TrendPoint[]) =>
+    arr.length ? Math.round(arr.reduce((s, x) => s + x.impressions, 0) / arr.length) : 0;
+  const last7 = avg(trend.slice(-7));
+  const prev7 = avg(trend.slice(-14, -7));
+  const trendPct = prev7 > 0 ? Math.round(((last7 - prev7) / prev7) * 100) : null;
+  const dayFmt = (s: string) => new Date(s).toLocaleDateString("ar", { day: "numeric", month: "short" });
+
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-24 mt-4" preserveAspectRatio="none">
-      <polyline points={line("impressions")} fill="none" stroke="var(--primary,#4F2396)" strokeWidth="2" strokeLinejoin="round" />
-      <polyline points={line("clicks")} fill="none" stroke="#FFC107" strokeWidth="2" strokeLinejoin="round" />
-    </svg>
+    <>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-24 mt-4" preserveAspectRatio="none">
+        <polyline points={line("impressions")} fill="none" stroke="var(--primary,#4F2396)" strokeWidth="2" strokeLinejoin="round" />
+        <polyline points={line("clicks")} fill="none" stroke="#FFC107" strokeWidth="2" strokeLinejoin="round" />
+      </svg>
+      <div className="flex items-center justify-between text-[10px] text-gray-300 mt-1 tabular-nums">
+        <span>{dayFmt(trend[0].date)}</span>
+        <span>{dayFmt(trend[trend.length - 1].date)}</span>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+        <div className="rounded-xl bg-gray-50 px-3 py-2">
+          <p className="text-gray-400 text-[11px]">أفضل يوم</p>
+          <p className="font-bold text-gray-800 tabular-nums">{nf(best.impressions)} <span className="font-normal text-gray-400 text-[11px]">{dayFmt(best.date)}</span></p>
+        </div>
+        <div className="rounded-xl bg-gray-50 px-3 py-2">
+          <p className="text-gray-400 text-[11px]">متوسّط آخر 7 أيام</p>
+          <p className="font-bold text-gray-800 tabular-nums">
+            {nf(last7)}/يوم
+            {trendPct != null && trendPct !== 0 && (
+              <span className={`ms-1.5 text-[11px] font-bold ${trendPct > 0 ? "text-emerald-600" : "text-red-500"}`}>
+                {trendPct > 0 ? "▲" : "▼"}{Math.abs(trendPct)}%
+              </span>
+            )}
+          </p>
+        </div>
+      </div>
+    </>
   );
 }
 
-function RankedList({ rows }: { rows: { label: string; impressions: number; clicks: number; position: number }[] }) {
+function RankedList({ rows, hrefOf }: {
+  rows: { label: string; impressions: number; clicks: number; position: number }[];
+  hrefOf?: (label: string) => string;
+}) {
   if (!rows.length) return <p className="mt-4 text-sm text-gray-500">لا بيانات بعد.</p>;
   const max = Math.max(1, ...rows.map((r) => r.impressions));
+  const total = rows.reduce((s, r) => s + r.impressions, 0) || 1;
   return (
-    <div className="mt-4 space-y-2.5">
-      {rows.map((r, i) => (
-        <div key={i}>
-          <div className="flex items-center justify-between gap-3 text-sm mb-1">
-            <span className="font-medium text-gray-800 truncate" dir="auto">{r.label}</span>
-            <span className="text-xs text-gray-400 tabular-nums shrink-0">ظهور {nf(r.impressions)} · نقر {nf(r.clicks)} · #{r.position}</span>
+    <div className="mt-4 space-y-3">
+      {rows.map((r, i) => {
+        // CTR الفعليّ مقابل المتوقّع من الموضع: يميّز «ترتيب ضعيف» عن «عنوان ضعيف».
+        const ctr = r.impressions ? r.clicks / r.impressions : 0;
+        const share = Math.round((r.impressions / total) * 100);
+        return (
+          <div key={i}>
+            <div className="flex items-center justify-between gap-3 text-sm mb-1">
+              <span className="font-medium text-gray-800 truncate flex items-center gap-2" dir="auto">
+                <span className="text-[10px] text-gray-300 tabular-nums w-4 shrink-0">{i + 1}</span>
+                {hrefOf ? (
+                  <a href={hrefOf(r.label)} target="_blank" rel="noopener noreferrer" className="hover:text-primary truncate">
+                    {r.label}
+                  </a>
+                ) : r.label}
+              </span>
+              <span className={`text-[11px] font-bold rounded-lg px-1.5 py-0.5 shrink-0 ${
+                r.position <= 3 ? "bg-emerald-50 text-emerald-600"
+                : r.position <= 10 ? "bg-amber-50 text-amber-600"
+                : "bg-gray-100 text-gray-500"}`}>#{r.position}</span>
+            </div>
+            <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+              <div className="h-full rounded-full bg-primary/70" style={{ width: `${Math.round((r.impressions / max) * 100)}%` }} />
+            </div>
+            <div className="flex items-center gap-x-3 gap-y-0.5 flex-wrap text-[11px] text-gray-400 mt-1 tabular-nums">
+              <span>ظهور {nf(r.impressions)}</span>
+              <span>نقر {nf(r.clicks)}</span>
+              <span className={ctr === 0 ? "text-red-500 font-semibold" : ""}>
+                CTR {(ctr * 100).toFixed(1)}%
+              </span>
+              <span className="text-gray-300">{share}% من ظهور القائمة</span>
+            </div>
           </div>
-          <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
-            <div className="h-full rounded-full bg-primary/70" style={{ width: `${Math.round((r.impressions / max) * 100)}%` }} />
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -499,6 +656,17 @@ function Kpi({ icon, label, value, hint, tone, delta }: {
       <p className="text-2xl font-extrabold text-gray-900 tabular-nums leading-none">{value}</p>
       <p className="text-xs text-gray-500 mt-1.5">{label}</p>
       {hint && <p className="text-[11px] text-gray-400 mt-0.5">{hint}</p>}
+    </Card>
+  );
+}
+
+/** رقمٌ مساعد بلا أيقونة — صفّ ثانٍ من المؤشّرات تحت الرئيسية. */
+function MiniStat({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <Card className="p-4">
+      <p className="text-xl font-extrabold text-gray-900 tabular-nums leading-none">{value}</p>
+      <p className="text-xs text-gray-500 mt-1.5">{label}</p>
+      {hint && <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">{hint}</p>}
     </Card>
   );
 }
