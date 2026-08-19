@@ -67,8 +67,8 @@ export async function generateMetadata(
   const { slug } = await params;
   const city = await resolveCity(slug);
   if (!city) return {};
-  const title = `عقارات في ${city.name_ar} — شقق وفلل وأراضٍ للبيع والإيجار`;
-  const description = `تصفّح أحدث العقارات في ${city.name_ar}: شقق وفلل وأراضٍ ومحلات للبيع والإيجار على مسكني، مع الأسعار والصور والتواصل المباشر بلا عمولات.`;
+  const title = `شقق وأراضٍ للبيع والإيجار في ${city.name_ar} — أرقام الملاك`;
+  const description = `عقارات ${city.name_ar} على مسكني: شقق وفلل وأراضٍ ومحلات بالسعر والصور والموقع، ورقم صاحب العقار مباشرةً — بلا سمسار وبلا عمولة.`;
   return {
     title,
     description,

@@ -30,6 +30,21 @@ export function ToolPage({ tool, children }: { tool: ToolMeta; children: ReactNo
       acceptedAnswer: { "@type": "Answer", text: f.a },
     })),
   };
+  // HowTo — الخطوات مؤهّلة لنتيجة ثرية، وتُثبّت للزاحف أن الصفحة أداة تنفيذية
+  // لا مقالاً؛ هذا هو الفارق الذي يجعلها تسبق المقالات على كلمة «كيف أحسب…».
+  const howToLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: tool.h1,
+    description: tool.metaDescription,
+    step: tool.how.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: `الخطوة ${i + 1}`,
+      text: s,
+      url: `${url}#how`,
+    })),
+  };
   const others = TOOLS.filter((t) => t.slug !== tool.slug).slice(0, 4);
   const articles = TOOL_ARTICLES[tool.slug] ?? [];
 
@@ -37,6 +52,7 @@ export function ToolPage({ tool, children }: { tool: ToolMeta; children: ReactNo
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       <JsonLd data={softwareApp} />
       <JsonLd data={faqLd} />
+      <JsonLd data={howToLd} />
       <JsonLd data={breadcrumbList([
         { name: "الرئيسية", path: "/" },
         { name: "الأدوات", path: "/tools" },
@@ -59,7 +75,18 @@ export function ToolPage({ tool, children }: { tool: ToolMeta; children: ReactNo
 
       <Card className="p-5 sm:p-6 mb-8">{children}</Card>
 
-      <section className="mb-8">
+      {tool.sections?.length ? (
+        <div className="mb-8 space-y-6">
+          {tool.sections.map((s) => (
+            <section key={s.h}>
+              <h2 className="text-lg font-bold text-ink mb-2">{s.h}</h2>
+              <p className="text-gray-600 leading-relaxed">{s.p}</p>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      <section id="how" className="mb-8">
         <h2 className="text-lg font-bold text-ink mb-3">كيف تعمل الأداة؟</h2>
         <ol className="list-decimal pr-5 space-y-2 text-gray-600 leading-relaxed marker:text-primary marker:font-bold">
           {tool.how.map((s, i) => <li key={i}>{s}</li>)}
