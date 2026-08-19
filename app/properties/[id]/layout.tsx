@@ -14,6 +14,30 @@ function videoIdOf(url?: string | null): string | null {
   return m ? m[1] : null;
 }
 
+/** اسم نوع العقار نصّاً — الحقل `category` يقبل نصّاً فقط، وواجهة الـAPI
+ *  تُرجعه كائناً `{id, name_ar, icon}`؛ تمريره كما هو كان يُنتج
+ *  «نوع الكائن غير صالح في الحقل category». */
+function propertyTypeName(l: any): string | undefined {
+  const t = l?.property_type;
+  if (!t) return undefined;
+  return typeof t === "string" ? t : (t.name_ar || t.name || undefined);
+}
+
+/** وصفٌ لا يكون فارغاً أبداً: نصّ صاحب العقار إن وُجد، وإلا جملة مُركَّبة من
+ *  خصائصه الفعلية (نوع · مدينة · غرف · مساحة) — أفضل من حقل ناقص. */
+function descriptionOf(l: any): string {
+  const written = (l?.meta_description || l?.description || "").trim();
+  if (written) return written.slice(0, 300);
+  const parts = [
+    propertyTypeName(l),
+    l?.city_name ? `في ${l.city_name}` : null,
+    l?.rooms != null ? `${l.rooms} غرف` : null,
+    l?.bathrooms != null ? `${l.bathrooms} حمّامات` : null,
+    l?.area != null ? `مساحة ${l.area} م²` : null,
+  ].filter(Boolean);
+  return (parts.length ? `${l?.title} — ${parts.join(" · ")}` : String(l?.title || "عقار")).slice(0, 300);
+}
+
 const OFFER_LABELS: Record<string, string> = {
   sale: "للبيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
 };
@@ -77,27 +101,10 @@ export default async function Layout(
       ].filter(Boolean)
     : [];
 
-  const jsonLd = l
-    ? {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name: l.title,
-        description: (l.meta_description || l.description || "").slice(0, 300),
-        image: l.main_image ? [l.main_image] : undefined,
-        category: l.property_type,
-        ...(additionalProperty.length ? { additionalProperty } : {}),
-        offers: {
-          "@type": "Offer",
-          price: l.price,
-          priceCurrency: l.currency || "YER",
-          availability: "https://schema.org/InStock",
-          url: `${BASE}/properties/${id}`,
-          ...(l.offer_type ? { name: OFFER_LABELS[l.offer_type] ?? l.offer_type } : {}),
-        },
-        brand: { "@type": "Brand", name: "مسكني" },
-        ...(l.city_name ? { areaServed: l.city_name } : {}),
-      }
-    : null;
+  // ملاحظة: لا مخطّط `Product` هنا عمداً. العقار ليس سلعة تُشحن، ومخطّط
+  // «بيانات التاجر» يطالبه بـ shippingDetails و hasMerchantReturnPolicy ولا
+  // يؤهّله لأي نتيجة ثرية — فكان يولّد تحذيرات Search Console بلا مقابل.
+  // البديل الصحيح: RealEstateProperty أدناه، وهو التمثيل الدلالي الدقيق.
 
   // مخطّط عقاري متخصّص (RealEstateProperty) — إشارة أدقّ لمحرّكات البحث من Product وحده.
   const realEstate = l
@@ -106,8 +113,11 @@ export default async function Layout(
         "@type": "RealEstateProperty",
         name: l.title,
         url: `${BASE}/properties/${id}`,
-        description: (l.meta_description || l.description || "").slice(0, 300),
-        image: l.main_image ? [l.main_image] : undefined,
+        // وصف لا يكون فارغاً أبداً: يُركَّب من خصائص العقار حين لا يكتب صاحبه شيئاً.
+        description: descriptionOf(l),
+        // صورة إلزامية: صورة العقار، وإلا صورة الهوية — «الحقل image غير مضمَّن»
+        // كان أخطر تحذير لأنه يمنع ظهور الصفحة أصلاً.
+        image: [l.main_image || `${BASE}/og.webp`],
         datePosted: l.created_at || undefined,
         ...(l.city_name || l.address
           ? {
@@ -126,12 +136,22 @@ export default async function Layout(
         ...(l.area != null
           ? { floorSize: { "@type": "QuantitativeValue", value: l.area, unitCode: "MTK" } }
           : {}),
-        offers: {
-          "@type": "Offer",
-          price: l.price,
-          priceCurrency: l.currency || "YER",
-          availability: "https://schema.org/InStock",
-        },
+        // عرضٌ بلا سعر مخطّطٌ غير صالح — نُسقطه كاملاً عند غياب السعر
+        // (كثير من العقارات تُنشر بسعر «عند التواصل»).
+        ...(l.price != null && l.price !== ''
+          ? {
+              offers: {
+                "@type": "Offer",
+                price: String(l.price),
+                priceCurrency: l.currency || "YER",
+                availability: "https://schema.org/InStock",
+                url: `${BASE}/properties/${id}`,
+                ...(l.offer_type ? { name: OFFER_LABELS[l.offer_type] ?? l.offer_type } : {}),
+              },
+            }
+          : {}),
+        ...(additionalProperty.length ? { additionalProperty } : {}),
+        ...(propertyTypeName(l) ? { category: propertyTypeName(l) } : {}),
       }
     : null;
 
@@ -165,9 +185,6 @@ export default async function Layout(
 
   return (
     <>
-      {jsonLd && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      )}
       {realEstate && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstate) }} />
       )}
