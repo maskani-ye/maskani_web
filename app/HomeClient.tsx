@@ -218,7 +218,7 @@ function FeaturedRow({ properties }: { properties: Property[] }) {
           <Button variant="outline" size="sm">عرض الكل <AltArrowLeft className="h-4 w-4" /></Button>
         </Link>
       </div>
-      <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-none snap-x">
+      <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-none snap-x min-h-[300px]">
         {properties.map((p) => (
           <div key={p.id} className="w-[260px] sm:w-[288px] flex-shrink-0 snap-start">
             <PropertyCard property={p} />
@@ -360,7 +360,9 @@ function CardGrid({ loading, empty, emptyIcon, emptyText, children }: {
 }) {
   if (loading) {
     return (
-      <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-none">
+      // الارتفاع الأدنى موحّد في الحالات الثلاث (تحميل/فارغ/محتوى): اختلافه كان
+      // يُقفز الصفحة تحت إصبع القارئ عند وصول البيانات (CLS = 0.184).
+      <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-none min-h-[300px]">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="w-[240px] sm:w-[270px] flex-shrink-0 bg-white rounded-2xl p-2.5 shadow-card">
             <Skeleton className="aspect-[4/3] w-full rounded-xl" />
@@ -372,13 +374,13 @@ function CardGrid({ loading, empty, emptyIcon, emptyText, children }: {
   }
   if (empty) {
     return (
-      <div className="bg-white rounded-2xl card-shadow py-12 flex flex-col items-center text-gray-300">
+      <div className="bg-white rounded-2xl card-shadow min-h-[300px] flex flex-col items-center justify-center text-gray-300">
         {emptyIcon}<p className="text-gray-400 text-sm mt-3">{emptyText}</p>
       </div>
     );
   }
   return (
-    <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-none snap-x">
+    <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-none snap-x min-h-[300px]">
       {React.Children.map(children, (ch) => (
         <div className="w-[240px] sm:w-[270px] flex-shrink-0 snap-start">{ch}</div>
       ))}
