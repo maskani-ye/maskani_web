@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { toolBySlug } from "@/lib/toolsMeta";
 import { SITE_URL } from "@/lib/seo";
 import { ToolPage } from "@/components/tools/ToolPage";
+import UnitLinks from "@/components/tools/UnitLinks";
 import AreaConverter from "@/components/tools/AreaConverter";
 
 const tool = toolBySlug("area-converter")!;
@@ -14,5 +15,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ToolPage tool={tool}><AreaConverter /></ToolPage>;
+  return (
+    <ToolPage tool={tool}>
+      <AreaConverter />
+      <UnitLinks />
+    </ToolPage>
+  );
 }

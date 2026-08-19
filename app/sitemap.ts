@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { citySlug } from "@/lib/seo";
 import { getBlogCategories } from "@/lib/blogCategories";
 import { TOOLS } from "@/lib/toolsMeta";
+import { ALL_UNITS } from "@/lib/areaUnits";
 
 const BASE = "https://maskani.homes";
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
@@ -184,7 +185,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  // صفحة لكل وحدة مساحة — كل واحدة تجيب سؤالاً مختلفاً يُبحث عنه في بلد مختلف.
+  const unitEntries: MetadataRoute.Sitemap = ALL_UNITS.map((u) => ({
+    url: `${BASE}/tools/area-converter/${u.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   return [
+    ...unitEntries,
     ...staticEntries,
     ...countryEntries,
     ...cityEntries,
