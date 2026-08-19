@@ -137,8 +137,8 @@ export default function AreaConverter({
             قيمة الوحدة تختلف في منطقتك؟ اضبطها ({editable.length})
           </summary>
           <p className="text-xs text-gray-500 leading-relaxed mt-2.5">
-            الأرقام أعلاه موثّقة إقليمياً، لكن العرف قد يختلف من مديريّة لأخرى. اسأل المسّاح
-            المعتمد عن قيمة الوحدة في موقع الأرض وأدخلها هنا ليطابق التحويل واقعك.
+            الأرقام أعلاه هي المعمول بها في الإقليم، وقد يختلف العرف بين مديريّة وأخرى.
+            إن كانت وحدتك تُحسب بقيمة مختلفة عندكم فأدخِلها هنا ليطابق التحويل واقعك.
           </p>
           <div className="grid sm:grid-cols-2 gap-3 mt-3">
             {editable.map((u) => (
@@ -154,8 +154,7 @@ export default function AreaConverter({
       )}
 
       <p className="text-xs text-gray-400 leading-relaxed">
-        الاعتماد القانونيّ على المساحة المثبتة في الوثيقة الرسمية ومحضر المسّاح المعتمد، لا على
-        أي محوّل إلكترونيّ. اقرأ{" "}
+        عند إبرام الصفقة، المرجع هو المساحة المثبتة في الوثيقة ومحضر المسّاح. اقرأ{" "}
         <Link href="/blog/measure-land-before-buying" className="text-primary hover:underline">
           كيف تتحقّق من مساحة الأرض قبل الشراء
         </Link>.

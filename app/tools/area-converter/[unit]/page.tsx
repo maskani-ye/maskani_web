@@ -86,7 +86,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
             acceptedAnswer: {
               "@type": "Answer",
               text: u.basis === "official"
-                ? `لا — ${u.name} وحدة ${BASIS_LABEL[u.basis]} بقيمة ثابتة ${fmt(u.m2)} م².`
+                ? `لا — ${u.name} قيمتها ثابتة ${fmt(u.m2)} م² لا تختلف بين منطقة وأخرى.`
                 : `نعم، ولهذا نعرض كل اشتقاق وحدةً مستقلّة: ${siblings.map((s) => `${s.name} = ${fmt(s.m2)} م²`).join("، ")}.`,
             },
           }]
@@ -198,8 +198,8 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
           ))}
         </div>
         <p className="text-xs text-gray-400 mt-4 leading-relaxed">
-          الاعتماد القانونيّ على الوثيقة الرسمية ومحضر المسّاح المعتمد. المصادر الإقليمية
-          لقيم الوحدات اليمنية منشورة ومتداولة بين المسّاحين، وقد تختلف بين مديريّة وأخرى.
+          هذه القيم هي المتعامَل بها فعلياً بين المسّاحين والسوق في كل إقليم، وقد يختلف
+          العرف بين مديريّة وأخرى. وعند إبرام الصفقة يبقى المرجع محضر المسّاح والوثيقة.
         </p>
       </section>
     </div>
