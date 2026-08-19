@@ -31,13 +31,33 @@ interface TrendPoint { date: string; impressions: number; clicks: number }
 interface TopQuery { query: string; impressions: number; clicks: number; position: number }
 interface TopPage { page: string; impressions: number; clicks: number; position: number }
 interface Rec { level: "error" | "warn" | "info" | "ok"; title: string; detail: string }
+interface Opportunity { query: string; page: string; impressions: number; clicks: number; position: number }
+interface Bleeding {
+  page: string; impressions: number; clicks: number;
+  ctr: number; expected_ctr: number; position: number; lost_clicks: number;
+}
+interface Prev { impressions: number; clicks: number; ctr: number; position: number }
+interface CountryRow { country: string; impressions: number; clicks: number; position: number }
+interface DeviceRow { device: string; impressions: number; clicks: number; position: number }
 interface SeoReport {
   available: boolean; site: string; error?: string;
   sitemaps: SeoSitemap[]; pages: SeoPage[]; coverage?: Coverage;
   performance: SeoPerf; trend?: TrendPoint[];
   indexed_count: number; pages_count: number;
   top_queries: TopQuery[]; top_pages?: TopPage[]; recommendations?: Rec[];
+  opportunities?: Opportunity[]; ctr_bleeding?: Bleeding[]; previous?: Prev;
+  countries?: CountryRow[]; devices?: DeviceRow[];
 }
+
+//: أسماء الدول بالعربية — GSC يعيد رمز ISO ثلاثيّاً.
+const COUNTRY_AR: Record<string, string> = {
+  yem: "اليمن", sau: "السعودية", egy: "مصر", jor: "الأردن", irq: "العراق",
+  are: "الإمارات", kwt: "الكويت", qat: "قطر", omn: "عُمان", bhr: "البحرين",
+  mar: "المغرب", tun: "تونس", dza: "الجزائر", lby: "ليبيا", sdn: "السودان",
+  syr: "سوريا", lbn: "لبنان", pse: "فلسطين", tur: "تركيا", usa: "أمريكا",
+  gbr: "بريطانيا", deu: "ألمانيا", mys: "ماليزيا", idn: "إندونيسيا",
+};
+const DEVICE_AR: Record<string, string> = { MOBILE: "جوّال", DESKTOP: "حاسوب", TABLET: "لوحيّ" };
 
 // ─── لون كل سبب في مخطّط التغطية ─────────────────────────────────────────────
 const REASON_TONE: Record<string, string> = {
@@ -84,7 +104,11 @@ export default function AdminSeoPage() {
   useEffect(() => { run(); }, [run]);
 
   const perf = report?.performance;
+  const prev = report?.previous;
   const cov = report?.coverage;
+  /** فرق النسبة عن الفترة السابقة — null حين لا مرجع (أول فترة). */
+  const delta = (now?: number, before?: number) =>
+    before && before > 0 && now != null ? Math.round(((now - before) / before) * 100) : null;
   const coveragePct = cov && cov.inspected ? Math.round((cov.indexed / cov.inspected) * 100) : 0;
 
   return (
@@ -132,12 +156,16 @@ export default function AdminSeoPage() {
                  label="نسبة الفهرسة" value={`${coveragePct}%`}
                  hint={`${nf(cov?.indexed ?? report.indexed_count)} من ${nf(cov?.inspected ?? report.pages_count)} مفحوصة`} />
             <Kpi icon={<Magnifer weight="Bold" className="h-5 w-5" />} tone="gold"
-                 label="مرّات الظهور" value={nf(perf?.impressions ?? 0)} hint={`آخر ${perf?.days ?? 30} يوماً`} />
+                 label="مرّات الظهور" value={nf(perf?.impressions ?? 0)} hint={`آخر ${perf?.days ?? 30} يوماً`}
+                 delta={delta(perf?.impressions, prev?.impressions)} />
             <Kpi icon={<CursorSquare weight="Bold" className="h-5 w-5" />} tone="gray"
                  label="النقرات" value={nf(perf?.clicks ?? 0)}
-                 hint={perf?.ctr ? `CTR ${(perf.ctr * 100).toFixed(1)}%` : undefined} />
+                 hint={perf?.ctr ? `CTR ${(perf.ctr * 100).toFixed(2)}%` : undefined}
+                 delta={delta(perf?.clicks, prev?.clicks)} />
             <Kpi icon={<Ranking weight="Bold" className="h-5 w-5" />} tone="gray"
-                 label="متوسط الترتيب" value={perf?.position ? perf.position.toFixed(1) : "—"} />
+                 label="متوسط الترتيب" value={perf?.position ? perf.position.toFixed(1) : "—"}
+                 // الترتيب يتحسّن بالنقصان — نعكس الإشارة كي يبقى الأخضر «تحسّن».
+                 delta={prev?.position && perf?.position ? Math.round(((prev.position - perf.position) / prev.position) * 100) : null} />
           </div>
 
           {/* ── التغطية حسب السبب + الاتجاه ── */}
@@ -203,6 +231,136 @@ export default function AdminSeoPage() {
                 label: q.query, impressions: q.impressions, clicks: q.clicks, position: q.position }))} />
             </Card>
           </div>
+
+
+          {/* ── فرص قريبة: كلمات على بُعد خطوة من الصدارة ── */}
+          {(report.opportunities ?? []).length > 0 && (
+            <Card className="p-6">
+              <SectionHeader icon={<Ranking className="h-5 w-5" />} title="فرص قريبة"
+                             subtitle="كلمات ترتيبك فيها 4–20: دفعة صغيرة تنقلها إلى الثلاثة الأوائل حيث النقرات" />
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full text-sm min-w-[560px]">
+                  <thead>
+                    <tr className="text-xs text-gray-400 text-right">
+                      <th className="pb-2 font-medium">الكلمة</th>
+                      <th className="pb-2 font-medium">الصفحة</th>
+                      <th className="pb-2 font-medium text-center">الترتيب</th>
+                      <th className="pb-2 font-medium text-center">ظهور</th>
+                      <th className="pb-2 font-medium text-center">نقرات</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {report.opportunities!.map((o) => (
+                      <tr key={`${o.query}-${o.page}`} className="text-gray-700">
+                        <td className="py-2.5 font-semibold">{o.query}</td>
+                        <td className="py-2.5 text-gray-400 text-xs" dir="ltr">
+                          <a href={o.page} target="_blank" rel="noopener noreferrer" className="hover:text-primary">
+                            {shortPath(o.page)}
+                          </a>
+                        </td>
+                        <td className="py-2.5 text-center">
+                          <span className={`text-xs font-bold rounded-lg px-2 py-1 ${
+                            o.position <= 10 ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
+                            {o.position}
+                          </span>
+                        </td>
+                        <td className="py-2.5 text-center tabular-nums">{nf(o.impressions)}</td>
+                        <td className="py-2.5 text-center tabular-nums text-gray-400">{nf(o.clicks)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          )}
+
+          {/* ── نزيف النقرات: ترتيب جيّد ونقرات دون المتوقّع ── */}
+          {(report.ctr_bleeding ?? []).length > 0 && (
+            <Card className="p-6">
+              <SectionHeader icon={<DangerTriangle className="h-5 w-5" />} title="صفحات تنزف نقرات"
+                             subtitle="ترتيبها جيّد لكن نقرها أقل بكثير من المتوقّع من موضعها — عيبُ عنوان ووصف لا عيبُ ترتيب" />
+              <div className="mt-4 space-y-3">
+                {report.ctr_bleeding!.map((b) => (
+                  <div key={b.page} className="rounded-xl border border-gray-100 p-4">
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <a href={b.page} target="_blank" rel="noopener noreferrer"
+                         className="text-sm font-semibold text-gray-800 hover:text-primary truncate" dir="ltr">
+                        {shortPath(b.page)}
+                      </a>
+                      <span className="text-xs font-bold text-red-600 bg-red-50 rounded-lg px-2 py-1 shrink-0">
+                        ~{nf(b.lost_clicks)} نقرة ضائعة
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                      <span>الترتيب <strong className="text-gray-700">{b.position}</strong></span>
+                      <span>الظهور <strong className="text-gray-700">{nf(b.impressions)}</strong></span>
+                      <span>
+                        النقر الفعليّ <strong className="text-red-600">{(b.ctr * 100).toFixed(2)}%</strong>
+                        {" "}مقابل متوقّع <strong className="text-gray-700">{(b.expected_ctr * 100).toFixed(1)}%</strong>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+                العلاج: أعِد صياغة عنوان الصفحة ووصفها ليقولا للباحث ما يجده بالداخل — أرخص تحسين
+                في السيو وأسرعه أثراً، ولا يحتاج تغيير ترتيب.
+              </p>
+            </Card>
+          )}
+
+          {/* ── الجمهور: الدول والأجهزة ── */}
+          {((report.countries ?? []).length > 0 || (report.devices ?? []).length > 0) && (
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <SectionHeader icon={<Global className="h-5 w-5" />} title="من أين يأتي الظهور؟"
+                               subtitle="توزّع مرّات الظهور حسب الدولة" />
+                <div className="mt-4 space-y-3">
+                  {(report.countries ?? []).map((c) => {
+                    const max = Math.max(1, ...(report.countries ?? []).map((x) => x.impressions));
+                    return (
+                      <div key={c.country}>
+                        <div className="flex items-center justify-between text-sm mb-1">
+                          <span className="text-gray-700">{COUNTRY_AR[c.country] ?? c.country}</span>
+                          <span className="text-gray-400 text-xs tabular-nums">
+                            {nf(c.impressions)} ظهور · ترتيب {c.position}
+                          </span>
+                        </div>
+                        <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                          <div className="h-full rounded-full bg-primary"
+                               style={{ width: `${Math.round((c.impressions / max) * 100)}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <SectionHeader icon={<ChartSquare className="h-5 w-5" />} title="الأجهزة"
+                               subtitle="يحدّد أين تُصرف جهود الأداء والتصميم" />
+                <div className="mt-4 space-y-3">
+                  {(report.devices ?? []).map((d) => {
+                    const total = Math.max(1, (report.devices ?? []).reduce((s, x) => s + x.impressions, 0));
+                    const pct = Math.round((d.impressions / total) * 100);
+                    return (
+                      <div key={d.device}>
+                        <div className="flex items-center justify-between text-sm mb-1">
+                          <span className="text-gray-700">{DEVICE_AR[d.device] ?? d.device}</span>
+                          <span className="text-gray-400 text-xs tabular-nums">
+                            {pct}% · {nf(d.impressions)} ظهور
+                          </span>
+                        </div>
+                        <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                          <div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            </div>
+          )}
 
           {/* ── تفصيل فحص الروابط ── */}
           <Card className="p-6">
@@ -322,14 +480,21 @@ function RecCard({ rec }: { rec: Rec }) {
   );
 }
 
-function Kpi({ icon, label, value, hint, tone }: {
-  icon: React.ReactNode; label: string; value: string; hint?: string; tone: "primary" | "gold" | "gray";
+function Kpi({ icon, label, value, hint, tone, delta }: {
+  icon: React.ReactNode; label: string; value: string; hint?: string;
+  tone: "primary" | "gold" | "gray"; delta?: number | null;
 }) {
   const toneCls = { primary: "bg-primary/10 text-primary", gold: "bg-gold/15 text-gold", gray: "bg-gray-100 text-gray-500" }[tone];
   return (
     <Card className="p-5">
       <div className="flex items-center justify-between mb-2.5">
         <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${toneCls}`}>{icon}</span>
+        {delta != null && delta !== 0 && (
+          <span className={`text-[11px] font-bold rounded-lg px-2 py-1 ${
+            delta > 0 ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}>
+            {delta > 0 ? "▲" : "▼"} {Math.abs(delta)}%
+          </span>
+        )}
       </div>
       <p className="text-2xl font-extrabold text-gray-900 tabular-nums leading-none">{value}</p>
       <p className="text-xs text-gray-500 mt-1.5">{label}</p>
