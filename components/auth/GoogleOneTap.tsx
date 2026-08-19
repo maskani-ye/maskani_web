@@ -50,6 +50,16 @@ export function GoogleOneTap() {
     if (loading || user || shown.current || !CLIENT_ID) return;
     shown.current = true;
 
+    // تأجيل حتى خمول المتصفّح: سكربت جوجل (97 ك.ب) كان يُحمَّل داخل النافذة
+    // الحرجة لرسم الصفحة على الجوّال فيؤخّر أكبر عنصر مرئيّ. النافذة ترغيبية
+    // لا وظيفية — تأخيرها ثانيتين لا يكلّف تسجيلاً واحداً، وتعجيلها يكلّف ترتيباً.
+    const idle = (cb: () => void) => {
+      const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: object) => number };
+      if (w.requestIdleCallback) w.requestIdleCallback(cb, { timeout: 4000 });
+      else setTimeout(cb, 2500);
+    };
+
+    idle(() => {
     loadGsi()
       .then(() => {
         if (!window.google?.accounts?.id) return;
@@ -71,6 +81,7 @@ export function GoogleOneTap() {
         window.google.accounts.id.prompt();
       })
       .catch(() => {});
+    });
   }, [user, loading, loginWithGoogle, router]);
 
   return null;

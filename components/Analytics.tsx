@@ -50,7 +50,9 @@ export function Analytics() {
     <>
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-        strategy="afterInteractive"
+        // lazyOnload لا afterInteractive: 150 ك.ب من جوجل كانت تزاحم رسم الصفحة
+        // على الجوّال. القياس الأساسي عندنا أوّليّ (VisitTracker) فلا نفقد بيانات.
+        strategy="lazyOnload"
       />
       <Script id="ga4-init" strategy="afterInteractive">
         {`
