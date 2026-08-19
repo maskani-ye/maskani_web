@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "audit:units": "tsx scripts/audit-units.ts"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.70.0",

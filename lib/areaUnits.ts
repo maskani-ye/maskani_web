@@ -31,6 +31,7 @@ const FEDDAN = 4200 + 5 / 6;   // التعريف الرسميّ: 4200.8333… م
 const QIRAT = FEDDAN / 24;     // 175.0347… م²
 const SAHM = QIRAT / 24;       // 7.2931… م²
 const LIBNAH_SANAANI = 44.44;  // أساسٌ تُشتقّ منه وحدات يمنية أخرى
+const QASABAH_EG = 3.55 * 3.55;  // القصبة المصرية: ضلعها 3.55 م → 12.6025 م²  // أساسٌ تُشتقّ منه وحدات يمنية أخرى
 
 /** وحدات معياريّة دولية — تُعرض مع كل دولة. */
 export const GLOBAL_UNITS: AreaUnit[] = [
@@ -61,8 +62,10 @@ export const LOCAL_UNITS: AreaUnit[] = [
   { key: "feddan", slug: "feddan", name: "الفدان", short: "فدان", m2: FEDDAN, basis: "official", country: "EG", note: "24 قيراطاً = 4200.83 م²", aliases: ["الفدان كم متر مربع", "تحويل الفدان"] },
   { key: "qirat", slug: "qirat", name: "القيراط", short: "قيراط", m2: QIRAT, basis: "official", country: "EG", note: "1/24 فدان = 24 سهماً", aliases: ["كم متر في القيراط"] },
   { key: "sahm", slug: "sahm", name: "السهم", short: "سهم", m2: SAHM, basis: "official", country: "EG", note: "1/24 قيراط" },
+  { key: "qasabah_eg", slug: "qasabah-murabbaa", name: "القصبة المربّعة", short: "قصبة", m2: QASABAH_EG, basis: "official", country: "EG", note: "ضلعها 3.55 م — الفدان 333.3 قصبة", aliases: ["القصبة كام متر", "كم قصبة في القيراط"] },
   { key: "feddan_sd", slug: "feddan-sudani", name: "الفدان السوداني", short: "فدان", m2: FEDDAN, basis: "official", country: "SD", note: "مطابق للفدان المصريّ" },
   { key: "qirat_sd", slug: "qirat-sudani", name: "القيراط السوداني", short: "قيراط", m2: QIRAT, basis: "official", country: "SD" },
+  { key: "qasabah_sd", slug: "qasabah-sudaniyah", name: "القصبة المربّعة", short: "قصبة", m2: QASABAH_EG, basis: "official", country: "SD" },
 
   // ── العراق ──
   { key: "dunam_iq", slug: "dunam-iraqi", name: "الدونم العراقي", short: "دونم عراقي", m2: 2500, basis: "official", country: "IQ", note: "≠ الدونم المتريّ (1000 م²)", aliases: ["الدونم كم متر في العراق"] },
@@ -84,6 +87,13 @@ export const LOCAL_UNITS: AreaUnit[] = [
   { key: "dunam_om", slug: "dunam-omani", name: "الدونم", short: "دونم", m2: 1000, basis: "official", country: "OM" },
   { key: "dunam_bh", slug: "dunam-bahraini", name: "الدونم", short: "دونم", m2: 1000, basis: "official", country: "BH" },
   { key: "dunam_ly", slug: "dunam-libi", name: "الدونم", short: "دونم", m2: 1000, basis: "official", country: "LY" },
+  // الفدان في بلاد الشام وليبيا: يَرد في المعاملات والوثائق الزراعية بالقيمة
+  // المصرية نفسها، لكنه ليس الوحدة الرسمية هناك (الرسميّ هو الدونم) — فوسمناه
+  // «تختلف بين المديريّات» كي لا يُقرأ كأنه مرجع تسجيل.
+  { key: "feddan_sy", slug: "feddan-souri", name: "الفدان", short: "فدان", m2: FEDDAN, basis: "local", country: "SY", note: "بالقيمة المصرية في المعاملات الزراعية" },
+  { key: "feddan_jo", slug: "feddan-ordoni", name: "الفدان", short: "فدان", m2: FEDDAN, basis: "local", country: "JO", note: "يَرد في وثائق زراعية؛ الرسميّ هو الدونم" },
+  { key: "feddan_lb", slug: "feddan-lubnani", name: "الفدان", short: "فدان", m2: FEDDAN, basis: "local", country: "LB", note: "بالقيمة المصرية" },
+  { key: "feddan_ly", slug: "feddan-libi", name: "الفدان", short: "فدان", m2: FEDDAN, basis: "local", country: "LY", note: "بالقيمة المصرية" },
 ];
 
 export interface Country { code: string; name: string; flag: string; hint?: string }
@@ -95,18 +105,18 @@ export const COUNTRIES: Country[] = [
   { code: "SA", name: "السعودية", flag: "🇸🇦", hint: "القياس رسمياً بالمتر المربّع، والزراعيّ بالهكتار والدونم." },
   { code: "IQ", name: "العراق", flag: "🇮🇶", hint: "انتبه: الدونم العراقي 2500 م² — ضعفَا الدونم المتريّ ونصف." },
   { code: "JO", name: "الأردن", flag: "🇯🇴", hint: "الدونم المتريّ (1000 م²) هو المعتمد؛ والعثمانيّ يظهر في الوثائق القديمة." },
-  { code: "PS", name: "فلسطين", flag: "🇵🇸" },
-  { code: "SY", name: "سوريا", flag: "🇸🇾" },
-  { code: "LB", name: "لبنان", flag: "🇱🇧" },
+  { code: "PS", name: "فلسطين", flag: "🇵🇸", hint: "الدونم المتريّ (1000 م²) هو المعتمد، ويظهر الدونم العثمانيّ (919.3 م²) في الطابو القديم." },
+  { code: "SY", name: "سوريا", flag: "🇸🇾", hint: "الدونم المتريّ رسمياً، والفدان يَرد في المعاملات الزراعية بالقيمة المصرية." },
+  { code: "LB", name: "لبنان", flag: "🇱🇧", hint: "الدونم المتريّ (1000 م²) هو المتداول، والمساحات السكنية بالمتر المربّع." },
   { code: "AE", name: "الإمارات", flag: "🇦🇪", hint: "سوق العقار يتعامل بالقدم المربّع = 0.09290304 م² بالتعريف." },
-  { code: "KW", name: "الكويت", flag: "🇰🇼" },
-  { code: "QA", name: "قطر", flag: "🇶🇦" },
-  { code: "OM", name: "عُمان", flag: "🇴🇲" },
-  { code: "BH", name: "البحرين", flag: "🇧🇭" },
-  { code: "LY", name: "ليبيا", flag: "🇱🇾" },
+  { code: "KW", name: "الكويت", flag: "🇰🇼", hint: "القياس بالمتر المربّع؛ والدونم (1000 م²) للأراضي الكبيرة." },
+  { code: "QA", name: "قطر", flag: "🇶🇦", hint: "المتر المربّع رسمياً، والقدم المربّع شائع في سوق العقار." },
+  { code: "OM", name: "عُمان", flag: "🇴🇲", hint: "المتر المربّع رسمياً، والدونم والهكتار للأراضي الزراعية." },
+  { code: "BH", name: "البحرين", flag: "🇧🇭", hint: "المتر المربّع والقدم المربّع في سوق العقار." },
+  { code: "LY", name: "ليبيا", flag: "🇱🇾", hint: "الهكتار والدونم للأراضي الزراعية، والمتر المربّع للسكنيّة." },
   { code: "MA", name: "المغرب", flag: "🇲🇦", hint: "النظام المتريّ: الهكتار والآر والمتر المربّع." },
-  { code: "DZ", name: "الجزائر", flag: "🇩🇿" },
-  { code: "TN", name: "تونس", flag: "🇹🇳" },
+  { code: "DZ", name: "الجزائر", flag: "🇩🇿", hint: "النظام المتريّ الفرنسيّ: الهكتار والآر والمتر المربّع — بلا وحدات عرفية متداولة اليوم." },
+  { code: "TN", name: "تونس", flag: "🇹🇳", hint: "الهكتار والآر والمتر المربّع؛ الفلاحة تتعامل بالهكتار غالباً." },
 ];
 
 export const ALL_UNITS: AreaUnit[] = [...LOCAL_UNITS, ...GLOBAL_UNITS];
