@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { toEnglishDigits } from "@/lib/digits";
 import { api } from "@/lib/api";
 import { endpoints } from "@/lib/endpoints";
 import { Button } from "@/components/ui/Button";
@@ -438,7 +439,7 @@ export default function AdminSeoPage() {
                   {tab.label}
                 </button>
               ))}
-              <input value={pageSearch} onChange={(e) => setPageSearch(e.target.value)}
+              <input value={pageSearch} onChange={(e) => setPageSearch(toEnglishDigits(e.target.value))}
                 placeholder="ابحث في المسارات…" dir="ltr"
                 className="ms-auto w-full sm:w-52 rounded-xl border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-primary" />
             </div>

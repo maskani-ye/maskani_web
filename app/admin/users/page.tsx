@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { toEnglishDigits } from "@/lib/digits";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -155,7 +156,7 @@ export default function AdminUsersPage() {
           <Magnifer className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => setSearch(toEnglishDigits(e.target.value))}
             placeholder="ابحث بالاسم أو الهاتف..."
             className="w-full h-10 border border-gray-200 rounded-xl pr-9 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
           />

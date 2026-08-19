@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { forwardRef, InputHTMLAttributes, ReactNode } from "react";
+import { toEnglishDigits } from "@/lib/digits";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -14,6 +15,18 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, hint, startIcon, endIcon, id, ...props }, ref) => {
     const inputId = id || label?.replace(/\s/g, "-").toLowerCase();
+    // كل حقل رقميّ يمرّ من هنا يحوّل «٥٠٠٠» إلى «5000» قبل أن تراه الحالة.
+    // الحقن في المكوّن المشترك لا في كل استدعاء: نسيانه مرّة واحدة يعني حقلاً
+    // يبتلع مدخل المستخدم بلا رسالة (المنظّفات تحذف الأرقام غير اللاتينية).
+    const numeric = props.type === "number" || props.type === "tel" ||
+      props.inputMode === "numeric" || props.inputMode === "decimal" || props.inputMode === "tel";
+    const onChange = numeric && props.onChange
+      ? (e: React.ChangeEvent<HTMLInputElement>) => {
+          const converted = toEnglishDigits(e.target.value);
+          if (converted !== e.target.value) e.target.value = converted;
+          props.onChange!(e);
+        }
+      : props.onChange;
     return (
       <div className="flex flex-col gap-1.5 w-full">
         {label && (
@@ -39,6 +52,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               className
             )}
             {...props}
+            onChange={onChange}
           />
           {endIcon && (
             <span className="absolute left-3 text-gray-400">{endIcon}</span>
