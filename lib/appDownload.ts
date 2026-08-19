@@ -4,4 +4,4 @@ export const APK_URL =
   "https://pub-c0a05c2cecc548aaa3a943b5751cf25f.r2.dev/download/maskani.apk";
 
 // نسخة التطبيق الحالية (للعرض بجانب زرّ التحميل). حدّثها مع كل رفع APK جديد.
-export const APK_VERSION = "1.0.52";
+export const APK_VERSION = "1.0.53";
