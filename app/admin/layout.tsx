@@ -13,6 +13,7 @@ import {
   ShieldCheck, DangerTriangle, Bell,
   Case, ChartSquare, HeadphonesRound, MagniferBug, NotebookBookmark, HashtagSquare, Stars,
   ServerSquare,
+  DocumentAdd,
 } from "@solar-icons/react";
 
 // عناصر التنقّل مجمّعة حسب التخصّص/الوظيفة. الترتيب ثابت ومطابق لتطبيق الإدارة.
@@ -36,6 +37,7 @@ const NAV_GROUPS = [
     title: "العقارات",
     items: [
       { href: "/admin/properties", label: "العقارات",    icon: Buildings2 },
+      { href: "/admin/properties/import", label: "استيراد جماعي", icon: DocumentAdd },
       { href: "/admin/requests", label: "طلبات عقارية", icon: ChatRound },
     ],
   },

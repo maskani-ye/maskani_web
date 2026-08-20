@@ -77,6 +77,7 @@ export const endpoints = {
     infraServices: `${ADMIN}/dashboard/services/`,
     infraService: (key: string) => `${ADMIN}/dashboard/services/${key}/`,
     // blog
+    propertiesBulkImport: `${ADMIN}/properties/bulk-import/`,
     blog: `${ADMIN}/blog/`,
     blogItem: (id: number) => `${ADMIN}/blog/${id}/`,
     blogCategories: `${ADMIN}/blog/categories/`,
