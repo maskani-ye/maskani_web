@@ -10,6 +10,7 @@ import { useCountry } from "@/context/CountryContext";
 import {
   Home2, Magnifer, Buildings2, ShieldWarning, ClipboardList, Case,
   Bell, ChatRound, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings, MapPoint,
+  AddCircle,
 } from "@solar-icons/react";
 import { Button } from "@/components/ui/Button";
 import { api } from "@/lib/api";
@@ -104,6 +105,16 @@ export function Navbar() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-2">
+            {/* دعوة النشر — أبرز إجراء في المنصّة وكان غائباً عن الشريط كلّياً:
+                118 زائراً وصلوا صفحة العقارات في أسبوع مقابل زيارة واحدة لصفحة
+                النشر. الزرّ هنا يراه كل زائر في كل صفحة. */}
+            <Link
+              href="/properties/create"
+              className="flex items-center gap-1.5 rounded-xl bg-gold px-3.5 py-2 text-sm font-bold text-ink hover:bg-gold/90 transition-colors"
+            >
+              <AddCircle className="h-4 w-4" />
+              أضف عقارك
+            </Link>
             {/* مُحدِّد المدينة العام — مصدر واحد لكل الصفحات */}
             <div className="relative">
               <button
@@ -280,6 +291,14 @@ export function Navbar() {
                 </Link>
               );
             })}
+            <Link
+              href="/properties/create"
+              className="flex items-center gap-2 mx-4 mt-2 rounded-xl bg-gold px-4 py-2.5 text-sm font-bold text-ink"
+              onClick={() => setMobileOpen(false)}
+            >
+              <AddCircle className="h-4 w-4" />
+              أضف عقارك مجاناً
+            </Link>
             {!user ? (
               <div className="flex gap-2 pt-2 px-4">
                 <Button fullWidth size="sm" onClick={() => { setMobileOpen(false); requireAuth(); }}>دخول</Button>

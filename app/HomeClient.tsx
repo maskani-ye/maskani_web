@@ -95,6 +95,30 @@ export default function HomeClient() {
         </div>
       </section>
 
+      {/* ─── دعوة النشر — أهمّ ما تحتاجه المنصّة اليوم ────────────────────
+          108 زائراً وصلوا هذه الصفحة في أسبوع، ولم يُطلب من أحدهم نشر عقاره
+          ولا مرّة. المخزون هو سقف المنصّة، والطلب الصريح أرخص وسيلة لرفعه. */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-8">
+        <Link
+          href="/properties/create"
+          className="flex items-center gap-4 rounded-3xl bg-gradient-to-l from-gold/95 to-gold p-5 sm:p-6 shadow-card hover:shadow-card-hover transition-all"
+        >
+          <span className="w-12 h-12 rounded-2xl bg-ink/10 flex items-center justify-center flex-shrink-0">
+            <Home2 weight="Bold" className="h-6 w-6 text-ink" />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="block text-lg sm:text-xl font-extrabold text-ink">عندك عقار للبيع أو الإيجار؟</span>
+            <span className="block text-ink/70 text-sm mt-0.5">
+              انشره مجاناً في دقيقة — ويصلك الباحث على رقمك مباشرة بلا وسيط ولا عمولة
+            </span>
+          </span>
+          <span className="rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-white flex-shrink-0 hidden sm:block">
+            أضف عقارك
+          </span>
+          <AltArrowLeft className="h-5 w-5 text-ink sm:hidden flex-shrink-0" />
+        </Link>
+      </div>
+
       {/* ─── شريط الأقسام السريعة ────────────────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-8">
         <CategoryStrip />

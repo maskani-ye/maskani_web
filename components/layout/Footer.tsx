@@ -135,6 +135,16 @@ export function Footer() {
         </nav>
 
         <div className="border-t border-primary-600 mt-6 pt-6 flex flex-col gap-4">
+          {/* دعوة النشر — الفوتر يظهر في كل صفحة، فهو آخر فرصة للطلب. */}
+          <div className="mb-6">
+            <Link
+              href="/properties/create"
+              className="inline-flex items-center gap-2 rounded-xl bg-gold px-5 py-2.5 text-sm font-bold text-ink hover:bg-gold/90 transition-colors"
+            >
+              أضف عقارك مجاناً
+            </Link>
+          </div>
+
           {/* روابط قانونية */}
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <Link
