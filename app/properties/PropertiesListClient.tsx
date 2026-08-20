@@ -58,6 +58,9 @@ function PropertiesContent() {
   const [filters, setFilters] = useState({
     search: searchParams.get("search") || "",
     property_type: searchParams.get("property_type") || "",
+    // الحيّ يتبع المدينة: يُصفَّر تلقائياً عند تبديلها كي لا يبقى فلترٌ من
+    // مدينة أخرى فيُظهر «لا نتائج» بلا سبب مفهوم.
+    neighborhood_ref: searchParams.get("neighborhood_ref") || "",
     offer_type: searchParams.get("offer_type") || "",
     price_min: searchParams.get("price_min") || "",
     price_max: searchParams.get("price_max") || "",
@@ -90,6 +93,28 @@ function PropertiesContent() {
     if (urlCity && urlCity !== cityId) setCity(urlCity, "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // أحياء المدينة المختارة — أدقّ نيّة بحثية عندنا: من يبحث عن «شقة في حدّة»
+  // لا يريد صنعاء كلّها. المنافسون (Bayut · عقار) يعرضونها بعدّاداتها.
+  const [hoods, setHoods] = useState<{ id: number; name: string; properties_count?: number }[]>([]);
+  useEffect(() => {
+    if (!cityId) { setHoods([]); return; }
+    let alive = true;
+    api.get("/cities/neighborhoods/", { params: { city: cityId, limit: 1000 } })
+      .then((r) => {
+        if (!alive) return;
+        const list = Array.isArray(r.data) ? r.data : r.data.results ?? [];
+        setHoods(list);
+      })
+      .catch(() => { if (alive) setHoods([]); });
+    return () => { alive = false; };
+  }, [cityId]);
+
+  // تبديل المدينة يُسقط حيّها المختار — وإلا فلترنا بحيٍّ لا ينتمي إليها.
+  useEffect(() => {
+    setFilters((f) => (f.neighborhood_ref ? { ...f, neighborhood_ref: "" } : f));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cityId]);
 
   const fetchProperties = useCallback(async () => {
     setLoading(true);
@@ -150,7 +175,7 @@ function PropertiesContent() {
   const resetFilters = () => {
     setFilters((p) => ({
       ...p,
-      property_type: "", offer_type: "", price_min: "", price_max: "",
+      property_type: "", offer_type: "", neighborhood_ref: "", price_min: "", price_max: "",
       price_currency: DEFAULT_CURRENCY,
       rooms_min: "", has_parking: "", has_elevator: "", furnishing: "",
     }));
@@ -335,6 +360,19 @@ function PropertiesContent() {
             onChange={(e) => handleFilterChange("property_type", e.target.value)}
             placeholder="الكل"
           />
+          {/* يظهر فقط حين تُختار مدينة ولها أحياء مسجّلة. */}
+          {cityId && hoods.length > 0 && (
+            <Select
+              label="الحيّ"
+              options={hoods.map((h) => ({
+                value: String(h.id),
+                label: h.properties_count ? `${h.name} (${h.properties_count})` : h.name,
+              }))}
+              value={filters.neighborhood_ref}
+              onChange={(e) => handleFilterChange("neighborhood_ref", e.target.value)}
+              placeholder="كل الأحياء"
+            />
+          )}
           <Select
             label="نوع العرض"
             options={OFFER_TYPE_OPTS}

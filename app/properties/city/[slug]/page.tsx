@@ -8,6 +8,7 @@ import { formatPrice, propertyTypeName, offerTypeLabels } from "@/lib/utils";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import CityGuideLinks from "@/components/properties/CityGuideLinks";
 import CityAlertButton from "@/components/properties/CityAlertButton";
+import CityNeighborhoods from "@/components/properties/CityNeighborhoods";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
@@ -173,6 +174,8 @@ export default async function CityPropertiesPage(
           ))}
         </div>
       )}
+
+      <CityNeighborhoods cityId={city.id} cityName={city.name_ar} />
 
       <CityGuideLinks cityName={city.name_ar} />
     </div>
