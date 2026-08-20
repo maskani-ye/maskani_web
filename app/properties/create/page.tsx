@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
+import { trackVisitEvent } from "@/lib/track";
 import { useCity } from "@/context/CityContext";
 import type { City, PropertyTypeItem } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -75,6 +76,10 @@ export default function CreatePropertyPage() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // قُمع النشر: نقيس كل خطوة على حدة. معرفة أن أحداً لم ينشر بلا معرفة أين
+  // توقّف تركتنا نُخمّن أسابيع — الآن نعرف: عند الفتح؟ الصور؟ طلب الدخول؟
+  useEffect(() => { trackVisitEvent("publish_opened"); }, []);
+
   // ملاحظة: لا بوّابة دخول عند الفتح.
   // كان الزائر يُطرَد للرئيسية قبل أن يرى النموذج — طلبُ الدخول قبل إظهار
   // القيمة هو ما جعل التحويل 0.8% (118 زائراً لصفحة العقارات مقابل زيارة
@@ -119,7 +124,9 @@ export default function CreatePropertyPage() {
   }, [cities, form.city]);
 
   const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) setImages((p) => [...p, ...Array.from(e.target.files!)].slice(0, 10));
+    if (!e.target.files) return;
+    trackVisitEvent("publish_images_added", { targetId: e.target.files.length });
+    setImages((p) => [...p, ...Array.from(e.target.files!)].slice(0, 10));
   };
 
   // ── التحقق لكل خطوة (مطابق للتطبيق) ──
@@ -143,14 +150,21 @@ export default function CreatePropertyPage() {
 
   function onPrimary() {
     if (!validateStep()) return;
-    if (step < LAST_STEP) setStep((s) => s + 1);
-    else submit();
+    if (step < LAST_STEP) {
+      // رقم الخطوة يُحمل في targetId وحده — نوع الهدف محصورٌ في كيانات المنصّة.
+      trackVisitEvent("publish_step_filled", { targetId: step });
+      setStep((s) => s + 1);
+    } else {
+      submit();
+    }
   }
 
   async function submit() {
     // الدخول عند الإرسال لا عند الفتح — وبعده يُستأنف الإرسال بنفس المدخلات
     // (الحالة محفوظة في المكوّن، فلا يفقد المستخدم شيئاً).
     if (!user) {
+      // اللحظة الأخطر في القُمع: المستخدم ملأ كل شيء ثم قابل نافذة الدخول.
+      trackVisitEvent("publish_auth_required");
       requireAuth(() => submit());
       return;
     }
@@ -164,9 +178,11 @@ export default function CreatePropertyPage() {
       const { data } = await api.post("/properties/create/", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      trackVisitEvent("publish_submitted", { targetType: "property", targetId: data.id });
       toast.success("تم نشر العقار بنجاح");
       router.push(`/properties/${data.id}`);
     } catch (err) {
+      trackVisitEvent("publish_failed");
       toast.error(getErrorMessage(err));
     } finally {
       setSaving(false);
