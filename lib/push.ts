@@ -191,3 +191,28 @@ export function routeForData(data: Record<string, string>): string | null {
       return "/notifications";
   }
 }
+
+
+/** يطلب الإذن ويُرجع توكن الدفع — بلا أي ربط بحساب.
+ *
+ *  فُصل عن `registerDeviceForPush` لأن ذاك يسجّل جهازاً لمستخدم مسجَّل (سقف
+ *  ثلاثة أجهزة وتفضيلات كتم)، بينما الزائر لا حساب له أصلاً: التوكن هو هويته
+ *  الوحيدة. الفصل يُبقي قيود المستخدمين سليمة بدل تمييعها.
+ */
+export async function getPushToken(): Promise<string | null> {
+  try {
+    if (typeof window === "undefined") return null;
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) return null;
+
+    const messaging = await getMessagingIfSupported();
+    if (!messaging || !VAPID_KEY) return null;
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return null;
+
+    const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    return (await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg })) || null;
+  } catch {
+    return null;
+  }
+}

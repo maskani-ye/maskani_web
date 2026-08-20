@@ -7,6 +7,7 @@ import { breadcrumbList, itemList, citySlug, SITE_URL } from "@/lib/seo";
 import { formatPrice, propertyTypeName, offerTypeLabels } from "@/lib/utils";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import CityGuideLinks from "@/components/properties/CityGuideLinks";
+import CityAlertButton from "@/components/properties/CityAlertButton";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
@@ -137,6 +138,9 @@ export default async function CityPropertiesPage(
           شقق وفلل وأراضٍ ومحلات تجارية للبيع والإيجار، مع الأسعار والصور والموقع على الخريطة،
           وتواصل مباشر مع أصحاب العقارات بلا عمولات.
         </p>
+        <div className="mt-4">
+          <CityAlertButton cityId={city.id} cityName={city.name_ar} />
+        </div>
         <Link
           href={`/properties?city=${city.id}`}
           className="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary text-white px-5 py-2.5 text-sm font-semibold hover:bg-primary/90 transition-colors"
