@@ -75,9 +75,11 @@ export default function CreatePropertyPage() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
-  }, [user, authLoading, router]);
+  // ملاحظة: لا بوّابة دخول عند الفتح.
+  // كان الزائر يُطرَد للرئيسية قبل أن يرى النموذج — طلبُ الدخول قبل إظهار
+  // القيمة هو ما جعل التحويل 0.8% (118 زائراً لصفحة العقارات مقابل زيارة
+  // واحدة لصفحة النشر). الآن يملأ ما يشاء، ولا نطلب الدخول إلا لحظة الإرسال
+  // وقد صار مستثمِراً في ما كتب.
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
@@ -146,6 +148,12 @@ export default function CreatePropertyPage() {
   }
 
   async function submit() {
+    // الدخول عند الإرسال لا عند الفتح — وبعده يُستأنف الإرسال بنفس المدخلات
+    // (الحالة محفوظة في المكوّن، فلا يفقد المستخدم شيئاً).
+    if (!user) {
+      requireAuth(() => submit());
+      return;
+    }
     setSaving(true);
     try {
       const fd = buildPropertyFormData(form, await compressImages(images));
@@ -164,8 +172,6 @@ export default function CreatePropertyPage() {
       setSaving(false);
     }
   }
-
-  if (!user) return null;
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
@@ -518,7 +524,8 @@ function StepMedia({
 }: {
   form: PropertyFormState;
   setField: <K extends keyof PropertyFormState>(k: K, v: PropertyFormState[K]) => void;
-  user: { phone: string };
+  //: قد يكون زائراً لم يسجّل بعد — النموذج مفتوح للجميع، والدخول عند الإرسال.
+  user: { phone: string } | null;
   images: File[];
   setImages: React.Dispatch<React.SetStateAction<File[]>>;
   onImages: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -527,13 +534,16 @@ function StepMedia({
     <div>
       <SectionLabel text="رقم التواصل" required />
       <PhoneField label="" value={form.contact_phone} onChange={(v) => setField("contact_phone", v)} />
+      {/* يظهر للمسجَّل فقط — الزائر لا رقم لديه بعد. */}
+      {user?.phone && (
       <button
         type="button"
-        onClick={() => user.phone && setField("contact_phone", user.phone)}
+        onClick={() => setField("contact_phone", user.phone)}
         className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold"
       >
         <Phone className="h-3.5 w-3.5" /> استخدم رقمي
       </button>
+      )}
 
       <div className="h-5" />
       <SectionLabel text="رقم واتساب (اختياري)" />
