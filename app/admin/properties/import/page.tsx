@@ -26,6 +26,29 @@ const SAMPLE = `title,city,offer_type,contact_phone,price,currency,area,rooms
 شقة 3 غرف في حي الجامعة,إب,rent_yearly,+967771234567,600000,YER,150,3
 أرض 4 لبنة في السنينة,صنعاء,sale,+967771234567,12000000,YER,178,`;
 
+/** قالب فارغ يُرسَل للمكتب ليملأه — عمودان إلزاميان فقط والباقي اختياريّ. */
+const TEMPLATE = `title,city,offer_type,contact_phone,price,currency,area,rooms,bathrooms,property_type,address,description
+شقة للإيجار في حي كذا,إب,rent_yearly,+9677XXXXXXXX,600000,YER,150,3,2,شقة,شارع كذا,وصف مختصر
+,,,,,,,,,,,
+ملاحظات: offer_type = sale أو rent_monthly أو rent_yearly · currency = YER أو SAR أو USD,,,,,,,,,,,`;
+
+/** رسالة جاهزة تُرسَل للمكتب العقاريّ كما هي.
+ *
+ *  سبب وجودها هنا لا في ملفّ جانبيّ: الآلة التي بنيناها (استيراد + استحواذ)
+ *  لا تُنتج عقاراً واحداً حتى يصل الجدول. والرسالة الجاهزة تحذف الاحتكاك
+ *  الأخير — لا يكتب المشرف شيئاً، ينسخ ويرسل. */
+const WHATSAPP_MSG = `السلام عليكم 👋
+
+منصّة *مسكني* تعرض عقاراتكم مجاناً أمام الباحثين في اليمن — بلا عمولة وبلا اشتراك، والتواصل يصلكم مباشرة على أرقامكم.
+
+نتولّى نحن إدخال عقاراتكم كاملة. أرسلوا لنا جدولاً (Excel أو حتى رسالة) يحوي لكل عقار:
+• الوصف/العنوان   • المدينة   • بيع أم إيجار   • السعر   • المساحة   • رقم التواصل
+
+وسنرفعها خلال دقائق. وحين تدخلون بحساب Google بنفس رقم الهاتف، تجدون كل عقاراتكم منسوبة إليكم وتديرونها بأنفسكم.
+
+الموقع: https://maskani.homes
+التطبيق: https://maskani.homes/download`;
+
 interface RowResult { row: number; ok: boolean; id?: number; title?: string; errors?: string[] }
 interface ImportResult {
   dry_run: boolean; total: number; ok: number; failed: number;
@@ -57,6 +80,7 @@ export default function BulkImportPage() {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const rows = parseCsv(text);
 
@@ -71,6 +95,28 @@ export default function BulkImportPage() {
       setError(getErrorMessage(err));
     } finally {
       setBusy(false);
+    }
+  }
+
+  function downloadTemplate() {
+    // BOM ضروريّ: بلا \uFEFF يفتح Excel العربية كرموز مشوّهة فيظنّ المكتب
+    // أن الملف تالف ولا يكمل.
+    const blob = new Blob(["\uFEFF" + TEMPLATE], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "قالب-عقارات-مسكني.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function copyMessage() {
+    try {
+      await navigator.clipboard.writeText(WHATSAPP_MSG);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      setError("تعذّر النسخ — انسخ الرسالة يدوياً من الأسفل");
     }
   }
 
@@ -100,6 +146,20 @@ export default function BulkImportPage() {
             className="text-xs rounded-xl bg-gray-100 px-3 py-2 text-gray-600 hover:bg-gray-200"
           >
             أدرِج مثالاً
+          </button>
+          <button
+            type="button"
+            onClick={downloadTemplate}
+            className="text-xs rounded-xl bg-gray-100 px-3 py-2 text-gray-600 hover:bg-gray-200"
+          >
+            نزّل القالب للمكتب
+          </button>
+          <button
+            type="button"
+            onClick={copyMessage}
+            className="text-xs rounded-xl bg-gold/20 px-3 py-2 font-semibold text-ink hover:bg-gold/30"
+          >
+            انسخ رسالة واتساب
           </button>
           <span className="text-xs text-gray-400 ms-auto">
             الأعمدة: {COLUMNS.join(" · ")}
@@ -135,6 +195,17 @@ export default function BulkImportPage() {
             {error}
           </div>
         )}
+      </Card>
+
+      <Card className="p-6">
+        <p className="text-sm font-bold text-ink mb-1">رسالة الدعوة للمكاتب العقارية</p>
+        <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+          انسخها وأرسلها كما هي. الآلة جاهزة — ما ينقصها هو الجدول، وهذه الرسالة تجلبه.
+          {copied && <span className="text-emerald-600 font-semibold"> · نُسخت ✓</span>}
+        </p>
+        <pre className="whitespace-pre-wrap rounded-xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-700 max-h-60 overflow-y-auto">
+{WHATSAPP_MSG}
+        </pre>
       </Card>
 
       {result && (
