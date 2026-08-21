@@ -85,6 +85,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Analytics />
         <VisitTracker />
         <AdSenseScript />
+        {/* بيانات التطبيق المنظّمة: رابطا التنزيل (المباشر و AppGallery) في
+            مكان واحد — يجعل جوجل يعرض مسكني تطبيقاً لا صفحة وحسب. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "MobileApplication",
+              name: "مسكني",
+              operatingSystem: "Android",
+              applicationCategory: "LifestyleApplication",
+              inLanguage: "ar",
+              isAccessibleForFree: true,
+              downloadUrl: [
+                "https://pub-c0a05c2cecc548aaa3a943b5751cf25f.r2.dev/download/maskani.apk",
+                "https://appgallery.huawei.com/app/C118696899",
+              ],
+              publisher: { "@type": "Organization", name: "مسكني", url: "https://maskani.homes" },
+            }),
+          }}
+        />
         {/* بيانات منظّمة للموقع (Organization + WebSite مع مربّع بحث) */}
         <script
           type="application/ld+json"

@@ -1,4 +1,4 @@
-import { APK_URL } from "@/lib/appDownload";
+import { APK_URL, APPGALLERY_URL } from "@/lib/appDownload";
 
 // شعار Google Play (المثلّث رباعيّ الألوان) — SVG مضمّن.
 function GooglePlayLogo({ className = "" }: { className?: string }) {
@@ -78,14 +78,14 @@ function Badge({
   );
 }
 
-// أزرار المتاجر في الفوتر — Google Play فعّال (تنزيل مباشر)، Apple و Huawei معطّلان
-// حتى رفع نسختيهما.
+// أزرار المتاجر في الفوتر — التنزيل المباشر و AppGallery فعّالان، وApp Store
+// معطّل حتى رفع نسخته.
 export function StoreBadges() {
   return (
     <div className="flex flex-wrap gap-2.5">
       <Badge href={APK_URL} logo={<GooglePlayLogo className="h-6 w-6" />} small="تحميل مباشر" name="Google Play" />
       <Badge disabled logo={<AppleLogo className="h-6 w-6" />} small="قريباً على" name="App Store" />
-      <Badge disabled logo={<AppGalleryLogo className="h-6 w-6" />} small="قريباً على" name="AppGallery" />
+      <Badge href={APPGALLERY_URL} logo={<AppGalleryLogo className="h-6 w-6" />} small="متوفّر على" name="AppGallery" />
     </div>
   );
 }
