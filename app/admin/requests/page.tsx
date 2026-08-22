@@ -24,6 +24,7 @@ interface AdminRequest {
   client_name: string;
   client_phone: string;
   property_type: string;
+  property_type_name?: string;
   offer_type: string;
   city: number;
   city_name: string;
@@ -42,10 +43,15 @@ interface AdminRequest {
 
 // ─── Labels ───────────────────────────────────────────────────────────────────
 
+// احتياطيّ للأنواع الأربعة الأصلية فقط. الأنواع تُدار من اللوحة، فالمصدر الصحيح
+// لاسمها العربيّ هو `property_type_name` الذي يرسله الخادم مع كل طلب.
 const PROPERTY_LABELS: Record<string, string> = {
   apartment: "شقة", house: "بيت / فيلا", land: "أرض",
   commercial: "محل تجاري", any: "أي نوع",
 };
+
+const typeLabel = (r: { property_type?: string; property_type_name?: string }) =>
+  r.property_type_name || PROPERTY_LABELS[r.property_type ?? ""] || r.property_type || "—";
 
 const OFFER_LABELS: Record<string, string> = {
   sale: "شراء", rent_monthly: "إيجار شهري",
@@ -254,7 +260,7 @@ export default function AdminRequestsPage() {
                         <Badge variant={req.is_active ? "green" : "gray"}>
                           {req.is_active ? "نشط" : "منتهي"}
                         </Badge>
-                        <Badge variant="blue">{PROPERTY_LABELS[req.property_type]}</Badge>
+                        <Badge variant="blue">{typeLabel(req)}</Badge>
                         <Badge variant="yellow">{OFFER_LABELS[req.offer_type]}</Badge>
                       </div>
                       <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
@@ -342,7 +348,7 @@ export default function AdminRequestsPage() {
                 <Badge variant={selected.is_active ? "green" : "gray"}>
                   {selected.is_active ? "نشط" : "منتهي"}
                 </Badge>
-                <Badge variant="blue">{PROPERTY_LABELS[selected.property_type]}</Badge>
+                <Badge variant="blue">{typeLabel(selected)}</Badge>
                 <Badge variant="yellow">{OFFER_LABELS[selected.offer_type]}</Badge>
               </div>
 
@@ -423,7 +429,7 @@ export default function AdminRequestsPage() {
         title="تأكيد الحذف"
         message={
           deleteTarget
-            ? `هل أنت متأكد من حذف طلب "${PROPERTY_LABELS[deleteTarget.property_type] ?? deleteTarget.property_type}" لـ "${deleteTarget.client_name}"؟`
+            ? `هل أنت متأكد من حذف طلب "${typeLabel(deleteTarget)}" لـ "${deleteTarget.client_name}"؟`
             : ""
         }
         confirmLabel="حذف"
