@@ -97,8 +97,6 @@ function isActive(href: string, pathname: string) {
   return href === "/admin" ? pathname === href : pathname.startsWith(href);
 }
 
-const NAV_SCROLL_KEY = "maskani_admin_nav_scroll";
-
 /** `useLayoutEffect` يحذّر أثناء التصيير على الخادم — نسقط إلى `useEffect` هناك. */
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -111,36 +109,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   /**
-   * موضع تمرير القائمة يبقى كما تركه المشرف عبر الصفحات.
+   * القائمة تُبقي زرّ الصفحة الحالية مرئياً، لا موضعاً محفوظاً وحسب.
    *
-   * الشريط أطول من الشاشة، فمن يعمل على «البنية والخدمات» في أسفله كان يُعاد به
-   * إلى «نظرة عامة» مع كل انتقال. نحفظ الموضع في sessionStorage: يعيش عبر
-   * الانتقالات ويموت بإغلاق التبويب — تفضيلٌ عابر لا يُلاحق المشرف إلى جلسة الغد.
+   * حفظ الموضع لم يكن كافياً: المشرف الذي يفتح «البنية والخدمات» من أسفل
+   * القائمة كان يجد نفسه في أعلاها بعد الانتقال. المرساة الصحيحة ليست موضعاً
+   * رقمياً بل **العنصر النشط** — نحسب مكانه داخل الحاوية ونضعه في وسطها.
    *
-   * ⚠️ لا يكفي الاستعادة عند التركيب وحده: عناصر الصفحة قد يُعاد بناؤها مع كل
-   * انتقال، فنستعيد الموضع أيضاً عند كل تغيّر مسار — و`useLayoutEffect` قبل
-   * الرسم كي لا يومض الشريط من أعلاه ثم يقفز.
+   * نضبط `scrollTop` يدوياً لا بـ`scrollIntoView`: الأخيرة تحرّك الصفحة كلّها
+   * أيضاً، فيقفز المحتوى تحت المستخدم بلا سبب.
    */
   const navEl = useRef<HTMLElement | null>(null);
+  const activeEl = useRef<HTMLAnchorElement | null>(null);
 
-  const navRef = useCallback((node: HTMLElement | null) => {
-    navEl.current = node;
-    if (!node) return;
-    const saved = Number(sessionStorage.getItem(NAV_SCROLL_KEY) || 0);
-    if (saved > 0) node.scrollTop = saved;
+  const revealActive = useCallback(() => {
+    const nav = navEl.current;
+    const item = activeEl.current;
+    if (!nav || !item) return;
+    const top = item.offsetTop - nav.clientHeight / 2 + item.clientHeight / 2;
+    nav.scrollTop = Math.max(0, top);
   }, []);
 
-  const rememberScroll = useCallback(() => {
-    const node = navEl.current;
-    if (node) sessionStorage.setItem(NAV_SCROLL_KEY, String(node.scrollTop));
-  }, []);
+  useIsomorphicLayoutEffect(revealActive, [pathname, revealActive]);
 
-  useIsomorphicLayoutEffect(() => {
-    const node = navEl.current;
-    if (!node) return;
-    const saved = Number(sessionStorage.getItem(NAV_SCROLL_KEY) || 0);
-    if (saved > 0 && node.scrollTop !== saved) node.scrollTop = saved;
-  }, [pathname]);
 
   useEffect(() => {
     if (loading) return;
@@ -179,7 +169,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* التنقّل — مجمّع حسب الوظيفة */}
-      <nav ref={navRef} onScroll={rememberScroll} className="flex-1 py-4 px-3 overflow-y-auto">
+      <nav ref={navEl} className="flex-1 py-4 px-3 overflow-y-auto">
         {NAV_GROUPS.map((group, gi) => (
           <div key={group.title} className={gi === 0 ? "" : "mt-5"}>
             <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-400">
@@ -193,6 +183,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <Link
                     key={href}
                     href={href}
+                    ref={active ? activeEl : undefined}
                     onClick={onNavigate}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                       active
