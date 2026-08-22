@@ -8,8 +8,8 @@ import { History, Refresh, AltArrowLeft, AltArrowRight } from "@solar-icons/reac
 /**
  * لوحة العمليات الجانبية — ثابتة في كل تبويبات لوحة التحكّم.
  *
- * الشريط الجانبي للتنقّل يشغل الحافة اليمنى (RTL)، فتأخذ العمليات الحافة
- * المقابلة كي لا يتكدّس عمودان على جهة واحدة ويُخنق المحتوى بينهما.
+ * موضعها الحافة المقابلة لشريط التنقّل، فلا يتكدّس عمودان على جهة واحدة
+ * ويبقى المحتوى في وسط الشاشة لا محشوراً في طرفها.
  *
  * تحديث تلقائي كل دقيقة: مشرفٌ يتابع بلاغاً حيّاً يحتاج أن يرى الجديد بلا نقر،
  * والدقيقة كافية لمنصّة بهذا الحجم بلا إغراق الخادم.
@@ -78,10 +78,10 @@ export default function ActivityPanel() {
 
   if (collapsed) {
     return (
-      <aside className="hidden xl:flex w-11 shrink-0 bg-white border-e border-gray-100 sticky top-0 h-screen flex-col items-center pt-4 gap-3">
+      <aside className="hidden xl:flex w-11 shrink-0 bg-white border-s border-gray-100 sticky top-0 h-screen flex-col items-center pt-4 gap-3">
         <button type="button" onClick={toggle} title="إظهار سجلّ العمليات"
           className="p-2 rounded-lg text-gray-500 hover:bg-gray-100">
-          <AltArrowLeft className="h-4 w-4" />
+          <AltArrowRight className="h-4 w-4" />
         </button>
         <History className="h-5 w-5 text-primary/60" />
       </aside>
@@ -89,7 +89,7 @@ export default function ActivityPanel() {
   }
 
   return (
-    <aside className="hidden xl:flex w-72 shrink-0 bg-white border-e border-gray-100 sticky top-0 h-screen flex-col">
+    <aside className="hidden xl:flex w-72 shrink-0 bg-white border-s border-gray-100 sticky top-0 h-screen flex-col">
       <div className="flex items-center gap-2 px-4 h-14 border-b border-gray-100 shrink-0">
         <History className="h-4 w-4 text-primary" />
         <span className="text-sm font-bold text-ink">آخر العمليات</span>
@@ -99,7 +99,7 @@ export default function ActivityPanel() {
         </button>
         <button type="button" onClick={toggle} title="طيّ"
           className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100">
-          <AltArrowRight className="h-3.5 w-3.5" />
+          <AltArrowLeft className="h-3.5 w-3.5" />
         </button>
       </div>
 

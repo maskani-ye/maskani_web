@@ -219,8 +219,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </Drawer>
 
       {/* العمود الرئيسي */}
-      <ActivityPanel />
-
       <div className="flex-1 min-w-0 flex flex-col">
         {/* الشريط العلوي */}
         <header className="sticky top-0 z-30 flex items-center gap-3 h-14 px-4 lg:px-6 bg-white/85 glass border-b border-gray-100">
@@ -238,6 +236,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
       </div>
+
+      <ActivityPanel />
     </div>
   );
 }
