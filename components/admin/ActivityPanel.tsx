@@ -30,8 +30,10 @@ const FILTERS: { key: string; label: string }[] = [
   { key: "user", label: "مستخدمون" },
   { key: "request,request_offer", label: "طلبات وعروض" },
   { key: "job,job_offer,service", label: "خدمات وعروضها" },
-  { key: "comment,rating,review", label: "تفاعل" },
-  { key: "fraud_report,user_report,verification", label: "رقابة" },
+  { key: "comment,rating,review,favorite,follow", label: "تفاعل" },
+  { key: "conversation,message,helpdesk", label: "محادثات" },
+  { key: "fraud_report,fraud_vote,fraud_comment,user_report,block,verification", label: "رقابة" },
+  { key: "visit,device,guest_alert,saved_search", label: "زيارات وأجهزة" },
   { key: "admin_action", label: "إجراءات إدارية" },
 ];
 
