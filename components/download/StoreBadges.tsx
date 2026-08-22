@@ -1,4 +1,4 @@
-import { APK_URL, APPGALLERY_URL } from "@/lib/appDownload";
+import { APK_URL, APK_VERSION, APPGALLERY_URL } from "@/lib/appDownload";
 
 // شعار Google Play (المثلّث رباعيّ الألوان) — SVG مضمّن.
 function GooglePlayLogo({ className = "" }: { className?: string }) {
@@ -82,10 +82,15 @@ function Badge({
 // معطّل حتى رفع نسخته.
 export function StoreBadges() {
   return (
-    <div className="flex flex-wrap gap-2.5">
-      <Badge href={APK_URL} logo={<GooglePlayLogo className="h-6 w-6" />} small="تحميل مباشر" name="Google Play" />
-      <Badge disabled logo={<AppleLogo className="h-6 w-6" />} small="قريباً على" name="App Store" />
-      <Badge href={APPGALLERY_URL} logo={<AppGalleryLogo className="h-6 w-6" />} small="متوفّر على" name="AppGallery" />
+    <div className="flex flex-col gap-1.5">
+      <div className="flex flex-wrap gap-2.5">
+        <Badge href={APK_URL} logo={<GooglePlayLogo className="h-6 w-6" />} small="تحميل مباشر" name="Google Play" />
+        <Badge disabled logo={<AppleLogo className="h-6 w-6" />} small="قريباً على" name="App Store" />
+        <Badge href={APPGALLERY_URL} logo={<AppGalleryLogo className="h-6 w-6" />} small="متوفّر على" name="AppGallery" />
+      </div>
+      {/* رقم النسخة كان ثابتاً معرّفاً بلا عرض — ومن ثبّت نسخة قديمة يحتاجه
+          ليعرف أنّ لديه غيرها. */}
+      <p className="text-[11px] text-gray-400">النسخة {APK_VERSION}</p>
     </div>
   );
 }
