@@ -1,7 +1,7 @@
 "use client";
 
 import ActivityPanel from "@/components/admin/ActivityPanel";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -104,6 +104,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  /**
+   * موضع تمرير القائمة يبقى كما تركه المشرف عبر الصفحات.
+   *
+   * الشريط أطول من الشاشة، فمن يعمل على «البنية والخدمات» في أسفله كان يُعاد به
+   * إلى «نظرة عامة» مع كل انتقال ويبحث عن موضعه من جديد. نحفظ الموضع في
+   * sessionStorage: يعيش عبر الانتقالات ويموت بإغلاق التبويب — تفضيلٌ عابر لا
+   * يستحقّ أن يُلاحق المشرف إلى جلسة الغد.
+   *
+   * الاستعادة داخل ref callback لا داخل useEffect: الأخير يعمل بعد الرسم فيومض
+   * الشريط من أعلاه ثم يقفز.
+   */
+  const navRef = useCallback((node: HTMLElement | null) => {
+    if (!node) return;
+    const saved = Number(sessionStorage.getItem("maskani_admin_nav_scroll") || 0);
+    if (saved > 0) node.scrollTop = saved;
+    node.addEventListener("scroll", () => {
+      sessionStorage.setItem("maskani_admin_nav_scroll", String(node.scrollTop));
+    }, { passive: true });
+  }, []);
+
   useEffect(() => {
     if (loading) return;
     // زائر → نافذة الدخول المنبثقة (لا شاشة دخول)؛ مستخدم غير مشرف → الرئيسية.
@@ -141,7 +161,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* التنقّل — مجمّع حسب الوظيفة */}
-      <nav className="flex-1 py-4 px-3 overflow-y-auto">
+      <nav ref={navRef} className="flex-1 py-4 px-3 overflow-y-auto">
         {NAV_GROUPS.map((group, gi) => (
           <div key={group.title} className={gi === 0 ? "" : "mt-5"}>
             <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-400">
