@@ -1,7 +1,7 @@
 "use client";
 
 import ActivityPanel from "@/components/admin/ActivityPanel";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -108,29 +108,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  /**
-   * القائمة تُبقي زرّ الصفحة الحالية مرئياً، لا موضعاً محفوظاً وحسب.
-   *
-   * حفظ الموضع لم يكن كافياً: المشرف الذي يفتح «البنية والخدمات» من أسفل
-   * القائمة كان يجد نفسه في أعلاها بعد الانتقال. المرساة الصحيحة ليست موضعاً
-   * رقمياً بل **العنصر النشط** — نحسب مكانه داخل الحاوية ونضعه في وسطها.
-   *
-   * نضبط `scrollTop` يدوياً لا بـ`scrollIntoView`: الأخيرة تحرّك الصفحة كلّها
-   * أيضاً، فيقفز المحتوى تحت المستخدم بلا سبب.
-   */
-  const navEl = useRef<HTMLElement | null>(null);
-  const activeEl = useRef<HTMLAnchorElement | null>(null);
-
-  const revealActive = useCallback(() => {
-    const nav = navEl.current;
-    const item = activeEl.current;
-    if (!nav || !item) return;
-    const top = item.offsetTop - nav.clientHeight / 2 + item.clientHeight / 2;
-    nav.scrollTop = Math.max(0, top);
-  }, []);
-
-  useIsomorphicLayoutEffect(revealActive, [pathname, revealActive]);
-
 
   useEffect(() => {
     if (loading) return;
@@ -155,7 +132,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   // ─── محتوى الشريط الجانبي (يُعاد استخدامه في الدرج على الجوال) ───────────────
-  const SidebarInner = ({ onNavigate }: { onNavigate?: () => void }) => (
+  const SidebarInner = ({ onNavigate }: { onNavigate?: () => void }) => {
+    /**
+     * كل نسخة من الشريط تُمرِّر نفسها إلى زرّ الصفحة الحالية.
+     *
+     * ⚠️ الشريط يُرسَم **مرّتين**: الثابت على الشاشات الكبيرة، ودرج الجوال الذي
+     * يبقى في الشجرة دائماً (يُخفى بالإزاحة لا بالإزالة). مراجع مشتركة على
+     * مستوى التخطيط كانت تُكتب بعناصر الدرج المخفيّ، فتُمرَّر قائمةٌ لا يراها
+     * أحد ويبقى الشريط الحقيقيّ في أعلاه. لذلك تعيش المراجع داخل كل نسخة.
+     */
+    const navRef = useRef<HTMLElement | null>(null);
+    const activeRef = useRef<HTMLAnchorElement | null>(null);
+
+    useIsomorphicLayoutEffect(() => {
+      const nav = navRef.current;
+      const item = activeRef.current;
+      // الدرج المخفيّ ارتفاعه صفر — لا نلمسه، وإلا حسبنا موضعاً بلا معنى.
+      if (!nav || !item || nav.clientHeight === 0) return;
+      const top = item.offsetTop - nav.clientHeight / 2 + item.clientHeight / 2;
+      nav.scrollTop = Math.max(0, top);
+    }, [pathname]);
+
+    return (
     <>
       {/* الشعار */}
       <div className="flex items-center gap-2 px-5 py-5 border-b border-gray-100">
@@ -169,7 +167,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* التنقّل — مجمّع حسب الوظيفة */}
-      <nav ref={navEl} className="flex-1 py-4 px-3 overflow-y-auto">
+      <nav ref={navRef} className="flex-1 py-4 px-3 overflow-y-auto">
         {NAV_GROUPS.map((group, gi) => (
           <div key={group.title} className={gi === 0 ? "" : "mt-5"}>
             <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-400">
@@ -183,7 +181,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <Link
                     key={href}
                     href={href}
-                    ref={active ? activeEl : undefined}
+                    ref={active ? activeRef : undefined}
                     onClick={onNavigate}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                       active
@@ -221,7 +219,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </button>
       </div>
     </>
-  );
+    );
+  };
 
   return (
     <div className="flex min-h-screen bg-cream" dir="rtl">
