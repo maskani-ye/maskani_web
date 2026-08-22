@@ -65,11 +65,15 @@ export function formatDate(date: string): string {
   return format(new Date(date), "d MMMM yyyy", { locale: ar });
 }
 
+// خريطة احتياطية للأنواع الأربعة القديمة فقط. الأنواع تُدار من اللوحة (22 نوعاً
+// وتزيد)، والمصدر الصحيح لاسمها العربيّ هو `property_type_name` من الخادم —
+// هذه الخريطة لِما وصل قبل إضافة ذلك الحقل.
 export const propertyTypeLabels: Record<string, string> = {
   apartment: "شقة",
   house: "بيت / فيلا",
   land: "أرض",
   commercial: "محل تجاري",
+  any: "أي نوع",
 };
 
 // property_type may arrive as a nested object {id,name_ar,icon} (current API),

@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
-import type { City } from "@/types";
+import type { City, PropertyTypeItem } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Input } from "@/components/ui/Input";
@@ -20,13 +21,8 @@ import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButt
 import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
 import { CURRENCIES } from "@/lib/utils";
 
-const PROPERTY_TYPE_OPTS = [
-  { value: "apartment", label: "شقة" },
-  { value: "house", label: "بيت / فيلا" },
-  { value: "land", label: "أرض" },
-  { value: "commercial", label: "محل تجاري" },
-  { value: "any", label: "أي نوع" },
-];
+// أنواع العقارات تُجلب من الجدول الذي تديره اللوحة لا من قائمة مجمّدة هنا:
+// حتى يستطيع الباحث أن يطلب «مزرعة» أو «مكتب» تماماً كما ينشرها الناشر.
 const OFFER_TYPE_OPTS = [
   { value: "sale", label: "للشراء" },
   { value: "rent_monthly", label: "إيجار شهري" },
@@ -43,6 +39,7 @@ export default function CreateRequestPage() {
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
   const [saving, setSaving] = useState(false);
+  const [propertyTypes, setPropertyTypes] = useState<PropertyTypeItem[]>([]);
   const [form, setForm] = useState({
     property_type: "any",
     offer_type: "any",
@@ -57,6 +54,22 @@ export default function CreateRequestPage() {
     contact_phone: "",
     duration_days: "30",
   });
+
+  useEffect(() => {
+    api
+      .get<{ results: PropertyTypeItem[] }>(endpoints.propertyTypes, { params: { limit: 100 } })
+      .then(({ data }) => setPropertyTypes(data.results ?? []))
+      .catch(() => setPropertyTypes([]));
+  }, []);
+
+  // «أي نوع» يبقى أوّل الخيارات: أغلب الباحثين لا يقيّدون أنفسهم بنوع واحد.
+  const propertyTypeOpts = useMemo(
+    () => [
+      { value: "any", label: "أي نوع" },
+      ...propertyTypes.map((p) => ({ value: p.slug, label: p.name_ar })),
+    ],
+    [propertyTypes]
+  );
 
   useEffect(() => {
     if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
@@ -132,7 +145,7 @@ export default function CreateRequestPage() {
 
       <form onSubmit={handleSubmit} className="bg-white rounded-3xl card-shadow p-6 space-y-5">
         <div className="grid grid-cols-2 gap-4">
-          <Select label="نوع العقار المطلوب" options={PROPERTY_TYPE_OPTS} value={form.property_type} onChange={(e) => setField("property_type", e.target.value)} required />
+          <Select label="نوع العقار المطلوب" options={propertyTypeOpts} value={form.property_type} onChange={(e) => setField("property_type", e.target.value)} required />
           <Select label="نوع العرض" options={OFFER_TYPE_OPTS} value={form.offer_type} onChange={(e) => setField("offer_type", e.target.value)} required />
         </div>
 

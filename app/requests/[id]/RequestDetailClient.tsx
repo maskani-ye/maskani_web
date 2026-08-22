@@ -159,7 +159,7 @@ export default function RequestDetailClient({ id, initialRequest }: { id: string
       <div className="bg-white rounded-2xl card-shadow p-6">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">
-            {propertyTypeName(request.property_type)}
+            {(request.property_type_name || propertyTypeName(request.property_type))}
           </span>
           <span className="text-xs bg-gold/10 text-gold px-2.5 py-1 rounded-full font-semibold">
             {offerTypeLabels[request.offer_type] || request.offer_type}

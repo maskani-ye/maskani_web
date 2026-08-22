@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
+import { endpoints } from "@/lib/endpoints";
 import { formatRelativeTime, formatPrice, propertyTypeName } from "@/lib/utils";
 import { RequestCard } from "@/components/requests/RequestCard";
-import type { ClientRequest, PaginatedResponse, City } from "@/types";
+import type { ClientRequest, PaginatedResponse, City, PropertyTypeItem } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Select } from "@/components/ui/Select";
@@ -33,6 +34,25 @@ export default function RequestsPage() {
   const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState<City[]>([]);
   const [filters, setFilters] = useState({ property_type: "", offer_type: "" });
+
+  // الأنواع من الجدول الذي تديره اللوحة — نفس مصدر نموذج النشر، فلا ينحرف
+  // ما يستطيع الباحث فلترته عمّا يستطيع الناشر عرضه.
+  const [propertyTypes, setPropertyTypes] = useState<PropertyTypeItem[]>([]);
+
+  useEffect(() => {
+    api
+      .get<{ results: PropertyTypeItem[] }>(endpoints.propertyTypes, { params: { limit: 100 } })
+      .then(({ data }) => setPropertyTypes(data.results ?? []))
+      .catch(() => setPropertyTypes([]));
+  }, []);
+
+  const propertyTypeOpts = useMemo(
+    () => [
+      { value: "any", label: "أي نوع" },
+      ...propertyTypes.map((p) => ({ value: p.slug, label: p.name_ar })),
+    ],
+    [propertyTypes]
+  );
 
   useEffect(() => {
     api.get("/cities/", { params: countryCode ? { country: countryCode } : {} })
@@ -87,10 +107,7 @@ export default function RequestsPage() {
           placeholder="المدينة"
         />
         <Select
-          options={[
-            { value: "apartment", label: "شقة" }, { value: "house", label: "بيت/فيلا" },
-            { value: "land", label: "أرض" }, { value: "commercial", label: "محل" }, { value: "any", label: "أي نوع" },
-          ]}
+          options={propertyTypeOpts}
           value={filters.property_type}
           onChange={(e) => setFilters((p) => ({ ...p, property_type: e.target.value }))}
           placeholder="النوع"

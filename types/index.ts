@@ -277,6 +277,9 @@ export interface ClientRequest {
   expires_at: string;
   created_at: string;
   offers?: RequestOffer[];
+  /** الاسم العربيّ للنوع كما يرسله الخادم — يشمل الأنواع التي تديرها اللوحة. */
+  property_type_name?: string;
+  property_type_id?: number | null;
 }
 
 export interface RequestOffer {

@@ -10,6 +10,8 @@ export interface RequestCardData {
   title?: string;
   client_name?: string;
   property_type?: unknown;
+  /** الاسم العربيّ الجاهز من الخادم — يغطّي الأنواع التي تديرها اللوحة. */
+  property_type_name?: string;
   offer_type?: string;
   city_name?: string | null;
   neighborhood?: string | null;
@@ -34,7 +36,7 @@ export function RequestCard({ request: req }: { request: RequestCardData }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">
-                {propertyTypeName(req.property_type)}
+                {(req.property_type_name || propertyTypeName(req.property_type))}
               </span>
               {req.offer_type && (
                 <span className="text-xs bg-gold/10 text-gold px-2.5 py-1 rounded-full font-semibold">
