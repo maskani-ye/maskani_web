@@ -7,8 +7,18 @@ import { breadcrumbList, itemList, citySlug, SITE_URL } from "@/lib/seo";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import type { Property } from "@/types";
 
-// إعادة توليد الصفحة كل 5 دقائق — يتبع دورة تحرير الأحياء من اللوحة.
-export const revalidate = 300;
+/**
+ * ساعة كاملة بين التجديدات، لا خمس دقائق.
+ *
+ * ⚠️ درسٌ من عطل حيّ: كل صفحة حيّ تطلب الـAPI مرّة، والأحياء 4,155. بتجديد كل
+ * خمس دقائق كان موقعنا يضرب واجهتنا آلاف الطلبات في الساعة، فردّ الخادم
+ * 10,259 مرّة بـ429 وسقط 1,674 مرّة بـ502 — خنقنا أنفسنا بأنفسنا. مخزون
+ * الأحياء لا يتغيّر كل خمس دقائق؛ الساعة تكفي بفارق مئة ضعف في الحِمل.
+ */
+export const revalidate = 3600;
+
+// الأحياء غير المولَّدة مسبقاً تُبنى عند أوّل طلب لها (لا 404).
+export const dynamicParams = true;
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
@@ -18,6 +28,7 @@ interface Neighborhood {
   slug: string;
   city: number;
   city_name: string;
+  properties_count?: number;
 }
 
 async function getNeighborhoods(): Promise<Neighborhood[]> {
@@ -25,7 +36,7 @@ async function getNeighborhoods(): Promise<Neighborhood[]> {
     // مدّة قصيرة عمداً: الأحياء تُحرَّر من اللوحة (حذف/تعطيل)، وكاش طويل يُبقي
     // صفحةَ حيٍّ محذوف حيّةً ساعةً كاملة. خمس دقائق تكفي لالتئام ذاتي سريع.
     const res = await fetch(`${API}/cities/neighborhoods/`, {
-      next: { revalidate: 300 },
+      next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
     const data = await res.json();
@@ -47,7 +58,7 @@ async function getProperties(refId: number): Promise<{ items: Property[]; count:
   try {
     const res = await fetch(
       `${API}/properties/?neighborhood_ref=${refId}&limit=12&offset=0`,
-      { next: { revalidate: 600 } },
+      { next: { revalidate: 3600 } },
     );
     if (!res.ok) return { items: [], count: 0 };
     const data = await res.json();
@@ -59,9 +70,19 @@ async function getProperties(refId: number): Promise<{ items: Property[]; count:
 
 // صفحة ثابتة لكل حيّ مسجّل — البحث العقاري في اليمن يبدأ بالحيّ، فهذه أعمق
 // طبقة فهرسة بعد المحافظة.
+/**
+ * نولّد مسبقاً أحياء **فيها عقارات فعلاً** فقط (ثلاثة من 4,155 اليوم).
+ *
+ * توليد صفحة لكل حيّ كان يكلّف طلب API لكل واحد منها، ويُنتج آلاف الصفحات
+ * الفارغة التي يصنّفها جوجل «اكتُشفت ولم تُفهرَس» فتستهلك ميزانية الزحف بلا
+ * مقابل. البقية تُبنى عند الطلب عبر `dynamicParams` — فيبقى الرابط حيّاً لمن
+ * يصله من مشاركة أو بحث، بلا أن ندفع ثمنه سلفاً 4,152 مرّة.
+ */
 export async function generateStaticParams() {
   const list = await getNeighborhoods();
-  return list.map((n) => ({ slug: n.slug })).filter((p) => p.slug);
+  return list
+    .filter((n) => (n.properties_count ?? 0) > 0 && n.slug)
+    .map((n) => ({ slug: n.slug }));
 }
 
 export async function generateMetadata(

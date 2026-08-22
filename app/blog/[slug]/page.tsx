@@ -25,7 +25,7 @@ interface Article extends ArticleCard {
 
 async function getArticle(slug: string): Promise<Article | null> {
   try {
-    const res = await fetch(`${API}/blog/${encodeURIComponent(slug)}/`, { next: { revalidate: 600 } });
+    const res = await fetch(`${API}/blog/${encodeURIComponent(slug)}/`, { next: { revalidate: 3600 } });
     if (!res.ok) return null;
     return await res.json();
   } catch {
