@@ -1,7 +1,7 @@
 "use client";
 
 import ActivityPanel from "@/components/admin/ActivityPanel";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -97,6 +97,12 @@ function isActive(href: string, pathname: string) {
   return href === "/admin" ? pathname === href : pathname.startsWith(href);
 }
 
+const NAV_SCROLL_KEY = "maskani_admin_nav_scroll";
+
+/** `useLayoutEffect` يحذّر أثناء التصيير على الخادم — نسقط إلى `useEffect` هناك. */
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
   const { requireAuth } = useAuthGate();
@@ -108,21 +114,33 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
    * موضع تمرير القائمة يبقى كما تركه المشرف عبر الصفحات.
    *
    * الشريط أطول من الشاشة، فمن يعمل على «البنية والخدمات» في أسفله كان يُعاد به
-   * إلى «نظرة عامة» مع كل انتقال ويبحث عن موضعه من جديد. نحفظ الموضع في
-   * sessionStorage: يعيش عبر الانتقالات ويموت بإغلاق التبويب — تفضيلٌ عابر لا
-   * يستحقّ أن يُلاحق المشرف إلى جلسة الغد.
+   * إلى «نظرة عامة» مع كل انتقال. نحفظ الموضع في sessionStorage: يعيش عبر
+   * الانتقالات ويموت بإغلاق التبويب — تفضيلٌ عابر لا يُلاحق المشرف إلى جلسة الغد.
    *
-   * الاستعادة داخل ref callback لا داخل useEffect: الأخير يعمل بعد الرسم فيومض
-   * الشريط من أعلاه ثم يقفز.
+   * ⚠️ لا يكفي الاستعادة عند التركيب وحده: عناصر الصفحة قد يُعاد بناؤها مع كل
+   * انتقال، فنستعيد الموضع أيضاً عند كل تغيّر مسار — و`useLayoutEffect` قبل
+   * الرسم كي لا يومض الشريط من أعلاه ثم يقفز.
    */
+  const navEl = useRef<HTMLElement | null>(null);
+
   const navRef = useCallback((node: HTMLElement | null) => {
+    navEl.current = node;
     if (!node) return;
-    const saved = Number(sessionStorage.getItem("maskani_admin_nav_scroll") || 0);
+    const saved = Number(sessionStorage.getItem(NAV_SCROLL_KEY) || 0);
     if (saved > 0) node.scrollTop = saved;
-    node.addEventListener("scroll", () => {
-      sessionStorage.setItem("maskani_admin_nav_scroll", String(node.scrollTop));
-    }, { passive: true });
   }, []);
+
+  const rememberScroll = useCallback(() => {
+    const node = navEl.current;
+    if (node) sessionStorage.setItem(NAV_SCROLL_KEY, String(node.scrollTop));
+  }, []);
+
+  useIsomorphicLayoutEffect(() => {
+    const node = navEl.current;
+    if (!node) return;
+    const saved = Number(sessionStorage.getItem(NAV_SCROLL_KEY) || 0);
+    if (saved > 0 && node.scrollTop !== saved) node.scrollTop = saved;
+  }, [pathname]);
 
   useEffect(() => {
     if (loading) return;
@@ -161,7 +179,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* التنقّل — مجمّع حسب الوظيفة */}
-      <nav ref={navRef} className="flex-1 py-4 px-3 overflow-y-auto">
+      <nav ref={navRef} onScroll={rememberScroll} className="flex-1 py-4 px-3 overflow-y-auto">
         {NAV_GROUPS.map((group, gi) => (
           <div key={group.title} className={gi === 0 ? "" : "mt-5"}>
             <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-400">
