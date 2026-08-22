@@ -15,7 +15,6 @@ import {
   Case, ChartSquare, HeadphonesRound, MagniferBug, NotebookBookmark, HashtagSquare, Stars,
   ServerSquare,
   DocumentAdd,
-  History,
 } from "@solar-icons/react";
 
 // عناصر التنقّل مجمّعة حسب التخصّص/الوظيفة. الترتيب ثابت ومطابق لتطبيق الإدارة.
@@ -25,7 +24,6 @@ const NAV_GROUPS = [
     items: [
       { href: "/admin",           label: "لوحة التحكم", icon: GraphNewUp },
       { href: "/admin/analytics", label: "التحليلات",   icon: ChartSquare },
-      { href: "/admin/activity", label: "سجلّ العمليات", icon: History },
       { href: "/admin/seo",       label: "الفهرسة وSEO", icon: MagniferBug },
     ],
   },

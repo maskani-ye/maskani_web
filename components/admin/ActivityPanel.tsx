@@ -22,6 +22,19 @@ interface Item {
 
 const REFRESH_MS = 60_000;
 
+// الفلاتر مجمّعة بالمعنى لا بالكيان: المشرف يسأل «ما جرى في العقارات؟» لا «كم صفّ
+// Property أُنشئ؟» — فالطلب وعرضه وجهان لحدث واحد، ويجمعهما زرّ واحد.
+const FILTERS: { key: string; label: string }[] = [
+  { key: "", label: "الكل" },
+  { key: "property", label: "عقارات" },
+  { key: "user", label: "مستخدمون" },
+  { key: "request,request_offer", label: "طلبات وعروض" },
+  { key: "job,job_offer,service", label: "خدمات وعروضها" },
+  { key: "comment,rating,review", label: "تفاعل" },
+  { key: "fraud_report,user_report,verification", label: "رقابة" },
+  { key: "admin_action", label: "إجراءات إدارية" },
+];
+
 function ago(iso: string): string {
   const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
   if (s < 60) return "الآن";
@@ -44,10 +57,18 @@ export default function ActivityPanel() {
   const [loading, setLoading] = useState(false);
   //: يُحفظ الطيّ محلياً — المشرف الذي يحتاج عرضاً أوسع لا يعيد طيّه كل صفحة.
   const [collapsed, setCollapsed] = useState(false);
+  //: الفلتر المختار يُحفظ كذلك — مشرف الرقابة يبقى على تبويبه بين الصفحات.
+  const [types, setTypes] = useState("");
 
   useEffect(() => {
     setCollapsed(localStorage.getItem("maskani_activity_collapsed") === "1");
+    setTypes(localStorage.getItem("maskani_activity_types") ?? "");
   }, []);
+
+  const pick = (key: string) => {
+    localStorage.setItem("maskani_activity_types", key);
+    setTypes(key);
+  };
 
   const toggle = () => {
     setCollapsed((c) => {
@@ -60,7 +81,7 @@ export default function ActivityPanel() {
     setLoading(true);
     try {
       const { data } = await api.get<{ results: Item[] }>(endpoints.admin.activity, {
-        params: { limit: 40 },
+        params: { limit: 40, ...(types ? { types } : {}) },
       });
       setItems(data.results ?? []);
     } catch {
@@ -68,7 +89,7 @@ export default function ActivityPanel() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [types]);
 
   useEffect(() => {
     load();
@@ -103,10 +124,27 @@ export default function ActivityPanel() {
         </button>
       </div>
 
+      <div className="shrink-0 flex flex-wrap gap-1 px-3 py-2 border-b border-gray-100">
+        {FILTERS.map((f) => (
+          <button
+            key={f.key}
+            type="button"
+            onClick={() => pick(f.key)}
+            className={`text-[11px] rounded-lg px-2 py-1 font-semibold transition-colors ${
+              types === f.key
+                ? "bg-primary text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       <div className="flex-1 overflow-y-auto px-2 py-2">
         {items.length === 0 && (
           <p className="text-center text-xs text-gray-400 py-8">
-            {loading ? "جارٍ التحميل…" : "لا عمليات بعد."}
+            {loading ? "جارٍ التحميل…" : "لا عمليات في هذا الفلتر."}
           </p>
         )}
         {items.map((it, i) => {
@@ -132,11 +170,6 @@ export default function ActivityPanel() {
           );
         })}
       </div>
-
-      <a href="/admin/activity"
-         className="shrink-0 border-t border-gray-100 py-2.5 text-center text-xs font-semibold text-primary hover:bg-primary/5">
-        عرض السجلّ الكامل
-      </a>
     </aside>
   );
 }
