@@ -103,6 +103,10 @@ function keywordsFor(country: CountryRow, cities: CityRow[]): string[] {
   return [...base, ...perCity];
 }
 
+// دولة جديدة تُضاف من الخادم (الأردن مثلاً) لا توجد في قائمة البناء السابقة،
+// فكانت صفحتها ترجع 404 حتى إعادة النشر. `dynamicParams` تبنيها عند أوّل طلب.
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const list = await getCountries();
   return list.map((c) => ({ slug: c.slug })).filter((p) => p.slug);

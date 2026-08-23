@@ -59,6 +59,9 @@ async function getCityProperties(cityId: number): Promise<{ items: PropertyRow[]
 }
 
 // توليد المسارات الثابتة لكل مدينة (أداء أفضل + أرشفة أشمل).
+// مدن دولة جديدة لا توجد في قائمة البناء السابقة — تُبنى عند أوّل طلب.
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const list = await getCities();
   return list.map((c) => ({ slug: citySlug(c.name_en) })).filter((p) => p.slug);
