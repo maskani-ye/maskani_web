@@ -50,14 +50,23 @@ async function countries(): Promise<{ slug: string }[]> {
 }
 
 // يجلب المدن لبناء صفحات هبوط المدن (SEO — الذيل الطويل: «عقارات في صنعاء»).
+//
+// ⚠️ **المدن الفارغة لا تدخل الخريطة.** صفحة المدينة تحمل `noindex` ما دامت بلا
+// عقار (منعاً للمحتوى الرقيق)، وإرسالها في الخريطة رغم ذلك تناقضٌ صريح: نطلب
+// من جوجل فهرسة ما منعناه، فيردّ بتقرير «مستثناة بعلامة noindex» — وهو ما وقع
+// فعلاً في 2026-08-23 مع **292 مدينة**. القاعدة نفسها المطبَّقة على الأحياء.
+// تعود المدينة إلى الخريطة تلقائياً بأوّل عقار يُنشر فيها.
 async function cities(): Promise<{ slug: string }[]> {
   try {
     const res = await fetch(`${API}/cities/?limit=1000`, { next: { revalidate: 86400 } });
     if (!res.ok) return [];
     const data = await res.json();
     return (data.results ?? [])
-      .map((c: { name_en?: string }) => ({ slug: citySlug(c.name_en || "") }))
-      .filter((c: { slug: string }) => c.slug);
+      .map((c: { name_en?: string; properties_count?: number }) => ({
+        slug: citySlug(c.name_en || ""),
+        count: c.properties_count ?? 0,
+      }))
+      .filter((c: { slug: string; count: number }) => c.slug && c.count > 0);
   } catch {
     return [];
   }
