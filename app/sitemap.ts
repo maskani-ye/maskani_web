@@ -13,16 +13,40 @@ interface Row {
   image?: string | null;
 }
 
-// يجلب عناصر قسم (حتى 1000) لبناء خريطة الموقع الديناميكية — مع lastmod وصورة (إن وُجدت).
+/**
+ * يجلب **كل** صفوف مسار مُرقَّم، لا الصفحة الأولى وحدها.
+ *
+ * ⚠️ درسٌ من عطل حيّ (2026-08-23): كنّا نطلب `?limit=1000` والخادم يسقّف عند 100
+ * (`StandardPagination.max_limit`)، فلم تحمل خريطة الموقع سوى **106 مقالاً من
+ * 477** — أي أن 371 مقالاً نشرناها لم يعرفها جوجل أصلاً، بلا أي رسالة خطأ.
+ * الطلب بحدٍّ أكبر من السقف لا يفشل، بل **يُقصّ بصمت** — وهذا أخطر أنواع العطل.
+ */
+async function fetchAll<T>(
+  path: string,
+  revalidate: number,
+): Promise<T[]> {
+  const PAGE = 100;
+  const out: T[] = [];
+  for (let offset = 0; offset < 10000; offset += PAGE) {
+    const sep = path.includes("?") ? "&" : "?";
+    const res = await fetch(`${API}${path}${sep}limit=${PAGE}&offset=${offset}`, {
+      next: { revalidate },
+    });
+    if (!res.ok) break;
+    const data = await res.json();
+    const rows = Array.isArray(data) ? data : data.results ?? [];
+    out.push(...rows);
+    if (rows.length < PAGE) break;
+  }
+  return out;
+}
+
+// يجلب عناصر قسم كاملةً لبناء خريطة الموقع الديناميكية — مع lastmod وصورة.
 async function rows(path: string): Promise<Row[]> {
   try {
-    const res = await fetch(`${API}${path}?limit=1000&offset=0`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.results ?? []).map(
-      (x: { id: number; updated_at?: string; created_at?: string; main_image?: string; first_image?: string }) => ({
+    const list = await fetchAll<{ id: number; updated_at?: string; created_at?: string; main_image?: string; first_image?: string }>(path, 3600);
+    return list.map(
+      (x) => ({
         id: x.id,
         updated: x.updated_at || x.created_at || null,
         image: x.main_image || x.first_image || null,
@@ -58,9 +82,7 @@ async function countries(): Promise<{ slug: string }[]> {
 // تعود المدينة إلى الخريطة تلقائياً بأوّل عقار يُنشر فيها.
 async function cities(): Promise<{ slug: string }[]> {
   try {
-    const res = await fetch(`${API}/cities/?limit=1000`, { next: { revalidate: 86400 } });
-    if (!res.ok) return [];
-    const data = await res.json();
+    const data = { results: await fetchAll<{ name_en?: string; properties_count?: number }>("/cities/", 86400) };
     return (data.results ?? [])
       .map((c: { name_en?: string; properties_count?: number }) => ({
         slug: citySlug(c.name_en || ""),
@@ -97,9 +119,8 @@ async function neighborhoods(): Promise<{ slug: string }[]> {
 // يجلب مقالات المدونة (slug + آخر تحديث) لخريطة الموقع.
 async function blogArticles(): Promise<{ slug: string; updated: string | null }[]> {
   try {
-    const res = await fetch(`${API}/blog/?limit=1000&offset=0`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    return ((await res.json()).results ?? []).map(
+    const list = await fetchAll<{ slug: string; published_at?: string }>("/blog/", 3600);
+    return list.map(
       (a: { slug: string; published_at?: string }) => ({ slug: a.slug, updated: a.published_at || null }),
     );
   } catch {
