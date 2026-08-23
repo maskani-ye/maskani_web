@@ -6,6 +6,15 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { breadcrumbList, SITE_URL } from "@/lib/seo";
 import { Card } from "@/components/ui/Card";
 import AreaConverter from "@/components/tools/AreaConverter";
+
+/**
+ * ⚠️ درسٌ من عطل حيّ (2026-08-23): بُني الويب بينما كانت القاعدة ساقطة، فثُبِّتت
+ * صفحاتٌ على **404 دائم** وزارها جوجل فسجّلها «غير موجودة». بلا `revalidate` لا
+ * تُعيد الصفحة المحاولة أبداً مهما تعافى الخادم — فيتحوّل عطلٌ عابر إلى ضرر
+ * دائم في نتائج البحث.
+ */
+export const revalidate = 3600;
+
 import {
   ALL_UNITS, GLOBAL_UNITS, unitBySlug, unitsOfCountry, countryByCode, BASIS_LABEL,
 } from "@/lib/areaUnits";

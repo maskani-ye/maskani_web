@@ -7,6 +7,15 @@ import { BlogPagination } from "@/components/blog/BlogPagination";
 import { getBlogCategories, BLOG_CATEGORIES } from "@/lib/blogCategories";
 import { breadcrumbList, itemList, SITE_URL, SITE_NAME } from "@/lib/seo";
 
+/**
+ * ⚠️ درسٌ من عطل حيّ (2026-08-23): بُني الويب بينما كانت القاعدة ساقطة، فثُبِّتت
+ * صفحاتٌ على **404 دائم** وزارها جوجل فسجّلها «غير موجودة». بلا `revalidate` لا
+ * تُعيد الصفحة المحاولة أبداً مهما تعافى الخادم — فيتحوّل عطلٌ عابر إلى ضرر
+ * دائم في نتائج البحث.
+ */
+export const revalidate = 3600;
+
+
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 const PER_PAGE = 12;
 

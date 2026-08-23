@@ -107,6 +107,17 @@ function keywordsFor(country: CountryRow, cities: CityRow[]): string[] {
 // فكانت صفحتها ترجع 404 حتى إعادة النشر. `dynamicParams` تبنيها عند أوّل طلب.
 export const dynamicParams = true;
 
+/**
+ * ⚠️ درسٌ من عطل حيّ (2026-08-23): بناء الويب جرى بينما كانت قاعدة البيانات
+ * ساقطة، فرجعت قائمة الدول فارغةً وثُبِّتت صفحتا الأردن ومصر على **404 دائم** —
+ * وزارها جوجل فسجّلها «غير موجودة». بلا `revalidate` لا تُعيد الصفحة المحاولة
+ * أبداً مهما تعافى الخادم.
+ *
+ * ساعةٌ تعني أن أي عطل مؤقّت في الـAPI يلتئم ذاتياً بدل أن يتحوّل إلى 404 دائم
+ * في نتائج البحث.
+ */
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
   const list = await getCountries();
   return list.map((c) => ({ slug: c.slug })).filter((p) => p.slug);
