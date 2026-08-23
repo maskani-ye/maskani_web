@@ -4,9 +4,9 @@
 import { ReactNode } from "react";
 import { toEnglishDigits } from "@/lib/digits";
 
-export const CURRENCIES = ["YER", "SAR", "JOD", "EGP", "USD"] as const;
+export const CURRENCIES = ["YER", "SAR", "JOD", "EGP", "IQD", "USD"] as const;
 export type Currency = (typeof CURRENCIES)[number];
-const CUR_LABEL: Record<Currency, string> = { YER: "ريال يمني", SAR: "ريال سعودي", JOD: "دينار أردني", EGP: "جنيه مصري", USD: "دولار" };
+const CUR_LABEL: Record<Currency, string> = { YER: "ريال يمني", SAR: "ريال سعودي", JOD: "دينار أردني", EGP: "جنيه مصري", IQD: "دينار عراقي", USD: "دولار" };
 
 /** رقم مُنسّق بفواصل الآلاف + رمز/تسمية اختيارية. */
 export function fmtNum(n: number, digits = 0): string {
@@ -15,7 +15,7 @@ export function fmtNum(n: number, digits = 0): string {
 }
 export function fmtMoney(n: number, cur: Currency): string {
   if (!isFinite(n)) return "—";
-  return `${fmtNum(Math.round(n))} ${cur === "YER" ? "ر.ي" : cur === "SAR" ? "ر.س" : cur === "JOD" ? "د.أ" : cur === "EGP" ? "ج.م" : "$"}`;
+  return `${fmtNum(Math.round(n))} ${cur === "YER" ? "ر.ي" : cur === "SAR" ? "ر.س" : cur === "JOD" ? "د.أ" : cur === "EGP" ? "ج.م" : cur === "IQD" ? "د.ع" : "$"}`;
 }
 
 /** يحوّل نصّ إدخال إلى رقم (يتجاهل الفواصل)، صفر إن فارغ. */
