@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { toast } from "sonner";
-import { Dollar, Refresh, AddCircle } from "@solar-icons/react";
+import { Dollar, Refresh, AddCircle, ClockCircle } from "@solar-icons/react";
 
 /**
  * إدارة العملات وأسعار صرفها.
@@ -22,6 +22,14 @@ import { Dollar, Refresh, AddCircle } from "@solar-icons/react";
  * ندخل السعر بصيغة **كم وحدة للدولار** (48.5 جنيهاً) لا بقيمة الوحدة بالدولار
  * (0.0206) — الأولى هي ما يعرفه الإنسان من السوق، والثانية ما يخزّنه الخادم.
  */
+
+interface JobStatus {
+  ran_at: string;
+  ok: boolean;
+  updated: string[];
+  skipped: Record<string, { current: string; fetched: string; deviation: string }>;
+  error: string | null;
+}
 
 interface Rate {
   id: number;
@@ -44,14 +52,21 @@ export default function AdminCurrenciesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [fetching, setFetching] = useState<string | null>(null);
+  const [job, setJob] = useState<JobStatus | null>(null);
+  const [schedule, setSchedule] = useState("");
   const [newCode, setNewCode] = useState("");
   const [newPerUsd, setNewPerUsd] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await api.get<{ base: string; rates: Rate[] }>(ep.exchangeRates);
+      const { data } = await api.get<{
+        base: string; rates: Rate[]; job: JobStatus | null; schedule: string;
+      }>(ep.exchangeRates);
       setRates(data.rates ?? []);
+      setJob(data.job ?? null);
+      setSchedule(data.schedule ?? "");
       setDrafts(Object.fromEntries((data.rates ?? []).map((r) => [r.code, r.per_usd])));
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -78,6 +93,24 @@ export default function AdminCurrenciesPage() {
       toast.error(getErrorMessage(err));
     } finally {
       setSaving(null);
+    }
+  };
+
+  /** يجلب سعر السوق ويملأ الحقل — بلا حفظ، فالمشرف يراجع ثم يحفظ. */
+  const fetchRate = async (rate: Rate) => {
+    setFetching(rate.code);
+    try {
+      const { data } = await api.post<{
+        per_usd: string; change_pct: string; source: string;
+      }>(ep.exchangeRateFetch(rate.id), {});
+      setDrafts((d) => ({ ...d, [rate.code]: data.per_usd }));
+      toast.success(
+        `${rate.label}: ${data.per_usd} للدولار (${data.source}) — الفارق ${data.change_pct}. اضغط حفظ للاعتماد.`
+      );
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setFetching(null);
     }
   };
 
@@ -115,6 +148,62 @@ export default function AdminCurrenciesPage() {
           </Button>
         }
       />
+
+      {/* حالة المهمّة اليومية — المهام الدورية تعمل في صمت، وسكوتها لا يُرى
+          إلّا إن عُرض. */}
+      <Card className={`p-5 border ${
+        job === null ? "bg-gray-50 border-gray-200"
+          : job.ok ? "bg-emerald-50/60 border-emerald-200"
+          : "bg-red-50/60 border-red-200"
+      }`}>
+        <div className="flex items-start gap-3">
+          <ClockCircle className={`h-5 w-5 shrink-0 mt-0.5 ${
+            job === null ? "text-gray-400" : job.ok ? "text-emerald-600" : "text-red-600"
+          }`} />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-ink">
+              التحديث التلقائي اليوميّ · {schedule || "—"}
+            </p>
+            {job === null ? (
+              <p className="text-xs text-gray-500 mt-1">
+                لم تُسجَّل أي دورة بعد — أوّل تشغيل يظهر هنا بعد موعده القادم.
+              </p>
+            ) : (
+              <>
+                <p className="text-xs text-gray-600 mt-1">
+                  آخر تشغيل:{" "}
+                  <strong>
+                    {new Date(job.ran_at).toLocaleString("ar", {
+                      dateStyle: "medium", timeStyle: "short",
+                    })}
+                  </strong>{" "}
+                  · {job.ok ? "نجح" : "فشل"}
+                </p>
+                {job.updated.length > 0 && (
+                  <p className="text-xs text-gray-600 mt-1">
+                    حُدّثت: {job.updated.join(" · ")}
+                  </p>
+                )}
+                {Object.keys(job.skipped ?? {}).length > 0 && (
+                  <div className="mt-2 text-xs text-amber-800 bg-amber-100/70 rounded-xl px-3 py-2">
+                    <p className="font-semibold mb-1">
+                      لم تُطبَّق (قفزة تتجاوز الحدّ — تحتاج قرارك):
+                    </p>
+                    {Object.entries(job.skipped).map(([code, s]) => (
+                      <p key={code}>
+                        {code}: {s.current} ← {s.fetched} (فارق {s.deviation})
+                      </p>
+                    ))}
+                  </div>
+                )}
+                {job.error && (
+                  <p className="text-xs text-red-700 mt-1">الخطأ: {job.error}</p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </Card>
 
       <Card className="p-4 bg-amber-50/60 border border-amber-200">
         <p className="text-sm text-amber-900 leading-relaxed">
@@ -161,15 +250,27 @@ export default function AdminCurrenciesPage() {
                 <td className="px-4 py-3 text-xs text-gray-400">
                   {new Date(r.updated_at).toLocaleDateString("ar", { dateStyle: "medium" })}
                 </td>
-                <td className="px-4 py-3 text-end">
-                  <Button
-                    size="sm"
-                    loading={saving === r.code}
-                    disabled={r.code === "USD" || drafts[r.code] === r.per_usd}
-                    onClick={() => save(r)}
-                  >
-                    حفظ
-                  </Button>
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      loading={fetching === r.code}
+                      disabled={r.code === "USD"}
+                      onClick={() => fetchRate(r)}
+                      title="جلب سعر السوق الآن"
+                    >
+                      <Refresh className="h-3.5 w-3.5" /> جلب
+                    </Button>
+                    <Button
+                      size="sm"
+                      loading={saving === r.code}
+                      disabled={r.code === "USD" || drafts[r.code] === r.per_usd}
+                      onClick={() => save(r)}
+                    >
+                      حفظ
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}
