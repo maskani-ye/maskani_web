@@ -15,6 +15,7 @@ import {
   Case, ChartSquare, HeadphonesRound, MagniferBug, NotebookBookmark, HashtagSquare, Stars,
   ServerSquare,
   DocumentAdd,
+  Dollar,
 } from "@solar-icons/react";
 
 // عناصر التنقّل مجمّعة حسب التخصّص/الوظيفة. الترتيب ثابت ومطابق لتطبيق الإدارة.
@@ -71,6 +72,7 @@ const NAV_GROUPS = [
       { href: "/admin/property-types", label: "أنواع العقارات", icon: MapPoint },
       { href: "/admin/categories", label: "أصناف الخدمات",  icon: Widget },
       { href: "/admin/cities",     label: "المدن والدول",   icon: City },
+      { href: "/admin/currencies", label: "العملات",        icon: Dollar },
     ],
   },
   {
