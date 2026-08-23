@@ -29,12 +29,29 @@ async function fetchAll<T>(
   const out: T[] = [];
   for (let offset = 0; offset < 10000; offset += PAGE) {
     const sep = path.includes("?") ? "&" : "?";
-    const res = await fetch(`${API}${path}${sep}limit=${PAGE}&offset=${offset}`, {
-      next: { revalidate },
-    });
-    if (!res.ok) break;
-    const data = await res.json();
-    const rows = Array.isArray(data) ? data : data.results ?? [];
+    const url = `${API}${path}${sep}limit=${PAGE}&offset=${offset}`;
+
+    // ⚠️ بناء الخريطة يُصدر عشرات الطلبات دفعةً واحدة فيصطدم بخنق الخادم
+    // (رصدنا 1,731 استجابة 429 أثناء بناءٍ واحد). التوقّف عند أوّل رفض يعني
+    // خريطةً ناقصة بصمت — فنُعيد المحاولة بتباطؤ متزايد بدل الاستسلام.
+    let rows: T[] | null = null;
+    for (let attempt = 0; attempt < 4 && rows === null; attempt += 1) {
+      if (attempt > 0) {
+        await new Promise((r) => setTimeout(r, 1500 * attempt));
+      }
+      // ترويسة داخلية تُعفي بناءنا من خنق الزائر المجهول — سرٌّ لا يملكه غيرنا.
+      const res = await fetch(url, {
+        next: { revalidate },
+        headers: process.env.INTERNAL_API_TOKEN
+          ? { "X-Maskani-Internal": process.env.INTERNAL_API_TOKEN }
+          : {},
+      });
+      if (res.ok) {
+        const data = await res.json();
+        rows = Array.isArray(data) ? data : data.results ?? [];
+      }
+    }
+    if (rows === null) break;   // فشلٌ مستمرّ — نكتفي بما جمعناه
     out.push(...rows);
     if (rows.length < PAGE) break;
   }
@@ -127,6 +144,10 @@ async function blogArticles(): Promise<{ slug: string; updated: string | null }[
     return [];
   }
 }
+
+// تُعاد الخريطة كل ساعة: بناءٌ واحد فاشل (خنق أو عطل عابر) لا يجوز أن يُجمّد
+// خريطة الموقع ناقصةً إلى الأبد.
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
