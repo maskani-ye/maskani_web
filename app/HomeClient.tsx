@@ -58,6 +58,13 @@ export default function HomeClient() {
    * أخماس الجمهور «هذا ليس بلدك». نستعمل صورة المدينة المختارة حين تتوفّر،
    * وإلا صورةً محايدة.
    */
+  /**
+   * الشبكة أدناه تعرض حتى 8 عقارات. إن كان ما لدينا ≤ ذلك فهي تعرض كل شيء،
+   * ويصير «الأكثر رواجاً» تكراراً محضاً — فنُخفيه. حين يكبر السوق يعود تلقائياً.
+   */
+  const showFeatured =
+    (featured?.length ?? 0) > 0 && (properties?.length ?? 0) >= 8;
+
   const heroImage =
     cities.find((c) => String(c.id) === cityId)?.image || "/cities/_hero.webp";
 
@@ -177,9 +184,13 @@ export default function HomeClient() {
       {/* ─── عقارات مميّزة — كاروسيل أفقي (الأكثر رواجًا) ─────────────────── */}
       {/* نفس المبدأ: نحجز ارتفاع الصفّ أثناء التحميل، ونطويه فقط حين نتيقّن
           أنه فارغ — فلا تُزاح الصفحة تحت إصبع القارئ. */}
+      {/* ⚠️ «الأكثر رواجاً» و«الأحدث» يعرضان **العقارات نفسها** في سوقٍ صغير:
+          قِسناه فوجدنا 3 من 4 مكرّرة — يرى الزائر العقار مرّتين في صفحة واحدة،
+          فيبدو المخزون أصغر ممّا هو ويبدو الترتيب عبثياً. القسم يظهر فقط حين
+          يحمل جديداً: أي حين لا تغطّي شبكة «العقارات» أدناه كل ما لدينا. */}
       {featured === null ? (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-12 min-h-[300px]" aria-hidden />
-      ) : featured.length > 0 ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-12 min-h-[320px]" aria-hidden />
+      ) : showFeatured ? (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-12">
           <FeaturedRow properties={featured} />
         </div>
@@ -311,9 +322,11 @@ function FeaturedRow({ properties }: { properties: Property[] }) {
           <Button variant="outline" size="sm">عرض الكل <AltArrowLeft className="h-4 w-4" /></Button>
         </Link>
       </div>
-      <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-none snap-x min-h-[300px]">
-        {properties.map((p) => (
-          <div key={p.id} className="w-[260px] sm:w-[288px] flex-shrink-0 snap-start">
+      {/* نفس شبكة بقيّة الأقسام: العرض الثابت (260/288) كان يُنتج بطاقةً بارتفاع
+          322 بجانب بطاقةٍ بارتفاع 359 في القسم التالي — نفس المكوّن بمقاسين. */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 min-h-[320px]">
+        {properties.slice(0, 8).map((p) => (
+          <div key={p.id}>
             <PropertyCard property={p} />
           </div>
         ))}
