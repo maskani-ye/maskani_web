@@ -15,6 +15,7 @@ export const CURRENCY_LABELS: Record<string, string> = {
   JOD: "دينار أردني",
   EGP: "جنيه مصري",
   IQD: "دينار عراقي",
+  OMR: "ريال عُماني",
   USD: "دولار",
 };
 
@@ -25,6 +26,7 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
   JOD: "د.أ",
   EGP: "ج.م",
   IQD: "د.ع",
+  OMR: "ر.ع",
   USD: "$",
 };
 
@@ -37,6 +39,7 @@ export const CURRENCIES: { value: string; symbol: string; label: string }[] = [
   { value: "JOD", symbol: CURRENCY_SYMBOLS.JOD, label: CURRENCY_LABELS.JOD },
   { value: "EGP", symbol: CURRENCY_SYMBOLS.EGP, label: CURRENCY_LABELS.EGP },
   { value: "IQD", symbol: CURRENCY_SYMBOLS.IQD, label: CURRENCY_LABELS.IQD },
+  { value: "OMR", symbol: CURRENCY_SYMBOLS.OMR, label: CURRENCY_LABELS.OMR },
   { value: "USD", symbol: CURRENCY_SYMBOLS.USD, label: CURRENCY_LABELS.USD },
 ];
 
@@ -52,7 +55,7 @@ export function formatPrice(price: string | number | null | undefined, currency?
   // عملة غير صالحة/فارغة → افتراضي YER (تفادي: "Currency code is required with currency style").
   const cur = (currency || "YER").toUpperCase();
   // YEA (ريال عدن) رمز داخلي لا يعرفه Intl — يسقط عمداً إلى صيغة الرمز أدناه.
-  const localeMap: Record<string, string> = { SAR: "ar-SA", JOD: "ar-JO", EGP: "ar-EG", IQD: "ar-IQ", YER: "ar-YE", USD: "en-US" };
+  const localeMap: Record<string, string> = { SAR: "ar-SA", JOD: "ar-JO", EGP: "ar-EG", IQD: "ar-IQ", OMR: "ar-OM", YER: "ar-YE", USD: "en-US" };
   const locale = localeMap[cur] ?? "ar-SA";
   try {
     return new Intl.NumberFormat(locale, {
