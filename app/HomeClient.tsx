@@ -42,7 +42,12 @@ export default function HomeClient() {
   const [stats, setStats] = useState<Record<string, number> | null>(null);
 
   const { cityId, cityName, cities, loading: cityLoading } = useCity();
-  const { code: countryCode } = useCountry();
+  const { code: countryCode, country } = useCountry();
+
+  // موضع البيانات المعروضة — يُذكَر صراحةً في حالات الفراغ. «لا توجد عقارات بعد»
+  // مجرّدةً تقول للزائر إن المنصّة فارغة؛ «لا توجد عقارات في القاهرة بعد» تقول
+  // له إن سوقه هو الجديد، وهذا فرق في المعنى لا في الصياغة.
+  const where = cityName || country?.name_ar || "منطقتك";
 
   /**
    * ⚠️ كانت التبعيات فارغة والطلبات بلا فلتر: تجلب الرئيسية مرّة واحدة ولا
@@ -180,7 +185,13 @@ export default function HomeClient() {
         {/* ─── العقارات ──────────────────────────────────────────────────── */}
         <HomeSection title="العقارات" subtitle="أحدث العقارات للبيع والإيجار" href="/properties">
           <CardGrid loading={properties === null} empty={properties?.length === 0}
-            emptyIcon={<Buildings2 className="h-10 w-10" />} emptyText="لا توجد عقارات بعد">
+            emptyIcon={<Buildings2 className="h-10 w-10" />}
+            emptyText={`لا توجد عقارات معروضة في ${where} بعد`}
+            emptyAction={
+              <Link href="/properties/create" className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-primary/90 transition-colors">
+                كن أوّل من ينشر عقاراً هنا
+              </Link>
+            }>
             {properties?.slice(0, 4).map((l) => <PropertyCard key={l.id} property={l} />)}
           </CardGrid>
         </HomeSection>
@@ -188,7 +199,11 @@ export default function HomeClient() {
         {/* ─── الخدمات ────────────────────────────────────────────────────── */}
         <HomeSection title="الخدمات" subtitle="مزوّدو خدمات عقارية متخصّصون" href="/services">
           <CardGrid loading={services === null} empty={services?.length === 0}
-            emptyIcon={<UsersGroupRounded className="h-10 w-10" />} emptyText="لا توجد خدمات بعد">
+            emptyIcon={<UsersGroupRounded className="h-10 w-10" />}
+            emptyText={`لا يوجد مزوّد خدمة في ${where} بعد`}
+            emptyAction={
+              <Link href="/services/my" className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-primary/90 transition-colors">أضِف خدمتك</Link>
+            }>
             {services?.slice(0, 4).map((s) => <ServiceCard key={s.id} service={s} />)}
           </CardGrid>
         </HomeSection>
@@ -196,7 +211,11 @@ export default function HomeClient() {
         {/* ─── طلبات عقارية (demands) ─────────────────────────────────────── */}
         <HomeSection title="طلبات عقارية" subtitle="عملاء يبحثون عن عقارات — قدّم عرضك" href="/requests">
           <CardGrid loading={requests === null} empty={requests?.length === 0}
-            emptyIcon={<ClipboardList className="h-10 w-10" />} emptyText="لا توجد طلبات عقارية بعد">
+            emptyIcon={<ClipboardList className="h-10 w-10" />}
+            emptyText={`لا توجد طلبات عقارية في ${where} بعد`}
+            emptyAction={
+              <Link href="/requests/create" className="inline-flex items-center gap-2 rounded-xl border border-primary/30 px-5 py-2.5 text-sm font-bold text-primary hover:bg-primary/5 transition-colors">انشر طلبك العقاري</Link>
+            }>
             {requests?.slice(0, 4).map((r) => <RequestCard key={r.id} request={r} />)}
           </CardGrid>
         </HomeSection>
@@ -204,7 +223,11 @@ export default function HomeClient() {
         {/* ─── طلبات خدمات (jobs) ─────────────────────────────────────────── */}
         <HomeSection title="طلبات خدمات" subtitle="عملاء يبحثون عن حِرفيين ومزوّدي خدمات" href="/jobs">
           <CardGrid loading={serviceReqs === null} empty={serviceReqs?.length === 0}
-            emptyIcon={<ClipboardList className="h-10 w-10" />} emptyText="لا توجد طلبات خدمات بعد">
+            emptyIcon={<ClipboardList className="h-10 w-10" />}
+            emptyText={`لا توجد طلبات خدمات في ${where} بعد`}
+            emptyAction={
+              <Link href="/jobs/create" className="inline-flex items-center gap-2 rounded-xl border border-primary/30 px-5 py-2.5 text-sm font-bold text-primary hover:bg-primary/5 transition-colors">اطلب حِرفياً أو مزوّد خدمة</Link>
+            }>
             {serviceReqs?.slice(0, 4).map((j) => <JobCard key={j.id} job={j} />)}
           </CardGrid>
         </HomeSection>
@@ -407,8 +430,9 @@ function HomeSection({ title, subtitle, href, children }: {
 }
 
 // صفّ كاروسيل أفقي (بأسلوب Gathern) — بديل الشبكة الجامدة.
-function CardGrid({ loading, empty, emptyIcon, emptyText, children }: {
-  loading: boolean; empty?: boolean; emptyIcon: React.ReactNode; emptyText: string; children: React.ReactNode;
+function CardGrid({ loading, empty, emptyIcon, emptyText, emptyAction, children }: {
+  loading: boolean; empty?: boolean; emptyIcon: React.ReactNode; emptyText: string;
+  emptyAction?: React.ReactNode; children: React.ReactNode;
 }) {
   if (loading) {
     return (
@@ -426,8 +450,13 @@ function CardGrid({ loading, empty, emptyIcon, emptyText, children }: {
   }
   if (empty) {
     return (
-      <div className="bg-white rounded-2xl card-shadow min-h-[300px] flex flex-col items-center justify-center text-gray-300">
-        {emptyIcon}<p className="text-gray-400 text-sm mt-3">{emptyText}</p>
+      <div className="bg-white rounded-2xl card-shadow min-h-[300px] flex flex-col items-center justify-center text-gray-300 px-6 text-center">
+        {emptyIcon}
+        <p className="text-gray-500 text-sm mt-3">{emptyText}</p>
+        {/* سوقٌ جديد يبدأ فارغاً بالضرورة. صندوقٌ رماديّ صامت يقول للزائر «المنصّة
+            ميتة»؛ ودعوةٌ صريحة تقول «كن أوّل من ينشر هنا» — وهي أرخص وسيلة لرفع
+            المخزون، وهو سقف المنصّة الحقيقي. */}
+        {emptyAction && <div className="mt-4">{emptyAction}</div>}
       </div>
     );
   }
