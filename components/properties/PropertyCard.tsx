@@ -52,15 +52,51 @@ export interface PropertyCardData {
  * • **سعر المتر**: مشتقّ من السعر والمساحة (بلا تغيير في الـAPI) — معيار في
  *   المنصّات المحترفة لأنه وحدة المقارنة الحقيقية بين عقارين.
  */
+/**
+ * سطح بديل الصورة — مُشترَك بين كل البطاقات التي قد تأتي بلا وسائط.
+ *
+ * ⚠️ كان لوحاً بتدرّج بنفسجيّ **مشبع** وأيقونة بيضاء بحجم 56 بكسل: أربع بطاقات
+ * متجاورة تصير أربعة طوب بنفسجية تسحق ما حولها. المعالجة ليست حذف الكتلة —
+ * الكتلة تمنح البطاقة حضورها وتُحاذيها مع بطاقات الصور — بل **تهدئتها**: سطح
+ * فاتح من عائلة اللون، نقشٌ قطريّ خفيف يمنحه عمقاً، وأيقونة صغيرة باهتة.
+ */
+export function PlaceholderSurface({
+  Icon,
+  tone = "primary",
+}: {
+  Icon: React.ComponentType<{ className?: string; weight?: "Bold" | "Linear" }>;
+  tone?: "primary" | "gold";
+}) {
+  const surface = tone === "gold" ? "bg-gold-50" : "bg-primary-50";
+  const ink = tone === "gold" ? "text-gold-700/45" : "text-primary/30";
+  const stripe = tone === "gold" ? "rgba(255,160,0,.10)" : "rgba(79,35,150,.08)";
+  return (
+    <div className={`relative w-full h-full ${surface} flex items-center justify-center`}>
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `repeating-linear-gradient(135deg, ${stripe} 0 1px, transparent 1px 10px)`,
+        }}
+      />
+      <Icon weight="Linear" className={`relative h-9 w-9 ${ink}`} />
+    </div>
+  );
+}
+
 export function PropertyCard({
   property,
   favorited,
   onToggleFavorite,
+  variant = "default",
 }: {
   property: PropertyCardData;
   favorited?: boolean;
   onToggleFavorite?: (id: number, e: React.MouseEvent) => void;
+  /** `featured` = بطاقة الصدارة في الشبكة التحريرية (صورة أطول وسعر أكبر) */
+  variant?: "default" | "featured";
 }) {
+  const featured = variant === "featured";
   const area = typeof property.area === "string" ? parseFloat(property.area) : property.area;
   const price = typeof property.price === "string" ? parseFloat(property.price) : property.price;
   // سعر المتر يُعرض فقط حين يكون له معنى: بيعٌ بمساحة معلومة. حسابه على إيجار
@@ -94,7 +130,7 @@ export function PropertyCard({
     <Link href={`/properties/${property.id}`} className="group block h-full">
       <article className="h-full flex flex-col bg-white rounded-2xl p-2 ring-1 ring-ink/[0.06] shadow-e1 hover:shadow-e3 hover:ring-ink/[0.10] transition-[box-shadow,transform] duration-200 group-hover:-translate-y-0.5">
         {/* ─── الوسائط ─────────────────────────────────────────── */}
-        <div className="relative aspect-[3/2] rounded-lg overflow-hidden bg-primary-50">
+        <div className={`relative ${featured ? "aspect-[4/3] lg:aspect-auto lg:flex-1 lg:min-h-[280px]" : "aspect-[3/2]"} rounded-lg overflow-hidden bg-primary-50`}>
           {showImage ? (
             <Image
               src={property.main_image!}
@@ -105,9 +141,7 @@ export function PropertyCard({
               onError={() => setImageFailed(true)}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-700 to-primary">
-              <Buildings2 weight="Bold" className="h-12 w-12 text-white/60" />
-            </div>
+            <PlaceholderSurface Icon={Buildings2} tone="primary" />
           )}
 
           {/* تدرّج سفليّ خفيف: يضمن قراءة الشارة فوق أي صورة مهما كانت فاتحة. */}
@@ -151,9 +185,13 @@ export function PropertyCard({
                 ما في البطاقة — رأيناها تبتلع بطاقتين من ثلاث. الغياب يُعرض
                 هامساً: مقاس الجسد ولونٌ محايد. */}
             {priceText === PRICE_ON_REQUEST ? (
-              <span className="text-body font-semibold text-muted">{priceText}</span>
+              <span className={`${featured ? "text-body-lg" : "text-body"} font-semibold text-muted`}>
+                {priceText}
+              </span>
             ) : (
-              <span className="text-price text-primary">{priceText}</span>
+              <span className={`${featured ? "text-h2" : "text-price"} text-primary`}>
+                {priceText}
+              </span>
             )}
             {perMeter && (
               <span className="text-caption text-muted whitespace-nowrap">
@@ -162,7 +200,7 @@ export function PropertyCard({
             )}
           </div>
 
-          <h3 className="text-body font-semibold text-ink mt-1.5 line-clamp-2 leading-snug">
+          <h3 className={`${featured ? "text-h3" : "text-body font-semibold"} text-ink mt-1.5 line-clamp-2 leading-snug`}>
             {property.title}
           </h3>
 

@@ -47,11 +47,11 @@ const SIGNALS = [
 export function TrustStrip() {
   return (
     <section aria-labelledby="trust-heading">
-      <div className="text-center mb-7">
-        <h2 id="trust-heading" className="text-h2 text-ink">
-          لماذا مسكني؟
-        </h2>
-        <p className="text-body text-muted mt-1.5">
+      {/* محاذاة البداية لا التوسيط: الصفحة كلّها تبدأ من الحافة نفسها، والتوسيط
+          هنا كان يكسر الخطّ العموديّ الذي تسير عليه بقيّة العناوين. */}
+      <div className="mb-8">
+        <h2 id="trust-heading" className="text-h1 text-ink">لماذا مسكني؟</h2>
+        <p className="text-body text-muted mt-2">
           منصّة تربطك بصاحب العقار مباشرةً — وتحميك في الطريق
         </p>
       </div>
@@ -60,9 +60,9 @@ export function TrustStrip() {
         {SIGNALS.map(({ Icon, title, body, href, cta }) => (
           <div
             key={title}
-            className="bg-white rounded-2xl p-5 ring-1 ring-ink/[0.06] shadow-e1 flex flex-col"
+            className="bg-white rounded-2xl p-6 ring-1 ring-ink/[0.06] flex flex-col"
           >
-            <span className="w-11 h-11 rounded-xl bg-primary-50 text-primary flex items-center justify-center mb-3.5">
+            <span className="w-11 h-11 rounded-xl bg-primary-50 text-primary flex items-center justify-center mb-4">
               <Icon weight="Bold" className="h-5 w-5" />
             </span>
             <h3 className="text-h3 text-ink">{title}</h3>
