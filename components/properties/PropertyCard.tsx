@@ -177,7 +177,10 @@ export function PropertyCard({
         </div>
 
         {/* ─── المحتوى ─────────────────────────────────────────── */}
-        <div className="px-1.5 pt-3 pb-1 flex flex-col flex-1">
+        {/* ⚠️ في بطاقة الصدارة **الصورة** تمتصّ الارتفاع الزائد لا المحتوى: حين
+            كان للاثنين `flex-1` اقتسما الفراغ، فيهبط صفّ التذييل إلى القاع
+            تاركاً ٢٥٠ بكسل بياضاً وسط البطاقة. */}
+        <div className={`px-1.5 pt-3 pb-1 flex flex-col ${featured ? "" : "flex-1"}`}>
           {/* السعر أوّلاً — هو ما تبحث عنه العين، لا العنوان. */}
           <div className="flex items-baseline justify-between gap-2">
             {/* ⚠️ حين لا سعر معلن يعود `formatPrice` بجملة «السعر عند التواصل».

@@ -145,7 +145,7 @@ export default function HomeClient() {
           <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-24 md:pt-24 md:pb-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-20 md:pt-20 md:pb-24">
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-3.5 py-1.5 text-caption font-bold ring-1 ring-white/20">
               <CheckCircle weight="Bold" className="h-4 w-4 text-gold" />
@@ -436,19 +436,18 @@ function CitiesTiles({ cities }: { cities: City[] }) {
                 on ? "ring-2 ring-primary shadow-e3" : "ring-ink/[0.06] hover:shadow-e2"
               }`}
             >
-              {c.image ? (
-                <Image
-                  src={c.image}
-                  alt=""
-                  aria-hidden
-                  fill
-                  sizes="(max-width: 640px) 45vw, 300px"
-                  quality={68}
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-primary-100" />
-              )}
+              {/* ⚠️ الاحتياطي الثابت `/cities/<id>.webp` ضروريّ: `City.image`
+                  مضبوطة لمدينتين فقط، وبلا الاحتياطي تبدو بقيّة البلاطات
+                  مستطيلات بنفسجية مسطّحة. (٢٢ صورة محافظة في `public/cities`.) */}
+              <Image
+                src={c.image || `/cities/${c.id}.webp`}
+                alt=""
+                aria-hidden
+                fill
+                sizes="(max-width: 640px) 45vw, 300px"
+                quality={68}
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-3.5">
                 <span className="block text-body font-bold text-white">{c.name_ar}</span>
