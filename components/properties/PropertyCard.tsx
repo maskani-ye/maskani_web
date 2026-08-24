@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { formatPrice, offerTypeLabels, propertyTypeName } from "@/lib/utils";
+import { formatPrice, offerTypeLabels, propertyTypeName, PRICE_ON_REQUEST } from "@/lib/utils";
 import {
   Buildings2, Heart, MapPoint, Bed, Bath, Ruler, CheckCircle,
 } from "@solar-icons/react";
@@ -69,10 +69,18 @@ export function PropertyCard({
       ? formatPrice(Math.round(price / area), property.currency)
       : null;
 
+  const priceText = formatPrice(property.price, property.currency);
+
   const specs = [
     property.rooms != null && { Icon: Bed, value: property.rooms, label: "غرف" },
     property.bathrooms != null && { Icon: Bath, value: property.bathrooms, label: "حمّامات" },
-    area != null && { Icon: Ruler, value: `${area}م²`, label: "المساحة" },
+    // ⚠️ الأرقام: الأسعار تخرج من Intl بأرقام هندية (٣٥٠٠) والمساحة كانت خامّاً
+    // (3111م²) — نظامان على البطاقة نفسها. التوطين هنا يوحّدهما.
+    area != null && {
+      Icon: Ruler,
+      value: `${area.toLocaleString("ar-EG")}م²`,
+      label: "المساحة",
+    },
   ].filter(Boolean) as Array<{ Icon: typeof Bed; value: React.ReactNode; label: string }>;
 
   return (
@@ -121,7 +129,7 @@ export function PropertyCard({
           >
             <Heart
               weight={favorited ? "Bold" : "Linear"}
-              className={`h-[18px] w-[18px] ${favorited ? "text-danger" : "text-muted"}`}
+              className={`h-5 w-5 ${favorited ? "text-danger" : "text-muted"}`}
             />
           </button>
         </div>
@@ -130,9 +138,15 @@ export function PropertyCard({
         <div className="px-1.5 pt-3 pb-1 flex flex-col flex-1">
           {/* السعر أوّلاً — هو ما تبحث عنه العين، لا العنوان. */}
           <div className="flex items-baseline justify-between gap-2">
-            <span className="text-price text-primary">
-              {formatPrice(property.price, property.currency)}
-            </span>
+            {/* ⚠️ حين لا سعر معلن يعود `formatPrice` بجملة «السعر عند التواصل».
+                عرضها بمقاس السعر (22px بنفسجي ثقيل) يجعل **غياب** المعلومة أبرز
+                ما في البطاقة — رأيناها تبتلع بطاقتين من ثلاث. الغياب يُعرض
+                هامساً: مقاس الجسد ولونٌ محايد. */}
+            {priceText === PRICE_ON_REQUEST ? (
+              <span className="text-body font-semibold text-muted">{priceText}</span>
+            ) : (
+              <span className="text-price text-primary">{priceText}</span>
+            )}
             {perMeter && (
               <span className="text-caption text-muted whitespace-nowrap">
                 {perMeter}/م²

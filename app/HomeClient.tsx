@@ -141,7 +141,7 @@ export default function HomeClient() {
       {/* ─── دعوة النشر — أهمّ ما تحتاجه المنصّة اليوم ────────────────────
           108 زائراً وصلوا هذه الصفحة في أسبوع، ولم يُطلب من أحدهم نشر عقاره
           ولا مرّة. المخزون هو سقف المنصّة، والطلب الصريح أرخص وسيلة لرفعه. */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-8">
         <Link
           href="/properties/create"
           className="flex items-center gap-4 rounded-3xl bg-gradient-to-l from-gold/95 to-gold p-5 sm:p-6 shadow-card hover:shadow-card-hover transition-all"
@@ -163,14 +163,14 @@ export default function HomeClient() {
       </div>
 
       {/* ─── شريط الأقسام السريعة ────────────────────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-8">
         <CategoryStrip />
       </div>
 
       {/* ─── المدن (وجهات بأسلوب Gathern + بوردر أكتيف) ───────────────────── */}
       {/* ارتفاع محجوز: الشريط يصل بعد الجلب، وبلا حجزٍ يدفع كل ما تحته للأسفل
           (كان أكبر مصدر لقفزات التخطيط في الصفحة). */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10 min-h-[152px] sm:min-h-[178px]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-10 min-h-[152px] sm:min-h-[178px]">
         <CitiesStrip cities={cities} />
       </div>
 
@@ -178,9 +178,9 @@ export default function HomeClient() {
       {/* نفس المبدأ: نحجز ارتفاع الصفّ أثناء التحميل، ونطويه فقط حين نتيقّن
           أنه فارغ — فلا تُزاح الصفحة تحت إصبع القارئ. */}
       {featured === null ? (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-12 min-h-[300px]" aria-hidden />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-12 min-h-[300px]" aria-hidden />
       ) : featured.length > 0 ? (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-12">
           <FeaturedRow properties={featured} />
         </div>
       ) : null}
@@ -511,33 +511,53 @@ function ServiceCard({ service }: { service: ServiceProvider }) {
   const city = service.cities_names?.[0];
   const rating = typeof service.average_rating === "number" && service.average_rating > 0 ? service.average_rating : null;
   return (
-    <Link href={`/services/${service.id}`}>
-      <div className="bg-white rounded-2xl p-2.5 shadow-card hover:shadow-card-hover transition-all duration-200 cursor-pointer h-full flex flex-col group">
-        <div className="relative aspect-[4/3] rounded-xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-gold-400 to-gold-600">
-          <Icon weight="Bold" className="h-14 w-14 text-white/90 group-hover:scale-110 transition-transform duration-300" />
-          {rating && (
-            <span className="absolute top-2.5 right-2.5 flex items-center gap-1 text-caption font-bold px-2.5 py-1 rounded-full bg-white/95 text-ink shadow-sm">
-              <Star weight="Bold" className="h-3.5 w-3.5 text-gold-500" />{rating.toFixed(1)}
+    <Link href={`/services/${service.id}`} className="group block h-full">
+      <article className="h-full flex flex-col bg-white rounded-2xl ring-1 ring-ink/[0.06] shadow-e1 hover:shadow-e3 transition-shadow duration-200 overflow-hidden">
+        {/* ⚠️ كانت كتلة ذهبية بنسبة 4:3 تشغل 60% من البطاقة — لوحٌ صارخ لمزوّد
+            خدمة لا صورة له. الشريط الرفيع يحمل هوية القسم بلا ادّعاء وسائط. */}
+        <span className="h-1 bg-gold flex-shrink-0" />
+        <div className="p-4 flex flex-col flex-1">
+          <div className="flex items-center gap-2">
+            <span className="w-9 h-9 rounded-lg bg-gold-50 text-gold-800 flex items-center justify-center flex-shrink-0">
+              <Icon weight="Bold" className="h-5 w-5" />
             </span>
-          )}
-        </div>
-        <div className="px-1.5 pt-3 pb-1 flex flex-col flex-1">
-          <span className="text-caption font-bold text-gold-600 mb-1 line-clamp-1">{cat.name || "خدمة"}</span>
-          <h3 className="font-bold text-ink text-body mb-1 line-clamp-1">{service.title}</h3>
-          <div className="flex items-center gap-1 text-muted text-caption mb-2.5">
-            <MapPoint className="h-3.5 w-3.5 flex-shrink-0" />
+            <span className="text-caption font-bold text-ink line-clamp-1">{cat.name || "خدمة"}</span>
+            {rating && (
+              <span className="ms-auto flex items-center gap-1 text-caption font-bold text-ink flex-shrink-0 tabular-nums">
+                <Star weight="Bold" className="h-4 w-4 text-gold-500" />
+                {rating.toLocaleString("ar-EG", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+              </span>
+            )}
+          </div>
+
+          <h3 className="text-body font-semibold text-ink mt-3 line-clamp-2 leading-snug">{service.title}</h3>
+
+          <div className="flex items-center gap-1.5 text-caption text-muted mt-1.5">
+            <MapPoint className="h-4 w-4 flex-shrink-0" />
             <span className="line-clamp-1">{city || "عدّة مدن"}</span>
           </div>
-          <div className="mt-auto pt-2.5 border-t border-gray-100">
-            <span className="text-primary text-caption font-bold flex items-center gap-1">عرض الخدمة <AltArrowLeft className="h-3.5 w-3.5" /></span>
+
+          <div className="mt-auto pt-3 border-t border-ink/[0.06]">
+            <span className="text-caption font-bold text-primary flex items-center gap-1">
+              عرض الخدمة <AltArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
+            </span>
           </div>
         </div>
-      </div>
+      </article>
     </Link>
   );
 }
 
 // ─── بطاقة طلب عقاري ─────────────────────────────────────────────────────
+/**
+ * ⚠️ بطاقات الطلبات كانت تُقلّد بطاقة العقار: كتلة بنسبة 4:3 تشغل ~60% من
+ * البطاقة، وفيها أيقونة فوق تدرّج بنفسجي — لأن الطلب لا صورة له أصلاً. أربع
+ * بطاقات متجاورة = أربعة ألواح بنفسجية متطابقة تسحق قسم العقارات الذي فوقها.
+ *
+ * الطلب **بيانات نصّية** (نوع · مكان · ميزانية · عدد العروض) فلا يجوز أن يرتدي
+ * تخطيطاً وسائطياً ويترك 60% منه فارغاً. البطاقة صارت نصّية مضغوطة: شريط لونيّ
+ * رفيع يحمل الهوية بلا ادّعاء صورة.
+ */
 function RequestCard({ request }: { request: ClientRequest }) {
   const type = PROPERTY_TYPE_LABELS[request.property_type] ?? request.property_type;
   const offer = offerTypeLabels[request.offer_type] ?? request.offer_type;
@@ -546,25 +566,37 @@ function RequestCard({ request }: { request: ClientRequest }) {
     : request.budget_max ? `حتى ${formatPrice(request.budget_max, request.currency)}`
     : request.budget_min ? `من ${formatPrice(request.budget_min, request.currency)}` : null;
   return (
-    <Link href={`/requests/${request.id}`}>
-      <div className="bg-white rounded-2xl p-2.5 shadow-card hover:shadow-card-hover transition-all duration-200 cursor-pointer h-full flex flex-col group">
-        <div className="relative aspect-[4/3] rounded-xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary-600 to-primary-800">
-          <ClipboardList weight="Bold" className="h-14 w-14 text-white/85 group-hover:scale-110 transition-transform duration-300" />
-          <span className="absolute top-2.5 right-2.5 text-caption font-bold px-3 py-1 rounded-full bg-white/95 text-primary shadow-sm">{offer}</span>
-        </div>
-        <div className="px-1.5 pt-3 pb-1 flex flex-col flex-1">
-          <span className="text-caption font-bold text-primary mb-1">مطلوب · {type}</span>
-          <h3 className="font-bold text-ink text-body mb-1 line-clamp-1">{request.title || `يبحث عن ${type}`}</h3>
-          <div className="flex items-center gap-1 text-muted text-caption mb-2.5">
-            <MapPoint className="h-3.5 w-3.5 flex-shrink-0" />
+    <Link href={`/requests/${request.id}`} className="group block h-full">
+      <article className="h-full flex flex-col bg-white rounded-2xl ring-1 ring-ink/[0.06] shadow-e1 hover:shadow-e3 transition-shadow duration-200 overflow-hidden">
+        <span className="h-1 bg-primary/70 flex-shrink-0" />
+        <div className="p-4 flex flex-col flex-1">
+          <div className="flex items-center gap-2">
+            <span className="w-9 h-9 rounded-lg bg-primary-50 text-primary flex items-center justify-center flex-shrink-0">
+              <ClipboardList weight="Bold" className="h-5 w-5" />
+            </span>
+            <span className="text-caption font-bold text-primary line-clamp-1">مطلوب · {type}</span>
+            <span className="ms-auto text-caption font-bold px-2 py-0.5 rounded-md bg-cream text-ink flex-shrink-0">{offer}</span>
+          </div>
+
+          <h3 className="text-body font-semibold text-ink mt-3 line-clamp-2 leading-snug">
+            {request.title || `يبحث عن ${type}`}
+          </h3>
+
+          <div className="flex items-center gap-1.5 text-caption text-muted mt-1.5">
+            <MapPoint className="h-4 w-4 flex-shrink-0" />
             <span className="line-clamp-1">{request.city_name}{request.neighborhood && ` — ${request.neighborhood}`}</span>
           </div>
-          <div className="mt-auto pt-2.5 border-t border-gray-100 flex items-center justify-between gap-2">
-            {budget ? <span className="text-primary font-extrabold text-body line-clamp-1">{budget}</span> : <span className="text-muted text-caption">حسب العرض</span>}
-            <span className="text-caption text-muted flex-shrink-0">{request.offers_count} عرض</span>
+
+          <div className="mt-auto pt-3 border-t border-ink/[0.06] flex items-baseline justify-between gap-2">
+            {budget
+              ? <span className="text-price-sm text-primary line-clamp-1">{budget}</span>
+              : <span className="text-body text-muted">حسب العرض</span>}
+            <span className="text-caption text-muted flex-shrink-0 tabular-nums">
+              {request.offers_count.toLocaleString("ar-EG")} عرض
+            </span>
           </div>
         </div>
-      </div>
+      </article>
     </Link>
   );
 }
@@ -578,24 +610,34 @@ function JobCard({ job }: { job: ServiceRequest }) {
     : job.budget_max ? `حتى ${formatPrice(job.budget_max, job.currency)}`
     : job.budget_min ? `من ${formatPrice(job.budget_min, job.currency)}` : null;
   return (
-    <Link href={`/jobs/${job.id}`}>
-      <div className="bg-white rounded-2xl p-2.5 shadow-card hover:shadow-card-hover transition-all duration-200 cursor-pointer h-full flex flex-col group">
-        <div className="relative aspect-[4/3] rounded-xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700">
-          <Icon weight="Bold" className="h-14 w-14 text-white/90 group-hover:scale-110 transition-transform duration-300" />
-        </div>
-        <div className="px-1.5 pt-3 pb-1 flex flex-col flex-1">
-          <span className="text-caption font-bold text-primary mb-1 line-clamp-1">{cat.name || "طلب خدمة"}</span>
-          <h3 className="font-bold text-ink text-body mb-1 line-clamp-1">{job.title}</h3>
-          <div className="flex items-center gap-1 text-muted text-caption mb-2.5">
-            <MapPoint className="h-3.5 w-3.5 flex-shrink-0" />
+    <Link href={`/jobs/${job.id}`} className="group block h-full">
+      <article className="h-full flex flex-col bg-white rounded-2xl ring-1 ring-ink/[0.06] shadow-e1 hover:shadow-e3 transition-shadow duration-200 overflow-hidden">
+        <span className="h-1 bg-gold flex-shrink-0" />
+        <div className="p-4 flex flex-col flex-1">
+          <div className="flex items-center gap-2">
+            <span className="w-9 h-9 rounded-lg bg-gold-50 text-gold-800 flex items-center justify-center flex-shrink-0">
+              <Icon weight="Bold" className="h-5 w-5" />
+            </span>
+            <span className="text-caption font-bold text-ink line-clamp-1">{cat.name || "طلب خدمة"}</span>
+          </div>
+
+          <h3 className="text-body font-semibold text-ink mt-3 line-clamp-2 leading-snug">{job.title}</h3>
+
+          <div className="flex items-center gap-1.5 text-caption text-muted mt-1.5">
+            <MapPoint className="h-4 w-4 flex-shrink-0" />
             <span className="line-clamp-1">{job.city_name}</span>
           </div>
-          <div className="mt-auto pt-2.5 border-t border-gray-100 flex items-center justify-between gap-2">
-            {budget ? <span className="text-primary font-extrabold text-body line-clamp-1">{budget}</span> : <span className="text-muted text-caption">حسب العرض</span>}
-            <span className="text-caption text-muted flex-shrink-0">{job.offers_count} عرض</span>
+
+          <div className="mt-auto pt-3 border-t border-ink/[0.06] flex items-baseline justify-between gap-2">
+            {budget
+              ? <span className="text-price-sm text-primary line-clamp-1">{budget}</span>
+              : <span className="text-body text-muted">حسب العرض</span>}
+            <span className="text-caption text-muted flex-shrink-0 tabular-nums">
+              {job.offers_count.toLocaleString("ar-EG")} عرض
+            </span>
           </div>
         </div>
-      </div>
+      </article>
     </Link>
   );
 }
