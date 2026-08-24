@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -107,7 +108,7 @@ export default function AdminBlogCategoriesPage() {
         <span className="text-gray-600">التصنيفات</span>
       </div>
 
-      <PageHeader icon={<HashtagSquare />} title="تصنيفات المدونة" subtitle={`${items.length.toLocaleString("ar")} تصنيف`}
+      <PageHeader icon={<HashtagSquare />} title="تصنيفات المدونة" subtitle={`${items.length.toLocaleString(NUMERIC_LOCALE)} تصنيف`}
         actions={<Button onClick={openNew}><AddCircle className="h-4 w-4" /> تصنيف جديد</Button>} />
 
       <div className="bg-white rounded-2xl shadow-card overflow-hidden">

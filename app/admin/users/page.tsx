@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { toEnglishDigits } from "@/lib/digits";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
@@ -146,7 +147,7 @@ export default function AdminUsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <PageHeader icon={<UsersGroupRounded />} title="إدارة المستخدمين"
-          subtitle={`${total.toLocaleString("ar-YE")} مستخدم`} />
+          subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} مستخدم`} />
       </div>
 
       {/* Filters */}

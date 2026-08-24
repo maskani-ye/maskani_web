@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 
 /**
  * ترقيم صفحي للمدونة — مبنيّ على روابط (صديق للفهرسة، يعمل بلا JS).
@@ -45,12 +46,12 @@ export function BlogPagination({
           <span key={`gap-${i}`} className={`${cellBase} text-gray-400`}>…</span>
         ) : n === page ? (
           <span key={n} aria-current="page" className={`${cellBase} bg-primary text-white`}>
-            {n.toLocaleString("ar")}
+            {n.toLocaleString(NUMERIC_LOCALE)}
           </span>
         ) : (
           <Link key={n} href={hrefFor(n)}
             className={`${cellBase} bg-white text-gray-600 border border-gray-200 hover:border-primary tabular-nums`}>
-            {n.toLocaleString("ar")}
+            {n.toLocaleString(NUMERIC_LOCALE)}
           </Link>
         ),
       )}

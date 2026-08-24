@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, type ComponentType } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
@@ -231,7 +232,7 @@ export default function AdminDashboardPage() {
           <StatCard
             key={k.label}
             label={k.label}
-            value={k.value.toLocaleString("ar-YE")}
+            value={k.value.toLocaleString(NUMERIC_LOCALE)}
             icon={asIcon(k.icon)}
             trend={k.trend}
             sub={k.sub}
@@ -241,12 +242,12 @@ export default function AdminDashboardPage() {
 
       {/* Secondary stats — تحليلات أعمق */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-        <StatCard label="المستخدمون النشطون" value={stats.active_users.toLocaleString("ar-YE")} icon={asIcon(CheckCircle)} />
-        <StatCard label="محظورون / معطّلون"  value={stats.inactive_users.toLocaleString("ar-YE")} icon={asIcon(UserCross)} />
-        <StatCard label="حسابات موثّقة"       value={stats.verified_count.toLocaleString("ar-YE")} icon={asIcon(ShieldCheck)} />
-        <StatCard label="مزودو الخدمة"        value={stats.service_providers_count.toLocaleString("ar-YE")} icon={asIcon(GraphNewUp)} sub="حساب مزوّد" />
-        <StatCard label="المحادثات"           value={stats.conversations_count.toLocaleString("ar-YE")} icon={asIcon(ChatRoundDots)} />
-        <StatCard label="الرسائل"             value={stats.messages_count.toLocaleString("ar-YE")} icon={asIcon(Letter)} />
+        <StatCard label="المستخدمون النشطون" value={stats.active_users.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(CheckCircle)} />
+        <StatCard label="محظورون / معطّلون"  value={stats.inactive_users.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(UserCross)} />
+        <StatCard label="حسابات موثّقة"       value={stats.verified_count.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(ShieldCheck)} />
+        <StatCard label="مزودو الخدمة"        value={stats.service_providers_count.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(GraphNewUp)} sub="حساب مزوّد" />
+        <StatCard label="المحادثات"           value={stats.conversations_count.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(ChatRoundDots)} />
+        <StatCard label="الرسائل"             value={stats.messages_count.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(Letter)} />
       </div>
 
       {/* Charts — Row 1 */}

@@ -8,7 +8,7 @@
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { ChartCard } from "@/components/ui/ChartCard";
-import { cn } from "@/lib/utils";
+import { cn, NUMERIC_LOCALE } from "@/lib/utils";
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 import type { ReactNode } from "react";
 
@@ -27,7 +27,7 @@ export function formatBytes(bytes?: number | null): string {
 }
 
 export function formatNumber(n?: number | null): string {
-  return n == null ? "—" : n.toLocaleString("ar-EG", { maximumFractionDigits: 2 });
+  return n == null ? "—" : n.toLocaleString(NUMERIC_LOCALE, { maximumFractionDigits: 2 });
 }
 
 /** «قبل ٣ ساعات» — الأعمار أنفع من الطوابع الزمنية في لوحة مراقبة. */

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -178,7 +179,7 @@ export default function AdminBlogPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <PageHeader icon={<NotebookBookmark />} title="المدونة" subtitle={`${total.toLocaleString("ar")} مقال`}
+      <PageHeader icon={<NotebookBookmark />} title="المدونة" subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} مقال`}
         actions={
           <div className="flex gap-2">
             <Link href="/admin/blog/categories">
@@ -237,7 +238,7 @@ export default function AdminBlogPage() {
         {total > PER_PAGE && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
             <span className="text-xs text-gray-500 tabular-nums">
-              {offset + 1}–{Math.min(offset + PER_PAGE, total)} من {total.toLocaleString("ar")}
+              {offset + 1}–{Math.min(offset + PER_PAGE, total)} من {total.toLocaleString(NUMERIC_LOCALE)}
             </span>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" disabled={offset === 0 || loading}

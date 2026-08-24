@@ -16,6 +16,7 @@
  * يضرب LCP الذي عولج سابقاً بجهد.
  */
 import dynamic from "next/dynamic";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
@@ -98,7 +99,7 @@ export function HomeMapPreview({
             <span className="block text-h3">تصفّح العقارات على الخريطة</span>
             <span className="block text-caption text-white/75 mt-0.5">
               {points.length > 0
-                ? `${points.length.toLocaleString("ar")} عقاراً بموقعه الدقيق`
+                ? `${points.length.toLocaleString(NUMERIC_LOCALE)} عقاراً بموقعه الدقيق`
                 : "اكتشف العقارات حسب موقعها الجغرافي"}
             </span>
           </span>

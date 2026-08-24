@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -286,7 +287,7 @@ export default function AnalyticsPage() {
               )}
             </div>
             <p className="text-2xl font-bold text-gray-900 tabular-nums">
-              {loading ? "…" : k.value.toLocaleString("ar-YE")}
+              {loading ? "…" : k.value.toLocaleString(NUMERIC_LOCALE)}
             </p>
             <p className="text-xs text-gray-500 mt-1">{k.label}</p>
           </div>
@@ -296,14 +297,14 @@ export default function AnalyticsPage() {
       {/* Engagement & retention strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
         {[
-          { l: "أحداث تحويل", v: (data?.totals.events ?? 0).toLocaleString("ar-YE") },
-          { l: "الجلسات", v: (data?.engagement?.sessions ?? 0).toLocaleString("ar-YE") },
-          { l: "صفحات/جلسة", v: (data?.engagement?.pages_per_session ?? 0).toLocaleString("ar-YE") },
+          { l: "أحداث تحويل", v: (data?.totals.events ?? 0).toLocaleString(NUMERIC_LOCALE) },
+          { l: "الجلسات", v: (data?.engagement?.sessions ?? 0).toLocaleString(NUMERIC_LOCALE) },
+          { l: "صفحات/جلسة", v: (data?.engagement?.pages_per_session ?? 0).toLocaleString(NUMERIC_LOCALE) },
           { l: "معدّل الارتداد", v: `${Math.round((data?.engagement?.bounce_rate ?? 0) * 100)}%` },
-          { l: "زوّار جدد", v: (data?.engagement?.new_visitors ?? 0).toLocaleString("ar-YE") },
-          { l: "زوّار عائدون", v: (data?.engagement?.returning_visitors ?? 0).toLocaleString("ar-YE") },
-          { l: "نشِط أسبوعياً", v: (data?.engagement?.wau ?? 0).toLocaleString("ar-YE") },
-          { l: "نشِط شهرياً", v: (data?.engagement?.mau ?? 0).toLocaleString("ar-YE") },
+          { l: "زوّار جدد", v: (data?.engagement?.new_visitors ?? 0).toLocaleString(NUMERIC_LOCALE) },
+          { l: "زوّار عائدون", v: (data?.engagement?.returning_visitors ?? 0).toLocaleString(NUMERIC_LOCALE) },
+          { l: "نشِط أسبوعياً", v: (data?.engagement?.wau ?? 0).toLocaleString(NUMERIC_LOCALE) },
+          { l: "نشِط شهرياً", v: (data?.engagement?.mau ?? 0).toLocaleString(NUMERIC_LOCALE) },
         ].map((m) => (
           <div key={m.l} className="bg-white rounded-2xl card-shadow p-4">
             <p className="text-xl font-bold text-gray-900 tabular-nums">{loading ? "…" : m.v}</p>
@@ -540,7 +541,7 @@ function _ListCard({
             <li key={it.key}>
               <div className="flex items-center justify-between text-sm mb-1">
                 <span className="text-gray-700 truncate max-w-[70%]" dir="ltr">{it.key || "—"}</span>
-                <span className="font-semibold text-gray-900 tabular-nums">{it.count.toLocaleString("ar-YE")}</span>
+                <span className="font-semibold text-gray-900 tabular-nums">{it.count.toLocaleString(NUMERIC_LOCALE)}</span>
               </div>
               <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full bg-primary/70 rounded-full" style={{ width: `${(it.count / max) * 100}%` }} />

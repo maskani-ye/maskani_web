@@ -3,6 +3,7 @@
 // لوحة مركز المساعدة (الإدارة) — الجلسات + المحادثة + ردّ الموظّف/إغلاق.
 // محرّك الفلو الشبكي: الرسائل envelopes موحّدة (bot/user/agent).
 import { useCallback, useEffect, useState } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -117,7 +118,7 @@ export default function AdminHelpdeskPage() {
                       {STATUSES.find((x) => x.key === s.status)?.label ?? s.status}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">{new Date(s.updated_at).toLocaleString("ar")}</p>
+                  <p className="text-xs text-gray-400 mt-1">{new Date(s.updated_at).toLocaleString(NUMERIC_LOCALE)}</p>
                 </button>
               ))}
             </div>

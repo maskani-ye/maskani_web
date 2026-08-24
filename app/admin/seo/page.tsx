@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { toEnglishDigits } from "@/lib/digits";
 import { api } from "@/lib/api";
 import { endpoints } from "@/lib/endpoints";
@@ -88,9 +89,9 @@ const REASON_MEANING: Record<string, string> = {
 };
 
 const fmtDate = (s?: string | null) =>
-  s ? new Date(s).toLocaleString("ar", { dateStyle: "medium", timeStyle: "short" }) : "—";
+  s ? new Date(s).toLocaleString(NUMERIC_LOCALE, { dateStyle: "medium", timeStyle: "short" }) : "—";
 const shortPath = (url: string) => { try { return new URL(url).pathname || "/"; } catch { return url; } };
-const nf = (n: number) => (n ?? 0).toLocaleString("ar");
+const nf = (n: number) => (n ?? 0).toLocaleString(NUMERIC_LOCALE);
 // رابط أداة فحص الروابط في Search Console (فحص فوري + زرّ «طلب الفهرسة»).
 // resource_id = خاصية URL-prefix للموقع؛ id = الرابط المراد فحصه.
 const gscInspectUrl = (url: string) =>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import type { PaginatedResponse, ServiceCategoryRef } from "@/types";
@@ -121,7 +122,7 @@ export default function AdminServicesPage() {
       {/* Header */}
       <div className="mb-6">
         <PageHeader icon={<Settings />} title="إدارة مزودي الخدمة"
-          subtitle={`${total.toLocaleString("ar-YE")} مزود خدمة`} />
+          subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} مزود خدمة`} />
       </div>
 
       {/* Filters */}

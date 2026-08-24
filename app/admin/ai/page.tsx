@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -35,7 +36,7 @@ const emptyKey = { name: "", provider: "openrouter", api_key: "", default_model:
 const emptyProv = { name: "", slug: "", base_url: "", default_model: "", simple_model: "", sensitive_model: "", is_active: true };
 
 const money = (v: number | null | undefined) => (typeof v === "number" ? `$${v.toFixed(4)}` : "—");
-const fmt = (n: number) => n.toLocaleString("ar");
+const fmt = (n: number) => n.toLocaleString(NUMERIC_LOCALE);
 
 export default function AdminAIPage() {
   const [keys, setKeys] = useState<AIKey[]>([]);

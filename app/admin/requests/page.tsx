@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
-import { formatRelativeTime, formatPrice } from "@/lib/utils";
+import { formatRelativeTime, formatPrice, NUMERIC_LOCALE } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -169,7 +169,7 @@ export default function AdminRequestsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <PageHeader icon={<ChatRound />} title="طلبات عقارية"
-          subtitle={`${total.toLocaleString("ar-YE")} طلب إجمالاً`} />
+          subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} طلب إجمالاً`} />
       </div>
 
       {/* Filters */}

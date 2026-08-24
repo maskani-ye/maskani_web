@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, type ComponentType } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -162,7 +163,7 @@ export default function AdminVerificationPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <PageHeader icon={<ShieldCheck />} title="طلبات التوثيق"
-          subtitle={`${total.toLocaleString("ar-YE")} طلب`} />
+          subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} طلب`} />
       </div>
 
       {/* Filters */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -43,7 +44,7 @@ export default function AdminBroadcastPage() {
       const res = await api.post<{ message: string; count: number }>(
         ep.admin.broadcast, { title, body, target }
       );
-      toast.success(`تم إرسال التعميم إلى ${res.data.count.toLocaleString("ar-YE")} مستخدم`);
+      toast.success(`تم إرسال التعميم إلى ${res.data.count.toLocaleString(NUMERIC_LOCALE)} مستخدم`);
       setTitle("");
       setBody("");
       setTarget("all");

@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { api, getErrorMessage } from "@/lib/api";
-import { CURRENCIES, DEFAULT_CURRENCY, formatPrice, offerTypeLabels, propertyTypeName } from "@/lib/utils";
+import { CURRENCIES, DEFAULT_CURRENCY, formatPrice, offerTypeLabels, propertyTypeName, NUMERIC_LOCALE } from "@/lib/utils";
 import type { Property, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -249,7 +249,7 @@ function PropertiesContent() {
                     "جارٍ التحميل…"
                   ) : (
                     <>
-                      <span className="font-bold text-primary">{total.toLocaleString("ar")}</span> عقار متاح
+                      <span className="font-bold text-primary">{total.toLocaleString(NUMERIC_LOCALE)}</span> عقار متاح
                     </>
                   )}
                 </p>

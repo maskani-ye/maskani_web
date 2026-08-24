@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
-import { formatRelativeTime } from "@/lib/utils";
+import { formatRelativeTime, NUMERIC_LOCALE } from "@/lib/utils";
 import type {
   AdminConversation, AdminConversationMessage, ChatParticipant, PaginatedResponse,
 } from "@/types";
@@ -150,7 +150,7 @@ export default function AdminConversationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <PageHeader icon={<ChatRoundDots />} title="المحادثات"
-          subtitle={`${total.toLocaleString("ar-YE")} محادثة إجمالاً`} />
+          subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} محادثة إجمالاً`} />
       </div>
 
       {/* Filters */}

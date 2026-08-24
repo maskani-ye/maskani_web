@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, NUMERIC_LOCALE } from "@/lib/utils";
 import type { PaginatedResponse, PropertyTypeRef } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -141,7 +141,7 @@ export default function AdminPropertiesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <PageHeader icon={<Buildings2 />} title="إدارة العقارات"
-          subtitle={`${total.toLocaleString("ar-YE")} عقار`} />
+          subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} عقار`} />
       </div>
 
       {/* Filters */}

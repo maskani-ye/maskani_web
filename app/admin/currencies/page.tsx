@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import { Button } from "@/components/ui/Button";
@@ -173,7 +174,7 @@ export default function AdminCurrenciesPage() {
                 <p className="text-xs text-gray-600 mt-1">
                   آخر تشغيل:{" "}
                   <strong>
-                    {new Date(job.ran_at).toLocaleString("ar", {
+                    {new Date(job.ran_at).toLocaleString(NUMERIC_LOCALE, {
                       dateStyle: "medium", timeStyle: "short",
                     })}
                   </strong>{" "}

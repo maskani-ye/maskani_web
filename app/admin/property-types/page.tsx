@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -157,7 +158,7 @@ export default function AdminPropertyTypesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <PageHeader icon={<Widget />} title="أنواع العقارات"
-          subtitle={`${total.toLocaleString("ar-YE")} نوع`} />
+          subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} نوع`} />
         <Button onClick={openAdd}>
           <AddCircle className="h-4 w-4" />
           إضافة نوع

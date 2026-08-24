@@ -49,6 +49,27 @@ export const DEFAULT_CURRENCY = "YER";
 // نصّ موحّد لغياب السعر — «السعر عند التواصل» يشجّع على النقر/التواصل.
 export const PRICE_ON_REQUEST = "السعر عند التواصل";
 
+/**
+ * تنسيق عدد بالأرقام العربية-الهندية — **مصدر واحد** لكل رقم في المنصّة.
+ *
+ * ⚠️ `toLocaleString("ar")` بلا إقليم يُنتج نتيجتين مختلفتين:
+ *   Node (SSR):     (1234).toLocaleString("ar") → "1,234"   أرقام غربية
+ *   Chrome (عميل):  (1234).toLocaleString("ar") → "١٬٢٣٤"   أرقام هندية
+ * فكل رقم يُرسَم على الخادم ثم يُرطَّب في المتصفّح يختلف بين النسختين — عدم
+ * تطابق ترطيب صامت، وأرقام مختلطة على الشاشة الواحدة. والوسم بالإقليم يحسم
+ * الأمر في البيئتين.
+ */
+export const NUMERIC_LOCALE = "ar-EG";
+
+export function formatNumber(
+  n: number | string | null | undefined,
+  options?: Intl.NumberFormatOptions,
+): string {
+  const num = typeof n === "string" ? parseFloat(n) : n;
+  if (num == null || isNaN(num)) return "";
+  return num.toLocaleString(NUMERIC_LOCALE, options);
+}
+
 export function formatPrice(price: string | number | null | undefined, currency?: string | null): string {
   const num = typeof price === "string" ? parseFloat(price) : price;
   if (num == null || isNaN(num)) return PRICE_ON_REQUEST;

@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, NUMERIC_LOCALE } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -102,7 +102,7 @@ export default function AdminJobsPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* ── الترويسة ── */}
       <PageHeader icon={<Case />} title="طلبات الخدمة"
-        subtitle={`${total.toLocaleString("ar")} طلب خدمة`} />
+        subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} طلب خدمة`} />
 
       {/* ── التولبار ── */}
       <div className="bg-white rounded-2xl card-shadow p-4 flex flex-col sm:flex-row gap-3">

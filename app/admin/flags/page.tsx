@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, type ComponentType } from "react";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -138,7 +139,7 @@ export default function AdminUserReportsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <PageHeader icon={<DangerTriangle />} title="بلاغات المستخدمين"
-          subtitle={`${total.toLocaleString("ar-YE")} بلاغ`} />
+          subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} بلاغ`} />
       </div>
 
       {/* Filters */}

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { formatPrice, offerTypeLabels, propertyTypeName, PRICE_ON_REQUEST } from "@/lib/utils";
+import { formatPrice, offerTypeLabels, propertyTypeName, PRICE_ON_REQUEST, NUMERIC_LOCALE } from "@/lib/utils";
 import {
   Buildings2, Heart, MapPoint, Bed, Bath, Ruler, CheckCircle,
 } from "@solar-icons/react";
@@ -85,7 +85,7 @@ export function PropertyCard({
     // (3111م²) — نظامان على البطاقة نفسها. التوطين هنا يوحّدهما.
     area != null && {
       Icon: Ruler,
-      value: `${area.toLocaleString("ar-EG")}م²`,
+      value: `${area.toLocaleString(NUMERIC_LOCALE)}م²`,
       label: "المساحة",
     },
   ].filter(Boolean) as Array<{ Icon: typeof Bed; value: React.ReactNode; label: string }>;

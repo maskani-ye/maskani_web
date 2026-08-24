@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCity } from "@/context/CityContext";
 import { useCountry } from "@/context/CountryContext";
 import { api } from "@/lib/api";
-import { formatPrice, offerTypeLabels } from "@/lib/utils";
+import { formatPrice, offerTypeLabels, NUMERIC_LOCALE } from "@/lib/utils";
 import type { Property, ServiceProvider, ClientRequest } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -421,7 +421,7 @@ function CitiesStrip({ cities }: { cities: City[] }) {
                   أن تفيد أحداً. */}
               <span className="text-[11px] tabular-nums leading-none text-muted h-3">
                 {(c.properties_count ?? 0) > 0
-                  ? `${c.properties_count!.toLocaleString("ar")} عقار`
+                  ? `${c.properties_count!.toLocaleString(NUMERIC_LOCALE)} عقار`
                   : ""}
               </span>
             </button>
@@ -549,7 +549,7 @@ function ServiceCard({ service }: { service: ServiceProvider }) {
             {rating && (
               <span className="ms-auto flex items-center gap-1 text-caption font-bold text-ink flex-shrink-0 tabular-nums">
                 <Star weight="Bold" className="h-4 w-4 text-gold-500" />
-                {rating.toLocaleString("ar-EG", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                {rating.toLocaleString(NUMERIC_LOCALE, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
               </span>
             )}
           </div>
@@ -617,7 +617,7 @@ function RequestCard({ request }: { request: ClientRequest }) {
               : <span className="text-body text-muted">حسب العرض</span>}
             <span className="text-caption text-muted flex-shrink-0 tabular-nums">
               {request.offers_count > 0
-                ? `${request.offers_count.toLocaleString("ar-EG")} عرض`
+                ? `${request.offers_count.toLocaleString(NUMERIC_LOCALE)} عرض`
                 : "لا عروض بعد"}
             </span>
           </div>
@@ -660,7 +660,7 @@ function JobCard({ job }: { job: ServiceRequest }) {
               : <span className="text-body text-muted">حسب العرض</span>}
             <span className="text-caption text-muted flex-shrink-0 tabular-nums">
               {job.offers_count > 0
-                ? `${job.offers_count.toLocaleString("ar-EG")} عرض`
+                ? `${job.offers_count.toLocaleString(NUMERIC_LOCALE)} عرض`
                 : "لا عروض بعد"}
             </span>
           </div>
