@@ -87,8 +87,9 @@ export function CountryProvider({ children }: { children: React.ReactNode }) {
     setCountryState(c);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(c));
-      // تبديل الدولة يُبطل اختيار مدينة تتبع دولةً أخرى.
-      localStorage.removeItem("maskani_selected_city");
+      // ⚠️ لا نلمس المدينة هنا. كان هذا الموضع يمسحها من التخزين وحده فتبقى
+      // حالة React عاملةً بمدينة الدولة السابقة — يرى القاهريّ بيانات صنعاء.
+      // `CityProvider` (المُتداخل تحتنا) يراقب `code` ويطابق المدينة معه.
     } catch {
       /* تجاهل */
     }

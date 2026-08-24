@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCity } from "@/context/CityContext";
+import { useCountry } from "@/context/CountryContext";
 import { api } from "@/lib/api";
 import { formatPrice, offerTypeLabels } from "@/lib/utils";
 import type { Property, ServiceProvider, ClientRequest } from "@/types";
@@ -37,20 +38,41 @@ export default function HomeClient() {
   const [services, setServices] = useState<ServiceProvider[] | null>(null);
   const [requests, setRequests] = useState<ClientRequest[] | null>(null);
   const [serviceReqs, setServiceReqs] = useState<ServiceRequest[] | null>(null);
-  const [cities, setCities] = useState<City[]>([]);
   const [featured, setFeatured] = useState<Property[] | null>(null);
   const [stats, setStats] = useState<Record<string, number> | null>(null);
 
+  const { cityId, cityName, cities, loading: cityLoading } = useCity();
+  const { code: countryCode } = useCountry();
+
+  /**
+   * ⚠️ كانت التبعيات فارغة والطلبات بلا فلتر: تجلب الرئيسية مرّة واحدة ولا
+   * تعرف المدينة ولا الدولة إطلاقاً. فمن يبدّل إلى القاهرة يبقى أمام عقارات
+   * صنعاء — والرئيسية أوّل ما يراه الزائر، فالخطأ فيها يقول له «هذا الموقع
+   * ليس لبلدك». الفلترة على المدينة، والدولة احتياطٌ حين لا مدينة بعد.
+   */
   useEffect(() => {
+    if (cityLoading) return; // لا نجلب بمدينةٍ لم تُطابَق بعد مع الدولة
+    const scope: Record<string, string | number> = cityId
+      ? { city: cityId }
+      : countryCode
+        ? { country: countryCode }
+        : {};
+    const q = (extra: Record<string, string | number>) => ({
+      params: { ...scope, ...extra },
+    });
+    const rows = (r: { data: { results?: unknown[] } | unknown[] }) =>
+      (Array.isArray(r.data) ? r.data : r.data.results) ?? [];
+
+    // `/stats/` أرقام المنصّة كلّها عمداً («أرقام مسكني») — لا تُضيَّق بمدينة،
+    // فتضييقها يعرض «0 عقار» لسوقٍ جديد فتبدو المنصّة ميتة. لا نمرّر فلتراً
+    // يبتلعه الخادم صامتاً.
     api.get("/stats/").then((r) => setStats(r.data ?? null)).catch(() => setStats(null));
-    api.get("/properties/featured/?limit=8").then((r) => setFeatured(r.data.results ?? r.data ?? [])).catch(() => setFeatured([]));
-    api.get("/properties/?limit=4&offset=0").then((r) => setProperties(r.data.results ?? [])).catch(() => setProperties([]));
-    api.get("/services/?limit=4&offset=0").then((r) => setServices(r.data.results ?? [])).catch(() => setServices([]));
-    api.get("/requests/?limit=4&offset=0").then((r) => setRequests(r.data.results ?? [])).catch(() => setRequests([]));
-    api.get("/jobs/?limit=4&offset=0").then((r) => setServiceReqs(r.data.results ?? [])).catch(() => setServiceReqs([]));
-    // `_t` يتجاوز كاش المتصفّح (المدن صارت قابلة للتحرير — صورة المحافظة تتغيّر).
-    api.get("/cities/", { params: { _t: Date.now() } }).then((r) => setCities(r.data.results ?? r.data ?? [])).catch(() => setCities([]));
-  }, []);
+    api.get("/properties/featured/", q({ limit: 8 })).then((r) => setFeatured(rows(r) as Property[])).catch(() => setFeatured([]));
+    api.get("/properties/", q({ limit: 4, offset: 0 })).then((r) => setProperties(rows(r) as Property[])).catch(() => setProperties([]));
+    api.get("/services/", q({ limit: 4, offset: 0 })).then((r) => setServices(rows(r) as ServiceProvider[])).catch(() => setServices([]));
+    api.get("/requests/", q({ limit: 4, offset: 0 })).then((r) => setRequests(rows(r) as ClientRequest[])).catch(() => setRequests([]));
+    api.get("/jobs/", q({ limit: 4, offset: 0 })).then((r) => setServiceReqs(rows(r) as ServiceRequest[])).catch(() => setServiceReqs([]));
+  }, [cityId, countryCode, cityLoading]);
 
   return (
     <div>

@@ -8,6 +8,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
 import { useCity } from "@/context/CityContext";
+import { useCountry } from "@/context/CountryContext";
 import { Dialog } from "@/components/ui/Dialog";
 import { MapPoint, Magnifer } from "@solar-icons/react";
 import type { City } from "@/types";
@@ -16,6 +17,7 @@ const CITY_KEY = "maskani_selected_city";
 
 export function CityFirstVisitModal() {
   const { cityId, setCity } = useCity();
+  const { code: countryCode, country, loading: countryLoading } = useCountry();
   const [open, setOpen] = useState(false);
   const [cities, setCities] = useState<City[]>([]);
   const [query, setQuery] = useState("");
@@ -30,9 +32,14 @@ export function CityFirstVisitModal() {
       return; // localStorage غير متاح — لا نعرض
     }
     if (hasCity) return;
+    // ⚠️ ننتظر تحديد الدولة: كانت القائمة تُجلب بلا فلتر، فيُطلب من زائر
+    // القاهرة أن يختار محافظةً يمنية — وهو أوّل ما يراه على المنصّة.
+    if (countryLoading || !countryCode) return;
 
     api
-      .get<{ results?: City[] }>("/cities/", { params: { offset: 0, limit: 100 } })
+      .get<{ results?: City[] }>("/cities/", {
+        params: { offset: 0, limit: 100, country: countryCode },
+      })
       .then((r) => {
         const list: City[] = r.data.results ?? [];
         if (list.length) {
@@ -41,7 +48,7 @@ export function CityFirstVisitModal() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [countryCode, countryLoading]);
 
   const choose = (c: City) => {
     setCity(String(c.id), c.name_ar);
@@ -75,7 +82,8 @@ export function CityFirstVisitModal() {
       }
     >
       <p className="text-sm text-gray-500 mb-3">
-        نعرض لك عقارات وخدمات مدينتك. اختر مدينتك للمتابعة — يمكنك تغييرها لاحقاً من الأعلى.
+        نعرض لك عقارات وخدمات مدينتك{country?.name_ar ? ` في ${country.name_ar}` : ""}. اختر
+        مدينتك للمتابعة — يمكنك تغيير المدينة أو الدولة لاحقاً من الأعلى.
       </p>
 
       {/* بحث */}

@@ -28,7 +28,9 @@ const navLinks = [
 export function Navbar() {
   const { user, logout } = useAuth();
   const { requireAuth } = useAuthGate();
-  const { cityId, cityName, setCity } = useCity();
+  // المدن تأتي من `CityContext` — مُصفّاة بالدولة ومرتّبة بالعاصمة أولاً.
+  // كان الشريط يجلبها بنفسه، فصار جلبان لنفس القائمة وفرصةٌ لتباعد الحالتين.
+  const { cityId, cityName, cities, setCity } = useCity();
   const { code: countryCode, country, countries, setCountry } = useCountry();
   const router = useRouter();
   const pathname = usePathname();
@@ -36,16 +38,7 @@ export function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
   const [countryOpen, setCountryOpen] = useState(false);
-  const [cities, setCities] = useState<City[]>([]);
   const [chatUnread, setChatUnread] = useState(0);
-
-  // قائمة المدن للمُحدِّد العام
-  useEffect(() => {
-    api
-      .get("/cities/", { params: { limit: 100, ...(countryCode ? { country: countryCode } : {}) } })
-      .then((r) => setCities(r.data.results ?? []))
-      .catch(() => {});
-  }, [countryCode]);
 
   // الاسم المعروض: من السياق، أو من قائمة المدن (لدعم الصيغة القديمة)، وإلا "كل المدن"
   const selectedCityName =
