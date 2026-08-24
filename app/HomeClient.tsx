@@ -208,6 +208,7 @@ export default function HomeClient() {
         {/* ─── الخدمات ────────────────────────────────────────────────────── */}
         <HomeSection title="الخدمات" subtitle="مزوّدو خدمات عقارية متخصّصون" href="/services">
           <CardGrid loading={services === null} empty={services?.length === 0}
+            media={false}
             emptyIcon={<UsersGroupRounded className="h-10 w-10" />}
             emptyText={`لا يوجد مزوّد خدمة في ${where} بعد`}
             emptyAction={
@@ -220,6 +221,7 @@ export default function HomeClient() {
         {/* ─── طلبات عقارية (demands) ─────────────────────────────────────── */}
         <HomeSection title="طلبات عقارية" subtitle="عملاء يبحثون عن عقارات — قدّم عرضك" href="/requests">
           <CardGrid loading={requests === null} empty={requests?.length === 0}
+            media={false}
             emptyIcon={<ClipboardList className="h-10 w-10" />}
             emptyText={`لا توجد طلبات عقارية في ${where} بعد`}
             emptyAction={
@@ -232,6 +234,7 @@ export default function HomeClient() {
         {/* ─── طلبات خدمات (jobs) ─────────────────────────────────────────── */}
         <HomeSection title="طلبات خدمات" subtitle="عملاء يبحثون عن حِرفيين ومزوّدي خدمات" href="/jobs">
           <CardGrid loading={serviceReqs === null} empty={serviceReqs?.length === 0}
+            media={false}
             emptyIcon={<ClipboardList className="h-10 w-10" />}
             emptyText={`لا توجد طلبات خدمات في ${where} بعد`}
             emptyAction={
@@ -452,20 +455,28 @@ function HomeSection({ title, subtitle, href, tone = "secondary", children }: {
  * واسع وإيماءة كاذبة. وكانت العروض ثلاثة مختلفة (240 · 270 · 300) فلا تتحاذى
  * الصفوف فيما بينها. شبكةٌ تعرض كل ما لديك بلا ادّعاء.
  */
-function CardGrid({ loading, empty, emptyIcon, emptyText, emptyAction, children }: {
+function CardGrid({ loading, empty, emptyIcon, emptyText, emptyAction, media = true, children }: {
   loading: boolean; empty?: boolean; emptyIcon: React.ReactNode; emptyText: string;
-  emptyAction?: React.ReactNode; children: React.ReactNode;
+  emptyAction?: React.ReactNode;
+  /** بطاقات وسائطية (صورة) أم نصّية — يحدّد الارتفاع المحجوز */
+  media?: boolean;
+  children: React.ReactNode;
 }) {
   // الارتفاع الأدنى موحّد في الحالات الثلاث (تحميل/فارغ/محتوى): اختلافه كان
   // يُقفز الصفحة تحت إصبع القارئ عند وصول البيانات (CLS = 0.184).
-  const grid = "grid grid-cols-2 lg:grid-cols-4 gap-4 min-h-[320px]";
+  //
+  // ⚠️ لكنّه يجب أن يطابق **ارتفاع البطاقة الحقيقي**: فرضُ 320 بكسل على بطاقة
+  // نصّية ارتفاعها ~190 يُنتج فراغاً أبيض هائلاً وسطها — رأيناه في الطلبات
+  // والخدمات بعد تحويلها إلى بطاقات نصّية.
+  const reserve = media ? "min-h-[320px]" : "min-h-[190px]";
+  const grid = `grid grid-cols-2 lg:grid-cols-4 gap-4 ${reserve}`;
 
   if (loading) {
     return (
       <div className={grid}>
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="bg-white rounded-2xl p-2 ring-1 ring-ink/[0.06] shadow-e1">
-            <Skeleton className="aspect-[3/2] w-full rounded-lg" />
+            {media && <Skeleton className="aspect-[3/2] w-full rounded-lg" />}
             <div className="px-1.5 pt-3 space-y-2.5">
               <Skeleton className="h-6 w-1/2" />
               <Skeleton className="h-4 w-3/4" />
@@ -478,7 +489,7 @@ function CardGrid({ loading, empty, emptyIcon, emptyText, emptyAction, children 
   }
   if (empty) {
     return (
-      <div className="bg-white rounded-2xl ring-1 ring-ink/[0.06] shadow-e1 min-h-[320px] flex flex-col items-center justify-center text-primary-200 px-6 text-center">
+      <div className={`bg-white rounded-2xl ring-1 ring-ink/[0.06] shadow-e1 ${reserve} flex flex-col items-center justify-center text-primary-200 px-6 text-center`}>
         {emptyIcon}
         <p className="text-body text-muted mt-3">{emptyText}</p>
         {/* سوقٌ جديد يبدأ فارغاً بالضرورة. صندوقٌ رماديّ صامت يقول للزائر «المنصّة
@@ -592,7 +603,9 @@ function RequestCard({ request }: { request: ClientRequest }) {
               ? <span className="text-price-sm text-primary line-clamp-1">{budget}</span>
               : <span className="text-body text-muted">حسب العرض</span>}
             <span className="text-caption text-muted flex-shrink-0 tabular-nums">
-              {request.offers_count.toLocaleString("ar-EG")} عرض
+              {request.offers_count > 0
+                ? `${request.offers_count.toLocaleString("ar-EG")} عرض`
+                : "لا عروض بعد"}
             </span>
           </div>
         </div>
@@ -633,7 +646,9 @@ function JobCard({ job }: { job: ServiceRequest }) {
               ? <span className="text-price-sm text-primary line-clamp-1">{budget}</span>
               : <span className="text-body text-muted">حسب العرض</span>}
             <span className="text-caption text-muted flex-shrink-0 tabular-nums">
-              {job.offers_count.toLocaleString("ar-EG")} عرض
+              {job.offers_count > 0
+                ? `${job.offers_count.toLocaleString("ar-EG")} عرض`
+                : "لا عروض بعد"}
             </span>
           </div>
         </div>

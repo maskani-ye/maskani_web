@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice, offerTypeLabels, propertyTypeName, PRICE_ON_REQUEST } from "@/lib/utils";
@@ -71,6 +72,12 @@ export function PropertyCard({
 
   const priceText = formatPrice(property.price, property.currency);
 
+  // ⚠️ رابط صورة معطوب (رصدنا 404 على R2 لأحد العقارات) كان يسكب النصّ البديل
+  // عبر البطاقة — سطران من الوصف فوق مساحة فارغة. الفشل يسقط إلى نفس عنصر
+  // «بلا صورة» فيبقى الصفّ متّسقاً مهما تعطّل رابط.
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = !!property.main_image && !imageFailed;
+
   const specs = [
     property.rooms != null && { Icon: Bed, value: property.rooms, label: "غرف" },
     property.bathrooms != null && { Icon: Bath, value: property.bathrooms, label: "حمّامات" },
@@ -88,13 +95,14 @@ export function PropertyCard({
       <article className="h-full flex flex-col bg-white rounded-2xl p-2 ring-1 ring-ink/[0.06] shadow-e1 hover:shadow-e3 hover:ring-ink/[0.10] transition-[box-shadow,transform] duration-200 group-hover:-translate-y-0.5">
         {/* ─── الوسائط ─────────────────────────────────────────── */}
         <div className="relative aspect-[3/2] rounded-lg overflow-hidden bg-primary-50">
-          {property.main_image ? (
+          {showImage ? (
             <Image
-              src={property.main_image}
+              src={property.main_image!}
               alt={`${property.title} — ${propertyTypeName(property.property_type)}${property.city_name ? " في " + property.city_name : ""}`}
               fill
               sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 320px"
               className="object-cover group-hover:scale-[1.04] transition-transform duration-500"
+              onError={() => setImageFailed(true)}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-700 to-primary">
