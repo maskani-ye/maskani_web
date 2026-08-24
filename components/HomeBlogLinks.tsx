@@ -42,10 +42,14 @@ export default async function HomeBlogLinks() {
       </div>
       <ul className="flex flex-wrap gap-2">
         {articles.map((a) => (
-          <li key={a.slug}>
+          /* ⚠️ `min-w-0` على عنصر القائمة شرطٌ لازم: عناصر الـflex لها
+             `min-width: auto` افتراضاً فترفض التقلّص تحت عرض محتواها مهما وُضع
+             `max-w-full` على ما بداخلها — وهذا ما جعل الشريحة تفيض 129 بكسل
+             على شاشة 320 بعد أن ظننتُ أنني أصلحتها. */
+          <li key={a.slug} className="min-w-0 max-w-full">
             <Link
               href={`/blog/${a.slug}`}
-              className="inline-block max-w-full sm:max-w-[20rem] truncate rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm text-ink hover:border-primary hover:text-primary transition-colors"
+              className="block max-w-full sm:max-w-[20rem] truncate rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm text-ink hover:border-primary hover:text-primary transition-colors"
             >
               {a.title}
             </Link>
