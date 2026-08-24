@@ -144,6 +144,19 @@ export default async function ArticlePage(
             </div>
           )}
 
+          {/* إفصاحٌ عن طريقة الإعداد — توصي به إرشادات جوجل للمحتوى المُعان
+              بالذكاء الاصطناعي، وهو صدقٌ مع القارئ قبل أن يكون امتثالاً.
+              ⚠️ لا ندّعي مراجعةً بشرية لم تقع: النصّ يصف ما جرى فعلاً. */}
+          <aside className="mt-8 rounded-2xl bg-cream border border-gray-100 p-4">
+            <p className="text-xs text-gray-500 leading-relaxed">
+              أُعدّ هذا الدليل بمساعدة أدوات الذكاء الاصطناعي اعتماداً على أنظمة
+              السوق العقاريّ المحلّي ومصطلحاته، ويُحدَّث كلّما تغيّرت الإجراءات.
+              وهو معلومات عامّة لا استشارة قانونية — ارجع إلى الجهة الرسمية
+              المختصّة قبل أي إجراء أو تعاقد. لاحظتَ خطأً؟{" "}
+              <Link href="/contact" className="text-primary hover:underline">أخبرنا</Link>.
+            </p>
+          </aside>
+
           <AdSlot slot={AD_SLOTS.articleBottom} />
 
           <div className="mt-6 pt-5 border-t border-gray-100">

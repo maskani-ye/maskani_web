@@ -99,7 +99,7 @@ export default async function BlogPage(
               {featured.map((a) => <BlogCard key={a.id} a={a} />)}
             </section>
           )}
-          <AdSlot slot={AD_SLOTS.blogList} />
+          <AdSlot slot={AD_SLOTS.blogList} hasContent={grid.length > 0 || featured.length > 0} />
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {grid.map((a) => <BlogCard key={a.id} a={a} />)}
           </section>

@@ -496,8 +496,9 @@ function PropertiesContent() {
       )}
       </>
       )}
-      {/* إعلان واحد أسفل القائمة — كثافة خفيفة عمداً في صفحات المنصّة. */}
-      <AdSlot slot={AD_SLOTS.listBottom} />
+      {/* إعلان واحد أسفل القائمة — كثافة خفيفة عمداً، ولا يظهر على قائمة
+          فارغة أو أثناء التحميل (سياسة «شاشات بلا محتوى ناشر»). */}
+      <AdSlot slot={AD_SLOTS.listBottom} hasContent={!loading && properties.length > 0} />
     </div>
   );
 }
