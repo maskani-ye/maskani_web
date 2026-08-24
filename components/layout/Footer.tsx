@@ -145,8 +145,26 @@ export function Footer() {
             </Link>
           </div>
 
-          {/* روابط قانونية */}
+          {/* روابط قانونية وتعريفية */}
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <Link
+              href="/about"
+              className="text-primary-200 hover:text-white text-sm font-medium transition-colors"
+            >
+              من نحن
+            </Link>
+            <span className="text-primary-600" aria-hidden>
+              ·
+            </span>
+            <Link
+              href="/contact"
+              className="text-primary-200 hover:text-white text-sm font-medium transition-colors"
+            >
+              تواصل معنا
+            </Link>
+            <span className="text-primary-600" aria-hidden>
+              ·
+            </span>
             <Link
               href="/privacy"
               className="text-primary-200 hover:text-white text-sm font-medium transition-colors"
