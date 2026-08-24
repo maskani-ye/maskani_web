@@ -432,7 +432,9 @@ function CitiesTiles({ cities }: { cities: City[] }) {
               key={c.id}
               onClick={() => pick(c)}
               aria-pressed={on}
-              className={`group relative h-36 sm:h-40 rounded-2xl overflow-hidden text-start ring-1 transition-all ${
+              // خلفية كحلية تحت الصورة: بعض صور المحافظات مرفوعة بقصٍّ دائريّ
+              // شفّاف الزوايا، وبلا خلفية داكنة تظهر الزوايا لوناً غريباً.
+              className={`group relative h-36 sm:h-40 rounded-2xl overflow-hidden text-start ring-1 transition-all bg-ink ${
                 on ? "ring-2 ring-primary shadow-e3" : "ring-ink/[0.06] hover:shadow-e2"
               }`}
             >

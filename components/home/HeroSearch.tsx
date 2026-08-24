@@ -14,7 +14,7 @@
  */
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Magnifer } from "@solar-icons/react";
+import { Magnifer, AltArrowDown, MapPoint } from "@solar-icons/react";
 import { useCity } from "@/context/CityContext";
 
 const OFFER_TABS = [
@@ -69,12 +69,17 @@ export function HeroSearch() {
         aria-label="البحث عن عقار"
         className="flex flex-col sm:flex-row items-stretch bg-white rounded-2xl shadow-e4 p-1.5 gap-1.5"
       >
-        <label className="sm:w-44 flex-shrink-0 relative">
+        {/* المؤشّران ضروريّان: `appearance-none` يجرّد الـselect من كل ما يقول
+            إنه قابل للفتح، فيبدو سطراً نصّياً لا حقلاً — وهو ما بدا عليه على
+            الجوّال. الدبّوس يسمّي الحقل والسهم يقول إنه قائمة. */}
+        <label className="sm:w-48 flex-shrink-0 relative">
           <span className="sr-only">المدينة</span>
+          <MapPoint className="absolute top-1/2 -translate-y-1/2 start-3.5 h-5 w-5 text-muted pointer-events-none" />
+          <AltArrowDown className="absolute top-1/2 -translate-y-1/2 end-3 h-4 w-4 text-muted pointer-events-none" />
           <select
             value={effectiveCity}
             onChange={(e) => setCity(e.target.value)}
-            className="w-full h-12 appearance-none rounded-xl border-0 bg-transparent px-4 text-body font-semibold text-ink outline-none focus:bg-cream transition-colors cursor-pointer"
+            className="w-full h-12 appearance-none rounded-xl border-0 bg-transparent ps-11 pe-9 text-body font-semibold text-ink outline-none focus:bg-cream transition-colors cursor-pointer"
           >
             <option value="">كل المدن</option>
             {cities.map((c) => (
@@ -85,7 +90,7 @@ export function HeroSearch() {
           </select>
         </label>
 
-        <span aria-hidden className="hidden sm:block w-px my-2 bg-ink/10" />
+        <span aria-hidden className="h-px mx-2 sm:h-auto sm:w-px sm:my-2 sm:mx-0 bg-ink/10" />
 
         <label className="flex-1 relative">
           <span className="sr-only">ابحث بالكلمة</span>
