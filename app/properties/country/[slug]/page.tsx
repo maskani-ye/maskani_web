@@ -39,11 +39,22 @@ interface PropertyRow {
   city_name?: string;
 }
 
-async function getCountries(): Promise<CountryRow[]> {
+/**
+ * ⚠️ درسٌ من عطل حيّ (2026-08-24): سجّل جوجل صفحة مصر **404**، وكانت عُمان ترجع
+ * 404 بعد إضافتها بيوم كامل. السبب ليس `dynamicParams` — بل أنّ تخزين هذا الجلب
+ * (86400) كان يفوق `revalidate` الصفحة (3600): تُعاد بناء الصفحة كل ساعة لكنها
+ * تقرأ قائمةً محفوظةً لا يظهر فيها الكيان الجديد، فتُعلن 404 وتُثبّتها.
+ *
+ * الإصلاح شقّان: مواءمة التخزين مع الصفحة، ثم **إعادة محاولة بلا تخزين قبل
+ * إعلان الغياب** — فالـ404 قرارٌ لا رجعة فيه في نتائج البحث، ولا يجوز اتّخاذه
+ * من نسخةٍ قد تكون قديمة.
+ */
+async function getCountries(fresh = false): Promise<CountryRow[]> {
   try {
-    const res = await fetch(`${API}/cities/countries/?limit=100`, {
-      next: { revalidate: 86400 },
-    });
+    const res = await fetch(
+      `${API}/cities/countries/?limit=100`,
+      fresh ? { cache: "no-store" as const } : { next: { revalidate: 3600 } },
+    );
     if (!res.ok) return [];
     return (await res.json()).results ?? [];
   } catch {
@@ -52,8 +63,11 @@ async function getCountries(): Promise<CountryRow[]> {
 }
 
 async function resolveCountry(slug: string): Promise<CountryRow | null> {
-  const list = await getCountries();
-  return list.find((c) => c.slug === slug) ?? null;
+  const hit = (list: CountryRow[]) => list.find((c) => c.slug === slug) ?? null;
+  const cached = hit(await getCountries());
+  if (cached) return cached;
+  // غائبة من النسخة المحفوظة؟ اسأل المصدر قبل إعلان 404 — دولةٌ أُضيفت للتوّ.
+  return hit(await getCountries(true));
 }
 
 async function getCountryProperties(
@@ -119,7 +133,10 @@ export const dynamicParams = true;
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const list = await getCountries();
+  // ⚠️ `true` = بلا تخزين: مخزن البناء (`.next/cache`) يبقى بين عمليات البناء،
+  // فبُنيت قائمةٌ سبقت إضافة عُمان ولم تُولَّد صفحتها. قائمة المسارات الثابتة
+  // تُقرأ من المصدر دائماً — البناء لحظةٌ واحدة، ودقّتها أهم من توفير طلب.
+  const list = await getCountries(true);
   return list.map((c) => ({ slug: c.slug })).filter((p) => p.slug);
 }
 

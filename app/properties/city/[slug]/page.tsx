@@ -39,9 +39,19 @@ interface PropertyRow {
   area?: number | null;
 }
 
-async function getCities(): Promise<City[]> {
+/**
+ * ⚠️ درسٌ من عطل حيّ (2026-08-24): سجّل جوجل صفحة مصر **404**، وكانت عُمان ترجع
+ * 404 بعد إضافتها بيوم كامل. السبب ليس `dynamicParams` — بل أنّ تخزين هذا الجلب
+ * (86400) كان يفوق `revalidate` الصفحة (3600): تُعاد بناء الصفحة كل ساعة لكنها
+ * تقرأ قائمةً محفوظةً لا يظهر فيها الكيان الجديد، فتُعلن 404 وتُثبّتها.
+ *
+ * الإصلاح شقّان: مواءمة التخزين مع الصفحة، ثم **إعادة محاولة بلا تخزين قبل
+ * إعلان الغياب** — فالـ404 قرارٌ لا رجعة فيه في نتائج البحث، ولا يجوز اتّخاذه
+ * من نسخةٍ قد تكون قديمة.
+ */
+async function getCities(fresh = false): Promise<City[]> {
   try {
-    const res = await fetch(`${API}/cities/?limit=1000`, { next: { revalidate: 86400 } });
+    const res = await fetch(`${API}/cities/?limit=1000`, fresh ? { cache: 'no-store' as const } : { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     return (await res.json()).results ?? [];
   } catch {
@@ -50,8 +60,12 @@ async function getCities(): Promise<City[]> {
 }
 
 async function resolveCity(slug: string): Promise<City | null> {
-  const list = await getCities();
-  return list.find((c) => citySlug(c.name_en) === slug) ?? null;
+  const hit = (list: City[]) =>
+    list.find((c) => citySlug(c.name_en) === slug) ?? null;
+  const cached = hit(await getCities());
+  if (cached) return cached;
+  // غائبة من النسخة المحفوظة؟ اسأل المصدر قبل إعلان 404 — مدينةٌ أُضيفت للتوّ.
+  return hit(await getCities(true));
 }
 
 async function getCityProperties(cityId: number): Promise<{ items: PropertyRow[]; count: number }> {
@@ -72,7 +86,8 @@ async function getCityProperties(cityId: number): Promise<{ items: PropertyRow[]
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const list = await getCities();
+  // بلا تخزين — انظر التعليق نفسه في صفحة الدولة.
+  const list = await getCities(true);
   return list.map((c) => ({ slug: citySlug(c.name_en) })).filter((p) => p.slug);
 }
 
