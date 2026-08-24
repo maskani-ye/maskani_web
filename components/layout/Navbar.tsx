@@ -76,7 +76,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const active = pathname.startsWith(link.href);
@@ -97,7 +97,7 @@ export function Navbar() {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2">
             {/* دعوة النشر — أبرز إجراء في المنصّة وكان غائباً عن الشريط كلّياً:
                 118 زائراً وصلوا صفحة العقارات في أسبوع مقابل زيارة واحدة لصفحة
                 النشر. الزرّ هنا يراه كل زائر في كل صفحة. */}
@@ -237,7 +237,7 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="القائمة"
             aria-expanded={mobileOpen}
@@ -248,7 +248,7 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-gray-100 py-3 space-y-1">
+          <div className="lg:hidden border-t border-gray-100 py-3 space-y-1">
             {/* مُحدِّد المدينة العام — الجوّال */}
             <div className="px-4 pb-2">
               <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mb-1">

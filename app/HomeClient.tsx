@@ -482,12 +482,14 @@ function ClosingCard({ Icon, tone, title, body, href, cta }: {
   const isPrimary = tone === "primary";
   return (
     <div
-      className={`rounded-3xl p-6 sm:p-7 flex items-center gap-5 ring-1 ${
+      /* ⚠️ التراصّ العموديّ تحت 400 بكسل: الصفّ الأفقيّ (أيقونة + نصّ + زرّ)
+         لا يتقلّص أكثر، فيفيض العنوان 28 بكسل على شاشة 320. */
+      className={`rounded-3xl p-5 sm:p-7 flex flex-col xs:flex-row xs:items-center gap-4 sm:gap-5 text-center xs:text-start ring-1 ${
         isPrimary ? "bg-primary text-white ring-primary" : "bg-cream ring-ink/[0.06]"
       }`}
     >
       <span
-        className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+        className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 mx-auto xs:mx-0 ${
           isPrimary ? "bg-white/15 text-white" : "bg-danger-50 text-danger"
         }`}
       >
@@ -497,9 +499,9 @@ function ClosingCard({ Icon, tone, title, body, href, cta }: {
         <h2 className={`text-h3 ${isPrimary ? "text-white" : "text-ink"}`}>{title}</h2>
         <p className={`text-caption mt-1 ${isPrimary ? "text-white/75" : "text-muted"}`}>{body}</p>
       </div>
-      <Link href={href} className="flex-shrink-0">
+      <Link href={href} className="flex-shrink-0 w-full xs:w-auto">
         <span
-          className={`inline-flex items-center rounded-xl px-5 py-2.5 text-body font-bold transition-colors ${
+          className={`inline-flex w-full xs:w-auto items-center justify-center rounded-xl px-5 py-2.5 text-body font-bold transition-colors ${
             isPrimary ? "bg-white text-primary hover:bg-white/90" : "bg-ink text-white hover:bg-ink-light"
           }`}
         >

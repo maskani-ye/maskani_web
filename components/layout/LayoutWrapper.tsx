@@ -19,7 +19,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   if (isBare) return <>{children}</>;
 
   return (
-    <div className={`flex flex-col min-h-screen ${isChatConversation ? "" : "pb-16 md:pb-0"}`}>
+    <div className={`flex flex-col min-h-screen ${isChatConversation ? "" : "pb-16 lg:pb-0"}`}>
       {/* نافذة Google One Tap تلقائياً للزوّار غير المسجّلين */}
       <GoogleOneTap />
       {/* أول زيارة بلا مدينة → مودال اختيار المدينة (للزائر أيضاً، مرّة واحدة) */}

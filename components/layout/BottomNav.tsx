@@ -1,6 +1,6 @@
 "use client";
 
-// شريط تنقّل سفلي app-like — يظهر على الجوّال فقط (md:hidden). مطابق لتطبيق Flutter:
+// شريط تنقّل سفلي app-like — يظهر على الجوّال فقط (lg:hidden). مطابق لتطبيق Flutter:
 // الرئيسية / العقارات / الخدمات / الطلبات / حسابي.
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -25,7 +25,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-gray-100 pb-[env(safe-area-inset-bottom)]"
+      className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-gray-100 pb-[env(safe-area-inset-bottom)]"
       aria-label="التنقّل السفلي"
     >
       <div className="flex items-stretch justify-around">

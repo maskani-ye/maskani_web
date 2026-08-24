@@ -45,7 +45,7 @@ export default async function HomeBlogLinks() {
           <li key={a.slug}>
             <Link
               href={`/blog/${a.slug}`}
-              className="inline-block max-w-[20rem] truncate rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm text-ink hover:border-primary hover:text-primary transition-colors"
+              className="inline-block max-w-full sm:max-w-[20rem] truncate rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm text-ink hover:border-primary hover:text-primary transition-colors"
             >
               {a.title}
             </Link>
