@@ -14,8 +14,9 @@
  */
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Magnifer, AltArrowDown, MapPoint } from "@solar-icons/react";
+import { Magnifer, AltArrowDown, MapPoint, Global } from "@solar-icons/react";
 import { useCity } from "@/context/CityContext";
+import { useCountry } from "@/context/CountryContext";
 
 const OFFER_TABS = [
   { value: "sale", label: "للبيع" },
@@ -25,11 +26,24 @@ const OFFER_TABS = [
 export function HeroSearch() {
   const router = useRouter();
   const { cityId, cities } = useCity();
+  const { code: countryCode, countries, setCountry } = useCountry();
   const [offer, setOffer] = useState<string>("sale");
   const [city, setCity] = useState<string>("");
   const [q, setQ] = useState("");
 
   const effectiveCity = city || cityId;
+
+  /**
+   * تبديل الدولة من داخل البحث يغيّر السوق كلّه: `CityContext` يراقب الرمز
+   * فيُعيد تحميل مدن الدولة الجديدة وينتقي عاصمتها. ونمسح التجاوز المحلّي
+   * للمدينة لأنه يشير إلى مدينةٍ في السوق السابق.
+   */
+  const onCountry = (code: string) => {
+    const c = countries.find((x) => x.code === code);
+    if (!c) return;
+    setCity("");
+    setCountry(c);
+  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,12 +81,36 @@ export function HeroSearch() {
         onSubmit={submit}
         role="search"
         aria-label="البحث عن عقار"
-        className="flex flex-col sm:flex-row items-stretch bg-white rounded-2xl shadow-e4 p-1.5 gap-1.5"
+        className="flex flex-col md:flex-row items-stretch bg-white rounded-2xl shadow-e4 p-1.5 gap-1.5"
       >
+        {/* الدولة أوّلاً — المدينة تتبعها، فترتيبهما يعكس تبعيّتهما. تظهر فقط
+            حين نخدم أكثر من دولة. */}
+        {countries.length > 1 && (
+          <>
+            <label className="md:w-40 flex-shrink-0 relative">
+              <span className="sr-only">الدولة</span>
+              <Global className="absolute top-1/2 -translate-y-1/2 start-3.5 h-5 w-5 text-muted pointer-events-none" />
+              <AltArrowDown className="absolute top-1/2 -translate-y-1/2 end-3 h-4 w-4 text-muted pointer-events-none" />
+              <select
+                value={countryCode}
+                onChange={(e) => onCountry(e.target.value)}
+                className="w-full h-12 appearance-none rounded-xl border-0 bg-transparent ps-11 pe-9 text-body font-semibold text-ink outline-none focus:bg-cream transition-colors cursor-pointer"
+              >
+                {countries.map((c) => (
+                  <option key={c.id} value={c.code}>
+                    {c.flag_emoji} {c.name_ar}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <span aria-hidden className="h-px mx-2 md:h-auto md:w-px md:my-2 md:mx-0 bg-ink/10" />
+          </>
+        )}
+
         {/* المؤشّران ضروريّان: `appearance-none` يجرّد الـselect من كل ما يقول
             إنه قابل للفتح، فيبدو سطراً نصّياً لا حقلاً — وهو ما بدا عليه على
             الجوّال. الدبّوس يسمّي الحقل والسهم يقول إنه قائمة. */}
-        <label className="sm:w-48 flex-shrink-0 relative">
+        <label className="md:w-40 flex-shrink-0 relative">
           <span className="sr-only">المدينة</span>
           <MapPoint className="absolute top-1/2 -translate-y-1/2 start-3.5 h-5 w-5 text-muted pointer-events-none" />
           <AltArrowDown className="absolute top-1/2 -translate-y-1/2 end-3 h-4 w-4 text-muted pointer-events-none" />
@@ -90,7 +128,7 @@ export function HeroSearch() {
           </select>
         </label>
 
-        <span aria-hidden className="h-px mx-2 sm:h-auto sm:w-px sm:my-2 sm:mx-0 bg-ink/10" />
+        <span aria-hidden className="h-px mx-2 md:h-auto md:w-px md:my-2 md:mx-0 bg-ink/10" />
 
         <label className="flex-1 relative">
           <span className="sr-only">ابحث بالكلمة</span>
@@ -105,7 +143,7 @@ export function HeroSearch() {
 
         <button
           type="submit"
-          className="h-12 rounded-xl bg-primary px-6 sm:px-8 text-body font-bold text-white hover:bg-primary-600 active:scale-[0.98] transition-all flex items-center justify-center gap-2 flex-shrink-0"
+          className="h-12 rounded-xl bg-primary px-6 md:px-8 text-body font-bold text-white hover:bg-primary-600 active:scale-[0.98] transition-all flex items-center justify-center gap-2 flex-shrink-0"
         >
           <Magnifer weight="Bold" className="h-5 w-5" />
           ابحث

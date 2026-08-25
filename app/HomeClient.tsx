@@ -86,8 +86,6 @@ export default function HomeClient() {
   const { code: countryCode, country } = useCountry();
 
   const where = cityName || country?.name_ar || "منطقتك";
-  const heroImage =
-    cities.find((c) => String(c.id) === cityId)?.image || "/cities/_hero.webp";
 
   /**
    * كل جلبٍ مقيَّد بالمدينة (والدولة احتياطاً) ويُعاد عند تبديل أيّهما — كانت
@@ -119,6 +117,21 @@ export default function HomeClient() {
    * ٣ من ٤ مكرّرة، فيرى الزائر العقار مرّتين ويبدو المخزون أصغر ممّا هو.
    */
   const spotlight = featured?.[0] ?? properties?.[0] ?? null;
+
+  /**
+   * ⚠️ **لا أصول ثابتة للمدن**: كانت الخلفية `/cities/_hero.webp` (صنعاء
+   * القديمة) وبلاطات المدن تسقط إلى `/cities/<id>.webp` — أي صورٌ في مستودع
+   * الويب مربوطة بمعرّفات صفوف في قاعدة البيانات. تنكسر بصمت عند أي إعادة
+   * ترقيم، ولا يملك المشرف تغييرها من اللوحة. نُقلت الـ21 صورة إلى `City.image`
+   * (على R2) وصار الخادم مصدرها الوحيد.
+   *
+   * تسلسل الاحتياط كلّه من الخادم: صورة المدينة ← صورة عقارٍ حقيقيّ في السوق
+   * ← سطحٌ محايد. لا صورة مُصمَّمة ولا أصل محلّي.
+   */
+  const heroImage =
+    cities.find((c) => String(c.id) === cityId)?.image ||
+    spotlight?.main_image ||
+    null;
   const grid = (properties ?? [])
     .filter((p) => p.id !== spotlight?.id)
     .slice(0, 4);
@@ -128,21 +141,29 @@ export default function HomeClient() {
     <div className="bg-white">
       {/* ─── ① الهيرو — صورة ممتدّة بحجاب محايد ────────────────────────── */}
       <section className="relative isolate text-white">
-        <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 -z-10 bg-ink">
           {/* عنصر LCP: يُقدَّم بمقاس الجهاز وبأولوية. الحجاب **كحليّ محايد** لا
               بنفسجيّ: التراكب البنفسجي السابق بشفافية 80-90% كان يطمس صورة
               المدينة تماماً فتتساوى كل الأسواق في مظهر واحد. */}
-          <Image
-            src={heroImage}
-            alt=""
-            aria-hidden
-            fill
-            priority
-            sizes="100vw"
-            quality={72}
-            className="object-cover object-center"
+          {heroImage && (
+            <Image
+              src={heroImage}
+              alt=""
+              aria-hidden
+              fill
+              priority
+              sizes="100vw"
+              quality={72}
+              className="object-cover object-center"
+            />
+          )}
+          <div
+            className={`absolute inset-0 ${
+              heroImage
+                ? "bg-gradient-to-t from-ink via-ink/70 to-ink/40"
+                : "bg-gradient-to-br from-primary-900 via-ink to-primary-800"
+            }`}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-20 md:pt-20 md:pb-24">
@@ -438,18 +459,21 @@ function CitiesTiles({ cities }: { cities: City[] }) {
                 on ? "ring-2 ring-primary shadow-e3" : "ring-ink/[0.06] hover:shadow-e2"
               }`}
             >
-              {/* ⚠️ الاحتياطي الثابت `/cities/<id>.webp` ضروريّ: `City.image`
-                  مضبوطة لمدينتين فقط، وبلا الاحتياطي تبدو بقيّة البلاطات
-                  مستطيلات بنفسجية مسطّحة. (٢٢ صورة محافظة في `public/cities`.) */}
-              <Image
-                src={c.image || `/cities/${c.id}.webp`}
-                alt=""
-                aria-hidden
-                fill
-                sizes="(max-width: 640px) 45vw, 300px"
-                quality={68}
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
+              {/* الصورة من الخادم فقط. غيابها ليس خطأً بل مدينة لم تُرفع صورتها
+                  من اللوحة بعد — يظهر سطحٌ محايد بنقشٍ خفيف، لا أصل محلّي. */}
+              {c.image ? (
+                <Image
+                  src={c.image}
+                  alt=""
+                  aria-hidden
+                  fill
+                  sizes="(max-width: 640px) 45vw, 300px"
+                  quality={68}
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              ) : (
+                <PlaceholderSurface Icon={MapPoint} tone="primary" />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-3.5">
                 <span className="block text-body font-bold text-white">{c.name_ar}</span>
