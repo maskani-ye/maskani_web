@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { citySlug } from "@/lib/seo";
 import PropertiesListClient from "./PropertiesListClient";
-import PropertiesCityLinks from "@/components/properties/PropertiesCityLinks";
 import LatestProperties from "@/components/properties/LatestProperties";
 import SectionIntro from "@/components/SectionIntro";
 
@@ -50,7 +49,6 @@ export default function PropertiesPage() {
         <PropertiesListClient />
       </Suspense>
       <LatestProperties />
-      <PropertiesCityLinks />
     </>
   );
 }

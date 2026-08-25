@@ -2,27 +2,6 @@ import Link from "next/link";
 import { Home2, Shield, Buildings2 } from "@solar-icons/react";
 import { StoreBadges } from "@/components/download/StoreBadges";
 
-// روابط صفحات هبوط المحافظات — تظهر في فوتر كل صفحة (ربط داخلي سيتوايد يمرّر
-// قوّة الزحف لصفحات المدن «المُكتشَفة وغير المفهرَسة» ويقلّل عمق النقر إليها).
-// روابط صفحات هبوط الدول — الفوتر يُصيَّر على الخادم في كل صفحة، فإبقاء
-// القائمة ثابتة هنا يتجنّب طلب شبكة في كل تصيير. تُحدَّث يدوياً عند فتح سوق
-// جديد (حدثٌ نادر ومقصود لا بيانات متغيّرة).
-const COUNTRIES = [{ slug: "yemen", name: "اليمن", flag: "🇾🇪" }];
-
-const GOVERNORATES = [
-  { slug: "sanaa", name: "صنعاء" }, { slug: "aden", name: "عدن" },
-  { slug: "taiz", name: "تعز" }, { slug: "al-hudaydah", name: "الحديدة" },
-  { slug: "ibb", name: "إب" }, { slug: "hadramout", name: "حضرموت" },
-  { slug: "dhamar", name: "ذمار" }, { slug: "hajjah", name: "حجة" },
-  { slug: "amran", name: "عمران" }, { slug: "marib", name: "مأرب" },
-  { slug: "al-bayda", name: "البيضاء" }, { slug: "lahij", name: "لحج" },
-  { slug: "abyan", name: "أبين" }, { slug: "saada", name: "صعدة" },
-  { slug: "shabwah", name: "شبوة" }, { slug: "raymah", name: "ريمة" },
-  { slug: "al-mahwit", name: "المحويت" }, { slug: "al-dhale-e", name: "الضالع" },
-  { slug: "al-jawf", name: "الجوف" }, { slug: "al-mahrah", name: "المهرة" },
-  { slug: "socotra", name: "سقطرى" },
-];
-
 export function Footer() {
   return (
     <footer className="bg-primary text-white mt-16">
@@ -98,41 +77,6 @@ export function Footer() {
             </ul>
           </div>
         </div>
-
-        {/* تصفّح حسب الدولة — أعلى طبقة جغرافية؛ رابط دائم في كل صفحة يجعل
-            صفحة هبوط الدولة على عمق نقرة واحدة من أي مكان في الموقع. */}
-        <nav aria-label="تصفّح العقارات حسب الدولة" className="border-t border-primary-600 mt-8 pt-6">
-          <h4 className="font-bold text-white mb-3 text-sm">تصفّح العقارات حسب الدولة</h4>
-          <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
-            {COUNTRIES.map((c) => (
-              <li key={c.slug}>
-                <Link
-                  href={`/properties/country/${c.slug}`}
-                  className="text-primary-200 hover:text-white text-sm transition-colors"
-                >
-                  {c.flag} عقارات {c.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* تصفّح حسب المحافظة — ربط داخلي سيتوايد لصفحات هبوط المدن */}
-        <nav aria-label="تصفّح العقارات حسب المحافظة" className="border-t border-primary-600 mt-8 pt-6">
-          <h4 className="font-bold text-white mb-3 text-sm">تصفّح العقارات حسب المحافظة</h4>
-          <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
-            {GOVERNORATES.map((g) => (
-              <li key={g.slug}>
-                <Link
-                  href={`/properties/city/${g.slug}`}
-                  className="text-primary-200 hover:text-white text-sm transition-colors"
-                >
-                  عقارات {g.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
 
         <div className="border-t border-primary-600 mt-6 pt-6 flex flex-col gap-4">
           {/* دعوة النشر — الفوتر يظهر في كل صفحة، فهو آخر فرصة للطلب. */}
