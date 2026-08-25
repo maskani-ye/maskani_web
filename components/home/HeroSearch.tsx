@@ -25,31 +25,34 @@ const OFFER_TABS = [
 
 export function HeroSearch() {
   const router = useRouter();
-  const { cityId, cities } = useCity();
+  const { cityId, cities, setCity } = useCity();
   const { code: countryCode, countries, setCountry } = useCountry();
   const [offer, setOffer] = useState<string>("sale");
-  const [city, setCity] = useState<string>("");
   const [q, setQ] = useState("");
 
-  const effectiveCity = city || cityId;
-
   /**
-   * تبديل الدولة من داخل البحث يغيّر السوق كلّه: `CityContext` يراقب الرمز
-   * فيُعيد تحميل مدن الدولة الجديدة وينتقي عاصمتها. ونمسح التجاوز المحلّي
-   * للمدينة لأنه يشير إلى مدينةٍ في السوق السابق.
+   * ⚠️ **الحقلان يكتبان في التخزين المحلّي، لا في حالةٍ عابرة.**
+   *
+   * كان حقل المدينة هنا `useState` محلّياً بينما حقل الدولة يكتب في السياق —
+   * فتناقضٌ صريح: يبدّل المستخدم الدولة فتُحفظ، ويبدّل المدينة فتُنسى عند أوّل
+   * تنقّل، ويبقى الشريط العلوي يعرض المدينة القديمة. اختيار المدينة تفضيلُ
+   * جهازٍ يدوم عبر الجلسات (نفس عقد التطبيق) لا فلتر بحثٍ لمرّة واحدة، فمصدره
+   * `CityContext` وحده — مصدرٌ واحد يراه الشريط والرئيسية وكل القوائم.
    */
   const onCountry = (code: string) => {
     const c = countries.find((x) => x.code === code);
-    if (!c) return;
-    setCity("");
-    setCountry(c);
+    if (c) setCountry(c); // `CityContext` يتبعه: يُعيد تحميل المدن وينتقي العاصمة
+  };
+
+  const onCity = (id: string) => {
+    setCity(id, cities.find((c) => String(c.id) === id)?.name_ar ?? "");
   };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (offer) params.set("offer_type", offer);
-    if (effectiveCity) params.set("city", effectiveCity);
+    if (cityId) params.set("city", cityId);
     const term = q.trim();
     if (term) params.set("search", term);
     router.push(`/properties?${params.toString()}`);
@@ -115,8 +118,8 @@ export function HeroSearch() {
           <MapPoint className="absolute top-1/2 -translate-y-1/2 start-3.5 h-5 w-5 text-muted pointer-events-none" />
           <AltArrowDown className="absolute top-1/2 -translate-y-1/2 end-3 h-4 w-4 text-muted pointer-events-none" />
           <select
-            value={effectiveCity}
-            onChange={(e) => setCity(e.target.value)}
+            value={cityId}
+            onChange={(e) => onCity(e.target.value)}
             className="w-full h-12 appearance-none rounded-xl border-0 bg-transparent ps-11 pe-9 text-body font-semibold text-ink outline-none focus:bg-cream transition-colors cursor-pointer"
           >
             <option value="">كل المدن</option>
