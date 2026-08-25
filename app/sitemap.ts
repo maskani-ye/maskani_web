@@ -78,8 +78,11 @@ async function rows(path: string): Promise<Row[]> {
 // يلتقط استعلامات «عقارات <الدولة>» في كل سوق نفتحه.
 async function countries(): Promise<{ slug: string }[]> {
   try {
+    // ⚠️ عمر الجلب = عمر الخريطة (3600). كان 86400 فبقيت نتيجةٌ فاشلة محفوظة
+    // يوماً كاملاً، فخرجت الخريطة بـ**صفر صفحة دولة** رغم أن الـAPI يردّ بستّ.
+    // نفس نمط العطل الذي أثبت صفحات الدول على 404: تخزينٌ يفوق عمر ما يقرأ منه.
     const res = await fetch(`${API}/cities/countries/?limit=100`, {
-      next: { revalidate: 86400 },
+      next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
     return ((await res.json()).results ?? [])
@@ -114,7 +117,7 @@ async function cities(): Promise<{ slug: string }[]> {
 // يجلب الأحياء المسجّلة — أعمق طبقة فهرسة بعد المحافظة («عقارات في حي السبل»).
 async function neighborhoods(): Promise<{ slug: string }[]> {
   try {
-    const res = await fetch(`${API}/cities/neighborhoods/`, { next: { revalidate: 86400 } });
+    const res = await fetch(`${API}/cities/neighborhoods/`, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     const data = await res.json();
     const list = Array.isArray(data) ? data : data.results ?? [];
