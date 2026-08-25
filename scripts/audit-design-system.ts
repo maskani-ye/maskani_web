@@ -42,7 +42,7 @@ const RULES: Rule[] = [
     // السُلّم: display h1 h2 h3 body-lg body caption price price-sm
     find: (s) =>
       s.match(/\btext-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl)\b/g) ?? [],
-    budget: 1084,
+    budget: 1082,
     why: "مقاس يُختار بالذوق كل مرّة بدل دورٍ معرّف",
   },
   {
@@ -61,7 +61,7 @@ const RULES: Rule[] = [
   {
     name: "أرقام سحرية (مقاسات مكتوبة يدوياً)",
     find: (s) => s.match(/\[(\d+)px\]/g) ?? [],
-    budget: 105,
+    budget: 89,
     why: "ثلاثة عروض بطاقات مختلفة في صفحة واحدة = صفوف غير متحاذية",
   },
 ];

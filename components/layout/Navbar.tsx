@@ -235,6 +235,46 @@ export function Navbar() {
             )}
           </div>
 
+          {/* ⚠️ عَلَم الدولة ظاهرٌ **دائماً** على الجوّال واللوحيّ، لا مدفوناً في
+              قائمة البرغر: كان المُبدِّل داخل كتلة سطح المكتب وحدها، فلا سبيل
+              لزائر الهاتف أن يغيّر سوقه إطلاقاً على منصّة تخدم ستّ دول وأغلب
+              زوّارها على الجوّال. الاسم يظهر على الشاشات الأوسع فقط توفيراً
+              للعرض. */}
+          {countries.length > 1 && (
+            <div className="relative lg:hidden">
+              <button
+                onClick={() => setCountryOpen((v) => !v)}
+                className="flex items-center gap-1 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-haspopup="listbox"
+                aria-expanded={countryOpen}
+                aria-label="تغيير الدولة"
+              >
+                <span className="text-h3 leading-none">{country?.flag_emoji || "🌍"}</span>
+                <span className="hidden sm:inline text-caption text-ink max-w-20 truncate">
+                  {country?.name_ar ?? "الدولة"}
+                </span>
+                <AltArrowDown className="h-4 w-4 text-gray-400" />
+              </button>
+              {countryOpen && (
+                <div className="absolute left-0 mt-2 w-52 max-h-80 overflow-y-auto bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                  {countries.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => { setCountry(c); setCountryOpen(false); }}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-body w-full text-right",
+                        c.code === countryCode ? "text-primary font-bold" : "text-ink",
+                      )}
+                    >
+                      <span>{c.flag_emoji}</span>
+                      {c.name_ar}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Mobile Menu Button */}
           <button
             className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
@@ -249,6 +289,37 @@ export function Navbar() {
         {/* Mobile Menu */}
         {mobileOpen && (
           <div className="lg:hidden border-t border-gray-100 py-3 space-y-1">
+            {/* ⚠️ مُبدِّل الدولة كان **غائباً كلّياً** عن قائمة الجوّال: موجودٌ في
+                شريط سطح المكتب وحده، فلا سبيل لزائر الهاتف أو اللوحيّ أن يغيّر
+                سوقه إطلاقاً — على منصّة تخدم ستّ دول وأغلب زوّارها على الجوّال.
+                (وسّع نقلُ العتبة من md إلى lg النطاقَ المعطوب إلى ما دون 1024.)
+                الدولة قبل المدينة لأن المدينة تتبعها. */}
+            {countries.length > 1 && (
+              <div className="px-4 pb-3">
+                <label
+                  htmlFor="mobile-country"
+                  className="flex items-center gap-1.5 text-caption font-semibold text-muted mb-1"
+                >
+                  <span aria-hidden>{country?.flag_emoji || "🌍"}</span> الدولة
+                </label>
+                <select
+                  id="mobile-country"
+                  value={countryCode}
+                  onChange={(e) => {
+                    const c = countries.find((x) => x.code === e.target.value);
+                    if (c) setCountry(c);
+                  }}
+                  className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-body text-ink focus:border-primary focus:outline-none"
+                >
+                  {countries.map((c) => (
+                    <option key={c.id} value={c.code}>
+                      {c.flag_emoji} {c.name_ar}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             {/* مُحدِّد المدينة العام — الجوّال */}
             <div className="px-4 pb-2">
               <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mb-1">
