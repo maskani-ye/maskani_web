@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { Badge } from "@/components/ui/Badge";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, NUMERIC_LOCALE } from "@/lib/utils";
 import { toast } from "sonner";
 import { compressImage } from "@/lib/imageCompression";
 import {
@@ -37,6 +37,16 @@ const ROLE_COLORS: Record<string, "green" | "yellow" | "blue" | "gold" | "red" |
   service_provider: "gold", admin: "red",
 };
 
+/** صفّ أداء إعلان — من `/properties/my/performance/`. */
+interface PerfRow {
+  id: number; views: number; contacts: number;
+  favorites: number; shares: number; views_total: number;
+}
+interface PerfTotals {
+  views: number; contacts: number; favorites: number;
+  shares: number; views_total: number;
+}
+
 export default function ProfilePage() {
   const { user, logout, refreshUser, loading: authLoading } = useAuth();
   const { requireAuth } = useAuthGate();
@@ -45,6 +55,9 @@ export default function ProfilePage() {
   const [form, setForm] = useState({ full_name: "", bio: "", phone: "", city: "" });
   const [cities, setCities] = useState<City[]>([]);
   const [myProperties, setMyProperties] = useState<Property[]>([]);
+  /** أداء الإعلانات — مفهرس بمعرّف العقار. انظر التعليق عند العرض. */
+  const [perf, setPerf] = useState<Record<number, PerfRow>>({});
+  const [perfTotals, setPerfTotals] = useState<PerfTotals | null>(null);
   const [propertiesTotal, setPropertiesTotal] = useState(0);
   const [saving, setSaving] = useState(false);
   const [loadingProperties, setLoadingProperties] = useState(false);
@@ -110,6 +123,14 @@ export default function ProfilePage() {
       const res = await api.get<PaginatedResponse<Property>>("/properties/my/", { params: { limit: 20, offset: 0 } });
       setMyProperties(res.data.results);
       setPropertiesTotal(res.data.count);
+      // أداء الإعلانات — جلبٌ مستقلّ فلا يُعطّل فشلُه عرضَ العقارات نفسها.
+      api
+        .get<{ totals: PerfTotals; results: PerfRow[] }>("/properties/my/performance/")
+        .then((r) => {
+          setPerfTotals(r.data.totals);
+          setPerf(Object.fromEntries(r.data.results.map((x) => [x.id, x])));
+        })
+        .catch(() => {});
     } catch { /* silent */ }
     finally { setLoadingProperties(false); }
   };
@@ -342,6 +363,25 @@ export default function ProfilePage() {
                 </div>
               ) : (
                 <div className="space-y-3">
+                  {/* ⚠️ ملخّص الأداء أوّلاً: المالك ينشر ثم لا يعرف أشاهده أحد.
+                      البيانات كانت مرصودة منذ البداية وتُعرض في لوحة الإدارة
+                      وحدها — رؤيته لها هي ما يدفعه للتجديد وإضافة عقار ثانٍ. */}
+                  {perfTotals && (
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      {([
+                        ["مشاهدة", perfTotals.views_total],
+                        ["حاولوا التواصل", perfTotals.contacts],
+                        ["أضافوه للمفضّلة", perfTotals.favorites],
+                      ] as const).map(([label, value]) => (
+                        <div key={label} className="rounded-xl bg-cream p-3 text-center">
+                          <p className="text-h3 text-ink tabular-nums">
+                            {value.toLocaleString(NUMERIC_LOCALE)}
+                          </p>
+                          <p className="text-caption text-muted mt-0.5">{label}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {myProperties.map((l) => (
                     <Link key={l.id} href={`/properties/${l.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
                       <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-100">
@@ -353,6 +393,17 @@ export default function ProfilePage() {
                         <p className="font-medium text-gray-900 truncate">{l.title}</p>
                         <p className="text-xs text-gray-500">{l.city_name}</p>
                         <p className="text-sm font-bold text-primary mt-0.5">{formatPrice(l.price, l.currency)}</p>
+                        {perf[l.id] && (
+                          <p className="text-caption text-muted mt-1 tabular-nums">
+                            {perf[l.id].views_total.toLocaleString(NUMERIC_LOCALE)} مشاهدة
+                            {perf[l.id].contacts > 0 && (
+                              <span className="text-primary font-bold">
+                                {" · "}
+                                {perf[l.id].contacts.toLocaleString(NUMERIC_LOCALE)} حاولوا التواصل
+                              </span>
+                            )}
+                          </p>
+                        )}
                       </div>
                       <Badge variant={l.is_active ? "green" : "gray"}>{l.is_active ? "نشط" : "موقوف"}</Badge>
                     </Link>
