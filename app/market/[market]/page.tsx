@@ -50,7 +50,10 @@ export async function generateMetadata(
     `مجّاناً وبلا عمولة وبلا وسيط.`;
 
   return {
-    title,
+    // ⚠️ `absolute` يتجاوز قالب التخطيط `%s | مسكني` — وإلّا صار العنوان
+    // «مسكني — عقارات السعودية … | مسكني»: العلامة مرّتين، وطولٌ يُبتر في
+    // نتائج البحث.
+    title: { absolute: title },
     description,
     keywords: [
       "عقارات",
