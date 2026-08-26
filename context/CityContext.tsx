@@ -17,6 +17,7 @@ import React, {
 } from "react";
 import { api } from "@/lib/api";
 import { useCountry } from "@/context/CountryContext";
+import { useAuth } from "@/context/AuthContext";
 
 const STORAGE_KEY = "maskani_selected_city";
 
@@ -45,6 +46,7 @@ const CityContext = createContext<CityContextType | null>(null);
 
 export function CityProvider({ children }: { children: React.ReactNode }) {
   const { code, loading: countryLoading } = useCountry();
+  const { user, refreshUser } = useAuth();
   const [cityId, setCityId] = useState("");
   const [cityName, setCityName] = useState("");
   const [cities, setCities] = useState<CityRow[]>([]);
@@ -133,6 +135,35 @@ export function CityProvider({ children }: { children: React.ReactNode }) {
       cancelled = true;
     };
   }, [code, restored, countryLoading, setCity]);
+
+  /**
+   * ③ مزامنة المدينة إلى **الحساب** لا إلى المتصفّح وحده.
+   *
+   * ⚠️ الويب يفرض اختيار المدينة على كل زائر (`CityFirstVisitModal` غير قابل
+   * للإغلاق)، لكن الاختيار كان يُحفظ في `localStorage` فقط ولا يُربط بالحساب.
+   * النتيجة المقيسة: **٦٧ مستخدماً، ٤ منهم فقط لهم مدينة (٥٪)** — فلا تُعرف
+   * دولة ٩١٪ منهم، ولا تقوم حملة تسويقية موجّهة على بيانات غائبة.
+   *
+   * المستخدم اختار مدينته فعلاً؛ كنّا نحن من لا يسجّلها. لا نضيف خطوة جديدة
+   * ولا احتكاكاً — نحفظ ما اختاره.
+   *
+   * الشرط `!user.city`: لا نطغى على مدينةٍ ضبطها المستخدم في ملفّه من قبل،
+   * فاختياره الصريح في الملف أوثق من تفضيل جهازٍ قد يكون لجهاز آخر.
+   */
+  const syncedRef = useRef<string>("");
+  useEffect(() => {
+    if (!user || !cityId) return;
+    if (user.city) return; // له مدينة في ملفّه — لا نلمسها
+    if (syncedRef.current === `${user.id}:${cityId}`) return;
+    syncedRef.current = `${user.id}:${cityId}`;
+    api
+      .patch("/auth/me/", { city: Number(cityId) })
+      .then(() => refreshUser())
+      .catch(() => {
+        // فشل المزامنة لا يُعطّل التصفّح — نُعيد المحاولة عند التغيير التالي.
+        syncedRef.current = "";
+      });
+  }, [user, cityId, refreshUser]);
 
   return (
     <CityContext.Provider
