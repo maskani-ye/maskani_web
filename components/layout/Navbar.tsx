@@ -31,7 +31,7 @@ export function Navbar() {
   // المدن تأتي من `CityContext` — مُصفّاة بالدولة ومرتّبة بالعاصمة أولاً.
   // كان الشريط يجلبها بنفسه، فصار جلبان لنفس القائمة وفرصةٌ لتباعد الحالتين.
   const { cityId, cityName, cities, setCity } = useCity();
-  const { code: countryCode, country, countries, setCountry } = useCountry();
+  const { code: countryCode, country, countries, setCountry, loading: countryLoading } = useCountry();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -140,7 +140,8 @@ export function Navbar() {
 
             {/* مُبدِّل الدولة — يظهر فقط حين نخدم أكثر من دولة؛ بدولة واحدة
                 يكون خيارًا بلا معنى يزحم الشريط. */}
-            {countries.length > 1 && (
+            {countryLoading && <span aria-hidden className="w-28 h-9" />}
+            {!countryLoading && countries.length > 1 && (
               <div className="relative">
                 <button
                   onClick={() => setCountryOpen((v) => !v)}
@@ -240,7 +241,9 @@ export function Navbar() {
               لزائر الهاتف أن يغيّر سوقه إطلاقاً على منصّة تخدم ستّ دول وأغلب
               زوّارها على الجوّال. الاسم يظهر على الشاشات الأوسع فقط توفيراً
               للعرض. */}
-          {countries.length > 1 && (
+          {/* حجزُ المكان أثناء التحميل — انظر التعليق نفسه في HeroSearch. */}
+          {countryLoading && <span aria-hidden className="lg:hidden w-16 h-9" />}
+          {!countryLoading && countries.length > 1 && (
             <div className="relative lg:hidden">
               <button
                 onClick={() => setCountryOpen((v) => !v)}

@@ -26,7 +26,7 @@ const OFFER_TABS = [
 export function HeroSearch() {
   const router = useRouter();
   const { cityId, cities, setCity } = useCity();
-  const { code: countryCode, countries, setCountry } = useCountry();
+  const { code: countryCode, countries, setCountry, loading: countryLoading } = useCountry();
   const [offer, setOffer] = useState<string>("sale");
   const [q, setQ] = useState("");
 
@@ -86,9 +86,17 @@ export function HeroSearch() {
         aria-label="البحث عن عقار"
         className="flex flex-col md:flex-row items-stretch bg-white rounded-2xl shadow-e4 p-1.5 gap-1.5"
       >
-        {/* الدولة أوّلاً — المدينة تتبعها، فترتيبهما يعكس تبعيّتهما. تظهر فقط
-            حين نخدم أكثر من دولة. */}
-        {countries.length > 1 && (
+        {/* الدولة أوّلاً — المدينة تتبعها، فترتيبهما يعكس تبعيّتهما.
+            ⚠️ الحقل يُحجَز مكانه أثناء التحميل: كان يظهر بعد وصول قائمة الدول
+            فيدفع بقيّة الحقول جانباً — قفزاتٌ صغيرة متكرّرة رفعت CLS إلى 0.113
+            (العتبة 0.1). حجزُ العرض يجعل الوصول بلا إزاحة. */}
+        {countryLoading && (
+          <>
+            <span aria-hidden className="md:w-40 h-12 flex-shrink-0 rounded-xl bg-cream animate-pulse" />
+            <span aria-hidden className="h-px mx-2 md:h-auto md:w-px md:my-2 md:mx-0 bg-ink/10" />
+          </>
+        )}
+        {!countryLoading && countries.length > 1 && (
           <>
             <label className="md:w-40 flex-shrink-0 relative">
               <span className="sr-only">الدولة</span>
