@@ -6,7 +6,7 @@ import { BottomNav } from "./BottomNav";
 import { Footer } from "./Footer";
 import { FloatingHelp } from "./FloatingHelp";
 import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
-import { CityFirstVisitModal } from "@/components/city/CityFirstVisitModal";
+import { LocationGate } from "@/components/city/LocationGate";
 import { ProfileCompletionBanner } from "@/components/account/ProfileCompletionBanner";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -22,8 +22,10 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     <div className={`flex flex-col min-h-screen ${isChatConversation ? "" : "pb-16 lg:pb-0"}`}>
       {/* نافذة Google One Tap تلقائياً للزوّار غير المسجّلين */}
       <GoogleOneTap />
-      {/* أول زيارة بلا مدينة → مودال اختيار المدينة (للزائر أيضاً، مرّة واحدة) */}
-      <CityFirstVisitModal />
+      {/* بلا مدينة على شاشة تعتمد على السوق → تحويل إلى `/location` ثم عودة.
+          حلّ محلّ المودال الذي كان يحجب الرئيسية بلا شرح ويُضيّع السياق: من
+          يصل من جوجل إلى /properties يعود إليها لا إلى الرئيسية. */}
+      <LocationGate />
       <Navbar />
       {/* ترغيب لطيف (لا إجبار) لإكمال الهاتف/المدينة للمستخدم المسجّل غير المكتمل */}
       <ProfileCompletionBanner />
