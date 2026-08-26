@@ -79,8 +79,14 @@ export const endpoints = {
     // مركز التحكّم بالخدمات الخارجية (البنية) — لا يُخلط مع مزوّدي الخدمات
     infraServices: `${ADMIN}/dashboard/services/`,
     infraService: (key: string) => `${ADMIN}/dashboard/services/${key}/`,
+    // ⚠️ `dashboard/` لازمة: تطبيق dashboard مُركَّب على
+    // `/api/v1/admin/dashboard/` في `config/admin_router.py` كبقيّة مسارات
+    // اللوحة (stats · broadcast · audit-log …). كان هذا السطر وحده بلا البادئة
+    // فيردّ الخادم 404 صامتًا، وتعرض اللوحة «لا عمليات» وكأن المنصّة ساكنة —
+    // بينما الخادم يُرجع 50 عنصرًا على المسار الصحيح.
+    activity: `${ADMIN}/dashboard/activity/`,
+
     // blog
-    activity: `${ADMIN}/activity/`,
     propertiesBulkImport: `${ADMIN}/properties/bulk-import/`,
     blog: `${ADMIN}/blog/`,
     blogItem: (id: number) => `${ADMIN}/blog/${id}/`,
