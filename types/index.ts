@@ -2,6 +2,11 @@
 export type UserRole = "user" | "admin";
 
 export interface User {
+  /** دولة المستخدم — مستنتَجة في الخادم من ثلاثة مصادر؛ `country_source`
+   *  يقول أيّها استُعمل (city | phone | visit) كي لا يُبنى قرار على تخمين. */
+  country_code?: string;
+  country_name?: string;
+  country_source?: string;
   id: number;
   phone: string;
   email: string;

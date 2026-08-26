@@ -84,7 +84,10 @@ export default function AdminUsersPage() {
   }, [authLoading, me, search, roleFilter, activeFilter, fetchUsers]);
 
   // ── actions ────────────────────────────────────────────────────────────────
-  const openDetail = (u: User) => { setSelected(u); };
+  // ⚠️ النقر يفتح **صفحة كاملة** لا لوحة جانبية: اللوحة كانت تعرض ما هو ظاهر
+  // في الصف أصلاً، بينما صفحة التفاصيل تجلب الإحصاءات وأحدث ما نشره المستخدم
+  // ودولته — وهي سبب الطلب. (`selected` يبقى للوحة الجانبية عند الحاجة.)
+  const openDetail = (u: User) => { router.push(`/admin/users/${u.id}`); };
 
   const toggleServiceProvider = async (u: User) => {
     try {
@@ -214,6 +217,9 @@ export default function AdminUsersPage() {
                 <tr>
                   <th className="text-right px-4 py-3 font-semibold text-gray-600">المستخدم</th>
                   <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden md:table-cell">الهاتف</th>
+                  {/* الدولة في القائمة نفسها: بناء حملة موجّهة يبدأ بمسحٍ سريع
+                      للتوزيع، لا بفتح كل مستخدم على حدة. */}
+                  <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden lg:table-cell">الدولة</th>
                   <th className="text-right px-4 py-3 font-semibold text-gray-600">الدور</th>
                   <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden sm:table-cell">الحالة</th>
                   <th className="px-4 py-3" />
@@ -242,6 +248,13 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-gray-500 hidden md:table-cell" dir="ltr">{u.phone}</td>
+                    <td className="px-4 py-3 hidden lg:table-cell">
+                      {u.country_name ? (
+                        <span className="text-ink">{u.country_name}</span>
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <Badge variant={ROLE_COLORS[u.role] ?? "gray"}>{ROLE_LABELS[u.role] ?? u.role}</Badge>
                     </td>
