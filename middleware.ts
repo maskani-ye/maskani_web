@@ -11,6 +11,22 @@ const BOT_RE =
 const API =
   process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
+/**
+ * أسواق مسكني — رموز ISO للدول المفعّلة، لكل واحدة **نسخة مبنيّة مسبقاً** من
+ * الرئيسية.
+ *
+ * ⚠️ لماذا إعادة كتابة لا `headers()` داخل الصفحة: استدعاء `headers()` يُخرج
+ * المسار من التخزين نهائياً (`no-store`)، فقيس بعده LCP على الجوّال **3,948
+ * م.ث** — فوق عتبة جوجل (2,500). هنا نقرأ الدولة على الحافة (رخيصة) ونعيد
+ * الكتابة إلى `/market/<code>` المبنيّ مسبقاً، فيُخدَم من التخزين ويبقى نصّه
+ * صحيحاً لسوق الزائر. الرابط الظاهر يبقى `/` (إعادة كتابة لا تحويل).
+ *
+ * القائمة ثابتة عمداً: الحافة لا تنادي الـAPI (تُبطئ كل طلب)، وفتح سوق جديد
+ * حدثٌ نادرٌ مقصود يستلزم نشراً على أي حال. رمزٌ غير معروف يقع على الافتراضي.
+ */
+const MARKETS = ["ye", "sa", "jo", "eg", "iq", "om"] as const;
+const DEFAULT_MARKET = "ye";
+
 export function middleware(req: NextRequest, event: NextFetchEvent) {
   const ua = req.headers.get("user-agent") || "";
   if (BOT_RE.test(ua)) {
@@ -31,6 +47,19 @@ export function middleware(req: NextRequest, event: NextFetchEvent) {
       }).catch(() => {}),
     );
   }
+  // ─── إعادة كتابة الرئيسية إلى نسخة السوق ──────────────────────────────
+  if (req.nextUrl.pathname === "/") {
+    const cc = (
+      req.headers.get("cf-ipcountry") ||
+      req.headers.get("x-vercel-ip-country") ||
+      ""
+    ).toLowerCase();
+    const market = (MARKETS as readonly string[]).includes(cc) ? cc : DEFAULT_MARKET;
+    const url = req.nextUrl.clone();
+    url.pathname = `/market/${market}`;
+    return NextResponse.rewrite(url);
+  }
+
   return NextResponse.next();
 }
 

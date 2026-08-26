@@ -58,6 +58,26 @@ async function allCountries(): Promise<CountryRow[]> {
   }
 }
 
+/**
+ * يطابق رمز دولة برأس القائمة المفعّلة. يُستعمل من مسار السوق المبنيّ مسبقاً
+ * (`/market/<code>`) حيث يأتي الرمز من عنوان المسار لا من ترويسة الطلب — فلا
+ * يلمس `headers()` ولا يُخرج المسار من التخزين.
+ */
+export async function marketByCode(code: string): Promise<Market | null> {
+  const list = await allCountries();
+  if (!list.length) {
+    return code.toUpperCase() === FALLBACK.code ? FALLBACK : null;
+  }
+  const hit = list.find((c) => c.code?.toUpperCase() === code.toUpperCase());
+  if (!hit) return null;
+  return {
+    code: hit.code,
+    nameAr: hit.name_ar,
+    slug: hit.slug,
+    cities: (hit.cities ?? []).slice(0, 3).map((c) => c.name_ar),
+  };
+}
+
 /** يقرأ ترويسة الوكيل ويطابقها بالدول المفعّلة. لا يفشل أبداً — يقع على الافتراضي. */
 export async function detectMarket(): Promise<Market> {
   let code = "";
