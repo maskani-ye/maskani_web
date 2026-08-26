@@ -180,7 +180,12 @@ export default function HomeClient({ serverMarket }: { serverMarket: string }) {
               بلا وسيط · بلا عمولة
             </span>
 
-            <h1 className="text-h1 md:text-display mt-5 text-balance">
+            {/* ⚠️ ارتفاع سطرين محجوز: اسم السوق يتغيّر بعد الترطيب (من سوق
+                الخادم إلى مدينة المستخدم المحفوظة)، فيعيد العنوان الالتفاف
+                وينمو الهيرو 59 بكسل — وهو ارتفاع سطر بمقاس `display` بالضبط —
+                فيدفع كل ما تحته. قياس CLS نسبه إلى هذه اللحظة (t=2.67ث).
+                الوحدة `em` كي تتبع المقاس عبر العتبات. */}
+            <h1 className="text-h1 md:text-display mt-5 text-balance min-h-[2.25em]">
               ابحث عن مسكنك في {where}
             </h1>
 
