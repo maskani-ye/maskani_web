@@ -75,7 +75,7 @@ const TYPE_RAIL = [
   { label: "على الخريطة", href: "/properties?view=map" },
 ];
 
-export default function HomeClient() {
+export default function HomeClient({ serverMarket }: { serverMarket: string }) {
   const [properties, setProperties] = useState<Property[] | null>(null);
   const [services, setServices] = useState<ServiceProvider[] | null>(null);
   const [requests, setRequests] = useState<ClientRequest[] | null>(null);
@@ -85,7 +85,14 @@ export default function HomeClient() {
   const { cityId, cityName, cities, loading: cityLoading } = useCity();
   const { code: countryCode, country } = useCountry();
 
-  const where = cityName || country?.name_ar || "منطقتك";
+  /**
+   * ⚠️ `serverMarket` هو اسم سوق الزائر كما كشفه **الخادم** من ترويسة الوكيل.
+   * كان الاحتياط هنا كلمة «منطقتك» الحرفية، فيرى زاحف جوجل «عقارات منطقتك»
+   * عنواناً — لأنه لا يملك تخزيناً محلّياً ولا يُنفّذ سياقنا. الترتيب: المدينة
+   * المختارة ← دولة السياق ← سوق الخادم. والقيمة الأخيرة هي نفسها في تصيير
+   * الخادم وأوّل تصيير في المتصفّح، فلا عدم تطابق ترطيب.
+   */
+  const where = cityName || country?.name_ar || serverMarket;
 
   /**
    * كل جلبٍ مقيَّد بالمدينة (والدولة احتياطاً) ويُعاد عند تبديل أيّهما — كانت
@@ -174,7 +181,7 @@ export default function HomeClient() {
             </span>
 
             <h1 className="text-h1 md:text-display mt-5 text-balance">
-              ابحث عن مسكنك{where !== "منطقتك" ? ` في ${where}` : ""}
+              ابحث عن مسكنك في {where}
             </h1>
 
             <p className="text-body-lg text-white/75 mt-4 max-w-xl leading-relaxed">
