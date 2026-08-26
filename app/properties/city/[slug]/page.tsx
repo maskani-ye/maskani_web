@@ -49,9 +49,9 @@ interface PropertyRow {
  * إعلان الغياب** — فالـ404 قرارٌ لا رجعة فيه في نتائج البحث، ولا يجوز اتّخاذه
  * من نسخةٍ قد تكون قديمة.
  */
-async function getCities(fresh = false): Promise<City[]> {
+async function getCities(): Promise<City[]> {
   try {
-    const res = await fetch(`${API}/cities/?limit=1000`, fresh ? { cache: 'no-store' as const } : { next: { revalidate: 3600 } });
+    const res = await fetch(`${API}/cities/?limit=1000`, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     return (await res.json()).results ?? [];
   } catch {
@@ -60,12 +60,17 @@ async function getCities(fresh = false): Promise<City[]> {
 }
 
 async function resolveCity(slug: string): Promise<City | null> {
+  // ⚠️ **لا `no-store` هنا.** كانت هذه الدالّة تُعيد المحاولة بجلبٍ بلا تخزين
+  // قبل إعلان الغياب (تفادياً لـ404 كاذب لمدينة أُضيفت للتوّ)، لكنها تعمل **وقت
+  // التشغيل** داخل تصيير ISR — فيُخرج `no-store` الصفحةَ من التوليد الساكن
+  // ويرفضه Next صراحةً: «Page changed from static to dynamic at runtime …
+  // reason: no-store fetch» (رصده Sentry).
+  //
+  // البديل كافٍ: عمر الجلب (3600) = عمر الصفحة، فالمدينة الجديدة تظهر خلال
+  // ساعة على الأكثر بدل أن تُثبَّت على 404. وقائمة المسارات الثابتة تقرأ من المصدر نفسه وقت البناء.
   const hit = (list: City[]) =>
     list.find((c) => citySlug(c.name_en) === slug) ?? null;
-  const cached = hit(await getCities());
-  if (cached) return cached;
-  // غائبة من النسخة المحفوظة؟ اسأل المصدر قبل إعلان 404 — مدينةٌ أُضيفت للتوّ.
-  return hit(await getCities(true));
+  return hit(await getCities());
 }
 
 async function getCityProperties(cityId: number): Promise<{ items: PropertyRow[]; count: number }> {
@@ -87,7 +92,7 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   // بلا تخزين — انظر التعليق نفسه في صفحة الدولة.
-  const list = await getCities(true);
+  const list = await getCities();
   return list.map((c) => ({ slug: citySlug(c.name_en) })).filter((p) => p.slug);
 }
 

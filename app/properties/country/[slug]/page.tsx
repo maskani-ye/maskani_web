@@ -49,11 +49,11 @@ interface PropertyRow {
  * إعلان الغياب** — فالـ404 قرارٌ لا رجعة فيه في نتائج البحث، ولا يجوز اتّخاذه
  * من نسخةٍ قد تكون قديمة.
  */
-async function getCountries(fresh = false): Promise<CountryRow[]> {
+async function getCountries(): Promise<CountryRow[]> {
   try {
     const res = await fetch(
       `${API}/cities/countries/?limit=100`,
-      fresh ? { cache: "no-store" as const } : { next: { revalidate: 3600 } },
+      { next: { revalidate: 3600 } },
     );
     if (!res.ok) return [];
     return (await res.json()).results ?? [];
@@ -63,11 +63,16 @@ async function getCountries(fresh = false): Promise<CountryRow[]> {
 }
 
 async function resolveCountry(slug: string): Promise<CountryRow | null> {
+  // ⚠️ **لا `no-store` هنا.** كانت هذه الدالّة تُعيد المحاولة بجلبٍ بلا تخزين
+  // قبل إعلان الغياب (تفادياً لـ404 كاذب لمدينة أُضيفت للتوّ)، لكنها تعمل **وقت
+  // التشغيل** داخل تصيير ISR — فيُخرج `no-store` الصفحةَ من التوليد الساكن
+  // ويرفضه Next صراحةً: «Page changed from static to dynamic at runtime …
+  // reason: no-store fetch» (رصده Sentry).
+  //
+  // البديل كافٍ: عمر الجلب (3600) = عمر الصفحة، فالمدينة الجديدة تظهر خلال
+  // ساعة على الأكثر بدل أن تُثبَّت على 404. وقائمة المسارات الثابتة تقرأ من المصدر نفسه وقت البناء.
   const hit = (list: CountryRow[]) => list.find((c) => c.slug === slug) ?? null;
-  const cached = hit(await getCountries());
-  if (cached) return cached;
-  // غائبة من النسخة المحفوظة؟ اسأل المصدر قبل إعلان 404 — دولةٌ أُضيفت للتوّ.
-  return hit(await getCountries(true));
+  return hit(await getCountries());
 }
 
 async function getCountryProperties(
@@ -136,7 +141,7 @@ export async function generateStaticParams() {
   // ⚠️ `true` = بلا تخزين: مخزن البناء (`.next/cache`) يبقى بين عمليات البناء،
   // فبُنيت قائمةٌ سبقت إضافة عُمان ولم تُولَّد صفحتها. قائمة المسارات الثابتة
   // تُقرأ من المصدر دائماً — البناء لحظةٌ واحدة، ودقّتها أهم من توفير طلب.
-  const list = await getCountries(true);
+  const list = await getCountries();
   return list.map((c) => ({ slug: c.slug })).filter((p) => p.slug);
 }
 

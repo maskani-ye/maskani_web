@@ -39,6 +39,27 @@ for (const f of files) {
       bad.push(`${f}: جلبٌ بعمر ${m[1]} يفوق عمر الصفحة ${page}`);
     }
   }
+
+  /**
+   * ⚠️ `no-store` في صفحة تُولَّد ساكنة يُسقط التوليد وقت التشغيل:
+   * «Page changed from static to dynamic at runtime … reason: no-store fetch».
+   * رصده Sentry على `/properties/city/[slug]` بعد أن أضفنا إعادة محاولة بلا
+   * تخزين لتفادي 404 كاذب — فأصلحنا عطلاً وفتحنا آخر.
+   *
+   * الاستثناء الوحيد `generateStaticParams`: تعمل وقت البناء لا التصيير.
+   */
+  if (src.includes('generateStaticParams') && /no-store/.test(src)) {
+    const runtime = src
+      .split('export async function generateStaticParams')[0]
+      .split('export function generateStaticParams')[0];
+    // نتجاهل ذكرها داخل التعليقات — الشرح ليس استعمالاً.
+    const stripped = runtime
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\/\/[^\n]*/g, '');
+    if (/no-store/.test(stripped)) {
+      bad.push(`${f}: \`no-store\` خارج generateStaticParams في صفحة ساكنة`);
+    }
+  }
 }
 
 if (bad.length) {
