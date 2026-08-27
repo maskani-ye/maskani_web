@@ -1,6 +1,8 @@
 // تتبّع طرف-أوّل موحّد (يغذّي لوحة تحليلات الإدارة): مشاهدات + أحداث تحويل.
 // خفيف: fetch مع keepalive، بلا مصادقة إلزامية، fire-and-forget لا يكسر الواجهة.
 
+import { getToken } from "./auth";
+
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
 /** معرّف زائر ثابت لكل متصفّح (يبقى عبر الجلسات) → عدّ دقيق بلا تكرار. */
@@ -35,9 +37,18 @@ function selectedCityId(): string {
 function send(body: Record<string, unknown>) {
   try {
     const cityId = selectedCityId();
+    // ⚠️ **التوكن ضروريّ لنسب الزيارة إلى صاحبها.** الخادم يربط الزيارة بـ
+    // `request.user` وحده، فبلا ترويسة المصادقة يبقى كل نشاط الويب مجهولاً:
+    // مقاس 2026‑08‑27 على الإنتاج — ٥٢٬٩٠٢ زيارة ويب، **صفر** منسوبة لمستخدم،
+    // مقابل ٤٢٠ من التطبيق (يرسل التوكن). هذا سبب خلوّ «سلوك المستخدم» في اللوحة.
+    // ويبقى المسار عاملاً للزائر غير المسجَّل — الترويسة تُضاف حين تتوفّر فقط.
+    const token = getToken();
     fetch(`${API}/analytics/track/`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Token ${token}` } : {}),
+      },
       body: JSON.stringify({
         session_id: visitorId(),
         platform: "web",

@@ -110,6 +110,10 @@ export const endpoints = {
     // accounts
     users: `${ADMIN}/accounts/users/`,
     user: (id: Id) => `${ADMIN}/accounts/users/${id}/`,
+    userDevices: (id: Id) => `${ADMIN}/accounts/users/${id}/devices/`,
+    userActivity: (id: Id) => `${ADMIN}/accounts/users/${id}/activity/`,
+    userSessions: (id: Id) => `${ADMIN}/accounts/users/${id}/sessions/`,
+    userBehavior: (id: Id) => `${ADMIN}/accounts/users/${id}/behavior/`,
     verificationRequests: `${ADMIN}/accounts/verification-requests/`,
     verificationRequest: (id: Id) => `${ADMIN}/accounts/verification-requests/${id}/`,
 
