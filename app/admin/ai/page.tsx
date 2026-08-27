@@ -29,6 +29,9 @@ interface RemoteUsage {
   key?: { label?: string; usage?: number; limit?: number | null; limit_remaining?: number | null; is_free_tier?: boolean };
   credits?: { total_credits?: number; total_usage?: number; remaining?: number | null };
 }
+interface ModelOption { id: string; label: string }
+interface ModelsResult { ok: boolean; models: ModelOption[]; error?: string }
+
 interface TestResult {
   ok: boolean; provider?: string; model?: string; reply?: string;
   error?: string; error_type?: string; elapsed_ms?: number;
@@ -80,6 +83,9 @@ export default function AdminAIPage() {
   const [testResult, setTestResult] = useState<TestResult | null>(null);
   // كتالوج المزوّدين المجّانيين
   const [catalog, setCatalog] = useState<CatalogEntry[]>([]);
+  // نماذج المزوّد المختار — تُجلب حيّةً بمفتاحه (لا قائمة مكتوبة في الشيفرة)
+  const [models, setModels] = useState<ModelsResult | null>(null);
+  const [modelsLoading, setModelsLoading] = useState(false);
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -121,8 +127,15 @@ export default function AdminAIPage() {
     finally { setStatsLoading(false); }
   }, []);
 
-  const openNew = () => { setEditing(null); setForm({ ...emptyKey, provider: providers[0]?.slug || "openrouter" }); setOpen(true); };
-  const openEdit = (k: AIKey) => { setEditing(k); setForm({ name: k.name, provider: k.provider, api_key: "", default_model: k.default_model }); setOpen(true); };
+  const openNew = () => {
+    const slug = providers[0]?.slug || "openrouter";
+    setEditing(null); setForm({ ...emptyKey, provider: slug }); setOpen(true);
+    setModels(null);
+  };
+  const openEdit = (k: AIKey) => {
+    setEditing(k); setForm({ name: k.name, provider: k.provider, api_key: "", default_model: k.default_model });
+    setOpen(true); loadModels(k.provider);
+  };
   const setF = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((p) => ({ ...p, [k]: v }));
 
   const save = async () => {
@@ -161,8 +174,12 @@ export default function AdminAIPage() {
   };
 
   // ── مزوّدون ──
-  const openNewProv = () => { setProvEditing(null); setProvForm({ ...emptyProv, order: providers.length } as typeof emptyProv); setProvOpen(true); };
-  const openEditProv = (p: Provider) => { setProvEditing(p); setProvForm({ name: p.name, slug: p.slug, base_url: p.base_url, default_model: p.default_model, simple_model: p.simple_model, sensitive_model: p.sensitive_model, is_active: p.is_active }); setProvOpen(true); };
+  const openNewProv = () => { setProvEditing(null); setProvForm({ ...emptyProv, order: providers.length } as typeof emptyProv); setProvOpen(true); setModels(null); };
+  const openEditProv = (p: Provider) => {
+    setProvEditing(p);
+    setProvForm({ name: p.name, slug: p.slug, base_url: p.base_url, default_model: p.default_model, simple_model: p.simple_model, sensitive_model: p.sensitive_model, is_active: p.is_active });
+    setProvOpen(true); loadModels(p.slug);
+  };
   const setPF = <K extends keyof typeof provForm>(k: K, v: (typeof provForm)[K]) => setProvForm((p) => ({ ...p, [k]: v }));
 
   const saveProv = async () => {
@@ -177,6 +194,26 @@ export default function AdminAIPage() {
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setProvSaving(false); }
   };
+
+  /**
+   * يجلب نماذج مزوّد بمفتاحٍ بعينه — حيّةً من المزوّد نفسه.
+   *
+   * ⚠️ **بمفتاح النموذج الجاري إنشاؤه لا بمفتاحٍ محفوظ**: حسابان لدى المزوّد
+   * نفسه قد يريان كتالوجين مختلفين (مقاس 2026‑08‑27: كتالوج Cerebras المجّاني
+   * نموذجان، وGroq أربعة عشر). لذلك يُمرَّر المفتاح المكتوب في النموذج إن وُجد.
+   */
+  const loadModels = useCallback(async (provider: string, apiKey?: string) => {
+    if (!provider) { setModels(null); return; }
+    setModelsLoading(true); setModels(null);
+    try {
+      const res = await api.post<ModelsResult>(ep.admin.aiProbeModels, {
+        provider, ...(apiKey ? { api_key: apiKey } : {}),
+      });
+      setModels(res.data);
+    } catch (err) {
+      setModels({ ok: false, models: [], error: getErrorMessage(err) });
+    } finally { setModelsLoading(false); }
+  }, []);
 
   /**
    * يختبر النموذج النشط بنداء حقيقي.
@@ -398,9 +435,19 @@ export default function AdminAIPage() {
       <Dialog open={open} onClose={() => setOpen(false)} title={editing ? "تعديل المفتاح" : "مفتاح جديد"}>
         <div className="space-y-4">
           <Input label="الاسم (وصف مميّز)" value={form.name} onChange={(e) => setF("name", e.target.value)} required />
-          <Select label="المزوّد" options={providers.map((p) => ({ value: p.slug, label: p.name }))} value={form.provider} onChange={(e) => setF("provider", e.target.value)} />
-          <Input label={editing ? "المفتاح (اتركه فارغاً للإبقاء على الحالي)" : "المفتاح (API Key)"} value={form.api_key} onChange={(e) => setF("api_key", e.target.value)} dir="ltr" type="password" placeholder="sk-..." />
-          <Input label="النموذج الافتراضي (اختياري — يُورَّث من المزوّد)" value={form.default_model} onChange={(e) => setF("default_model", e.target.value)} dir="ltr" placeholder="openai/gpt-4o-mini" />
+          <Select label="المزوّد"
+            options={providers.map((p) => ({ value: p.slug, label: p.name }))}
+            value={form.provider}
+            onChange={(e) => { setF("provider", e.target.value); setF("default_model", ""); setModels(null); }} />
+          <Input label={editing ? "المفتاح (اتركه فارغاً للإبقاء على الحالي)" : "المفتاح (API Key)"}
+            value={form.api_key} onChange={(e) => setF("api_key", e.target.value)}
+            onBlur={() => form.api_key.trim() && loadModels(form.provider, form.api_key.trim())}
+            dir="ltr" type="password" placeholder="sk-..." />
+          <ModelPicker
+            label="نموذج هذا المفتاح (اختياري — يُورَّث من المزوّد)"
+            value={form.default_model} onChange={(v) => setF("default_model", v)}
+            models={models} loading={modelsLoading}
+            onLoad={() => loadModels(form.provider, form.api_key.trim() || undefined)} />
           <div className="flex gap-3 pt-2">
             <Button variant="outline" fullWidth onClick={() => setOpen(false)}>إلغاء</Button>
             <Button fullWidth loading={saving} onClick={save}>{editing ? "حفظ" : "إضافة"}</Button>
@@ -414,11 +461,20 @@ export default function AdminAIPage() {
           <Input label="اسم المزوّد" value={provForm.name} onChange={(e) => setPF("name", e.target.value)} required placeholder="OpenRouter" />
           <Input label="المعرّف (slug) — اتركه فارغاً للتوليد الآلي" value={provForm.slug} onChange={(e) => setPF("slug", e.target.value)} dir="ltr" />
           <Input label="عنوان API (اختياري)" value={provForm.base_url} onChange={(e) => setPF("base_url", e.target.value)} dir="ltr" placeholder="https://openrouter.ai/api/v1" />
-          <Input label="النموذج الافتراضي (اختياري)" value={provForm.default_model} onChange={(e) => setPF("default_model", e.target.value)} dir="ltr" placeholder="openai/gpt-4o-mini" />
+          <ModelPicker label="النموذج الافتراضي (اختياري)"
+            value={provForm.default_model} onChange={(v) => setPF("default_model", v)}
+            models={models} loading={modelsLoading}
+            onLoad={() => loadModels(provForm.slug || provEditing?.slug || "")} />
           <div className="rounded-xl bg-gray-50 border border-gray-100 p-3 space-y-3">
             <p className="text-caption text-muted">نماذج الاستراتيجية المختلطة لهذا المزوّد (معرّفات النماذج تختلف بين المزوّدين). اتركها فارغة لاستخدام النموذج الافتراضي أعلاه.</p>
-            <Input label="🆓 نموذج المهام البسيطة (مجاني)" value={provForm.simple_model} onChange={(e) => setPF("simple_model", e.target.value)} dir="ltr" placeholder="google/gemma-4-26b-a4b-it:free" />
-            <Input label="💳 نموذج المهام الحسّاسة (مدفوع)" value={provForm.sensitive_model} onChange={(e) => setPF("sensitive_model", e.target.value)} dir="ltr" placeholder="openai/gpt-4o-mini" />
+            <ModelPicker label="🆓 نموذج المهام البسيطة (مجاني)"
+              value={provForm.simple_model} onChange={(v) => setPF("simple_model", v)}
+              models={models} loading={modelsLoading}
+              onLoad={() => loadModels(provForm.slug || provEditing?.slug || "")} />
+            <ModelPicker label="💳 نموذج المهام الحسّاسة (مدفوع)"
+              value={provForm.sensitive_model} onChange={(v) => setPF("sensitive_model", v)}
+              models={models} loading={modelsLoading}
+              onLoad={() => loadModels(provForm.slug || provEditing?.slug || "")} />
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={provForm.is_active} onChange={(e) => setPF("is_active", e.target.checked)} className="rounded" />
@@ -500,6 +556,64 @@ export default function AdminAIPage() {
         title="حذف المزوّد؟"
         message={provDelete ? `«${provDelete.name}»${provDelete.keys_count > 0 ? ` — يملك ${provDelete.keys_count} مفتاحاً، لن يُحذف حتى تنقلها.` : " — لا يمكن التراجع."}` : ""}
         variant="danger" confirmLabel="حذف" loading={busy} onConfirm={confirmDeleteProv} onCancel={() => setProvDelete(null)} />
+    </div>
+  );
+}
+
+/**
+ * منتقي نموذج: قائمة النماذج الحيّة للمزوّد، مع كتابة يدوية كمخرج آمن.
+ *
+ * ⚠️ **لا يُستبدل الإدخال اليدوي بالقائمة**: المزوّد قد يرفض السرد أو يُخفي
+ * نموذجاً حديثاً، وإجبار المشرف على الاختيار من قائمة ناقصة يمنعه من استعمال
+ * نموذج يعمل. القائمة تسهيل، والحقل يبقى مفتوحاً.
+ */
+function ModelPicker({ label, value, onChange, models, loading, onLoad }: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  models: ModelsResult | null;
+  loading: boolean;
+  onLoad: () => void;
+}) {
+  const list = models?.models ?? [];
+  const known = list.some((m) => m.id === value);
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between gap-2">
+        <label className="text-caption font-semibold text-ink">{label}</label>
+        <button type="button" onClick={onLoad} disabled={loading}
+          className="text-caption font-bold text-primary hover:underline disabled:opacity-50 flex items-center gap-1">
+          <Refresh className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+          {list.length ? "تحديث القائمة" : "اجلب النماذج المتاحة"}
+        </button>
+      </div>
+
+      {list.length > 0 && (
+        <select
+          value={known ? value : ""}
+          onChange={(e) => onChange(e.target.value)}
+          dir="ltr"
+          className="w-full h-11 rounded-xl border border-gray-200 px-3 text-body text-ink bg-white text-left"
+        >
+          <option value="">— اختر نموذجاً ({fmt(list.length)} متاح) —</option>
+          {list.map((m) => (
+            <option key={m.id} value={m.id}>{m.label === m.id ? m.id : `${m.id} — ${m.label}`}</option>
+          ))}
+        </select>
+      )}
+
+      <Input value={value} onChange={(e) => onChange(e.target.value)} dir="ltr"
+        placeholder={list.length ? "أو اكتب المعرّف يدوياً" : "معرّف النموذج"} />
+
+      {models && !models.ok && models.error && (
+        <p className="text-caption text-amber-700 leading-relaxed">{models.error}</p>
+      )}
+      {list.length > 0 && value && !known && (
+        <p className="text-caption text-amber-700">
+          هذا المعرّف ليس في قائمة المزوّد — قد يردّ 404 عند الاستخدام.
+        </p>
+      )}
     </div>
   );
 }
