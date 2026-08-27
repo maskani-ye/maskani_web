@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Dialog } from "@/components/ui/Dialog";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Stars, AddCircle, TrashBinMinimalistic, Pen, Refresh, ChartSquare, CheckCircle, ServerSquare } from "@solar-icons/react";
+import { Stars, AddCircle, TrashBinMinimalistic, Pen, Refresh, ChartSquare, CheckCircle, ServerSquare, Play, Gift, DangerTriangle } from "@solar-icons/react";
 import { toast } from "sonner";
 
 interface AIKey {
@@ -28,6 +28,16 @@ interface RemoteUsage {
   ok: boolean; error?: string;
   key?: { label?: string; usage?: number; limit?: number | null; limit_remaining?: number | null; is_free_tier?: boolean };
   credits?: { total_credits?: number; total_usage?: number; remaining?: number | null };
+}
+interface TestResult {
+  ok: boolean; provider?: string; model?: string; reply?: string;
+  error?: string; error_type?: string; elapsed_ms?: number;
+  usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
+}
+interface CatalogEntry {
+  slug: string; name: string; base_url: string; default_model: string;
+  free_quota: string; keys_url: string; openai_compatible: boolean;
+  registered: boolean; has_key: boolean;
 }
 interface LocalStats { total_requests: number; success: number; error: number; total_tokens: number; last_24h: number; by_task: { task_name: string; n: number; tokens: number }[] }
 interface Tiers { simple_model: string; sensitive_model: string; tasks: { name: string; description: string; sensitive: boolean; tier: string; model: string }[] }
@@ -64,15 +74,24 @@ export default function AdminAIPage() {
   const [provSaving, setProvSaving] = useState(false);
   const [provDelete, setProvDelete] = useState<Provider | null>(null);
 
+  // اختبار النموذج النشط
+  const [testPrompt, setTestPrompt] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<TestResult | null>(null);
+  // كتالوج المزوّدين المجّانيين
+  const [catalog, setCatalog] = useState<CatalogEntry[]>([]);
+
   const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [k, p] = await Promise.all([
+      const [k, p, c] = await Promise.all([
         api.get<AIKey[]>(ep.admin.aiKeys),
         api.get<Provider[]>(ep.admin.aiProviders),
+        api.get<CatalogEntry[]>(ep.admin.aiProvidersCatalog),
       ]);
       setKeys(Array.isArray(k.data) ? k.data : []);
       setProviders(Array.isArray(p.data) ? p.data : []);
+      setCatalog(Array.isArray(c.data) ? c.data : []);
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
   }, []);
@@ -159,6 +178,26 @@ export default function AdminAIPage() {
     finally { setProvSaving(false); }
   };
 
+  /**
+   * يختبر النموذج النشط بنداء حقيقي.
+   *
+   * ⚠️ **الخطأ نتيجةٌ لا فشل**: الخادم يعيد 200 بـ`ok:false` ورسالة، فلا نعرض
+   * «تعذّر الاتصال» — بل السبب نفسه («النموذج لم يعد متاحاً»، «تجاوزت الحصّة»)،
+   * وهو الغرض كلّه من الحقل.
+   */
+  const runTest = async () => {
+    setTesting(true); setTestResult(null);
+    try {
+      const res = await api.post<TestResult>(ep.admin.aiTestActive,
+        testPrompt.trim() ? { prompt: testPrompt.trim() } : {});
+      setTestResult(res.data);
+      if (res.data.ok) toast.success(`النموذج يعمل — ${res.data.model}`);
+      else toast.error("النموذج لم يستجب");
+    } catch (err) {
+      setTestResult({ ok: false, error: getErrorMessage(err) });
+    } finally { setTesting(false); }
+  };
+
   const confirmDeleteProv = async () => {
     if (!provDelete) return;
     setBusy(true);
@@ -194,6 +233,43 @@ export default function AdminAIPage() {
           ⚠️ لا يوجد مفتاح نشط — أضِف مفتاحاً وفعّله لبدء استخدام الذكاء الاصطناعي.
         </div>
       )}
+
+      {/* ── اختبار النموذج النشط ── */}
+      <div className="bg-white rounded-2xl shadow-card p-5">
+        <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-1">
+          <Play className="h-5 w-5 text-primary" /> اختبار النموذج النشط
+        </h2>
+        <p className="text-xs text-gray-400 mb-4">
+          نداء حقيقي بالمفتاح النشط — يكشف المفتاح الميّت أو معرّف النموذج المتقاعد
+          قبل أن يصطدم به المستخدم. اتركه فارغاً لاستخدام سؤال تجريبي.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Input value={testPrompt} onChange={(e) => setTestPrompt(e.target.value)}
+            placeholder="اكتب سؤالاً للنموذج (اختياري)" className="flex-1"
+            onKeyDown={(e) => { if (e.key === "Enter" && !testing) runTest(); }} />
+          <Button onClick={runTest} loading={testing} disabled={!activeKey}>
+            <Play className="h-4 w-4" /> شغّل الاختبار
+          </Button>
+        </div>
+
+        {testResult && (
+          <div className={`mt-4 rounded-xl border p-4 ${testResult.ok ? "border-green-200 bg-green-50/60" : "border-red-200 bg-red-50/60"}`}>
+            <div className="flex items-center gap-2 flex-wrap text-sm font-bold mb-2">
+              {testResult.ok
+                ? <><CheckCircle className="h-4 w-4 text-green-600" /><span className="text-green-700">النموذج يعمل</span></>
+                : <><DangerTriangle className="h-4 w-4 text-red-500" /><span className="text-red-600">فشل الاختبار</span></>}
+              {testResult.model && <span dir="ltr" className="font-mono text-xs bg-white px-1.5 py-0.5 rounded border">{testResult.model}</span>}
+              {typeof testResult.elapsed_ms === "number" &&
+                <span className="text-xs font-normal text-gray-500">{fmt(Math.round(testResult.elapsed_ms))} م.ث</span>}
+              {testResult.usage?.total_tokens != null &&
+                <span className="text-xs font-normal text-gray-500">{fmt(testResult.usage.total_tokens)} رمزاً</span>}
+            </div>
+            <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+              {testResult.ok ? testResult.reply : testResult.error}
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* ── إحصاء طلبات المنصّة ── */}
       {local && (
@@ -378,6 +454,42 @@ export default function AdminAIPage() {
           </div>
         )}
       </Dialog>
+
+      {/* ── مزوّدون بحصص مجانية ── */}
+      {catalog.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+          <div className="px-5 py-3 border-b border-gray-100">
+            <h2 className="font-bold text-gray-900 flex items-center gap-2">
+              <Gift className="h-5 w-5 text-primary" /> مزوّدون بحصّة مجانية
+            </h2>
+            <p className="text-xs text-gray-400 mt-1">
+              الحصص إرشادية وتتغيّر — راجع صفحة المزوّد قبل الاعتماد عليها. أضِف المفتاح من «مفتاح جديد» بنفس المعرّف.
+            </p>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {catalog.map((c) => (
+              <div key={c.slug} className="flex items-start gap-4 p-4 hover:bg-gray-50/70 transition-colors">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-bold text-gray-900 text-sm">{c.name}</h3>
+                    <span dir="ltr" className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-500">{c.slug}</span>
+                    {c.has_key ? <Badge variant="success">له مفتاح</Badge>
+                      : c.registered ? <Badge variant="warning">مسجَّل بلا مفتاح</Badge>
+                      : <Badge variant="default">غير مسجَّل</Badge>}
+                    {!c.openai_compatible && <Badge variant="info">واجهة خاصّة</Badge>}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">{c.free_quota}</p>
+                  <p dir="ltr" className="font-mono text-[11px] text-gray-400 mt-1 text-left break-all">{c.default_model}</p>
+                </div>
+                <a href={c.keys_url} target="_blank" rel="noopener noreferrer"
+                  className="shrink-0 text-xs font-bold px-3 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 text-primary flex items-center">
+                  احصل على مفتاح
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <ConfirmDialog open={!!deleteTarget} icon={<TrashBinMinimalistic className="h-6 w-6 text-red-500" />}
         title="حذف المفتاح؟"
