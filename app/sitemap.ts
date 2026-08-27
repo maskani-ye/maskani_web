@@ -169,6 +169,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.65,
     })),
+    // صفحة المكاتب العقارية — مدخل المخزون، فأولويتها أعلى من الصفحات التعريفية.
+    { url: `${BASE}/offices`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/about`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },

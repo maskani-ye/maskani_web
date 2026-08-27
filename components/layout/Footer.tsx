@@ -92,6 +92,13 @@ export function Footer() {
           {/* روابط قانونية وتعريفية */}
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <Link
+              href="/offices"
+              className="text-primary-200 hover:text-white text-sm font-medium transition-colors"
+            >
+              للمكاتب العقارية
+            </Link>
+            <span className="text-primary-600" aria-hidden>·</span>
+            <Link
               href="/about"
               className="text-primary-200 hover:text-white text-sm font-medium transition-colors"
             >
