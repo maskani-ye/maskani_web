@@ -222,24 +222,24 @@ export default function AdminAIPage() {
             <CheckCircle className="h-5 w-5" /> المفتاح المُستخدَم الآن
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-lg font-extrabold text-gray-900">{activeKey.name}</span>
+            <span className="text-h3 font-extrabold text-ink">{activeKey.name}</span>
             <Badge variant="info">{provName(activeKey.provider)}</Badge>
-            <span dir="ltr" className="font-mono text-xs bg-white px-2 py-1 rounded border border-primary/20">{activeKey.masked_key}</span>
+            <span dir="ltr" className="font-mono text-caption bg-white px-2 py-1 rounded border border-primary/20">{activeKey.masked_key}</span>
           </div>
-          <p className="text-xs text-gray-500 mt-2">هذا هو المفتاح الذي تعمل به المنصّة فعلياً. لتبديله، اضغط «تفعيل» على مفتاح آخر في القائمة أدناه.</p>
+          <p className="text-caption text-muted mt-2">هذا هو المفتاح الذي تعمل به المنصّة فعلياً. لتبديله، اضغط «تفعيل» على مفتاح آخر في القائمة أدناه.</p>
         </div>
       ) : (
-        <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 text-amber-800 text-sm">
+        <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 text-amber-800 text-body">
           ⚠️ لا يوجد مفتاح نشط — أضِف مفتاحاً وفعّله لبدء استخدام الذكاء الاصطناعي.
         </div>
       )}
 
       {/* ── اختبار النموذج النشط ── */}
       <div className="bg-white rounded-2xl shadow-card p-5">
-        <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-1">
+        <h2 className="font-bold text-ink flex items-center gap-2 mb-1">
           <Play className="h-5 w-5 text-primary" /> اختبار النموذج النشط
         </h2>
-        <p className="text-xs text-gray-400 mb-4">
+        <p className="text-caption text-muted mb-4">
           نداء حقيقي بالمفتاح النشط — يكشف المفتاح الميّت أو معرّف النموذج المتقاعد
           قبل أن يصطدم به المستخدم. اتركه فارغاً لاستخدام سؤال تجريبي.
         </p>
@@ -254,17 +254,17 @@ export default function AdminAIPage() {
 
         {testResult && (
           <div className={`mt-4 rounded-xl border p-4 ${testResult.ok ? "border-green-200 bg-green-50/60" : "border-red-200 bg-red-50/60"}`}>
-            <div className="flex items-center gap-2 flex-wrap text-sm font-bold mb-2">
+            <div className="flex items-center gap-2 flex-wrap text-body font-bold mb-2">
               {testResult.ok
                 ? <><CheckCircle className="h-4 w-4 text-green-600" /><span className="text-green-700">النموذج يعمل</span></>
                 : <><DangerTriangle className="h-4 w-4 text-red-500" /><span className="text-red-600">فشل الاختبار</span></>}
-              {testResult.model && <span dir="ltr" className="font-mono text-xs bg-white px-1.5 py-0.5 rounded border">{testResult.model}</span>}
+              {testResult.model && <span dir="ltr" className="font-mono text-caption bg-white px-1.5 py-0.5 rounded border">{testResult.model}</span>}
               {typeof testResult.elapsed_ms === "number" &&
-                <span className="text-xs font-normal text-gray-500">{fmt(Math.round(testResult.elapsed_ms))} م.ث</span>}
+                <span className="text-caption font-normal text-muted">{fmt(Math.round(testResult.elapsed_ms))} م.ث</span>}
               {testResult.usage?.total_tokens != null &&
-                <span className="text-xs font-normal text-gray-500">{fmt(testResult.usage.total_tokens)} رمزاً</span>}
+                <span className="text-caption font-normal text-muted">{fmt(testResult.usage.total_tokens)} رمزاً</span>}
             </div>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+            <p className="text-body text-ink whitespace-pre-wrap leading-relaxed">
               {testResult.ok ? testResult.reply : testResult.error}
             </p>
           </div>
@@ -275,9 +275,9 @@ export default function AdminAIPage() {
       {local && (
         <div className="bg-white rounded-2xl shadow-card p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-gray-900 flex items-center gap-2"><ChartSquare className="h-5 w-5 text-primary" /> إحصاء طلبات المنصّة</h2>
+            <h2 className="font-bold text-ink flex items-center gap-2"><ChartSquare className="h-5 w-5 text-primary" /> إحصاء طلبات المنصّة</h2>
             <button onClick={fetchLocal} disabled={localLoading} title="تحديث" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center">
-              <Refresh className={`h-4 w-4 text-gray-500 ${localLoading ? "animate-spin" : ""}`} />
+              <Refresh className={`h-4 w-4 text-muted ${localLoading ? "animate-spin" : ""}`} />
             </button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -293,24 +293,24 @@ export default function AdminAIPage() {
       {/* ── توزيع النماذج (استراتيجية مختلطة) ── */}
       {tiers && (
         <div className="bg-white rounded-2xl shadow-card p-5">
-          <h2 className="font-bold text-gray-900 mb-1">توزيع النماذج (مختلط)</h2>
-          <p className="text-xs text-gray-400 mb-4">المهام البسيطة تعمل بنموذج مجاني، والحسّاسة بنموذج مدفوع — توفيراً للتكلفة. النماذج التالية مأخوذة من <b>المزوّد النشط</b> (تُضبط لكل مزوّد في قسم «المزوّدون» أدناه، لأن المعرّفات تختلف بينها).</p>
+          <h2 className="font-bold text-ink mb-1">توزيع النماذج (مختلط)</h2>
+          <p className="text-caption text-muted mb-4">المهام البسيطة تعمل بنموذج مجاني، والحسّاسة بنموذج مدفوع — توفيراً للتكلفة. النماذج التالية مأخوذة من <b>المزوّد النشط</b> (تُضبط لكل مزوّد في قسم «المزوّدون» أدناه، لأن المعرّفات تختلف بينها).</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             <div className="rounded-xl border border-green-100 bg-green-50/50 p-3">
-              <p className="text-xs text-green-700 font-semibold mb-1">🆓 المهام البسيطة → مجاني</p>
-              <p dir="ltr" className="font-mono text-xs text-gray-700 text-left break-all">{tiers.simple_model}</p>
+              <p className="text-caption text-green-700 font-semibold mb-1">🆓 المهام البسيطة → مجاني</p>
+              <p dir="ltr" className="font-mono text-caption text-muted text-left break-all">{tiers.simple_model}</p>
             </div>
             <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3">
-              <p className="text-xs text-amber-700 font-semibold mb-1">💳 المهام الحسّاسة → مدفوع</p>
-              <p dir="ltr" className="font-mono text-xs text-gray-700 text-left break-all">{tiers.sensitive_model}</p>
+              <p className="text-caption text-amber-700 font-semibold mb-1">💳 المهام الحسّاسة → مدفوع</p>
+              <p dir="ltr" className="font-mono text-caption text-muted text-left break-all">{tiers.sensitive_model}</p>
             </div>
           </div>
           <div className="space-y-1.5">
             {tiers.tasks.map((t) => (
-              <div key={t.name} className="flex items-center gap-2 text-sm py-1.5 border-b border-gray-50 last:border-0">
-                <span className="font-semibold text-gray-800" dir="ltr">{t.name}</span>
+              <div key={t.name} className="flex items-center gap-2 text-body py-1.5 border-b border-gray-50 last:border-0">
+                <span className="font-semibold text-ink" dir="ltr">{t.name}</span>
                 <Badge variant={t.sensitive ? "warning" : "success"}>{t.sensitive ? "مدفوع" : "مجاني"}</Badge>
-                <span className="text-xs text-gray-400 truncate flex-1 text-left" dir="ltr">{t.model}</span>
+                <span className="text-caption text-muted truncate flex-1 text-left" dir="ltr">{t.model}</span>
               </div>
             ))}
           </div>
@@ -319,37 +319,37 @@ export default function AdminAIPage() {
 
       {/* ── قائمة المفاتيح ── */}
       <div className="bg-white rounded-2xl shadow-card overflow-hidden">
-        <div className="px-5 py-3 border-b border-gray-100"><h2 className="font-bold text-gray-900">المفاتيح</h2></div>
+        <div className="px-5 py-3 border-b border-gray-100"><h2 className="font-bold text-ink">المفاتيح</h2></div>
         {loading ? (
           <div className="divide-y divide-gray-100">{[0, 1].map((i) => <div key={i} className="h-16 bg-gray-50 animate-pulse m-3 rounded-xl" />)}</div>
         ) : keys.length === 0 ? (
-          <div className="py-16 text-center text-gray-400"><Stars className="h-12 w-12 mx-auto mb-3 opacity-30" /><p>لا مفاتيح بعد — أضِف أول مفتاح</p></div>
+          <div className="py-16 text-center text-muted"><Stars className="h-12 w-12 mx-auto mb-3 opacity-30" /><p>لا مفاتيح بعد — أضِف أول مفتاح</p></div>
         ) : (
           <div className="p-3 space-y-2">
             {keys.map((key) => (
               <div key={key.id} className={`flex items-center gap-4 p-3.5 rounded-xl transition-colors ${key.is_active ? "border-2 border-primary bg-primary/5" : "border border-gray-100 hover:bg-gray-50/70"}`}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-gray-900 text-sm">{key.name}</h3>
+                    <h3 className="font-bold text-ink text-body">{key.name}</h3>
                     {key.is_active
-                      ? <span className="inline-flex items-center gap-1 text-xs font-bold text-white bg-primary px-2 py-0.5 rounded-full"><CheckCircle className="h-3.5 w-3.5" /> نشط الآن</span>
-                      : <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">غير نشط</span>}
+                      ? <span className="inline-flex items-center gap-1 text-caption font-bold text-white bg-primary px-2 py-0.5 rounded-full"><CheckCircle className="h-3.5 w-3.5" /> نشط الآن</span>
+                      : <span className="text-caption text-muted bg-gray-100 px-2 py-0.5 rounded-full">غير نشط</span>}
                     <Badge variant="info">{provName(key.provider)}</Badge>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-400 mt-1 flex-wrap">
+                  <div className="flex items-center gap-3 text-caption text-muted mt-1 flex-wrap">
                     <span dir="ltr" className="font-mono bg-gray-100 px-1.5 py-0.5 rounded">{key.masked_key || "—"}</span>
                     {key.last_used_at && <span>آخر استخدام: {new Date(key.last_used_at).toLocaleDateString("ar")}</span>}
                   </div>
-                  {!key.is_active && key.last_error && <p className="text-xs text-red-500 mt-1 line-clamp-1" title={key.last_error}>توقّف: {key.last_error}</p>}
+                  {!key.is_active && key.last_error && <p className="text-caption text-red-500 mt-1 line-clamp-1" title={key.last_error}>توقّف: {key.last_error}</p>}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   {!key.is_active && (
-                    <button onClick={() => setActive(key)} className="text-xs font-bold px-3 h-9 rounded-lg bg-primary text-white hover:bg-primary/90 flex items-center gap-1">
+                    <button onClick={() => setActive(key)} className="text-caption font-bold px-3 h-9 rounded-lg bg-primary text-white hover:bg-primary/90 flex items-center gap-1">
                       <CheckCircle className="h-4 w-4" /> تفعيل
                     </button>
                   )}
-                  <button onClick={() => openStats(key)} title="الإحصائيات" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center"><ChartSquare className="h-4 w-4 text-gray-500" /></button>
-                  <button onClick={() => openEdit(key)} title="تعديل" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-gray-500" /></button>
+                  <button onClick={() => openStats(key)} title="الإحصائيات" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center"><ChartSquare className="h-4 w-4 text-muted" /></button>
+                  <button onClick={() => openEdit(key)} title="تعديل" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-muted" /></button>
                   <button onClick={() => setDeleteTarget(key)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center"><TrashBinMinimalistic className="h-4 w-4 text-red-500" /></button>
                 </div>
               </div>
@@ -361,26 +361,26 @@ export default function AdminAIPage() {
       {/* ── المزوّدون ── */}
       <div className="bg-white rounded-2xl shadow-card overflow-hidden">
         <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="font-bold text-gray-900 flex items-center gap-2"><ServerSquare className="h-5 w-5 text-primary" /> المزوّدون</h2>
+          <h2 className="font-bold text-ink flex items-center gap-2"><ServerSquare className="h-5 w-5 text-primary" /> المزوّدون</h2>
           <Button size="sm" variant="outline" onClick={openNewProv}><AddCircle className="h-4 w-4" /> مزوّد جديد</Button>
         </div>
         {providers.length === 0 ? (
-          <div className="py-10 text-center text-gray-400 text-sm">لا مزوّدون بعد</div>
+          <div className="py-10 text-center text-muted text-body">لا مزوّدون بعد</div>
         ) : (
           <div className="divide-y divide-gray-100">
             {providers.map((p) => (
               <div key={p.id} className="flex items-center gap-4 p-4 hover:bg-gray-50/70 transition-colors">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-gray-900 text-sm">{p.name}</h3>
-                    <span dir="ltr" className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-500">{p.slug}</span>
+                    <h3 className="font-bold text-ink text-body">{p.name}</h3>
+                    <span dir="ltr" className="font-mono text-caption bg-gray-100 px-1.5 py-0.5 rounded text-muted">{p.slug}</span>
                     {p.keys_count > 0 && <Badge variant="info">{p.keys_count} مفتاح</Badge>}
                     {!p.is_active && <Badge variant="default">معطّل</Badge>}
                   </div>
-                  <p dir="ltr" className="text-xs text-gray-400 mt-1 truncate text-left">{p.base_url || "عنوان API الافتراضي (OpenRouter)"}</p>
+                  <p dir="ltr" className="text-caption text-muted mt-1 truncate text-left">{p.base_url || "عنوان API الافتراضي (OpenRouter)"}</p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button onClick={() => openEditProv(p)} title="تعديل" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-gray-500" /></button>
+                  <button onClick={() => openEditProv(p)} title="تعديل" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-muted" /></button>
                   <button onClick={() => setProvDelete(p)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center"><TrashBinMinimalistic className="h-4 w-4 text-red-500" /></button>
                 </div>
               </div>
@@ -389,7 +389,7 @@ export default function AdminAIPage() {
         )}
       </div>
 
-      <p className="text-xs text-gray-400 leading-relaxed">
+      <p className="text-caption text-muted leading-relaxed">
         المزوّدون متوافقون مع OpenAI — يكفي تحديد «عنوان API» لكلٍّ (اختياري؛ يُستخدم عنوان OpenRouter عند تركه فارغاً).
         كل مفتاح يختار مزوّده من القائمة. المفتاح النشط (واحد فقط) هو ما تعمل به المنصّة. لا يُعرض المفتاح كاملاً بعد الحفظ.
       </p>
@@ -416,13 +416,13 @@ export default function AdminAIPage() {
           <Input label="عنوان API (اختياري)" value={provForm.base_url} onChange={(e) => setPF("base_url", e.target.value)} dir="ltr" placeholder="https://openrouter.ai/api/v1" />
           <Input label="النموذج الافتراضي (اختياري)" value={provForm.default_model} onChange={(e) => setPF("default_model", e.target.value)} dir="ltr" placeholder="openai/gpt-4o-mini" />
           <div className="rounded-xl bg-gray-50 border border-gray-100 p-3 space-y-3">
-            <p className="text-xs text-gray-500">نماذج الاستراتيجية المختلطة لهذا المزوّد (معرّفات النماذج تختلف بين المزوّدين). اتركها فارغة لاستخدام النموذج الافتراضي أعلاه.</p>
+            <p className="text-caption text-muted">نماذج الاستراتيجية المختلطة لهذا المزوّد (معرّفات النماذج تختلف بين المزوّدين). اتركها فارغة لاستخدام النموذج الافتراضي أعلاه.</p>
             <Input label="🆓 نموذج المهام البسيطة (مجاني)" value={provForm.simple_model} onChange={(e) => setPF("simple_model", e.target.value)} dir="ltr" placeholder="google/gemma-4-26b-a4b-it:free" />
             <Input label="💳 نموذج المهام الحسّاسة (مدفوع)" value={provForm.sensitive_model} onChange={(e) => setPF("sensitive_model", e.target.value)} dir="ltr" placeholder="openai/gpt-4o-mini" />
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={provForm.is_active} onChange={(e) => setPF("is_active", e.target.checked)} className="rounded" />
-            <span className="text-sm text-gray-700">مُفعّل</span>
+            <span className="text-body text-muted">مُفعّل</span>
           </label>
           <div className="flex gap-3 pt-2">
             <Button variant="outline" fullWidth onClick={() => setProvOpen(false)}>إلغاء</Button>
@@ -434,9 +434,9 @@ export default function AdminAIPage() {
       {/* إحصائيات مفتاح */}
       <Dialog open={!!statsKey} onClose={() => setStatsKey(null)} title={statsKey ? `إحصائيات: ${statsKey.name}` : ""}>
         {statsLoading ? (
-          <div className="py-8 text-center text-gray-400"><Refresh className="h-6 w-6 mx-auto animate-spin" /><p className="mt-2 text-sm">جارٍ الجلب…</p></div>
+          <div className="py-8 text-center text-muted"><Refresh className="h-6 w-6 mx-auto animate-spin" /><p className="mt-2 text-body">جارٍ الجلب…</p></div>
         ) : !statsData ? null : !statsData.ok ? (
-          <p className="text-sm text-red-500 py-4 text-center">تعذّر الجلب: {statsData.error}</p>
+          <p className="text-body text-red-500 py-4 text-center">تعذّر الجلب: {statsData.error}</p>
         ) : (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
@@ -445,7 +445,7 @@ export default function AdminAIPage() {
               <Stat label="المتبقّي للمفتاح" value={statsData.key?.limit_remaining == null ? "—" : money(statsData.key?.limit_remaining)} tone="green" />
               <Stat label="رصيد الحساب المتبقّي" value={money(statsData.credits?.remaining)} />
             </div>
-            <div className="text-xs text-gray-500 space-y-1 border-t border-gray-100 pt-3">
+            <div className="text-caption text-muted space-y-1 border-t border-gray-100 pt-3">
               <div className="flex justify-between"><span>إجمالي رصيد الحساب</span><span dir="ltr" className="tabular-nums">{money(statsData.credits?.total_credits)}</span></div>
               <div className="flex justify-between"><span>إجمالي الاستهلاك</span><span dir="ltr" className="tabular-nums">{money(statsData.credits?.total_usage)}</span></div>
               <div className="flex justify-between"><span>الطبقة المجانية</span><span>{statsData.key?.is_free_tier ? "نعم" : "لا"}</span></div>
@@ -459,10 +459,10 @@ export default function AdminAIPage() {
       {catalog.length > 0 && (
         <div className="bg-white rounded-2xl shadow-card overflow-hidden">
           <div className="px-5 py-3 border-b border-gray-100">
-            <h2 className="font-bold text-gray-900 flex items-center gap-2">
+            <h2 className="font-bold text-ink flex items-center gap-2">
               <Gift className="h-5 w-5 text-primary" /> مزوّدون بحصّة مجانية
             </h2>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-caption text-muted mt-1">
               الحصص إرشادية وتتغيّر — راجع صفحة المزوّد قبل الاعتماد عليها. أضِف المفتاح من «مفتاح جديد» بنفس المعرّف.
             </p>
           </div>
@@ -471,18 +471,18 @@ export default function AdminAIPage() {
               <div key={c.slug} className="flex items-start gap-4 p-4 hover:bg-gray-50/70 transition-colors">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-gray-900 text-sm">{c.name}</h3>
-                    <span dir="ltr" className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-500">{c.slug}</span>
+                    <h3 className="font-bold text-ink text-body">{c.name}</h3>
+                    <span dir="ltr" className="font-mono text-caption bg-gray-100 px-1.5 py-0.5 rounded text-muted">{c.slug}</span>
                     {c.has_key ? <Badge variant="success">له مفتاح</Badge>
                       : c.registered ? <Badge variant="warning">مسجَّل بلا مفتاح</Badge>
                       : <Badge variant="default">غير مسجَّل</Badge>}
                     {!c.openai_compatible && <Badge variant="info">واجهة خاصّة</Badge>}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">{c.free_quota}</p>
-                  <p dir="ltr" className="font-mono text-[11px] text-gray-400 mt-1 text-left break-all">{c.default_model}</p>
+                  <p className="text-caption text-muted mt-1 leading-relaxed">{c.free_quota}</p>
+                  <p dir="ltr" className="font-mono text-caption text-muted mt-1 text-left break-all">{c.default_model}</p>
                 </div>
                 <a href={c.keys_url} target="_blank" rel="noopener noreferrer"
-                  className="shrink-0 text-xs font-bold px-3 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 text-primary flex items-center">
+                  className="shrink-0 text-caption font-bold px-3 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 text-primary flex items-center">
                   احصل على مفتاح
                 </a>
               </div>
@@ -505,10 +505,10 @@ export default function AdminAIPage() {
 }
 
 function Stat({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "primary" | "green" | "red" }) {
-  const color = tone === "primary" ? "text-primary" : tone === "green" ? "text-green-600" : tone === "red" ? "text-red-500" : "text-gray-900";
+  const color = tone === "primary" ? "text-primary" : tone === "green" ? "text-green-600" : tone === "red" ? "text-red-500" : "text-ink";
   return (
     <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-3">
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
+      <p className="text-caption text-muted mb-1">{label}</p>
       <p className={`font-bold tabular-nums ${color}`}>{value}</p>
     </div>
   );
