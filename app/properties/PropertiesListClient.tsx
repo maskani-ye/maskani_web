@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { api, getErrorMessage } from "@/lib/api";
-import { CURRENCIES, DEFAULT_CURRENCY, formatPrice, offerTypeLabels, propertyTypeName, NUMERIC_LOCALE } from "@/lib/utils";
+import { CURRENCIES, DEFAULT_CURRENCY, formatPrice, formatNumber, offerTypeLabels, propertyTypeName, NUMERIC_LOCALE } from "@/lib/utils";
 import type { Property, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -13,8 +13,8 @@ import { Select } from "@/components/ui/Select";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import {
   Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed, Bath,
-  Ruler, Eye, Heart, AltArrowRight, AltArrowLeft,
-  AddCircle, Bookmark,
+  Ruler, Eye, Heart, AltArrowRight, AltArrowLeft, AltArrowDown,
+  AddCircle, Bookmark, CloseCircle,
 } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
@@ -195,6 +195,43 @@ function PropertiesContent() {
     Object.entries(filters).filter(([k, v]) => v && k !== "search" && k !== "ordering" && k !== "price_currency").length +
     (cityId ? 1 : 0);
 
+  /**
+   * الفلاتر النشطة كرقائق تُقرأ وتُزال بنقرة — كما في المرجع.
+   *
+   * ⚠️ **الشارة الرقمية وحدها لا تكفي**: «الفلاتر ③» تقول إن شيئاً يُخفي نتائج
+   * ولا تقول ما هو، فيبقى الزائر أمام قائمة قصيرة لا يعرف سببها. الرقاقة تسمّي
+   * الفلتر وتُزيله في نقرة واحدة.
+   */
+  const activeChips = useMemo(() => {
+    const chips: { key: string; label: string; clear: () => void }[] = [];
+    if (cityId) {
+      chips.push({
+        key: "city",
+        label: cities.find((c) => String(c.id) === cityId)?.name_ar ?? "المدينة",
+        clear: () => setCity("", ""),
+      });
+    }
+    const LABELS: Record<string, (v: string) => string> = {
+      offer_type: (v) => offerTypeLabels[v as keyof typeof offerTypeLabels] ?? v,
+      property_type: (v) => propertyTypeOpts.find((o) => o.value === v)?.label ?? v,
+      rooms: (v) => `${formatNumber(Number(v))} غرف`,
+      bathrooms: (v) => `${formatNumber(Number(v))} حمّامات`,
+      price_min: (v) => `من ${formatNumber(Number(v))}`,
+      price_max: (v) => `إلى ${formatNumber(Number(v))}`,
+      area_min: (v) => `مساحة من ${formatNumber(Number(v))}`,
+      area_max: (v) => `مساحة إلى ${formatNumber(Number(v))}`,
+      furnishing: (v) => v,
+      status: (v) => v,
+    };
+    Object.entries(filters).forEach(([k, v]) => {
+      if (!v || k === "search" || k === "ordering" || k === "price_currency") return;
+      const label = LABELS[k]?.(v) ?? v;
+      chips.push({ key: k, label, clear: () => handleFilterChange(k, "") });
+    });
+    return chips;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, cityId, cities, propertyTypeOpts]);
+
   const toggleFavorite = async (id: number, e: React.MouseEvent) => {
     e.preventDefault();
     if (!requireAuth()) return;
@@ -252,78 +289,91 @@ function PropertiesContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <Breadcrumbs items={[{ name: "الرئيسية", href: "/" }, { name: sectionLabel("properties") }]} />
-      {/* Toolbar */}
-      <div className="relative mb-6 overflow-hidden rounded-3xl bg-white card-shadow">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-gold via-gold/60 to-primary" />
-        <div className="p-5 sm:p-6">
-          {/* Title + actions */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <Buildings2 className="h-6 w-6" />
-              </div>
-              <div>
-                {/* h2 لا h1 — الـh1 الرئيسي في الكتلة التعريفية الخادمية (SectionIntro). */}
-                <h2 className="text-xl sm:text-2xl font-extrabold leading-tight text-gray-900">العقارات</h2>
-                <p className="mt-0.5 text-sm text-gray-500">
-                  {loading ? (
-                    "جارٍ التحميل…"
-                  ) : (
-                    <>
-                      <span className="font-bold text-primary">{total.toLocaleString(NUMERIC_LOCALE)}</span> عقار متاح
-                    </>
-                  )}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
-                <SliderHorizontal className="h-4 w-4" />
-                الفلاتر
-                {activeFilterCount > 0 && (
-                  <span className="mr-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-white">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </Button>
-              <Button variant="outline" size="sm" onClick={saveSearch} title="احفظ هذا البحث لتصلك تنبيهات المطابقة">
-                <Bookmark className="h-4 w-4" />
-                احفظ البحث
-              </Button>
-              <Button size="sm" onClick={() => requireAuth(() => router.push("/properties/create"))}>
-                <AddCircle className="h-4 w-4" />
-                أضف عقار
-              </Button>
-            </div>
-          </div>
+      {/* ─── الشريط ─────────────────────────────────────────────────────
+          ⚠️ **أُعيد بناؤه على المرجع حرفياً**: كان حاويةً بيضاء ثقيلة بشريط
+          متدرّج وأيقونة وعنوان «العقارات» مكرّراً — والعنوان موجودٌ فوقه في
+          الكتلة التعريفية، فكان يقوله مرّتين ويأكل ثلث الشاشة قبل أوّل عقار.
+          المرجع: صفٌّ واحد للبحث والفلاتر، وصفٌّ ثانٍ للعدد والترتيب، لا أكثر.
 
-          {/* Search + sort */}
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Input
-              placeholder="ابحث بالعنوان أو الحي..."
+          ⚠️ **والزجاج هنا مصقول لا شفّاف**: لا صورة خلف هذه الشاشة، فالزجاج
+          الشديد الشفافية يبدو باهتاً. `bg-white/70` + `backdrop-blur` + حدّ
+          شعرة يعطي الحسّ الزجاجيّ ويُبقي النصّ مقروءاً على خلفية فاتحة. */}
+      <div className="mb-6 space-y-3">
+        {/* صفّ ① — البحث والفلاتر */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[16rem]">
+            <Magnifer className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <input
               value={filters.search}
               onChange={(e) => handleFilterChange("search", e.target.value)}
-              startIcon={<Magnifer className="h-4 w-4" />}
-              className="flex-1"
-            />
-            <Select
-              options={[
-                { value: "-created_at", label: "الأحدث" },
-                { value: "price", label: "السعر: الأقل" },
-                { value: "-price", label: "السعر: الأعلى" },
-                { value: "-views_count", label: "الأكثر مشاهدة" },
-              ]}
-              value={filters.ordering}
-              onChange={(e) => handleFilterChange("ordering", e.target.value)}
-              className="w-full sm:w-48"
+              placeholder="ابحث بالعنوان أو الحي…"
+              className="h-11 w-full rounded-full border border-white/60 bg-white/70 ps-11 pe-4 text-body text-ink shadow-e1 backdrop-blur-xl outline-none transition-colors placeholder:text-muted focus:border-primary-300 focus:bg-white"
             />
           </div>
 
-          {/* بحث ذكي بالذكاء الاصطناعي — جملة عربية → فلاتر */}
-          <div className="mt-3">
-            <SmartSearchBar onResult={applyAiFilters} />
+          {/* رقائق الفلاتر النشطة — تُقرأ وتُزال بنقرة، كما في المرجع */}
+          {activeChips.map((chip) => (
+            <button
+              key={chip.key}
+              onClick={chip.clear}
+              className="group inline-flex h-11 items-center gap-2 rounded-full border border-white/60 bg-white/70 px-4 text-caption font-semibold text-ink shadow-e1 backdrop-blur-xl transition-colors hover:border-primary-300"
+            >
+              {chip.label}
+              <CloseCircle className="h-4 w-4 text-muted transition-colors group-hover:text-primary" />
+            </button>
+          ))}
+
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-caption font-bold text-white shadow-e2 transition-colors hover:bg-primary-400"
+          >
+            <SliderHorizontal className="h-4 w-4" />
+            كل الفلاتر
+            {activeFilterCount > 0 && (
+              <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-white/25 px-1.5 text-caption font-bold">
+                {formatNumber(activeFilterCount)}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* صفّ ② — العدد والترتيب والإجراءات */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-h2 text-ink">
+            {loading ? "جارٍ التحميل…" : <>{formatNumber(total)} عقار متاح</>}
+          </h2>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <select
+                value={filters.ordering}
+                onChange={(e) => handleFilterChange("ordering", e.target.value)}
+                className="h-10 appearance-none rounded-full border border-white/60 bg-white/70 ps-4 pe-9 text-caption font-semibold text-ink shadow-e1 backdrop-blur-xl outline-none focus:border-primary-300"
+              >
+                <option value="-created_at">الأحدث</option>
+                <option value="price">السعر: الأقل</option>
+                <option value="-price">السعر: الأعلى</option>
+                <option value="-views_count">الأكثر مشاهدة</option>
+              </select>
+              <AltArrowDown className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            </div>
+            <button
+              onClick={saveSearch}
+              title="احفظ هذا البحث لتصلك تنبيهات المطابقة"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-white/60 bg-white/70 px-4 text-caption font-semibold text-ink shadow-e1 backdrop-blur-xl transition-colors hover:border-primary-300"
+            >
+              <Bookmark className="h-4 w-4" /> احفظ البحث
+            </button>
+            <button
+              onClick={() => requireAuth(() => router.push("/properties/create"))}
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-gold px-4 text-caption font-bold text-ink shadow-e2 transition-colors hover:bg-gold/90"
+            >
+              <AddCircle className="h-4 w-4" /> أضف عقار
+            </button>
           </div>
         </div>
+
+        {/* بحث بجملة — يبقى، فهو ما لا تملكه المنصّات المرجعية */}
+        <SmartSearchBar onResult={applyAiFilters} />
       </div>
 
       {/* Filters Panel */}

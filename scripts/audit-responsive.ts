@@ -20,7 +20,17 @@
 import { chromium } from "playwright";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-const URL = process.argv[2] || "https://maskani.homes/";
+const BASE = process.argv[2] || "https://maskani.homes";
+
+/**
+ * ⚠️ **الفحص يشمل المنصّة لا صفحةً واحدة.** كان يقيس الرئيسية وحدها، فمرّت
+ * أعطال استجابة في الأقسام والتفاصيل بلا أن يراها أحد — والشكوى جاءت من
+ * المستخدم لا من الحارس. هذه المسارات تغطّي كل نمط تخطيط عندنا.
+ */
+const PATHS = process.argv[3]
+  ? [process.argv[3]]
+  : ["/", "/ye", "/ye/properties", "/ye/services", "/ye/requests", "/ye/jobs",
+     "/blog", "/offices", "/location"];
 
 const SIZES: Array<[string, number, number, boolean]> = [
   ["هاتف صغير", 320, 640, true],
@@ -37,6 +47,8 @@ async function main() {
   const browser = await chromium.launch({ executablePath: CHROME });
   let failed = false;
 
+  for (const path of PATHS) {
+  const URL = BASE + path;
   for (const [name, w, h, mobile] of SIZES) {
     const ctx = await browser.newContext({
       viewport: { width: w, height: h },
@@ -93,6 +105,7 @@ async function main() {
     await ctx.close();
   }
 
+  }
   await browser.close();
 
   if (failed) {
