@@ -32,8 +32,8 @@ export interface Market {
 }
 interface Pillar {
   key: string;
-  ar: { name: string; body: string };
-  en: { name: string; body: string };
+  ar: { name: string; body: string; short: string };
+  en: { name: string; body: string; short: string };
   href: string;
 }
 
@@ -170,7 +170,11 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
   const rest = markets.length - shown.length;
 
   return (
-    <div dir={t.dir} lang={lang} className="relative min-h-screen bg-ink text-white overflow-hidden">
+    // ⚠️ **شاشة واحدة بلا تمرير**: `h-[100svh]` + `overflow-hidden`، والتخطيط
+    // ثلاثة صفوف (ترويسة · مشهد · نسب الصورة) فيتمدّد المشهد بما بقي لا أكثر.
+    // `svh` لا `vh`: شريط متصفّح الجوّال يقضم من `vh` فيظهر تمرير بمقداره.
+    <div dir={t.dir} lang={lang}
+      className="relative h-[100svh] overflow-hidden bg-ink text-white grid grid-rows-[auto_1fr_auto]">
       {/* ─── الخلفية السينمائية ─────────────────────────────────────────── */}
       <div className="fixed inset-0 -z-10">
         {withImage.map((m) => (
@@ -229,9 +233,9 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
       </header>
 
       {/* ─── المشهد ─────────────────────────────────────────────────────── */}
-      <main className="relative z-10 max-w-shell mx-auto px-5 sm:px-8">
-        <div className="min-h-[calc(100svh-theme(spacing.16))] flex flex-col justify-center py-10 lg:py-0">
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_400px] gap-10 lg:gap-14 items-center">
+      <main className="relative z-10 w-full max-w-shell mx-auto px-5 sm:px-8 min-h-0 flex items-center">
+        <div className="w-full">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_400px] gap-6 lg:gap-14 items-center">
             {/* العنوان */}
             <div className="max-w-headline">
               <h1 className="text-h1 md:text-display lg:text-hero font-extrabold text-balance">
@@ -241,21 +245,28 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
                 {t.sub}
               </p>
 
-              {/* شريط القدرات — نظام واحد بفواصل، لا أربع بطاقات منفصلة */}
-              <div className="mt-9 rounded-3xl bg-white/[0.08] ring-1 ring-white/15 backdrop-blur-xl px-2 py-2 inline-flex flex-wrap">
-                {pillars.map((p, i) => {
-                  const Icon = PILLAR_ICON[p.key] ?? Buildings2;
-                  return (
-                    <span key={p.key} className="flex items-center">
-                      {i > 0 && <span className="w-px h-5 bg-white/15" aria-hidden />}
-                      <a href={`#${p.key}`}
-                        className="flex items-center gap-2 px-3.5 py-2 rounded-2xl text-caption font-semibold text-white/85 hover:text-white hover:bg-white/[0.07] transition-colors">
-                        <Icon className="h-4 w-4 text-gold/90" />
-                        {(isAr ? p.ar : p.en).name}
-                      </a>
-                    </span>
-                  );
-                })}
+              {/* ما تقدّمه المنصّة — **نبذة لا أزرار**، ونظامٌ واحد بفواصل لا
+                  أربع بطاقات منفصلة. والنصّ داخل الإطار لأن صفحةً بلا نصّ صفحةٌ
+                  رقيقة أمام جوجل، وقد رُفضنا من أدسنس مرّة لهذا السبب بعينه. */}
+              <div className="mt-6 lg:mt-8 rounded-3xl bg-white/[0.07] ring-1 ring-white/15 backdrop-blur-xl p-4 sm:p-5">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-4 lg:divide-x lg:divide-x-reverse divide-white/10">
+                  {pillars.map((p) => {
+                    const Icon = PILLAR_ICON[p.key] ?? Buildings2;
+                    const c = isAr ? p.ar : p.en;
+                    return (
+                      <Link key={p.key} href={p.href}
+                        className="group lg:px-4 rounded-xl transition-colors">
+                        <span className="flex items-center gap-2">
+                          <Icon weight="Bold" className="h-4 w-4 text-gold shrink-0" />
+                          <span className="text-caption font-bold group-hover:text-gold transition-colors">{c.name}</span>
+                        </span>
+                        <span className="block text-caption text-white/55 mt-1.5 leading-relaxed">
+                          {c.short}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
@@ -307,40 +318,14 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
             </section>
           </div>
 
-          {/* نسب الصورة — شرط رخصة لا تجميل */}
-          <p className="text-caption text-white/35 mt-8 truncate">
-            {active?.credit ? `${t.photo} ${active.credit}` : ""}
-          </p>
         </div>
 
-        {/* ─── طبقة المحتوى: النبذات الأربع نصّاً ───────────────────────── */}
-        <section className="pb-20 pt-4">
-          <h2 className="text-h2 font-bold">{t.whatTitle}</h2>
-          <p className="text-body text-white/60 mt-2 max-w-[60ch] leading-relaxed">{t.whatSub}</p>
-
-          <div className="grid sm:grid-cols-2 gap-4 mt-8">
-            {pillars.map((p) => {
-              const Icon = PILLAR_ICON[p.key] ?? Buildings2;
-              const c = isAr ? p.ar : p.en;
-              return (
-                <article key={p.key} id={p.key}
-                  className="rounded-3xl bg-white/[0.06] ring-1 ring-white/12 backdrop-blur-xl p-6 hover:bg-white/[0.09] transition-colors scroll-mt-20">
-                  <span className="inline-flex w-10 h-10 rounded-xl bg-white/10 items-center justify-center">
-                    <Icon weight="Bold" className="h-5 w-5 text-gold" />
-                  </span>
-                  <h3 className="text-h3 font-bold mt-4">{c.name}</h3>
-                  <p className="text-body text-white/65 mt-2 leading-relaxed">{c.body}</p>
-                  <Link href={p.href}
-                    className="inline-flex items-center gap-1.5 text-caption font-bold text-white/80 hover:text-white mt-4 group">
-                    {c.name}
-                    <AltArrowLeft className={`h-4 w-4 transition-transform group-hover:-translate-x-1 ${isAr ? "" : "rotate-180 group-hover:translate-x-1"}`} />
-                  </Link>
-                </article>
-              );
-            })}
-          </div>
-        </section>
       </main>
+
+      {/* نسب الصورة — شرط رخصة لا تجميل. صفٌّ ثالث ثابت فلا يزحم المشهد. */}
+      <p className="relative z-10 max-w-shell w-full mx-auto px-5 sm:px-8 pb-3 text-caption text-white/30 truncate">
+        {active?.credit ? `${t.photo} ${active.credit}` : ""}
+      </p>
     </div>
   );
 }
