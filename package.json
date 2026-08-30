@@ -15,7 +15,8 @@
     "lint": "next lint",
     "audit:units": "tsx scripts/audit-units.ts",
     "audit:digits": "tsx scripts/audit-digits.ts",
-    "audit:broker": "tsx scripts/audit-broker-claim.ts"
+    "audit:broker": "tsx scripts/audit-broker-claim.ts",
+    "audit:markets": "tsx scripts/audit-market-pages.ts"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.70.0",

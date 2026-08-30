@@ -48,13 +48,33 @@ interface CountryRow {
   cities?: Array<{ name_ar: string }>;
 }
 
+/**
+ * الدول من الـAPI — **بمحاولات متعدّدة**.
+ *
+ * ⚠️ **جلبةٌ واحدة فاشلة تُنتج عشرين صفحة 404.** حدث فعلاً في نشرة
+ * 2026‑08‑30: تعثّر النداء أثناء البناء فرجعت قائمة فارغة، فأعادت
+ * `marketByCode` قيمة `null` لكل سوق غير اليمن، فاستدعت الصفحات `notFound()`
+ * و**خُبزت 404 في عشرين صفحة سوق** لساعة كاملة. الصفحة الساكنة تُخلّد الفشل،
+ * فالإصرار على الجلب ليس ترفاً بل شرط صحّة.
+ */
 async function allCountries(): Promise<CountryRow[]> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const rows = await fetchCountries(attempt);
+    if (rows.length) return rows;
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  return [];
+}
+
+async function fetchCountries(attempt: number): Promise<CountryRow[]> {
   try {
     // عمر التخزين = عمر الصفحات التي تقرأ منه (ساعة). تخزينٌ أطول يُثبّت نتيجةً
     // فاشلة — وهي العلّة التي أفرغت خريطة الموقع من صفحات الدول.
-    const res = await fetch(`${API}/cities/countries/?limit=100`, {
-      next: { revalidate: 3600 },
-    });
+    // بارامتر `_r` يكسر دمج `fetch` بين المحاولات فتتحقّق الإعادة فعلاً.
+    const url = attempt === 0
+      ? `${API}/cities/countries/?limit=100`
+      : `${API}/cities/countries/?limit=100&_r=${attempt}`;
+    const res = await fetch(url, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     return (await res.json()).results ?? [];
   } catch {
