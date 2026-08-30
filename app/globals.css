@@ -114,3 +114,25 @@ body {
 select {
   background-image: none;
 }
+
+/* علامة السعر على الخريطة — قرصٌ داكن يُقرأ فوق أي بلاطة، بذيلٍ صغير يشير
+   إلى الموقع. الحجم من المحتوى فيتّسع للسعر مهما طال. */
+.maskani-price-marker {
+  width: auto !important;
+  height: auto !important;
+}
+.maskani-price-marker span {
+  display: inline-block;
+  transform: translate(-50%, -100%);
+  background: #171539;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(5, 5, 54, 0.35);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+}
+.maskani-price-marker:hover span { background: #403B9B; }

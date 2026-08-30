@@ -26,3 +26,21 @@ export const propertyIcon: L.DivIcon = L.divIcon({
   iconAnchor: [15, 42],
   popupAnchor: [0, -40],
 });
+
+/**
+ * علامة سعر — قرصٌ يحمل السعر نفسه بدل دبّوسٍ صامت.
+ *
+ * ⚠️ **الدبّوس لا يقول شيئاً.** خريطةٌ بعشرين دبّوساً متطابقاً تُجبر الباحث على
+ * النقر على كل واحد ليعرف سعره — والغرض من وضع الخريطة بجانب الشبكة أن يُقرأ
+ * «أين» و«بكم» في نظرة واحدة. لذلك السعر **على** العلامة، والنقر يفتح البطاقة.
+ */
+export function priceIcon(label: string): L.DivIcon {
+  const safe = label.replace(/[<>&]/g, "");
+  return L.divIcon({
+    className: "maskani-price-marker",
+    html: `<span dir="auto">${safe}</span>`,
+    iconSize: [0, 0],          // الحجم من المحتوى — الأسعار تختلف طولاً
+    iconAnchor: [0, 0],
+    popupAnchor: [0, -14],
+  });
+}

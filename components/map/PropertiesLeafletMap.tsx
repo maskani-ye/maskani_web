@@ -14,7 +14,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { formatPrice, offerTypeLabels, propertyTypeName } from "@/lib/utils";
 import { Buildings2, MapPoint } from "@solar-icons/react";
-import { propertyIcon } from "./leafletSetup";
+import { priceIcon } from "./leafletSetup";
 import { DEFAULT_ZOOM, type MapProperty, type MapResponse } from "./constants";
 
 // Leaflet + MarkerCluster stylesheets (client-only import — SSR-safe here).
@@ -146,7 +146,7 @@ export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filt
 
         <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
           {markers.map((m) => (
-            <Marker key={m.id} position={[m.latitude, m.longitude]} icon={propertyIcon}>
+            <Marker key={m.id} position={[m.latitude, m.longitude]} icon={priceIcon(formatPrice(m.price, m.currency))}>
               <Popup>
                 <Link href={`/properties/${m.id}`} className="block w-48 no-underline">
                   <div className="h-24 w-full overflow-hidden rounded-lg bg-gray-100">
