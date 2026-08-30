@@ -10,7 +10,7 @@ import type { Property, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { PropertyCard } from "@/components/properties/PropertyCard";
+import { PropertyCardFlat } from "@/components/properties/PropertyCardFlat";
 import {
   Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed, Bath,
   Ruler, Eye, Heart, AltArrowRight, AltArrowLeft, AltArrowDown,
@@ -52,6 +52,8 @@ function PropertiesContent() {
   const [cities, setCities] = useState<City[]>([]);
   const [propertyTypeOpts, setPropertyTypeOpts] = useState<{ value: string; label: string }[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  // مفتاح الخريطة في المرجع — مفتوحٌ افتراضياً فالشاشتان معاً كما طُلب.
+  const [showMap, setShowMap] = useState(true);
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   /**
    * ⚠️ **لا مبدّل عرض إطلاقاً — الخريطة والشبكة معاً دائماً.**
@@ -292,94 +294,110 @@ function PropertiesContent() {
     // الشاشات العريضة ويضغط الخريطة حتى تصير مصغّرة لا خريطة.
     <div className="w-full px-3 sm:px-5 lg:px-6 py-6">
       <Breadcrumbs items={[{ name: "الرئيسية", href: "/" }, { name: sectionLabel("properties") }]} />
-      {/* ─── الشريط ─────────────────────────────────────────────────────
-          ⚠️ **أُعيد بناؤه على المرجع حرفياً**: كان حاويةً بيضاء ثقيلة بشريط
-          متدرّج وأيقونة وعنوان «العقارات» مكرّراً — والعنوان موجودٌ فوقه في
-          الكتلة التعريفية، فكان يقوله مرّتين ويأكل ثلث الشاشة قبل أوّل عقار.
-          المرجع: صفٌّ واحد للبحث والفلاتر، وصفٌّ ثانٍ للعدد والترتيب، لا أكثر.
+      {/* ═══ الشاشة: حاوية بيضاء واحدة تضمّ الشريط والمحتوى ═══════════════
+          ⚠️ **حاوية واحدة لا حاويتان.** المرجع يضع الشريط والشبكة والخريطة داخل
+          بطاقة بيضاء واحدة بحوافّ مستديرة — فتُقرأ الشاشة كسطحٍ واحد. تنفيذي
+          السابق فصل الشريط في بطاقة والمحتوى خارجها، فظهر خطّان أفقيّان يقطعان
+          الشاشة بلا معنى. */}
+      <div className="overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-e2 backdrop-blur-xl">
 
-          ⚠️ **والزجاج هنا مصقول لا شفّاف**: لا صورة خلف هذه الشاشة، فالزجاج
-          الشديد الشفافية يبدو باهتاً. `bg-white/70` + `backdrop-blur` + حدّ
-          شعرة يعطي الحسّ الزجاجيّ ويُبقي النصّ مقروءاً على خلفية فاتحة. */}
-      <div className="mb-5 overflow-hidden rounded-3xl border border-white/60 bg-white/70 shadow-e2 backdrop-blur-xl">
-        {/* صفّ ① — البحث والفلاتر */}
-        <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4">
-          <div className="relative flex-1 min-w-[16rem]">
-            <Magnifer className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+        {/* ── صفّ ① : البحث ورقائق الفلاتر (يفصله خطّ شعرة عمّا تحته) ── */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-ink/[0.07] p-3 sm:p-4">
+          {/* الحقلان **متطابقان تماماً** — نفس الارتفاع ونصف القطر والحدّ
+              وموضع الأيقونة. الفرق فيما يقبله كلٌّ منهما لا في مظهره. */}
+          <div className="relative order-1 w-full min-w-0 sm:w-64">
             <input
               value={filters.search}
               onChange={(e) => handleFilterChange("search", e.target.value)}
               placeholder="ابحث بالعنوان أو الحي…"
-              className="h-11 w-full rounded-full border border-white/60 bg-white/70 ps-11 pe-4 text-body text-ink shadow-e1 backdrop-blur-xl outline-none transition-colors placeholder:text-muted focus:border-primary-300 focus:bg-white"
+              className="h-10 w-full rounded-xl border border-ink/10 bg-white ps-4 pe-10 text-caption text-ink outline-none transition-colors placeholder:text-muted focus:border-primary-300"
             />
+            <Magnifer className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary-400" />
+          </div>
+          <div className="order-1 w-full min-w-0 sm:w-72">
+            <SmartSearchBar onResult={applyAiFilters} />
           </div>
 
-          {/* رقائق الفلاتر النشطة — تُقرأ وتُزال بنقرة، كما في المرجع */}
-          {activeChips.map((chip) => (
-            <button
-              key={chip.key}
-              onClick={chip.clear}
-              className="group inline-flex h-11 items-center gap-2 rounded-full border border-white/60 bg-white/70 px-4 text-caption font-semibold text-ink shadow-e1 backdrop-blur-xl transition-colors hover:border-primary-300"
-            >
-              {chip.label}
-              <CloseCircle className="h-4 w-4 text-muted transition-colors group-hover:text-primary" />
-            </button>
-          ))}
-
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-caption font-bold text-white shadow-e2 transition-colors hover:bg-primary-400"
-          >
-            <SliderHorizontal className="h-4 w-4" />
-            كل الفلاتر
-            {activeFilterCount > 0 && (
-              <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-white/25 px-1.5 text-caption font-bold">
-                {formatNumber(activeFilterCount)}
-              </span>
-            )}
-          </button>
-        </div>
-
-        {/* صفّ ② — العدد والترتيب والإجراءات (يفصله خطّ شعرة كما في المرجع) */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink/[0.06] p-3 sm:p-4">
-          <h2 className="text-h2 text-ink">
-            {loading ? "جارٍ التحميل…" : <>{formatNumber(total)} عقار متاح</>}
-          </h2>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <select
-                value={filters.ordering}
-                onChange={(e) => handleFilterChange("ordering", e.target.value)}
-                className="h-10 appearance-none rounded-full border border-white/60 bg-white/70 ps-4 pe-9 text-caption font-semibold text-ink shadow-e1 backdrop-blur-xl outline-none focus:border-primary-300"
+          {/* الرقائق تنزاح إلى الطرف المقابل كما في المرجع */}
+          <div className="order-2 flex flex-1 flex-wrap items-center justify-end gap-2">
+            {activeChips.map((chip) => (
+              <button
+                key={chip.key}
+                onClick={chip.clear}
+                className="group inline-flex h-10 items-center gap-1.5 rounded-full border border-ink/10 bg-white px-3.5 text-caption text-ink transition-colors hover:border-ink/25"
               >
-                <option value="-created_at">الأحدث</option>
-                <option value="price">السعر: الأقل</option>
-                <option value="-price">السعر: الأعلى</option>
-                <option value="-views_count">الأكثر مشاهدة</option>
-              </select>
-              <AltArrowDown className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-            </div>
+                {chip.label}
+                <CloseCircle className="h-3.5 w-3.5 text-muted transition-colors group-hover:text-ink" />
+              </button>
+            ))}
             <button
-              onClick={saveSearch}
-              title="احفظ هذا البحث لتصلك تنبيهات المطابقة"
-              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-white/60 bg-white/70 px-4 text-caption font-semibold text-ink shadow-e1 backdrop-blur-xl transition-colors hover:border-primary-300"
+              onClick={() => setShowFilters(!showFilters)}
+              className="inline-flex h-10 items-center gap-2 rounded-full bg-ink px-4 text-caption font-semibold text-white transition-colors hover:bg-primary"
             >
-              <Bookmark className="h-4 w-4" /> احفظ البحث
+              كل الفلاتر
+              <SliderHorizontal className="h-4 w-4" />
+              {activeFilterCount > 0 && (
+                <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-white/25 px-1.5 text-caption font-bold">
+                  {formatNumber(activeFilterCount)}
+                </span>
+              )}
             </button>
             <button
               onClick={() => requireAuth(() => router.push("/properties/create"))}
-              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-gold px-4 text-caption font-bold text-ink shadow-e2 transition-colors hover:bg-gold/90"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-gold px-4 text-caption font-bold text-ink transition-colors hover:bg-gold/90"
             >
               <AddCircle className="h-4 w-4" /> أضف عقار
             </button>
           </div>
         </div>
 
-        {/* بحث بجملة — يبقى، فهو ما لا تملكه المنصّات المرجعية */}
-        <div className="border-t border-ink/[0.06] p-3 sm:p-4">
-          <SmartSearchBar onResult={applyAiFilters} />
+        {/* ── صفّ ② : العدد · الترتيب · مفتاح الخريطة ── */}
+        <div className="flex flex-wrap items-center justify-between gap-3 px-3 pt-4 sm:px-5">
+          {/* ⚠️ هذا هو `h1` الصفحة بعد حذف الكتلة التعريفية — بلا عنوانٍ واحد
+              تصير الصفحة بلا رأس في نظر محرّكات البحث. */}
+          <h1 className="text-h2 text-ink">
+            {loading ? "جارٍ التحميل…" : <>{formatNumber(total)} عقار متاح</>}
+          </h1>
+
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <select
+                value={filters.ordering}
+                onChange={(e) => handleFilterChange("ordering", e.target.value)}
+                aria-label="ترتيب النتائج"
+                className="h-9 appearance-none rounded-lg border-0 bg-transparent ps-1 pe-6 text-caption text-muted outline-none hover:text-ink"
+              >
+                <option value="-created_at">الأحدث</option>
+                <option value="price">السعر: الأقل</option>
+                <option value="-price">السعر: الأعلى</option>
+                <option value="-views_count">الأكثر مشاهدة</option>
+              </select>
+              <AltArrowDown className="pointer-events-none absolute end-1 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
+            </div>
+
+            <button
+              onClick={saveSearch}
+              title="احفظ هذا البحث لتصلك تنبيهات المطابقة"
+              aria-label="احفظ البحث"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-ink/10 text-muted transition-colors hover:border-ink/25 hover:text-ink"
+            >
+              <Bookmark className="h-4 w-4" />
+            </button>
+
+            {/* مفتاح الخريطة — مطابق للمرجع، ومفتوحٌ افتراضياً */}
+            <button
+              onClick={() => setShowMap((v) => !v)}
+              role="switch"
+              aria-checked={showMap}
+              className="inline-flex h-9 items-center gap-2 rounded-full border border-ink/10 bg-white ps-3 pe-1 text-caption font-semibold text-ink"
+            >
+              الخريطة
+              <span className={`relative h-5 w-9 rounded-full transition-colors ${showMap ? "bg-primary-400" : "bg-ink/15"}`}>
+                <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all ${showMap ? "start-0.5" : "start-4"}`} />
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* Filters Panel */}
       {showFilters && (
@@ -502,10 +520,12 @@ function PropertiesContent() {
       {/* ─── الشبكة والخريطة معاً ───────────────────────────────────────
           ⚠️ على الجوّال تعلو الخريطةُ الشبكةَ بارتفاع ثابت بدل أن تُخفى: الغرض
           أن يرى الباحث «أين» دائماً، وعمودان لا يتّسعان تحت 1024 بكسل. */}
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,46%)] lg:gap-4 lg:items-start">
-      <aside className="lg:hidden h-64 mb-4 overflow-hidden rounded-3xl border border-white/60 shadow-e2">
-        <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} fitPoints={resultPoints} />
-      </aside>
+      <div className={`p-3 sm:p-5 ${showMap ? "lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,46%)] lg:gap-4 lg:items-start" : ""}`}>
+      {showMap && (
+        <aside className="lg:hidden h-64 mb-4 overflow-hidden rounded-xl">
+          <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} fitPoints={resultPoints} />
+        </aside>
+      )}
       <div className="min-w-0">
       {/* Properties Grid */}
       {loading ? (
@@ -528,14 +548,9 @@ function PropertiesContent() {
           <p className="text-gray-400 text-sm mt-1">جرّب تغيير معايير البحث</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 min-[560px]:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 min-[560px]:grid-cols-2 gap-x-4 gap-y-6">
           {properties.map((property) => (
-            <PropertyCard
-              key={property.id}
-              property={property}
-              favorited={favorites.has(property.id)}
-              onToggleFavorite={toggleFavorite}
-            />
+            <PropertyCardFlat key={property.id} property={property} />
           ))}
         </div>
       )}
@@ -557,9 +572,12 @@ function PropertiesContent() {
       {/* ⚠️ **الخريطة لاصقة وبارتفاع الشاشة**: قائمةٌ تُمرَّر وخريطةٌ تختفي مع
           التمرير تُلغي فائدة الوضع المزدوج — الغرض أن يبقى «أين» أمام العين
           بينما تتصفّح «ماذا». وتُخفى تحت 1024 بكسل حيث لا يتّسع عمودان. */}
-      <aside className="hidden lg:block sticky top-24 h-[calc(100svh-8rem)] overflow-hidden rounded-2xl card-shadow">
-        <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} fitPoints={resultPoints} />
-      </aside>
+      {showMap && (
+        <aside className="hidden lg:block sticky top-20 h-[calc(100svh-7rem)] overflow-hidden rounded-xl">
+          <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} fitPoints={resultPoints} />
+        </aside>
+      )}
+      </div>
       </div>
       {/* إعلان واحد أسفل القائمة — كثافة خفيفة عمداً، ولا يظهر على قائمة
           فارغة أو أثناء التحميل (سياسة «شاشات بلا محتوى ناشر»). */}

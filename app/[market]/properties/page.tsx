@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import PropertiesListClient from "@/app/properties/PropertiesListClient";
-import LatestProperties from "@/components/properties/LatestProperties";
-import SectionIntro from "@/components/SectionIntro";
 import { marketByCode } from "@/lib/serverMarket";
 import { MARKETS } from "@/lib/markets";
 
@@ -56,13 +54,12 @@ export default async function MarketSectionPage(
 
   return (
     <>
-      <SectionIntro title={`عقارات للبيع والإيجار في ${m.nameAr}`}>
-        {`تصفّح أحدث العقارات في ${m.nameAr} على منصّة مسكني: شقق وفلل وأراضٍ ومحلات تجارية للبيع والإيجار في ${cities} وسائر المدن، مع الأسعار والصور والموقع على الخريطة، وتواصل مباشر مع أصحاب العقارات بلا عمولات.`}
-      </SectionIntro>
+      {/* ⚠️ **حُذفت الكتلة التعريفية وقسم «أحدث العقارات» بأمر المالك.**
+          كانتا محتوى الصفحة المفهرَس (h1 + فقرة + روابط عميقة للزحف)، فنُقل
+          دور `h1` إلى سطر العدد داخل الشريط كي لا تبقى الصفحة بلا عنوان. */}
       <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-muted">جارِ التحميل…</div>}>
         <PropertiesListClient />
       </Suspense>
-      <LatestProperties />
     </>
   );
 }

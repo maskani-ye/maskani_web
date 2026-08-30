@@ -45,26 +45,32 @@ export function SmartSearchBar({ onResult }: { onResult: (f: AiFilters) => void 
     }
   };
 
+  /**
+   * ⚠️ **حقلٌ مطابق لحقل البحث العادي — لا صندوق بنفسجيّ مميّز.**
+   *
+   * كان محاطاً بإطارٍ بلون العلامة وخلفيةٍ ملوّنة وزرٍّ ممتلئ، فبدا عنصراً
+   * دخيلاً على شريطٍ كلّ حقوله بيضاء بحدّ رمادي شعرة. التمييز البصريّ لا يصنع
+   * قيمة: الفرق في **ما يقبله الحقل** لا في لونه، ويقوله نصّ الإرشاد نفسه.
+   * الأيقونة (نجوم) عند الطرف كما المكبّرة في الحقل الآخر — نفس المقاس ونفس
+   * الموضع ونفس نصف القطر.
+   */
   return (
-    <div className="flex items-stretch gap-2 rounded-2xl border-2 border-primary/20 bg-primary/5 p-2">
-      <div className="flex items-center gap-2 flex-1 px-2">
-        <Stars className="h-5 w-5 text-primary shrink-0" />
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && run()}
-          placeholder="ابحث بجملة: شقة إيجار غرفتين في عدن بأقل من 500 ألف…"
-          className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
-        />
-      </div>
+    <div className="relative w-full">
+      <input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && run()}
+        placeholder="ابحث بجملة: شقة إيجار غرفتين في عدن بأقل من 500 ألف…"
+        className="h-10 w-full rounded-xl border border-ink/10 bg-white ps-4 pe-10 text-caption text-ink outline-none transition-colors placeholder:text-muted focus:border-primary-300"
+      />
       <button
         type="button"
         onClick={run}
         disabled={loading}
-        className="inline-flex items-center gap-1.5 rounded-xl bg-primary text-white px-4 py-2 text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60 shrink-0"
+        aria-label="بحث ذكي"
+        className="absolute end-2 top-1/2 -translate-y-1/2 text-primary-400 transition-colors hover:text-primary disabled:opacity-60"
       >
-        {loading ? <Refresh className="h-4 w-4 animate-spin" /> : <Magnifer className="h-4 w-4" />}
-        بحث ذكي
+        {loading ? <Refresh className="h-4 w-4 animate-spin" /> : <Stars className="h-4 w-4" />}
       </button>
     </div>
   );

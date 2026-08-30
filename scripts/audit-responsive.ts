@@ -100,7 +100,9 @@ async function main() {
     const ok = r.hScroll <= 0 && r.overlap === 0;
     if (!ok) failed = true;
     console.log(
-      `${ok ? "✅" : "❌"} ${name.padEnd(11)} ${String(w).padStart(4)}px  تمرير أفقي=${r.hScroll}  تراكب=${r.overlap}`,
+      // ⚠️ المسار في السطر: بلا اسمه لا يُعرف أيّ صفحة كُسرت — الفحص يمرّ على
+      // تسعة مسارات، وسطرٌ يقول «هاتف صغير» وحده لا يدلّ على شيء.
+      `${ok ? "✅" : "❌"} ${path.padEnd(16)} ${name.padEnd(11)} ${String(w).padStart(4)}px  تمرير أفقي=${r.hScroll}  تراكب=${r.overlap}`,
     );
     await ctx.close();
   }
@@ -112,7 +114,7 @@ async function main() {
     console.error("\n✗ الاستجابة مكسورة — تمرير أفقيّ أو تراكب على مقاس واحد أو أكثر.");
     process.exit(1);
   }
-  console.log(`\n✅ ${SIZES.length} مقاسات — صفر تمرير أفقيّ وصفر تراكب`);
+  console.log(`\n✅ ${PATHS.length} مسارات × ${SIZES.length} مقاسات — صفر تمرير أفقيّ وصفر تراكب`);
 
 }
 
