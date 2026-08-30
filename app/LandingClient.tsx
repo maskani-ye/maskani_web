@@ -287,16 +287,19 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
                     const Icon = PILLAR_ICON[p.key] ?? Buildings2;
                     const c = isAr ? p.ar : p.en;
                     return (
-                      <Link key={p.key} href={p.href}
-                        className="group lg:px-4 rounded-xl transition-colors">
+                      // ⚠️ **نبذة لا رابط**: الزائر هنا لم يختر سوقه بعد،
+                      // فالنقر على «العقارات» يرميه في سوقٍ لم يخترْه (تحويل
+                      // 308 إلى الافتراضي). الاختيار فعلٌ واحد في هذه الصفحة:
+                      // الدولة. وهذه فقرات تعريفٍ لا أزرار.
+                      <div key={p.key} className="lg:px-4">
                         <span className="flex items-center gap-2">
                           <Icon weight="Bold" className="h-4 w-4 text-gold shrink-0" />
-                          <span className="text-caption font-bold group-hover:text-gold transition-colors">{c.name}</span>
+                          <span className="text-caption font-bold">{c.name}</span>
                         </span>
                         <span className="block text-caption text-white/55 mt-1.5 leading-relaxed">
                           {c.short}
                         </span>
-                      </Link>
+                      </div>
                     );
                   })}
                 </div>
