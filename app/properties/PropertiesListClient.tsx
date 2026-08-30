@@ -53,7 +53,16 @@ function PropertiesContent() {
   const [propertyTypeOpts, setPropertyTypeOpts] = useState<{ value: string; label: string }[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
-  const [view, setView] = useState<"list" | "map">(searchParams.get("view") === "map" ? "map" : "list");
+  /**
+   * ⚠️ **ثلاثة أوضاع لا اثنان.** كان الاختيار «قائمة **أو** خريطة»، وهو اختيارٌ
+   * لا يريده الباحث عن عقار: يريد أن يرى **أين** يقع ما يقرأ سعره. الوضع
+   * المزدوج هو الافتراضي على الشاشات الواسعة (كما في منصّات العقار العالمية)،
+   * ويسقط تلقائياً إلى «قائمة» تحت 1024 بكسل حيث لا يتّسع عمودان.
+   */
+  const [view, setView] = useState<"list" | "map" | "split">(() => {
+    const v = searchParams.get("view");
+    return v === "map" ? "map" : v === "list" ? "list" : "split";
+  });
 
   const [filters, setFilters] = useState({
     search: searchParams.get("search") || "",
@@ -267,6 +276,14 @@ function PropertiesContent() {
                   <ListIcon className="h-4 w-4" /> قائمة
                 </button>
                 <button
+                  onClick={() => setView("split")}
+                  className={`hidden lg:flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
+                    view === "split" ? "bg-primary text-white shadow-sm" : "text-gray-500 hover:text-primary"
+                  }`}
+                >
+                  <MapIcon className="h-4 w-4" /> قائمة وخريطة
+                </button>
+                <button
                   onClick={() => setView("map")}
                   className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
                     view === "map" ? "bg-primary text-white shadow-sm" : "text-gray-500 hover:text-primary"
@@ -448,7 +465,8 @@ function PropertiesContent() {
           <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} />
         </div>
       ) : (
-      <>
+      <div className={view === "split" ? "lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-5 lg:items-start" : ""}>
+      <div className="min-w-0">
       {/* Properties Grid */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -470,7 +488,11 @@ function PropertiesContent() {
           <p className="text-gray-400 text-sm mt-1">جرّب تغيير معايير البحث</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className={`grid gap-5 ${
+          view === "split"
+            ? "grid-cols-1 sm:grid-cols-2"      // عمودان بجانب الخريطة
+            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+        }`}>
           {properties.map((property) => (
             <PropertyCard
               key={property.id}
@@ -494,7 +516,17 @@ function PropertiesContent() {
           </Button>
         </div>
       )}
-      </>
+      </div>
+
+      {/* ⚠️ **الخريطة لاصقة وبارتفاع الشاشة**: قائمةٌ تُمرَّر وخريطةٌ تختفي مع
+          التمرير تُلغي فائدة الوضع المزدوج — الغرض أن يبقى «أين» أمام العين
+          بينما تتصفّح «ماذا». وتُخفى تحت 1024 بكسل حيث لا يتّسع عمودان. */}
+      {view === "split" && (
+        <aside className="hidden lg:block sticky top-24 h-[calc(100svh-8rem)] overflow-hidden rounded-2xl card-shadow">
+          <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} />
+        </aside>
+      )}
+      </div>
       )}
       {/* إعلان واحد أسفل القائمة — كثافة خفيفة عمداً، ولا يظهر على قائمة
           فارغة أو أثناء التحميل (سياسة «شاشات بلا محتوى ناشر»). */}
