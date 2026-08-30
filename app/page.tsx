@@ -55,7 +55,7 @@ interface ApiCountry {
   id: number; code: string; slug: string; name_ar: string; name_en: string;
   flag_emoji: string; hero_image: string | null; hero_credit: string;
   tagline_ar: string; tagline_en: string; properties_count: number;
-  cities?: { name_ar: string; name_en: string }[];
+  cities?: { name_ar: string; name_en: string; latitude?: string | null; longitude?: string | null }[];
 }
 
 /**
@@ -96,6 +96,9 @@ async function fetchMarkets(): Promise<Market[]> {
       taglineAr: c.tagline_ar || (c.cities || []).slice(0, 4).map((x) => x.name_ar).join(" · "),
       taglineEn: c.tagline_en || (c.cities || []).slice(0, 4).map((x) => x.name_en).join(" · "),
       count: c.properties_count || 0,
+      // إحداثيّات العاصمة (أوّل مدينة بالترتيب) — تضع نقطة السوق على الكرة.
+      lat: Number((c.cities || [])[0]?.latitude ?? 0) || null,
+      lng: Number((c.cities || [])[0]?.longitude ?? 0) || null,
     }));
   } catch {
     return [];

@@ -18,6 +18,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { formatNumber } from "@/lib/utils";
@@ -27,6 +28,7 @@ export interface Market {
   code: string; slug: string; nameAr: string; nameEn: string; flag: string;
   image: string | null; credit: string;
   taglineAr: string; taglineEn: string; count: number;
+  lat?: number | null; lng?: number | null;
 }
 interface Pillar {
   key: string;
@@ -78,6 +80,16 @@ const T = {
     scroll: "About the platform",
   },
 };
+
+/**
+ * الكرة تُحمَّل **بعد** رسم الصفحة ولا تُصيَّر على الخادم: مكتبة three ثقيلة،
+ * وتحميلها ضمن الحزمة الأولى يؤخّر أهمّ صفحة عندنا. وهي زينة — فلا يجوز أن
+ * تسبق المحتوى.
+ */
+const MarketGlobe = dynamic(() => import("@/components/landing/MarketGlobe"), {
+  ssr: false,
+  loading: () => null,
+});
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
@@ -133,6 +145,24 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
     try { localStorage.setItem("maskani_landing_lang", next); } catch { /* لا شيء */ }
   }, []);
 
+  // تأجيل الزينة: بعد خمول المتصفّح، وعلى الشاشات الواسعة وحدها.
+  const [showGlobe, setShowGlobe] = useState(false);
+  useEffect(() => {
+    if (window.innerWidth < 1024) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // مهلة بسيطة بدل `requestIdleCallback`: مدعومة في كل المتصفّحات، وتُبقي
+    // الزينة خلف الرسم الأوّل بلا تفرّع في الشيفرة.
+    const id = window.setTimeout(() => setShowGlobe(true), 1400);
+    return () => clearTimeout(id);
+  }, []);
+
+  const globePoints = useMemo(
+    () => markets
+      .filter((m) => m.lat != null && m.lng != null)
+      .map((m) => ({ code: m.code, lat: m.lat as number, lng: m.lng as number, active: hovered === m.code })),
+    [markets, hovered],
+  );
+
   const withImage = useMemo(() => markets.filter((m) => m.image), [markets]);
   const primary = markets[0] ?? null;
   const active = markets.find((m) => m.code === hovered) || primary;
@@ -157,11 +187,21 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
             }`}
           />
         ))}
-        {/* حجاب الحبر: بلا هذا التدرّج يصير النصّ الأبيض على سماء فاتحة غير
-            مقروء — والتباين شرط وصول لا ذوق. */}
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/85 via-ink/70 to-ink/90" />
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-ink/20 to-ink/60" />
+        {/* حجاب الحبر — **مُوجَّه لا مُطبِق**.
+            ⚠️ أوّل ضبطٍ كدّس تدرّجين ثقيلين (85→70→90 فوق 0→20→60) فصار
+            المجموع ≈٩٠٪ من كحليّ داكن: الصورة موجودة ومحمَّلة لكن **غير مرئية**
+            إطلاقاً — دفعنا ثمن تحميلها ولم نقبض المشهد. الآن يثقل الحجاب تحت
+            النصّ ويخفّ حيث لا نصّ، فيُقرأ النصّ وتبقى العمارة ظاهرة. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/45 to-ink/85" />
+        <div className="absolute inset-0 bg-gradient-to-l from-ink/10 via-transparent to-ink/70" />
       </div>
+
+      {/* كرة الأسواق — بين الصورة والمحتوى، بلا التقاط للمؤشّر. */}
+      {showGlobe && globePoints.length > 0 && (
+        <div className="pointer-events-none fixed inset-y-0 start-0 w-[46vw] max-w-globe -z-[5] opacity-70">
+          <MarketGlobe points={globePoints} />
+        </div>
+      )}
 
       {/* ─── الترويسة ───────────────────────────────────────────────────── */}
       <header className="relative z-20 max-w-shell mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">

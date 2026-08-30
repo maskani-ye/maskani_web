@@ -148,6 +148,8 @@ const config: Config = {
       maxWidth: {
         shell: "1400px",
         headline: "650px",
+        /** أقصى اتّساع لزينة الكرة — تبقى خلف اللوحة ولا تبتلع الشاشة. */
+        globe: "820px",
       },
 
       /**
