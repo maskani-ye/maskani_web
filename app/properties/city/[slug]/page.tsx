@@ -106,7 +106,7 @@ export async function generateMetadata(
   // حتى يُنشر فيها أوّل عقار، فترجع للفهرسة تلقائياً — بلا تدخّل يدويّ.
   const { count: stock } = await getCityProperties(city.id);
   const title = `شقق وأراضٍ للبيع والإيجار في ${city.name_ar} — أرقام الملاك`;
-  const description = `عقارات ${city.name_ar} على مسكني: شقق وفلل وأراضٍ ومحلات بالسعر والصور والموقع، ورقم صاحب العقار مباشرةً — بلا سمسار وبلا عمولة.`;
+  const description = `عقارات ${city.name_ar} على مسكني: شقق وفلل وأراضٍ ومحلات بالسعر والصور والموقع، ورقم صاحب العقار مباشرةً — بلا عمولة.`;
   return {
     title,
     description,

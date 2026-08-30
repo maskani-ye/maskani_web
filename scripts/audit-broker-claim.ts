@@ -15,7 +15,10 @@
 import { readFileSync } from "node:fs";
 import { globSync } from "node:fs";
 
-const PATTERN = /(?:بلا|بدون|ولا)\s*وس(?:يط|طاء)/;
+// ⚠️ **الصيغ كلّها لا صيغةٌ واحدة.** أوّل نسخة من هذا الحارس أمسكت «بلا وسيط»
+// وحدها، فمرّت «بلا سمسار يتوسّط» في صدر الرئيسية — نفس الوعد بكلمةٍ أخرى.
+// كشفتها لقطةُ شاشة لا الحارس. الآن يشمل: وسيط · وسطاء · سمسار · سماسرة · دلّال.
+const PATTERN = /(?:بلا|بدون|ولا|لا)\s*(?:وس(?:يط|طاء)|سمسار|سماسرة|دلّال|دلال)/;
 
 const files = globSync("{app,components,lib}/**/*.{ts,tsx}", {
   exclude: (p) => p.includes("node_modules") || p.endsWith("audit-broker-claim.ts"),

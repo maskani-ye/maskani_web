@@ -211,7 +211,7 @@ export default function HomeClient({
 
             <p className="text-body-lg text-white/75 mt-4 max-w-xl leading-relaxed">
               تصفّح العقارات المعروضة، وتواصل مع صاحب العقار على رقمه مباشرةً —
-              بلا سمسار يتوسّط ولا نسبة من الصفقة.
+              بلا نسبة من الصفقة ولا رسوم.
             </p>
 
             <div className="mt-8">

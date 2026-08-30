@@ -39,7 +39,7 @@ export default function AboutPage() {
         <ul className="space-y-2 text-gray-600 leading-relaxed list-disc ps-6">
           <li>
             <strong>تواصل مباشر:</strong> رقم صاحب العقار ظاهر، والمراسلة داخل
-            المنصّة — لا سمسار ولا عمولة.
+            المنصّة — بلا عمولة.
           </li>
           <li>
             <strong>إشارات ثقة:</strong> توثيق الحساب، وعمر الحساب، ومؤشّر سرعة
