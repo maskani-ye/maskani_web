@@ -5,7 +5,7 @@
 /* خط Cairo يُحمَّل مرة واحدة عبر <link> في app/layout.tsx (لا تكرّره هنا) */
 
 :root {
-  --primary: #4F2396; /* بنفسجي Gathern */
+  --primary: #171539; /* كحليّ‑بنفسجيّ — اللون السائد في البوّابة (مقاس) */
   --gold: #FFC107; /* أكسنت كهرماني */
   --cream: #F6F6FB;
 }
@@ -30,14 +30,14 @@ body {
 /* ─── Scrollbar ─────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #4F239640; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #4F2396; }
+::-webkit-scrollbar-thumb { background: #17153940; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #171539; }
 
 /* ─── Selection ──────────────────────────────────────────────────── */
-::selection { background-color: #4F239620; }
+::selection { background-color: #17153920; }
 
 /* ─── Focus outline ─────────────────────────────────────────────── */
-:focus-visible { outline: 2px solid #4F2396; outline-offset: 2px; }
+:focus-visible { outline: 2px solid #403B9B; outline-offset: 2px; }
 
 /* ─── Utilities ──────────────────────────────────────────────────── */
 @layer utilities {
@@ -80,7 +80,7 @@ body {
 .marker-cluster-small div,
 .marker-cluster-medium div,
 .marker-cluster-large div {
-  background-color: #4F2396;
+  background-color: #171539;
   color: #fff;
   font-weight: 700;
   font-family: "Cairo", "Tajawal", sans-serif;
@@ -100,6 +100,6 @@ body {
 .article-body ul { list-style: disc; }
 .article-body ol { list-style: decimal; }
 .article-body li { margin: 0.4rem 0; }
-.article-body a { color: #4F2396; text-decoration: underline; font-weight: 600; }
-.article-body a:hover { color: #371869; }
+.article-body a { color: #403B9B; text-decoration: underline; font-weight: 600; }
+.article-body a:hover { color: #171539; }
 .article-body strong { color: #050536; font-weight: 700; }

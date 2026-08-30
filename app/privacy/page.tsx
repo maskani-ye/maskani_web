@@ -60,10 +60,10 @@ export default async function PrivacyPolicyPage() {
 
       {/* تنسيق محتوى الـHTML القادم من الباك اند */}
       <style>{`
-        .legal-body h2 { color: #4F2396; font-weight: 700; font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
+        .legal-body h2 { color: #171539; font-weight: 700; font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
         .legal-body ul { list-style: disc; padding-inline-start: 1.25rem; }
         .legal-body li { margin: 0.25rem 0; }
-        .legal-body a { color: #4F2396; text-decoration: underline; font-weight: 600; }
+        .legal-body a { color: #403B9B; text-decoration: underline; font-weight: 600; }
         .legal-body strong { font-weight: 700; }
       `}</style>
     </main>

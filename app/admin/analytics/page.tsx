@@ -17,7 +17,7 @@ import {
 } from "@solar-icons/react";
 import { toast } from "sonner";
 
-const COLORS = ["#4F2396", "#FFC107", "#EF4444", "#3B82F6", "#8B5CF6", "#10B981", "#F59E0B"];
+const COLORS = ["#403B9B", "#FFC107", "#EF4444", "#3B82F6", "#8B5CF6", "#10B981", "#F59E0B"];
 const axisTick = { fontSize: 11, fill: "#9ca3af" };
 const tooltipStyle = { borderRadius: 12, border: "1px solid #eee", fontSize: 12 };
 
@@ -327,7 +327,7 @@ export default function AnalyticsPage() {
             <YAxis tick={axisTick} allowDecimals={false} />
             <Tooltip contentStyle={tooltipStyle} />
             <Legend />
-            <Line type="monotone" name="بشر" dataKey="humans" stroke="#4F2396" strokeWidth={2} dot={false} />
+            <Line type="monotone" name="بشر" dataKey="humans" stroke="#403B9B" strokeWidth={2} dot={false} />
             <Line type="monotone" name="زواحف" dataKey="bots" stroke="#FFC107" strokeWidth={2} dot={false} />
           </LineChart>
         </ChartCard>
@@ -341,7 +341,7 @@ export default function AnalyticsPage() {
             <XAxis dataKey="name" tick={axisTick} interval={2} />
             <YAxis tick={axisTick} allowDecimals={false} />
             <Tooltip contentStyle={tooltipStyle} />
-            <Bar dataKey="value" fill="#4F2396" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="value" fill="#403B9B" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ChartCard>
         <ChartCard title="أعلى المدن" icon={Global} height={200} empty={!loading && cityData.length === 0}>
@@ -403,7 +403,7 @@ export default function AnalyticsPage() {
             <XAxis type="number" tick={axisTick} allowDecimals={false} />
             <YAxis type="category" dataKey="name" tick={axisTick} width={70} />
             <Tooltip contentStyle={tooltipStyle} />
-            <Bar dataKey="value" fill="#4F2396" radius={[0, 6, 6, 0]} />
+            <Bar dataKey="value" fill="#403B9B" radius={[0, 6, 6, 0]} />
           </BarChart>
         </ChartCard>
 

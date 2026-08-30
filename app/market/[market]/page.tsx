@@ -93,7 +93,7 @@ export default async function MarketHome(
       <JsonLd data={homeFaq} />
       {/* `serverMarket` يُصيَّر به الخادم **وأوّل تصيير في المتصفّح** (فلا عدم
           تطابق ترطيب)، ثم يحلّ محلّه اختيار المستخدم المحفوظ بعد تحميل السياق. */}
-      <HomeClient serverMarket={m.nameAr} />
+      <HomeClient serverMarket={m.nameAr} marketImage={m.heroImage} marketCredit={m.heroCredit} />
       <HomeBlogLinks />
     </>
   );

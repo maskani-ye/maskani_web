@@ -543,7 +543,7 @@ function Sparkline({ trend }: { trend: TrendPoint[] }) {
   return (
     <>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-24 mt-4" preserveAspectRatio="none">
-        <polyline points={line("impressions")} fill="none" stroke="var(--primary,#4F2396)" strokeWidth="2" strokeLinejoin="round" />
+        <polyline points={line("impressions")} fill="none" stroke="var(--primary,#171539)" strokeWidth="2" strokeLinejoin="round" />
         <polyline points={line("clicks")} fill="none" stroke="#FFC107" strokeWidth="2" strokeLinejoin="round" />
       </svg>
       <div className="flex items-center justify-between text-[10px] text-gray-300 mt-1 tabular-nums">

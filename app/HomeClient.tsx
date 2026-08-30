@@ -75,7 +75,16 @@ const TYPE_RAIL = [
   { label: "على الخريطة", href: "/properties?view=map" },
 ];
 
-export default function HomeClient({ serverMarket }: { serverMarket: string }) {
+export default function HomeClient({
+  serverMarket,
+  marketImage = null,
+  marketCredit = "",
+}: {
+  serverMarket: string;
+  /** صورة السوق — **نفس صورة البوّابة** فيتّصل المشهدان بصرياً. */
+  marketImage?: string | null;
+  marketCredit?: string;
+}) {
   const [properties, setProperties] = useState<Property[] | null>(null);
   const [services, setServices] = useState<ServiceProvider[] | null>(null);
   const [requests, setRequests] = useState<ClientRequest[] | null>(null);
@@ -135,7 +144,14 @@ export default function HomeClient({ serverMarket }: { serverMarket: string }) {
    * تسلسل الاحتياط كلّه من الخادم: صورة المدينة ← صورة عقارٍ حقيقيّ في السوق
    * ← سطحٌ محايد. لا صورة مُصمَّمة ولا أصل محلّي.
    */
+  /**
+   * ⚠️ **صورة السوق تسبق صورة المدينة.** الزائر يصل من البوّابة وقد رأى صورة
+   * بلده مِلءَ الشاشة، فإن استقبلته صفحة السوق بصورةٍ أخرى انقطع المشهد وبدت
+   * الصفحتان موقعين مختلفين. صورة السوق أوّلاً، ثم صورة مدينته المختارة إن
+   * اختار، ثم عقارٌ حقيقيّ، ثم سطحٌ محايد.
+   */
   const heroImage =
+    marketImage ||
     cities.find((c) => String(c.id) === cityId)?.image ||
     spotlight?.main_image ||
     null;
@@ -164,13 +180,17 @@ export default function HomeClient({ serverMarket }: { serverMarket: string }) {
               className="object-cover object-center"
             />
           )}
+          {/* حجابٌ مطابق للبوّابة: يثقل تحت النصّ ويخفّ حيث لا نصّ. */}
           <div
             className={`absolute inset-0 ${
               heroImage
-                ? "bg-gradient-to-t from-ink via-ink/70 to-ink/40"
+                ? "bg-gradient-to-b from-ink/70 via-ink/45 to-ink/85"
                 : "bg-gradient-to-br from-primary-900 via-ink to-primary-800"
             }`}
           />
+          {heroImage && (
+            <div className="absolute inset-0 bg-gradient-to-l from-ink/10 via-transparent to-ink/70" />
+          )}
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-20 md:pt-20 md:pb-24">
@@ -199,6 +219,12 @@ export default function HomeClient({ serverMarket }: { serverMarket: string }) {
             </div>
           </div>
         </div>
+        {/* نسب الصورة — شرط رخصة لا تجميل (صور المشاع تشترط ذكر المصوّر). */}
+        {marketImage && marketCredit && (
+          <p className="absolute bottom-1.5 inset-x-0 px-4 text-caption text-white/30 truncate text-center">
+            الصورة: {marketCredit}
+          </p>
+        )}
       </section>
 
       {/* ─── ② شريط النوع — يتداخل مع الهيرو ليربط النطاقين بعمق ────────── */}

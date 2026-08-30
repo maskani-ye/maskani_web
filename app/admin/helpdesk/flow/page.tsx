@@ -41,7 +41,7 @@ const NODE_TYPES = [
   { value: "end", label: "إنهاء" },
 ];
 const TYPE_COLOR: Record<string, string> = {
-  message: "#4F2396", list: "#FFC107", handoff: "#8b5cf6", end: "#6b7280",
+  message: "#403B9B", list: "#FFC107", handoff: "#8b5cf6", end: "#6b7280",
 };
 
 let _tmp = 1;
@@ -50,7 +50,7 @@ const tmpId = (p: string) => `${p}-tmp-${_tmp++}`;
 // ── عقدة مخصّصة ───────────────────────────────────────────────────────────────
 function FlowNodeBox({ data, selected }: { data: FlowData; selected: boolean }) {
   const n = data.node;
-  const color = TYPE_COLOR[n.node_type] || "#4F2396";
+  const color = TYPE_COLOR[n.node_type] || "#403B9B";
   return (
     <div className={`rounded-xl bg-white border-2 shadow-sm min-w-[210px] ${selected ? "ring-2 ring-primary" : ""}`}
       style={{ borderColor: color }}>
@@ -193,7 +193,7 @@ function FlowEditor() {
               fitView proOptions={{ hideAttribution: true }} dir="ltr">
               <Background />
               <Controls />
-              <MiniMap nodeColor={(n) => TYPE_COLOR[(n.data as FlowData)?.node?.node_type] || "#4F2396"} />
+              <MiniMap nodeColor={(n) => TYPE_COLOR[(n.data as FlowData)?.node?.node_type] || "#403B9B"} />
             </ReactFlow>
           )}
         </div>

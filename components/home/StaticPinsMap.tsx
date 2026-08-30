@@ -66,7 +66,7 @@ export default function StaticPinsMap({
           pathOptions={{
             color: "#FFFFFF",
             weight: 2,
-            fillColor: "#4F2396",
+            fillColor: "#403B9B",
             fillOpacity: 1,
           }}
         />

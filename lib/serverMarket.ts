@@ -30,6 +30,9 @@ export interface Market {
   cities: string[];
   /** عدد العقارات المنشورة — **يقرّر فهرسة صفحات السوق**. */
   count: number;
+  /** صورة السوق ونسب رخصتها — نفس صورة البوّابة، فيتّصل المشهدان. */
+  heroImage: string | null;
+  heroCredit: string;
 }
 
 const FALLBACK: Market = {
@@ -38,12 +41,16 @@ const FALLBACK: Market = {
   slug: "yemen",
   cities: ["صنعاء", "عدن", "تعز"],
   count: 0,
+  heroImage: null,
+  heroCredit: "",
 };
 
 interface CountryRow {
   code: string;
   name_ar: string;
   slug: string;
+  hero_image?: string | null;
+  hero_credit?: string;
   properties_count?: number;
   cities?: Array<{ name_ar: string }>;
 }
@@ -100,6 +107,8 @@ export async function marketByCode(code: string): Promise<Market | null> {
     slug: hit.slug,
     cities: (hit.cities ?? []).slice(0, 3).map((c) => c.name_ar),
     count: hit.properties_count ?? 0,
+    heroImage: hit.hero_image ?? null,
+    heroCredit: hit.hero_credit ?? "",
   };
 }
 
@@ -127,5 +136,7 @@ export async function detectMarket(): Promise<Market> {
     slug: hit.slug,
     cities: (hit.cities ?? []).slice(0, 3).map((c) => c.name_ar),
     count: hit.properties_count ?? 0,
+    heroImage: hit.hero_image ?? null,
+    heroCredit: hit.hero_credit ?? "",
   };
 }

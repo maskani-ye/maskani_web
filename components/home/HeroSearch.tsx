@@ -12,10 +12,11 @@
  *   «نموذج إدخال».
  * • تُسلَّم القيم إلى `/properties` التي تقرأ `offer_type` و`city` و`search`.
  */
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
-import { Magnifer, AltArrowDown, MapPoint, Global } from "@solar-icons/react";
+import { Magnifer, AltArrowDown, MapPoint } from "@solar-icons/react";
 import { useCity } from "@/context/CityContext";
+import { marketPath, splitMarket } from "@/lib/markets";
 import { useCountry } from "@/context/CountryContext";
 
 const OFFER_TABS = [
@@ -25,8 +26,11 @@ const OFFER_TABS = [
 
 export function HeroSearch() {
   const router = useRouter();
+  const pathname = usePathname();
+  const { market } = splitMarket(pathname || "/");
   const { cityId, cities, setCity } = useCity();
-  const { code: countryCode, countries, setCountry, loading: countryLoading } = useCountry();
+  // ⚠️ لا يُقرأ رمز السوق هنا: البحث يقع **داخل** السوق الذي يحدّده المسار،
+  // والوجهة تحمل بادئته. (كان الحقل يسمح بتبديل الدولة فيتناقض مع العنوان.)
   const [offer, setOffer] = useState<string>("sale");
   const [q, setQ] = useState("");
 
@@ -39,11 +43,6 @@ export function HeroSearch() {
    * جهازٍ يدوم عبر الجلسات (نفس عقد التطبيق) لا فلتر بحثٍ لمرّة واحدة، فمصدره
    * `CityContext` وحده — مصدرٌ واحد يراه الشريط والرئيسية وكل القوائم.
    */
-  const onCountry = (code: string) => {
-    const c = countries.find((x) => x.code === code);
-    if (c) setCountry(c); // `CityContext` يتبعه: يُعيد تحميل المدن وينتقي العاصمة
-  };
-
   const onCity = (id: string) => {
     setCity(id, cities.find((c) => String(c.id) === id)?.name_ar ?? "");
   };
@@ -55,7 +54,8 @@ export function HeroSearch() {
     if (cityId) params.set("city", cityId);
     const term = q.trim();
     if (term) params.set("search", term);
-    router.push(`/properties?${params.toString()}`);
+    // الوجهة داخل السوق الحاليّ — بلا بادئة يقع تحويلٌ من الحافة يُخرج الزائر.
+    router.push(`${marketPath(market ?? "", "properties")}?${params.toString()}`);
   };
 
   return (
@@ -86,38 +86,11 @@ export function HeroSearch() {
         aria-label="البحث عن عقار"
         className="flex flex-col md:flex-row items-stretch bg-white rounded-2xl shadow-e4 p-1.5 gap-1.5"
       >
-        {/* الدولة أوّلاً — المدينة تتبعها، فترتيبهما يعكس تبعيّتهما.
-            ⚠️ الحقل يُحجَز مكانه أثناء التحميل: كان يظهر بعد وصول قائمة الدول
-            فيدفع بقيّة الحقول جانباً — قفزاتٌ صغيرة متكرّرة رفعت CLS إلى 0.113
-            (العتبة 0.1). حجزُ العرض يجعل الوصول بلا إزاحة. */}
-        {countryLoading && (
-          <>
-            <span aria-hidden className="md:w-40 h-12 flex-shrink-0 rounded-xl bg-cream animate-pulse" />
-            <span aria-hidden className="h-px mx-2 md:h-auto md:w-px md:my-2 md:mx-0 bg-ink/10" />
-          </>
-        )}
-        {!countryLoading && countries.length > 1 && (
-          <>
-            <label className="md:w-40 flex-shrink-0 relative">
-              <span className="sr-only">الدولة</span>
-              <Global className="absolute top-1/2 -translate-y-1/2 start-3.5 h-5 w-5 text-muted pointer-events-none" />
-              <AltArrowDown className="absolute top-1/2 -translate-y-1/2 end-3 h-4 w-4 text-muted pointer-events-none" />
-              <select
-                value={countryCode}
-                onChange={(e) => onCountry(e.target.value)}
-                className="w-full h-12 appearance-none rounded-xl border-0 bg-transparent ps-11 pe-9 text-body font-semibold text-ink outline-none focus:bg-cream transition-colors cursor-pointer"
-              >
-                {countries.map((c) => (
-                  <option key={c.id} value={c.code}>
-                    {c.flag_emoji} {c.name_ar}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <span aria-hidden className="h-px mx-2 md:h-auto md:w-px md:my-2 md:mx-0 bg-ink/10" />
-          </>
-        )}
-
+        {/* ⚠️ **حقل الدولة حُذف من الفلترة نهائياً.** صار السوق في **المسار**
+            (`/sa/properties`) ويُبدَّل من الناف بار بفتح صفحة السوق الآخر. وجود
+            حقل دولة داخل الفلاتر يعني مالكاً ثانياً للسوق يناقض العنوان: يختار
+            المستخدم «مصر» في الحقل فيبقى العنوان `/sa` والمحتوى مصريّاً —
+            رابطٌ يكذب على من يُشارَك معه. الفلاتر تسأل عمّا **داخل** السوق فقط. */}
         {/* المؤشّران ضروريّان: `appearance-none` يجرّد الـselect من كل ما يقول
             إنه قابل للفتح، فيبدو سطراً نصّياً لا حقلاً — وهو ما بدا عليه على
             الجوّال. الدبّوس يسمّي الحقل والسهم يقول إنه قائمة. */}

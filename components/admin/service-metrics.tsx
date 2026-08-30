@@ -152,7 +152,7 @@ export function Series({
   subtitle,
   points,
   unit,
-  color = "#4F2396",
+  color = "#403B9B",
   height = 200,
 }: {
   title: string;
