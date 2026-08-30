@@ -73,6 +73,7 @@ const NAV_GROUPS = [
       { href: "/admin/categories", label: "أصناف الخدمات",  icon: Widget },
       { href: "/admin/cities",     label: "المدن والدول",   icon: City },
       { href: "/admin/currencies", label: "العملات",        icon: Dollar },
+      { href: "/admin/settings",   label: "إعدادات المنصّة", icon: Settings },
     ],
   },
   {

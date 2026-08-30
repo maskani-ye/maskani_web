@@ -177,7 +177,7 @@ export default function HomeClient({ serverMarket }: { serverMarket: string }) {
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-3.5 py-1.5 text-caption font-bold ring-1 ring-white/20">
               <CheckCircle weight="Bold" className="h-4 w-4 text-gold" />
-              بلا وسيط · بلا عمولة
+              تواصل مباشر · بلا عمولة
             </span>
 
             {/* ⚠️ ارتفاع سطرين محجوز: اسم السوق يتغيّر بعد الترطيب (من سوق

@@ -76,7 +76,7 @@ async function rows(path: string): Promise<Row[]> {
 
 // يجلب الدول لبناء صفحات هبوطها — أعلى طبقة في التسلسل الجغرافي، وهي ما
 // يلتقط استعلامات «عقارات <الدولة>» في كل سوق نفتحه.
-async function countries(): Promise<{ slug: string; code: string }[]> {
+async function countries(): Promise<{ slug: string; code: string; count: number }[]> {
   try {
     // ⚠️ عمر الجلب = عمر الخريطة (3600). كان 86400 فبقيت نتيجةٌ فاشلة محفوظة
     // يوماً كاملاً، فخرجت الخريطة بـ**صفر صفحة دولة** رغم أن الـAPI يردّ بستّ.
@@ -86,8 +86,9 @@ async function countries(): Promise<{ slug: string; code: string }[]> {
     });
     if (!res.ok) return [];
     return ((await res.json()).results ?? [])
-      .map((c: { slug?: string; code?: string }) => ({
+      .map((c: { slug?: string; code?: string; properties_count?: number }) => ({
         slug: c.slug || "", code: (c.code || "").toLowerCase(),
+        count: c.properties_count ?? 0,
       }))
       .filter((c: { slug: string }) => c.slug);
   } catch {
@@ -222,7 +223,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.9,
       },
       // أقسام السوق الأربعة — كلٌّ صفحة قائمة قائمة بذاتها بنصّها ومدنها.
-      ...["properties", "services", "requests", "jobs"].map((sec) => ({
+      //
+      // ⚠️ **لا تُرسَل أقسام سوقٍ فارغ**: صفحاتها تحمل `noindex` (محتوى رقيق)،
+      // وإرسال ما منعناه تناقضٌ يعود بتقرير «مستثناة بعلامة noindex».
+      ...(c.count > 0 ? ["properties", "services", "requests", "jobs"] : []).map((sec) => ({
         url: `${BASE}/${c.code}/${sec}`,
         lastModified: now,
         changeFrequency: "daily" as const,

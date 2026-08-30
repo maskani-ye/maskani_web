@@ -34,6 +34,11 @@ export async function generateMetadata(
   return {
     title: { absolute: `${title} | مسكني` },
     description,
+    // ⚠️ **السوق الفارغ لا يُفهرَس.** صفحة قائمة بلا عنصر واحد محتوى رقيق:
+    // جوجل يردّ عليها بـ«اكتُشفت ولم تُفهرَس» ويستهلك ميزانية زحفنا، وملفّ
+    // أدسنس عندنا رُفض مرّة بسبب «شاشات بلا محتوى ناشر». تُفتح الفهرسة تلقائياً
+    // بأوّل عقار يُنشر — لا حاجة لتدخّل.
+    robots: m.count > 0 ? undefined : { index: false, follow: true },
     alternates: { canonical: `/${market}/requests` },
     openGraph: { title, description, url: `/${market}/requests`, siteName: "مسكني", locale: "ar_AR" },
   };

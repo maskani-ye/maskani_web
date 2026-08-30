@@ -101,6 +101,7 @@ export const endpoints = {
     aiUsage: `${ADMIN}/ai/keys/usage/`,
     aiTestActive: `${ADMIN}/ai/keys/test/`,
     aiKeyTest: (id: number) => `${ADMIN}/ai/keys/${id}/test/`,
+    siteConfig: `${ADMIN}/settings/site-config/`,
     aiProvidersCatalog: `${ADMIN}/ai/providers/catalog/`,
     aiProviderModels: (id: number) => `${ADMIN}/ai/providers/${id}/models/`,
     aiProbeModels: `${ADMIN}/ai/providers/probe-models/`,
