@@ -47,16 +47,29 @@ export function middleware(req: NextRequest, event: NextFetchEvent) {
       }).catch(() => {}),
     );
   }
-  // ─── إعادة كتابة الرئيسية إلى نسخة السوق ──────────────────────────────
-  if (req.nextUrl.pathname === "/") {
-    const cc = (
-      req.headers.get("cf-ipcountry") ||
-      req.headers.get("x-vercel-ip-country") ||
-      ""
-    ).toLowerCase();
-    const market = (MARKETS as readonly string[]).includes(cc) ? cc : DEFAULT_MARKET;
+  // ─── مسارات الأسواق العامّة ───────────────────────────────────────────
+  //
+  // ⚠️ **`/` لم تعد تُعيد الكتابة إلى سوق.** كانت تفعل، فورثت من صفحة السوق
+  // وسم `noindex` — فخرجت الصفحة الأولى للعلامة من فهرس جوجل («Excluded by
+  // 'noindex' tag»، مُتحقَّق 2026‑08‑30)، ورأى الزاحف (من عناوين أمريكية) سوق
+  // السعودية وفيه صفر عقار. صار `/` صفحة هبوط عالمية مفهرسة يختار منها الزائر
+  // سوقه، وصار لكل سوق مسارٌ عامّ باسمه.
+  const path = req.nextUrl.pathname;
+
+  // `/market/ye` القديم → `/ye` بتحويل دائم: الرابط القديم قد يكون في مفضّلات
+  // أو سجلّ زحف، و301 تنقل قوّته للمسار الجديد بدل أن تهدرها على 404.
+  const legacy = path.match(/^\/market\/([a-z]{2})\/?$/);
+  if (legacy && (MARKETS as readonly string[]).includes(legacy[1])) {
     const url = req.nextUrl.clone();
-    url.pathname = `/market/${market}`;
+    url.pathname = `/${legacy[1]}`;
+    return NextResponse.redirect(url, 308);
+  }
+
+  // `/ye` → يُخدَم من `/market/ye` المبنيّ مسبقاً (إعادة كتابة: الرابط يبقى `/ye`).
+  const short = path.match(/^\/([a-z]{2})\/?$/);
+  if (short && (MARKETS as readonly string[]).includes(short[1])) {
+    const url = req.nextUrl.clone();
+    url.pathname = `/market/${short[1]}`;
     return NextResponse.rewrite(url);
   }
 

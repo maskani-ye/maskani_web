@@ -28,6 +28,9 @@ interface CityForm {
 }
 
 interface CountryForm {
+  tagline_ar?: string;
+  tagline_en?: string;
+  hero_credit?: string;
   name_ar: string;
   name_en: string;
   code: string;
@@ -35,7 +38,7 @@ interface CountryForm {
 }
 
 const emptyCityForm: CityForm = { name_ar: "", name_en: "", region: "", country: "", is_active: true };
-const emptyCountryForm: CountryForm = { name_ar: "", name_en: "", code: "", is_active: true };
+const emptyCountryForm: CountryForm = { name_ar: "", name_en: "", code: "", is_active: true, tagline_ar: "", tagline_en: "", hero_credit: "" };
 
 // ─── Component ────────────────────────────────────────────────────────────
 
@@ -56,6 +59,7 @@ export default function AdminCitiesPage() {
   const [cityForm, setCityForm] = useState<CityForm>(emptyCityForm);
   const [cityImage, setCityImage] = useState<File | null>(null);
   const [countryForm, setCountryForm] = useState<CountryForm>(emptyCountryForm);
+  const [countryImage, setCountryImage] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: "city" | "country"; id: number } | null>(null);
 
@@ -151,11 +155,18 @@ export default function AdminCitiesPage() {
   // ── Country CRUD ───────────────────────────────────────────────────────
   const openAddCountry = () => {
     setCountryForm(emptyCountryForm);
+    setCountryImage(null);
     setCountryModal({ open: true, editing: null });
   };
 
   const openEditCountry = (country: Country) => {
-    setCountryForm({ name_ar: country.name_ar, name_en: country.name_en, code: country.code, is_active: country.is_active ?? true });
+    setCountryForm({
+      name_ar: country.name_ar, name_en: country.name_en, code: country.code,
+      is_active: country.is_active ?? true,
+      tagline_ar: country.tagline_ar ?? "", tagline_en: country.tagline_en ?? "",
+      hero_credit: country.hero_credit ?? "",
+    });
+    setCountryImage(null);
     setCountryModal({ open: true, editing: country });
   };
 
@@ -166,11 +177,20 @@ export default function AdminCitiesPage() {
     }
     setSaving(true);
     try {
+      // ⚠️ صورة السوق تُضغط قبل الرفع كبقيّة الصور في المنصّة — خلفية بمِلء
+      // الشاشة بلا ضغط تُثقل أهمّ صفحة عندنا.
+      let payload: CountryForm | FormData = countryForm;
+      if (countryImage) {
+        const fd = new FormData();
+        Object.entries(countryForm).forEach(([k, v]) => fd.append(k, String(v ?? "")));
+        fd.append("hero_image", await compressImage(countryImage));
+        payload = fd;
+      }
       if (countryModal.editing) {
-        await api.patch(ep.admin.country(countryModal.editing.id), countryForm);
+        await api.patch(ep.admin.country(countryModal.editing.id), payload);
         toast.success("تم تعديل الدولة");
       } else {
-        await api.post(ep.admin.countries, countryForm);
+        await api.post(ep.admin.countries, payload);
         toast.success("تم إضافة الدولة");
       }
       setCountryModal({ open: false, editing: null });
@@ -335,6 +355,30 @@ export default function AdminCitiesPage() {
               <Input label="الاسم بالإنجليزية *" value={countryForm.name_en} onChange={(e) => setCountryForm((p) => ({ ...p, name_en: e.target.value }))} />
             </div>
             <Input label="رمز الدولة (مثال: YE، SA) *" value={countryForm.code} onChange={(e) => setCountryForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Input label="سطر السوق (عربي)" value={countryForm.tagline_ar ?? ""} onChange={(e) => setCountryForm((p) => ({ ...p, tagline_ar: e.target.value }))} placeholder="صنعاء · عدن · تعز · إب" />
+              <Input label="سطر السوق (إنجليزي)" value={countryForm.tagline_en ?? ""} onChange={(e) => setCountryForm((p) => ({ ...p, tagline_en: e.target.value }))} dir="ltr" placeholder="Sana'a · Aden · Taiz" />
+            </div>
+            <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 space-y-2">
+              <p className="text-caption text-muted">
+                صورة السوق — خلفية الصفحة الأولى حين يمرّ الزائر على هذه الدولة.
+              </p>
+              {(countryImage || countryModal.editing?.hero_image) && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={countryImage ? URL.createObjectURL(countryImage) : (countryModal.editing?.hero_image ?? "")}
+                  alt="" className="w-full h-28 rounded-lg object-cover border border-gray-200"
+                />
+              )}
+              <input type="file" accept="image/*" onChange={(e) => setCountryImage(e.target.files?.[0] ?? null)}
+                className="text-caption w-full" />
+              {/* ⚠️ النسب شرط رخصة لا حقل اختياري: صور المشاع مرخّصة تجارياً
+                  بشرط ذكر المصوّر ورخصته، والصفحة تعرض هذا السطر تحت الصورة. */}
+              <Input label="نسب الصورة ورخصتها (إلزاميّ مع صورة من المشاع)"
+                value={countryForm.hero_credit ?? ""}
+                onChange={(e) => setCountryForm((p) => ({ ...p, hero_credit: e.target.value }))}
+                placeholder="اسم الملفّ — المصوّر · CC BY-SA 4.0 · ويكيميديا كومنز" />
+            </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={countryForm.is_active} onChange={(e) => setCountryForm((p) => ({ ...p, is_active: e.target.checked }))} className="rounded" />
               <span className="text-sm text-gray-700">مفعّلة</span>

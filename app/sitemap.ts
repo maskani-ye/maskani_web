@@ -76,7 +76,7 @@ async function rows(path: string): Promise<Row[]> {
 
 // يجلب الدول لبناء صفحات هبوطها — أعلى طبقة في التسلسل الجغرافي، وهي ما
 // يلتقط استعلامات «عقارات <الدولة>» في كل سوق نفتحه.
-async function countries(): Promise<{ slug: string }[]> {
+async function countries(): Promise<{ slug: string; code: string }[]> {
   try {
     // ⚠️ عمر الجلب = عمر الخريطة (3600). كان 86400 فبقيت نتيجةٌ فاشلة محفوظة
     // يوماً كاملاً، فخرجت الخريطة بـ**صفر صفحة دولة** رغم أن الـAPI يردّ بستّ.
@@ -86,7 +86,9 @@ async function countries(): Promise<{ slug: string }[]> {
     });
     if (!res.ok) return [];
     return ((await res.json()).results ?? [])
-      .map((c: { slug?: string }) => ({ slug: c.slug || "" }))
+      .map((c: { slug?: string; code?: string }) => ({
+        slug: c.slug || "", code: (c.code || "").toLowerCase(),
+      }))
       .filter((c: { slug: string }) => c.slug);
   } catch {
     return [];
@@ -205,6 +207,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...(withImages && x.image ? { images: [x.image] } : {}),
     }));
 
+  // الأسواق — /ye /sa … الصفحة الأولى لكل سوق.
+  //
+  // ⚠️ دخلت الخريطة بعد أن صارت **مفهرسة**: كانت تُخدَم على `/` بوسم `noindex`
+  // فأخرجت الرئيسية نفسها من الفهرس. الأولوية 0.9 — أعلى من صفحة هبوط الدولة
+  // لأنها واجهة السوق لا قائمة عقاراته وحدها.
+  const marketEntries: MetadataRoute.Sitemap = countryList
+    .filter((c) => c.code)
+    .map((c) => ({
+      url: `${BASE}/${c.code}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+    }));
+
   // صفحات هبوط الدول — /properties/country/<slug>
   const countryEntries: MetadataRoute.Sitemap = countryList.map((c) => ({
     url: `${BASE}/properties/country/${c.slug}`,
@@ -254,6 +270,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...unitEntries,
     ...staticEntries,
+    ...marketEntries,
     ...countryEntries,
     ...cityEntries,
     ...hoodEntries,

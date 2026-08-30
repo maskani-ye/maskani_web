@@ -23,9 +23,14 @@ const HomeClient = dynamicImport(() => import("../../HomeClient"), { ssr: true }
  * الكتابة إلى هذا المسار، وهو **مبنيّ مسبقاً لكل سوق** فيُخدَم من التخزين.
  * الرابط الظاهر يبقى `/` لأنها إعادة كتابة لا تحويل.
  *
- * ⚠️ **لا يُفهرَس هذا المسار**: العنوان الأساسي `/` وحده (canonical)، وهذه
- * النسخ ستّ صفحات بمحتوى شبه متطابق. `noindex` هنا + `Disallow` في robots
- * يمنعان تكرار المحتوى، والزاحف يصل عبر `/` فيقع على النسخة الصحيحة تلقائياً.
+ * ⚠️ **صار هذا المسار مفهرساً — بعد أن كان `noindex`.** حين كانت `/` تُعيد
+ * الكتابة إلى هنا، ورثت الرئيسية وسم `noindex` فخرجت من فهرس جوجل
+ * («Excluded by 'noindex' tag» — مُتحقَّق 2026‑08‑30) وضاع استعلام «مسكني»
+ * (٩٨ ظهوراً · نقرتان). الآن `/` صفحة هبوط عالمية مستقلّة، وهذه صفحة **سوق
+ * حقيقية** لها عنوانها العامّ `/ye` وكلماتها ومدنها — فتُفهرَس باسمها.
+ *
+ * العنوان الأساسي (canonical) هو المسار القصير `/<code>` لا `/market/<code>`،
+ * و`/market/*` يُحوَّل إليه بـ308 من الحافة فلا يوجد عنوانان لمحتوى واحد.
  */
 
 export const revalidate = 3600;
@@ -65,11 +70,10 @@ export async function generateMetadata(
       "خدمات عقارية", "مقاول", "طلبات عقارية",
       "بلاغات احتيال عقاري", "مسكني", "maskani",
     ],
-    // العنوان الأساسي هو `/` دائماً — النسخ الستّ لا تُفهرَس بذاتها.
-    alternates: { canonical: "/" },
-    robots: { index: false, follow: true },
+    // العنوان الأساسي هو المسار القصير — لا `/market/…` الذي يُحوَّل إليه.
+    alternates: { canonical: `/${market}` },
     openGraph: {
-      title, description, url: "/", siteName: "مسكني",
+      title, description, url: `/${market}`, siteName: "مسكني",
       locale: "ar_AR", type: "website",
     },
     twitter: { card: "summary_large_image", title, description },

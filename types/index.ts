@@ -42,6 +42,11 @@ export interface Country {
   order?: number;
   is_active?: boolean;
   properties_count?: number;
+  /** صورة السوق ونسبها وسطره — تُدار من لوحة «المدن والدول». */
+  hero_image?: string | null;
+  hero_credit?: string;
+  tagline_ar?: string;
+  tagline_en?: string;
   cities?: City[];
 }
 

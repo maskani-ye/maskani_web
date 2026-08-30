@@ -13,6 +13,13 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   // مسارات /auth و /admin لها هيكلها الخاص — لا نغلّفها بشريط التنقّل العام والتذييل
   const isBare = pathname.startsWith("/auth") || pathname.startsWith("/admin");
+  // ⚠️ **الصفحة الأولى تُدير إطارها بنفسها**: تأليفها مِلء الشاشة بترويسة
+  // زجاجية فوق الصورة، فإقحام الشريط العام والتذييل والشريط السفلي فوقها
+  // يُنتج ترويستين وشريط تنقّل يقطع المشهد. وهي أيضاً **قبل** اختيار السوق،
+  // فلا معنى لبوّابة الموقع فيها.
+  const isLanding = pathname === "/";
+
+  if (isLanding) return <>{children}</>;
   // محادثة مفتوحة = شاشة كاملة بلا شريط سفلي (مطابق للتطبيق)
   const isChatConversation = pathname.startsWith("/chat/") && pathname !== "/chat";
 
