@@ -167,7 +167,29 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
     [markets, hovered],
   );
 
-  const withImage = useMemo(() => markets.filter((m) => m.image), [markets]);
+  /**
+   * الأسواق الستّة كلّها ظاهرة على الشاشات الطويلة، والطيّ للقصيرة وحدها.
+   *
+   * ⚠️ **الخلفية كانت تعرض سوقاً لا يراه الزائر**: الدوران يمرّ على الستّة
+   * بينما القائمة تُظهر ثلاثة، فتظهر مسقط ولا تجد عُمان أمامك — فيبدو أن
+   * «عُمان بلا صورة» وهي أوضح صورة عندنا. الآن ما يُعرض في الخلفية موجودٌ في
+   * القائمة دائماً.
+   */
+  const [tall, setTall] = useState(false);
+  useEffect(() => {
+    const check = () => setTall(window.innerHeight >= 760 && window.innerWidth >= 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const showAll = expanded || tall;
+  const shown = useMemo(
+    () => (showAll ? markets : markets.slice(0, 3)),
+    [markets, showAll],
+  );
+  const rest = markets.length - shown.length;
+  const withImage = useMemo(() => shown.filter((m) => m.image), [shown]);
   const primary = markets[0] ?? null;
 
   /**
@@ -192,8 +214,7 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
   const active = markets.find((m) => m.code === hovered)
     || withImage[slide % (withImage.length || 1)]
     || primary;
-  const shown = expanded ? markets : markets.slice(0, 3);
-  const rest = markets.length - shown.length;
+
 
   return (
     // ⚠️ **شاشة واحدة بلا تمرير**: `h-[100svh]` + `overflow-hidden`، والتخطيط
