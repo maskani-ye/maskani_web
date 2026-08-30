@@ -173,10 +173,15 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
     // ⚠️ **شاشة واحدة بلا تمرير**: `h-[100svh]` + `overflow-hidden`، والتخطيط
     // ثلاثة صفوف (ترويسة · مشهد · نسب الصورة) فيتمدّد المشهد بما بقي لا أكثر.
     // `svh` لا `vh`: شريط متصفّح الجوّال يقضم من `vh` فيظهر تمرير بمقداره.
+    // ⚠️ **لا لون خلفية على الجذر.** كان `bg-ink` هنا وطبقة الصورة عند
+    // `-z-10`، فرُسمت الخلفية المعتمة **فوق** الصورة: تُحمَّل ولا تُرى إطلاقاً
+    // (٢٢٠ ك.ب تُدفع بلا مقابل). اللون انتقل إلى طبقة الخلفية نفسها ليبقى
+    // احتياطاً حين تتعذّر الصورة، والطبقات صارت موجبة ومرتّبة: صورة (0) ←
+    // كرة (1) ← محتوى (10).
     <div dir={t.dir} lang={lang}
-      className="relative h-[100svh] overflow-hidden bg-ink text-white grid grid-rows-[auto_1fr_auto]">
+      className="relative h-[100svh] overflow-hidden text-white grid grid-rows-[auto_1fr_auto]">
       {/* ─── الخلفية السينمائية ─────────────────────────────────────────── */}
-      <div className="fixed inset-0 -z-10">
+      <div className="absolute inset-0 z-0 bg-ink">
         {withImage.map((m) => (
           <Image
             key={m.code}
@@ -202,7 +207,7 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
 
       {/* كرة الأسواق — بين الصورة والمحتوى، بلا التقاط للمؤشّر. */}
       {showGlobe && globePoints.length > 0 && (
-        <div className="pointer-events-none fixed inset-y-0 start-0 w-[46vw] max-w-globe -z-[5] opacity-70">
+        <div className="pointer-events-none absolute inset-y-0 start-0 w-[46vw] max-w-globe z-[1] opacity-70">
           <MarketGlobe points={globePoints} />
         </div>
       )}
