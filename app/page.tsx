@@ -65,6 +65,19 @@ interface ApiCountry {
  * الـAPI نُرجع قائمة فارغة فتعرض الصفحة نصّها ودعوة الاتصال بدل أن تنهار.
  */
 async function getMarkets(): Promise<Market[]> {
+  // ⚠️ **محاولةٌ واحدة لا تكفي وقت البناء.** أوّل نشرة خرجت بلوحة أسواق
+  // **فارغة**: صادف البناءُ إعادةَ تشغيل حاوية الـAPI، ففشل الجلب مرّةً واحدة
+  // فخُبز الفراغ في صفحةٍ ساكنة عمرها ساعة. الصفحة الأهمّ عندنا لا تُترك
+  // لمصادفة شبكة — ثلاث محاولات متباعدة، ثم رجوعٌ للمتصفّح في `LandingClient`.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const rows = await fetchMarkets();
+    if (rows.length) return rows;
+    await new Promise((r) => setTimeout(r, 1200));
+  }
+  return [];
+}
+
+async function fetchMarkets(): Promise<Market[]> {
   try {
     const res = await fetch(`${API}/cities/countries/`, {
       next: { revalidate: 3600 },

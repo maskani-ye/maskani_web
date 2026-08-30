@@ -117,6 +117,9 @@ const config: Config = {
        * الاسم يصف **الدور** لا الحجم، فلا يُختار المقاس بالذوق كل مرّة.
        */
       fontSize: {
+        /** العنوان الافتتاحيّ للبوّابة العالمية — أكبر درجة في السُلّم،
+         *  ولا تُستعمل إلا في صفحةٍ نصّها الوحيد هو هذا العنوان. */
+        hero: ["4.5rem", { lineHeight: "1.05", letterSpacing: "-0.03em", fontWeight: "800" }],
         display: ["3.25rem", { lineHeight: "1.12", letterSpacing: "-0.02em", fontWeight: "800" }],
         h1: ["2.25rem", { lineHeight: "1.2", letterSpacing: "-0.015em", fontWeight: "800" }],
         h2: ["1.625rem", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "700" }],

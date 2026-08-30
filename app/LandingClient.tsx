@@ -79,7 +79,10 @@ const T = {
   },
 };
 
-export default function LandingClient({ markets, pillars }: { markets: Market[]; pillars: Pillar[] }) {
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
+
+export default function LandingClient({ markets: initial, pillars }: { markets: Market[]; pillars: Pillar[] }) {
+  const [markets, setMarkets] = useState<Market[]>(initial);
   const [lang, setLang] = useState<Lang>("ar");
   const [hovered, setHovered] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -94,6 +97,36 @@ export default function LandingClient({ markets, pillars }: { markets: Market[];
       if (saved === "en" || saved === "ar") setLang(saved);
     } catch { /* تخزين محجوب — تبقى العربية */ }
   }, []);
+
+  /**
+   * شبكة أمان: لو خرجت الصفحة الساكنة بلا أسواق (فشل جلبٍ لحظيّ وقت البناء —
+   * وقد حدث فعلاً في أوّل نشرة) نجلبها من المتصفّح فلا يرى الزائر لوحةً فارغة
+   * لساعة كاملة حتى تتجدّد الصفحة. لا تمويه: نفس المحتوى الذي كان سيُصيَّر.
+   */
+  useEffect(() => {
+    if (initial.length) return;
+    let alive = true;
+    fetch(`${API}/cities/countries/`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!alive || !j) return;
+        const rows = Array.isArray(j) ? j : j.results || [];
+        setMarkets(rows.map((c: Record<string, never | string | number | null>) => ({
+          code: String(c.code || "").toLowerCase(),
+          slug: String(c.slug || ""),
+          nameAr: String(c.name_ar || ""),
+          nameEn: String(c.name_en || ""),
+          flag: String(c.flag_emoji || ""),
+          image: (c.hero_image as string | null) ?? null,
+          credit: String(c.hero_credit || ""),
+          taglineAr: String(c.tagline_ar || ""),
+          taglineEn: String(c.tagline_en || ""),
+          count: Number(c.properties_count || 0),
+        })));
+      })
+      .catch(() => { /* تبقى اللوحة كما هي */ });
+    return () => { alive = false; };
+  }, [initial.length]);
 
   const switchLang = useCallback((next: Lang) => {
     setLang(next);
@@ -161,7 +194,7 @@ export default function LandingClient({ markets, pillars }: { markets: Market[];
           <div className="grid lg:grid-cols-[minmax(0,1fr)_400px] gap-10 lg:gap-14 items-center">
             {/* العنوان */}
             <div className="max-w-headline">
-              <h1 className="text-h1 md:text-display font-extrabold tracking-tight text-balance leading-[1.08]">
+              <h1 className="text-h1 md:text-display lg:text-hero font-extrabold text-balance">
                 {t.headline}
               </h1>
               <p className="text-body-lg text-white/70 mt-5 leading-relaxed max-w-[46ch]">
