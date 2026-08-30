@@ -178,7 +178,18 @@ export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filt
             خلف دائرةٍ صمّاء. `disableClusteringAtZoom` يُبقيه للكثافة وحدها. */}
         <MarkerClusterGroup chunkedLoading showCoverageOnHover={false} disableClusteringAtZoom={11} maxClusterRadius={45}>
           {markers.map((m) => (
-            <Marker key={m.id} position={[m.latitude, m.longitude]} icon={priceIcon(formatPrice(m.price, m.currency))}>
+            <Marker
+              key={m.id}
+              position={[m.latitude, m.longitude]}
+              icon={priceIcon(formatPrice(m.price, m.currency))}
+              // ⚠️ **المعاينة تفتح بالمرور لا بالنقر**: المرجع يُظهر بطاقةً
+              // كاملة (صورة وسعر وعنوان) بمجرّد المرور، فيقرأ الباحث العرض بلا
+              // أن يفقد سياق الخريطة. النقر يبقى للانتقال إلى صفحة العقار.
+              eventHandlers={{
+                mouseover: (e) => e.target.openPopup(),
+                mouseout: (e) => setTimeout(() => e.target.closePopup(), 400),
+              }}
+            >
               <Popup>
                 <Link href={`/properties/${m.id}`} className="block w-48 no-underline">
                   <div className="h-24 w-full overflow-hidden rounded-lg bg-gray-100">

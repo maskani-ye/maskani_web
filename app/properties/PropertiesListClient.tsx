@@ -287,7 +287,10 @@ function PropertiesContent() {
   if (cityId) mapFilters.city = cityId;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    // ⚠️ **عرضٌ كامل لا عمود محصور**: هذه شاشة تصفّح لا مقال. الخريطة والشبكة
+    // جنباً إلى جنب تحتاجان كل بكسل، وحصرهما في 80rem يترك هامشين فارغين على
+    // الشاشات العريضة ويضغط الخريطة حتى تصير مصغّرة لا خريطة.
+    <div className="w-full px-3 sm:px-5 lg:px-6 py-6">
       <Breadcrumbs items={[{ name: "الرئيسية", href: "/" }, { name: sectionLabel("properties") }]} />
       {/* ─── الشريط ─────────────────────────────────────────────────────
           ⚠️ **أُعيد بناؤه على المرجع حرفياً**: كان حاويةً بيضاء ثقيلة بشريط
@@ -298,9 +301,9 @@ function PropertiesContent() {
           ⚠️ **والزجاج هنا مصقول لا شفّاف**: لا صورة خلف هذه الشاشة، فالزجاج
           الشديد الشفافية يبدو باهتاً. `bg-white/70` + `backdrop-blur` + حدّ
           شعرة يعطي الحسّ الزجاجيّ ويُبقي النصّ مقروءاً على خلفية فاتحة. */}
-      <div className="mb-6 space-y-3">
+      <div className="mb-5 overflow-hidden rounded-3xl border border-white/60 bg-white/70 shadow-e2 backdrop-blur-xl">
         {/* صفّ ① — البحث والفلاتر */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4">
           <div className="relative flex-1 min-w-[16rem]">
             <Magnifer className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input
@@ -337,8 +340,8 @@ function PropertiesContent() {
           </button>
         </div>
 
-        {/* صفّ ② — العدد والترتيب والإجراءات */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* صفّ ② — العدد والترتيب والإجراءات (يفصله خطّ شعرة كما في المرجع) */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink/[0.06] p-3 sm:p-4">
           <h2 className="text-h2 text-ink">
             {loading ? "جارٍ التحميل…" : <>{formatNumber(total)} عقار متاح</>}
           </h2>
@@ -373,7 +376,9 @@ function PropertiesContent() {
         </div>
 
         {/* بحث بجملة — يبقى، فهو ما لا تملكه المنصّات المرجعية */}
-        <SmartSearchBar onResult={applyAiFilters} />
+        <div className="border-t border-ink/[0.06] p-3 sm:p-4">
+          <SmartSearchBar onResult={applyAiFilters} />
+        </div>
       </div>
 
       {/* Filters Panel */}
@@ -497,8 +502,8 @@ function PropertiesContent() {
       {/* ─── الشبكة والخريطة معاً ───────────────────────────────────────
           ⚠️ على الجوّال تعلو الخريطةُ الشبكةَ بارتفاع ثابت بدل أن تُخفى: الغرض
           أن يرى الباحث «أين» دائماً، وعمودان لا يتّسعان تحت 1024 بكسل. */}
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)] lg:gap-5 lg:items-start">
-      <aside className="lg:hidden h-72 mb-5 overflow-hidden rounded-2xl card-shadow">
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,46%)] lg:gap-4 lg:items-start">
+      <aside className="lg:hidden h-64 mb-4 overflow-hidden rounded-3xl border border-white/60 shadow-e2">
         <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} fitPoints={resultPoints} />
       </aside>
       <div className="min-w-0">
@@ -523,7 +528,7 @@ function PropertiesContent() {
           <p className="text-gray-400 text-sm mt-1">جرّب تغيير معايير البحث</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 min-[560px]:grid-cols-2 gap-4">
           {properties.map((property) => (
             <PropertyCard
               key={property.id}
