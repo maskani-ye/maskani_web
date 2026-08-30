@@ -2,7 +2,8 @@
 
 // شريط تنقّل سفلي app-like — يظهر على الجوّال فقط (lg:hidden). مطابق لتطبيق Flutter:
 // الرئيسية / العقارات / الخدمات / الطلبات / حسابي.
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
+import { splitMarket } from "@/lib/markets";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
@@ -31,7 +32,9 @@ export function BottomNav() {
       <div className="flex items-stretch justify-around">
         {TABS.map((tab) => {
           const Icon = tab.icon;
-          const active = tab.exact ? pathname === tab.href : pathname.startsWith(tab.href);
+          // المقارنة على المسار **منزوع بادئة السوق** — انظر Navbar.
+          const rest = splitMarket(pathname || "/").rest || "/";
+          const active = tab.exact ? rest === tab.href : rest.startsWith(tab.href);
           const handleClick = (e: React.MouseEvent) => {
             if (tab.auth && !user) {
               e.preventDefault();

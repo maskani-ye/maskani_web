@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
@@ -96,7 +96,9 @@ export function Navbar() {
           <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => {
               const Icon = link.icon;
-              const active = pathname.startsWith(link.href);
+              // المسار يحمل بادئة سوق (`/sa/properties`) بينما الرابط مجرّد،
+              // فتُنزع البادئة قبل المقارنة وإلا لم يُميَّز أي قسم كنشط.
+              const active = splitMarket(pathname || "/").rest.startsWith(link.href);
               return (
                 <Link
                   key={link.href}

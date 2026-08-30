@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import type { ServiceProvider, PaginatedResponse, City, ServiceCategoryItem } from "@/types";

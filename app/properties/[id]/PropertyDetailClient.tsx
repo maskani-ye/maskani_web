@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage, getErrorStatus } from "@/lib/api";
 import { trackVisitEvent } from "@/lib/track";
 import {

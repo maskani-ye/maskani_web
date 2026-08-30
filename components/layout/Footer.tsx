@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
 import { Home2, Shield, Buildings2 } from "@solar-icons/react";
 import { StoreBadges } from "@/components/download/StoreBadges";
 

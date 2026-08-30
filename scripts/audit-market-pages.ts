@@ -14,6 +14,7 @@ const SECTIONS = ["properties", "services", "requests", "jobs"];
 
 const bad: string[] = [];
 
+async function main() {
 for (const m of MARKETS) {
   // واجهة السوق
   const home = await fetch(`${BASE}/${m}`);
@@ -35,3 +36,6 @@ if (bad.length) {
   process.exit(1);
 }
 console.log(`✓ ${MARKETS.length * (SECTIONS.length + 1)} صفحة سوق تعمل`);
+}
+
+main();

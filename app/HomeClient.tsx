@@ -29,7 +29,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCity } from "@/context/CityContext";

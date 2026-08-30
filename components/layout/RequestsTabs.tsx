@@ -2,7 +2,7 @@
 
 // شريط تبويبات «مركز الطلبات» — موحّد أعلى صفحتَي /requests (طلبات عقارية)
 // و /jobs (طلبات خدمات)، مطابق لمركز الطلبات بقسمين في تطبيق Flutter.
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
 
 const TABS = [
   { href: "/requests", label: "طلبات عقارية", key: "property" },

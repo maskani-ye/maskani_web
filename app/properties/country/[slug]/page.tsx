@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
 import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { breadcrumbList, itemList, citySlug, SITE_URL } from "@/lib/seo";

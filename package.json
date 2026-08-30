@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prebuild": "npm run audit && tsx scripts/audit-broker-claim.ts",
+    "prebuild": "npm run audit && tsx scripts/audit-broker-claim.ts && tsx scripts/audit-market-links.ts",
     "audit": "npm run audit:ads && npm run audit:units && npm run audit:digits && npm run audit:notfound && npm run audit:design",
     "audit:ads": "tsx scripts/audit-ads.ts",
     "audit:notfound": "tsx scripts/audit-notfound-cache.ts",
@@ -16,7 +16,8 @@
     "audit:units": "tsx scripts/audit-units.ts",
     "audit:digits": "tsx scripts/audit-digits.ts",
     "audit:broker": "tsx scripts/audit-broker-claim.ts",
-    "audit:markets": "tsx scripts/audit-market-pages.ts"
+    "audit:markets": "tsx scripts/audit-market-pages.ts",
+    "audit:links": "tsx scripts/audit-market-links.ts"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.70.0",

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, type ComponentType } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";

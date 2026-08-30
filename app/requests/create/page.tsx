@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints } from "@/lib/endpoints";
 import { useAuth } from "@/context/AuthContext";

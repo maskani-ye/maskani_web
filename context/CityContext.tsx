@@ -104,6 +104,12 @@ export function CityProvider({ children }: { children: React.ReactNode }) {
     const switched = prevCodeRef.current !== "" && prevCodeRef.current !== code;
     prevCodeRef.current = code;
 
+    // ⚠️ **تُمسح المدينة فوراً عند تبديل السوق — لا بعد وصول القائمة.**
+    // بين التبديل ووصول قائمة المدن كانت القوائم تُرسل `city=<مدينة أردنية>`
+    // مع `country=SA`، فيرى الزائر بيانات بلدٍ آخر على عنوان السعودية. المسح
+    // التزامنيّ يجعل النافذة صفراً: نتيجة أقلّ دقّةً لحظةً خيرٌ من نتيجة خاطئة.
+    if (switched) setCity("", "");
+
     api
       .get<{ results?: CityRow[] }>("/cities/", {
         params: { limit: 100, country: code },
