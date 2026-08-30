@@ -23,6 +23,14 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 export interface PropertiesLeafletMapProps {
+  /**
+   * نقاط النتائج الظاهرة في الشبكة — **تُلائم الخريطةُ نفسَها عليها**.
+   *
+   * ⚠️ بلا هذا كانت الخريطة تفتح على مركز المدينة المختارة (أو الافتراضي)
+   * بينما النتائج في محافظة أخرى: شبكةٌ ملأى بجانب خريطةٍ خالية — أسوأ من عدم
+   * عرض الخريطة، لأنها توحي بأن لا شيء هناك. المقاس يتبع النتيجة لا العكس.
+   */
+  fitPoints?: [number, number][];
   center: [number, number];
   zoom?: number;
   /** الفلاتر الحالية للصفحة (city/property_type/offer_type/price/search…) */
@@ -112,6 +120,28 @@ function ViewportLoader({
 }
 
 /** يعيد توسيط الخريطة عند تغيّر الـ center (مثلاً عند اختيار مدينة) */
+/**
+ * يُلائم العرض على نقاط النتائج مرّة واحدة لكل مجموعة.
+ *
+ * ⚠️ **مرّة واحدة لا في كل تصيير**: الملاءمة تُحرّك الخريطة، وتحريكها يُطلق
+ * `ViewportLoader` فيجلب نتائج جديدة فتتغيّر النقاط فتُلائم من جديد — حلقةٌ لا
+ * تنتهي. المفتاح النصّي يجعلها تعمل عند تغيّر **النقاط نفسها** فقط.
+ */
+function FitToResults({ points }: { points: [number, number][] }) {
+  const map = useMap();
+  const key = points.map((p) => p.join()).join("|");
+  useEffect(() => {
+    if (!points.length) return;
+    if (points.length === 1) {
+      map.setView(points[0], 13);
+      return;
+    }
+    map.fitBounds(points, { padding: [48, 48], maxZoom: 14 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+  return null;
+}
+
 function Recenter({ center, zoom }: { center: [number, number]; zoom: number }) {
   const map = useMap();
   const key = `${center[0]},${center[1]}`;
@@ -122,7 +152,7 @@ function Recenter({ center, zoom }: { center: [number, number]; zoom: number }) 
   return null;
 }
 
-export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filters }: PropertiesLeafletMapProps) {
+export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filters, fitPoints = [] }: PropertiesLeafletMapProps) {
   const [markers, setMarkers] = useState<MapProperty[]>([]);
   const [truncated, setTruncated] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -141,10 +171,12 @@ export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filt
         className="maskani-map h-full w-full rounded-2xl z-0"
       >
         <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} maxZoom={19} />
-        <Recenter center={center} zoom={zoom} />
+        {fitPoints.length ? <FitToResults points={fitPoints} /> : <Recenter center={center} zoom={zoom} />}
         <ViewportLoader filters={filters} onData={handleData} onLoadingChange={setLoading} />
 
-        <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
+        {/* ⚠️ التجميع مفيدٌ عند مئات النقاط، ومضرٌّ عند عشرة: يُخفي أسعارها
+            خلف دائرةٍ صمّاء. `disableClusteringAtZoom` يُبقيه للكثافة وحدها. */}
+        <MarkerClusterGroup chunkedLoading showCoverageOnHover={false} disableClusteringAtZoom={11} maxClusterRadius={45}>
           {markers.map((m) => (
             <Marker key={m.id} position={[m.latitude, m.longitude]} icon={priceIcon(formatPrice(m.price, m.currency))}>
               <Popup>

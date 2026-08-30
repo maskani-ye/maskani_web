@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -221,6 +221,20 @@ function PropertiesContent() {
   const cityLng = selectedCity?.longitude != null ? parseFloat(selectedCity.longitude) : NaN;
   const cityRealCoords: [number, number] | null =
     Number.isFinite(cityLat) && Number.isFinite(cityLng) ? [cityLat, cityLng] : null;
+  /**
+   * إحداثيّات نتائج الصفحة الحالية — تُلائم الخريطةُ نفسَها عليها.
+   *
+   * ⚠️ **العقارات بلا إحداثيّات لا تدخل**: صفرٌ في `latitude` ليس موقعاً بل
+   * غيابُه، وإدخاله يسحب الخريطة إلى خليج غينيا.
+   */
+  const resultPoints = useMemo(
+    () => properties
+      .filter((p) => p.latitude && p.longitude)
+      .map((p) => [Number(p.latitude), Number(p.longitude)] as [number, number])
+      .filter(([la, ln]) => Number.isFinite(la) && Number.isFinite(ln) && (la !== 0 || ln !== 0)),
+    [properties],
+  );
+
   const mapCenter: [number, number] =
     Number.isFinite(latParam) && Number.isFinite(lngParam)
       ? [latParam, lngParam]
@@ -435,7 +449,7 @@ function PropertiesContent() {
           أن يرى الباحث «أين» دائماً، وعمودان لا يتّسعان تحت 1024 بكسل. */}
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)] lg:gap-5 lg:items-start">
       <aside className="lg:hidden h-72 mb-5 overflow-hidden rounded-2xl card-shadow">
-        <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} />
+        <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} fitPoints={resultPoints} />
       </aside>
       <div className="min-w-0">
       {/* Properties Grid */}
@@ -489,7 +503,7 @@ function PropertiesContent() {
           التمرير تُلغي فائدة الوضع المزدوج — الغرض أن يبقى «أين» أمام العين
           بينما تتصفّح «ماذا». وتُخفى تحت 1024 بكسل حيث لا يتّسع عمودان. */}
       <aside className="hidden lg:block sticky top-24 h-[calc(100svh-8rem)] overflow-hidden rounded-2xl card-shadow">
-        <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} />
+        <PropertiesMap center={mapCenter} zoom={DEFAULT_ZOOM} filters={mapFilters} fitPoints={resultPoints} />
       </aside>
       </div>
       {/* إعلان واحد أسفل القائمة — كثافة خفيفة عمداً، ولا يظهر على قائمة
