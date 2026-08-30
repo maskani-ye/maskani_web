@@ -58,12 +58,19 @@ export function CityProvider({ children }: { children: React.ReactNode }) {
   const cityIdRef = useRef("");
   cityIdRef.current = cityId;
   const prevCodeRef = useRef("");
+  // رمز السوق الحاليّ في مرجع — يُقرأ داخل `setCity` بلا إضافته اعتماديةً
+  // تُعيد بناء الدالة عند كل تبديل.
+  const codeRef = useRef("");
+  codeRef.current = code;
 
   const setCity = useCallback((id: string, name: string) => {
     setCityId(id);
     setCityName(name);
     try {
-      if (id) localStorage.setItem(STORAGE_KEY, JSON.stringify({ id, name }));
+      // ⚠️ **تُحفظ الدولة مع المدينة**: بلا انتمائها لا يمكن معرفة أن المحفوظة
+      // تتبع سوقاً آخر إلا بعد جلب قائمة المدن — وفي تلك النافذة يُرسَل
+      // `city=<مدينة أردنية>&country=SA` فيرى الزائر نتائج خاطئة أو فارغة.
+      if (id) localStorage.setItem(STORAGE_KEY, JSON.stringify({ id, name, country: codeRef.current }));
       else localStorage.removeItem(STORAGE_KEY);
     } catch {
       /* التخزين غير متاح — نتجاهل بصمت */
@@ -78,6 +85,17 @@ export function CityProvider({ children }: { children: React.ReactNode }) {
       if (!raw) return;
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === "object" && parsed.id != null) {
+        // ⚠️ المدينة المحفوظة لا تُستعمل إلا إن كانت **لهذا السوق**. المسار
+        // يحدّد السوق تزامنياً، فالرفض يقع قبل أوّل نداء لا بعده.
+        const savedCountry = typeof parsed.country === "string" ? parsed.country : "";
+        // ⚠️ **المحفوظ بلا انتماء يُرفض أيضاً** (صيغة ما قبل تعدّد الأسواق):
+        // لا سبيل للتحقّق منه، وإرساله مع سوقٍ آخر يُنتج نتائج خاطئة. الثمن
+        // مرّة واحدة: يقع الزائر على عاصمة سوقه بدل مدينته، ثم يُحفظ اختياره
+        // الجديد بانتمائه فلا يتكرّر.
+        if (codeRef.current && savedCountry !== codeRef.current) {
+          localStorage.removeItem(STORAGE_KEY);
+          return;
+        }
         setCityId(String(parsed.id));
         setCityName(typeof parsed.name === "string" ? parsed.name : "");
       } else {
