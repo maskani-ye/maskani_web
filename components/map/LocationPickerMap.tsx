@@ -1,7 +1,6 @@
 "use client";
 // ─────────────────────────────────────────────────────────────────────────
 //  خريطة تفاعلية لاختيار موقع العقار — اضغط على الخريطة لوضع العلامة.
-//  مطابقة لشاشة اختيار الموقع في تطبيق Flutter (نفس بلاط CARTO Voyager).
 //  كل تبعية Leaflet محبوسة داخل components/map/ فقط.
 // ─────────────────────────────────────────────────────────────────────────
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
@@ -9,9 +8,14 @@ import { propertyIcon } from "./leafletSetup";
 
 import "leaflet/dist/leaflet.css";
 
-const TILE_URL = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
-const TILE_SUBDOMAINS = "abcd";
-const TILE_ATTRIBUTION = "© OpenStreetMap contributors © CARTO";
+// ⚠️ **بلاط OpenStreetMap لا CARTO.** كان CARTO Voyager، وصار يطبع **«API KEY
+// REQUIRED»** قُطرياً على كل بلاطة (مُتحقَّق بتنزيل بلاطة 2026‑08‑30) — خريطةٌ
+// مشوّهة على أهمّ شاشة عندنا، والبديل المرخّص عندهم مدفوع. وبلاط OSM يكسب
+// شيئاً إضافياً: أسماؤه **بالعربية** في منطقتنا (بورتسودان · البحر الأحمر)
+// بينما CARTO يكتبها بالإنجليزية — فالتصحيح إصلاحٌ ومكسب لغويّ معاً.
+// شرطه: ذِكر النسب (تحته) وترويسة وكيلٍ صحيحة (يُرسلها المتصفّح).
+const TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const TILE_ATTRIBUTION = "© مساهمو OpenStreetMap";
 
 function ClickCapture({ onPick }: { onPick: (lat: number, lng: number) => void }) {
   useMapEvents({
@@ -39,7 +43,7 @@ export default function LocationPickerMap({ lat, lng, center, onPick }: Location
       attributionControl
       className="maskani-map h-full w-full rounded-2xl z-0"
     >
-      <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains={TILE_SUBDOMAINS} maxZoom={20} />
+      <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} maxZoom={19} />
       <ClickCapture onPick={onPick} />
       {hasMarker && <Marker position={[lat, lng]} icon={propertyIcon} />}
     </MapContainer>

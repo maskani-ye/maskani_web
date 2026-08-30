@@ -16,10 +16,14 @@ export interface MiniMapLeafletProps {
   zoom?: number;
 }
 
-// بلاط CARTO Voyager — أقرب مظهر مجاني لخرائط Google (مطابق لتطبيق Flutter).
-const TILE_URL = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
-const TILE_SUBDOMAINS = "abcd";
-const TILE_ATTRIBUTION = "© OpenStreetMap contributors © CARTO";
+// ⚠️ **بلاط OpenStreetMap لا CARTO.** كان CARTO Voyager، وصار يطبع **«API KEY
+// REQUIRED»** قُطرياً على كل بلاطة (مُتحقَّق بتنزيل بلاطة 2026‑08‑30) — خريطةٌ
+// مشوّهة على أهمّ شاشة عندنا، والبديل المرخّص عندهم مدفوع. وبلاط OSM يكسب
+// شيئاً إضافياً: أسماؤه **بالعربية** في منطقتنا (بورتسودان · البحر الأحمر)
+// بينما CARTO يكتبها بالإنجليزية — فالتصحيح إصلاحٌ ومكسب لغويّ معاً.
+// شرطه: ذِكر النسب (تحته) وترويسة وكيلٍ صحيحة (يُرسلها المتصفّح).
+const TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const TILE_ATTRIBUTION = "© مساهمو OpenStreetMap";
 
 export default function MiniMapLeaflet({ lat, lng, zoom = 15 }: MiniMapLeafletProps) {
   return (
@@ -33,7 +37,7 @@ export default function MiniMapLeaflet({ lat, lng, zoom = 15 }: MiniMapLeafletPr
       attributionControl
       className="maskani-map h-full w-full rounded-2xl z-0"
     >
-      <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains={TILE_SUBDOMAINS} maxZoom={20} />
+      <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} maxZoom={19} />
       <Marker position={[lat, lng]} icon={propertyIcon} />
     </MapContainer>
   );

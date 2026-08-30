@@ -16,8 +16,7 @@ import type { LatLngBoundsExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 const TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
-const TILE_SUBDOMAINS = "abcd";
+  "https://tile.openstreetmap.org/{z}/{x}/{y}.png";  // CARTO صار يطبع «API KEY REQUIRED»
 const TILE_ATTRIBUTION = "© OpenStreetMap contributors © CARTO";
 
 export default function StaticPinsMap({
@@ -55,8 +54,7 @@ export default function StaticPinsMap({
       <TileLayer
         url={TILE_URL}
         attribution={TILE_ATTRIBUTION}
-        subdomains={TILE_SUBDOMAINS}
-        maxZoom={20}
+        maxZoom={19}
       />
       {points.map(([lat, lng], i) => (
         <CircleMarker
