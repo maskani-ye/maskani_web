@@ -235,7 +235,10 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
 
       {/* كرة الأسواق — بين الصورة والمحتوى، بلا التقاط للمؤشّر. */}
       {showGlobe && globePoints.length > 0 && (
-        <div className="pointer-events-none absolute inset-y-0 start-0 w-[46vw] max-w-globe z-[1] opacity-70">
+        // ⚠️ **مُنزَلة عن العنوان عمداً**: حين كانت `inset-y-0` وقع عنقود
+        // نقاطها الذهبية فوق «مكانك يبدأ هنا» فزاحمت أهمّ سطر في الصفحة.
+        // إرساؤها إلى الأسفل يُبقيها حاضرةً في المشهد بلا أن تنازع النصّ.
+        <div className="pointer-events-none absolute bottom-0 start-0 h-[70svh] w-[46vw] max-w-globe z-[1] opacity-60">
           <MarketGlobe points={globePoints} />
         </div>
       )}
