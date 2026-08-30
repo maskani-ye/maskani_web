@@ -48,7 +48,11 @@ const T = {
   ar: {
     dir: "rtl" as const,
     brand: "مسكني",
-    nav: [["العقارات", "/properties"], ["الخدمات", "/services"], ["الطلبات", "/requests"], ["عن المنصّة", "/about"]],
+    // ⚠️ لا روابط أقسام في ترويسة البوّابة: العقارات والخدمات والطلبات كلّها
+    // **تابعة لسوق**، وفتحها قبل اختيار الدولة يُوقع الزائر في بوّابة الموقع
+    // فيُعاد إلى `/location` — طريقٌ ملتوٍ إلى ما تفعله هذه الصفحة أصلاً. تبقى
+    // المدونة لأنها المحتوى الوحيد غير المرتبط بسوق.
+    nav: [["المدونة", "/blog"], ["عن المنصّة", "/about"]],
     headline: "مكانك يبدأ هنا.",
     sub: "عقارات وخدمات وطلبات حقيقية — موصولة عبر ستّة أسواق.",
     chooseTitle: "اختر سوقك",
@@ -65,7 +69,7 @@ const T = {
   en: {
     dir: "ltr" as const,
     brand: "MASKANI",
-    nav: [["Properties", "/properties"], ["Services", "/services"], ["Requests", "/requests"], ["About", "/about"]],
+    nav: [["Blog", "/blog"], ["About", "/about"]],
     headline: "Your place starts here.",
     sub: "Properties, services and real-world requests — connected across six markets.",
     chooseTitle: "Choose your market",
@@ -165,7 +169,29 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
 
   const withImage = useMemo(() => markets.filter((m) => m.image), [markets]);
   const primary = markets[0] ?? null;
-  const active = markets.find((m) => m.code === hovered) || primary;
+
+  /**
+   * عرضٌ دوّار للأسواق: كل ستّ ثوانٍ تتلاشى صورة إلى صورة سوقٍ آخر.
+   *
+   * ⚠️ **الدوران يتوقّف فور لمس المؤشّر سوقاً** ثم يستأنف بعد تركه: وإلا نازع
+   * العرضُ الزائرَ فتبدّلت الخلفية بينما هو يتفحّص سوقاً بعينه — حركةٌ تُقاتل
+   * المستخدم بدل أن تخدمه. ويتوقّف كذلك لمن طلب تقليل الحركة ولمن غادر التبويب
+   * (لا نُحرق بطاريةً على زينة لا يراها أحد).
+   */
+  const [slide, setSlide] = useState(0);
+  useEffect(() => {
+    if (withImage.length < 2) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (hovered) return;
+    const id = window.setInterval(() => {
+      if (!document.hidden) setSlide((i) => (i + 1) % withImage.length);
+    }, 6000);
+    return () => clearInterval(id);
+  }, [withImage.length, hovered]);
+
+  const active = markets.find((m) => m.code === hovered)
+    || withImage[slide % (withImage.length || 1)]
+    || primary;
   const shown = expanded ? markets : markets.slice(0, 3);
   const rest = markets.length - shown.length;
 
@@ -191,7 +217,9 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
             priority={m.code === primary?.code}
             sizes="100vw"
             aria-hidden
-            className={`object-cover transition-opacity duration-[900ms] ease-out motion-reduce:transition-none ${
+            // التلاشي نفسه للحالتين — الدوران التلقائي وتمرير المؤشّر على سوق —
+            // فلا يشعر الزائر بأنّهما آليّتان مختلفتان.
+            className={`object-cover transition-opacity duration-[1200ms] ease-out motion-reduce:transition-none ${
               active?.code === m.code ? "opacity-100" : "opacity-0"
             }`}
           />

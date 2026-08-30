@@ -158,10 +158,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticEntries: MetadataRoute.Sitemap = [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "daily", priority: 1 },
-    { url: `${BASE}/properties`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
-    { url: `${BASE}/services`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
-    { url: `${BASE}/requests`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
-    { url: `${BASE}/jobs`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    // ⚠️ الأقسام الأربعة **لم تعد عناوين مستقلّة**: صارت تابعة لسوق
+    // (`/ye/properties`) وتُبعث في `marketEntries`. وإرسال `/properties` هنا
+    // بعد أن صارت تُحوَّل بـ308 يعني إخبار جوجل بفهرسة عنوانٍ يُعيد التوجيه —
+    // تقريرٌ أحمر بلا فائدة.
     { url: `${BASE}/reports`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
@@ -214,12 +214,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // لأنها واجهة السوق لا قائمة عقاراته وحدها.
   const marketEntries: MetadataRoute.Sitemap = countryList
     .filter((c) => c.code)
-    .map((c) => ({
-      url: `${BASE}/${c.code}`,
-      lastModified: now,
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    }));
+    .flatMap((c) => [
+      {
+        url: `${BASE}/${c.code}`,
+        lastModified: now,
+        changeFrequency: "daily" as const,
+        priority: 0.9,
+      },
+      // أقسام السوق الأربعة — كلٌّ صفحة قائمة قائمة بذاتها بنصّها ومدنها.
+      ...["properties", "services", "requests", "jobs"].map((sec) => ({
+        url: `${BASE}/${c.code}/${sec}`,
+        lastModified: now,
+        changeFrequency: "daily" as const,
+        priority: 0.8,
+      })),
+    ]);
 
   // صفحات هبوط الدول — /properties/country/<slug>
   const countryEntries: MetadataRoute.Sitemap = countryList.map((c) => ({

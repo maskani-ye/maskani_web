@@ -73,6 +73,24 @@ export function middleware(req: NextRequest, event: NextFetchEvent) {
     return NextResponse.rewrite(url);
   }
 
+  // ─── الروابط القديمة بلا بادئة سوق ────────────────────────────────────
+  //
+  // ⚠️ **تحويلٌ لا نسخة ثانية**: `/properties` كانت صفحةً واحدة تخدم ستّة
+  // أسواق بنصٍّ مكتوب فيه «في اليمن» حرفياً. إبقاؤها إلى جانب `/ye/properties`
+  // يعني عنوانين لمحتوى واحد. والوجهة تُقرأ من كعكة سوق الزائر إن وُجدت، وإلا
+  // السوق الافتراضي — قاعدةٌ واحدة للبشر والزواحف (والزاحف بلا كعكة يقع دائماً
+  // على `/ye` فتتجمّع إشاراته على وجهةٍ ثابتة لا على ستّ).
+  const legacySection = path.match(/^\/(properties|services|requests|jobs)\/?$/);
+  if (legacySection) {
+    const cookieMarket = req.cookies.get("mk_market")?.value?.toLowerCase();
+    const target = (MARKETS as readonly string[]).includes(cookieMarket || "")
+      ? (cookieMarket as string)
+      : DEFAULT_MARKET;
+    const url = req.nextUrl.clone();
+    url.pathname = `/${target}/${legacySection[1]}`;
+    return NextResponse.redirect(url, 308);
+  }
+
   return NextResponse.next();
 }
 

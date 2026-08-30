@@ -1,0 +1,60 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import ServicesListClient from "@/app/services/ServicesListClient";
+import RecentItemsLinks from "@/components/RecentItemsLinks";
+import SectionIntro from "@/components/SectionIntro";
+import { marketByCode } from "@/lib/serverMarket";
+import { MARKETS } from "@/lib/markets";
+
+/**
+ * مزوّدو الخدمات العقارية في السوق — صفحة **داخل سوق**.
+ *
+ * ⚠️ **النصّ يتبع السوق ولا يُكتب فيه اسم بلدٍ ثابت.** كانت النسخة العامّة
+ * تقول «في اليمن» حرفياً، فكان زائر السعودية يقرأ عنواناً يخصّ بلداً آخر —
+ * وجوجل يفهرس صفحةً واحدة لستّة أسواق. هنا الاسم والمدن من الـAPI لكل سوق.
+ *
+ * ⚠️ **السوق الفارغ لا يُفهرَس**: صفحة قائمة بلا عناصر محتوى رقيق، وإرسالها
+ * إلى جوجل يعود بتقرير «اكتُشفت ولم تُفهرَس» ويستهلك ميزانية الزحف.
+ */
+export const revalidate = 3600;
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return MARKETS.map((market) => ({ market }));
+}
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ market: string }> },
+): Promise<Metadata> {
+  const { market } = await params;
+  const m = await marketByCode(market);
+  if (!m) return {};
+  const cities = m.cities.join(" و") || m.nameAr;
+  const title = `مزوّدو الخدمات العقارية في ${m.nameAr}`;
+  const description = `مقاولون وفنّيون ومهندسون في ${m.nameAr} — ${cities} وغيرها، بتقييمات حقيقية وتواصل مباشر.`;
+  return {
+    title: { absolute: `${title} | مسكني` },
+    description,
+    alternates: { canonical: `/${market}/services` },
+    openGraph: { title, description, url: `/${market}/services`, siteName: "مسكني", locale: "ar_AR" },
+  };
+}
+
+export default async function MarketSectionPage(
+  { params }: { params: Promise<{ market: string }> },
+) {
+  const { market } = await params;
+  const m = await marketByCode(market);
+  if (!m) notFound();
+  const cities = m.cities.join(" و") || m.nameAr;
+
+  return (
+    <>
+      <SectionIntro title={`مزوّدو الخدمات العقارية في ${m.nameAr}`}>
+        {`اعثر على مزوّدي الخدمات في ${m.nameAr} على مسكني: مقاولو بناء ومهندسون وفنيّو كهرباء وسباكة وتكييف، وخدمات ديكور وصيانة وتنظيف في ${cities} وغيرها، مع معرض أعمال وتقييمات المستخدمين وتواصل مباشر بلا عمولات.`}
+      </SectionIntro>
+      <ServicesListClient />
+      <RecentItemsLinks endpoint="/services/" hrefPrefix="/services" heading="أحدث مزوّدي الخدمات" />
+    </>
+  );
+}

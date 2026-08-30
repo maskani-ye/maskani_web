@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthGate } from "@/context/AuthGate";
 import { useCity } from "@/context/CityContext";
 import { useCountry } from "@/context/CountryContext";
+import { isMarket, marketPath, splitMarket } from "@/lib/markets";
 import {
   Home2, Magnifer, Buildings2, ShieldWarning, ClipboardList, Case,
   Bell, ChatRound, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings, MapPoint,
@@ -31,13 +32,29 @@ export function Navbar() {
   // المدن تأتي من `CityContext` — مُصفّاة بالدولة ومرتّبة بالعاصمة أولاً.
   // كان الشريط يجلبها بنفسه، فصار جلبان لنفس القائمة وفرصةٌ لتباعد الحالتين.
   const { cityId, cityName, cities, setCity } = useCity();
-  const { code: countryCode, country, countries, setCountry, loading: countryLoading } = useCountry();
+  const { code: countryCode, country, countries, loading: countryLoading } = useCountry();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
   const [countryOpen, setCountryOpen] = useState(false);
+
+  /**
+   * تبديل السوق = **فتح عنوان آخر**، لا تغيير حالة في المتصفّح.
+   *
+   * ⚠️ كان التبديل يبدّل السياق وحده فيبقى العنوان `/ye` والمحتوى سعوديّاً:
+   * رابطٌ يكذب على من يُشارَك معه، وصفحةٌ لا يعرف جوجل لأيّ سوق يفهرسها. الآن
+   * كل سوق موقعٌ قائم بذاته، والتبديل ينقلك إلى **نفس القسم** فيه لا إلى
+   * البداية — من كان في `/ye/services` يصل إلى `/sa/services`.
+   */
+  const switchMarket = useCallback((c: { code: string; name_ar: string; flag_emoji?: string }) => {
+    setCountryOpen(false);
+    const code = c.code.toLowerCase();
+    if (!isMarket(code)) return;                 // سوق بلا مسار — يبقى تبديل سياق
+    const { rest } = splitMarket(pathname || "/");
+    router.push(marketPath(code, rest));
+  }, [pathname, router]);
   const [chatUnread, setChatUnread] = useState(0);
 
   // الاسم المعروض: من السياق، أو من قائمة المدن (لدعم الصيغة القديمة)، وإلا "كل المدن"
@@ -159,7 +176,7 @@ export function Navbar() {
                     {countries.map((c) => (
                       <button
                         key={c.id}
-                        onClick={() => { setCountry(c); setCountryOpen(false); }}
+                        onClick={() => switchMarket(c)}
                         className={cn(
                           "flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm w-full text-right",
                           c.code === countryCode ? "text-primary font-bold" : "text-gray-700",
@@ -263,7 +280,7 @@ export function Navbar() {
                   {countries.map((c) => (
                     <button
                       key={c.id}
-                      onClick={() => { setCountry(c); setCountryOpen(false); }}
+                      onClick={() => switchMarket(c)}
                       className={cn(
                         "flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-body w-full text-right",
                         c.code === countryCode ? "text-primary font-bold" : "text-ink",
@@ -310,7 +327,7 @@ export function Navbar() {
                   value={countryCode}
                   onChange={(e) => {
                     const c = countries.find((x) => x.code === e.target.value);
-                    if (c) setCountry(c);
+                    if (c) switchMarket(c);
                   }}
                   className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-body text-ink focus:border-primary focus:outline-none"
                 >
