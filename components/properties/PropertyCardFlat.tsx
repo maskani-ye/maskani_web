@@ -27,13 +27,18 @@ export function PropertyCardFlat({ property }: { property: Property }) {
   const imgs = (property.images ?? []).map((i) => i.image).filter(Boolean);
   const cover = property.main_image || imgs[0] || PLACEHOLDER;
   const dots = Math.min(imgs.length, 5);
+  // سعرٌ حقيقيّ = رقم موجب. الصفر والفراغ يعنيان «لم يُذكر» لا «مجّاناً».
+  const hasPrice = Number(property.price) > 0;
   const place = [property.neighborhood_name || property.neighborhood, property.city_name]
     .filter(Boolean)
     .join(" — ");
 
   return (
     <Link href={`/properties/${property.id}`} className="group block">
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-cream">
+      {/* ⚠️ **٣:٢ لا ٤:٣**: البطاقة بلا إطار، فالصورة هي كتلتها البصرية كلّها.
+          نسبة ٤:٣ ترفع ارتفاعها حتى يهبط السعر خارج النظرة الأولى — والمرجع
+          يضع السعر مباشرةً تحت صورة عريضة. */}
+      <div className="relative aspect-[3/2] w-full overflow-hidden rounded-xl bg-cream">
         <Image
           src={cover}
           alt={property.title}
@@ -55,9 +60,19 @@ export function PropertyCardFlat({ property }: { property: Property }) {
         )}
       </div>
 
-      <p className="mt-3 text-h3 font-extrabold text-ink">
-        {formatPrice(property.price, property.currency)}
-      </p>
+      {/* ⚠️ **«السعر عند التواصل» ليس سعراً** — إظهاره بمقاس السعر البارز يمنح
+          غيابَ المعلومة وزنَ المعلومة، ويجعل أربع بطاقات متطابقة بصرياً. حين
+          لا رقم: سطرٌ هادئ بحجم النصّ العادي، والعنوان يأخذ الصدارة بدلاً منه. */}
+      {hasPrice ? (
+        <p className="mt-3 text-h3 font-extrabold text-ink">
+          {formatPrice(property.price, property.currency)}
+        </p>
+      ) : (
+        <p className="mt-3 text-body font-bold text-ink line-clamp-1">{property.title}</p>
+      )}
+      {hasPrice ? null : (
+        <p className="mt-0.5 text-caption text-muted">السعر عند التواصل</p>
+      )}
 
       <p className="mt-1 flex items-center gap-1.5 text-caption text-ink/70">
         <MapPoint className="h-4 w-4 shrink-0 text-muted" />
