@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ServicesListClient from "@/app/services/ServicesListClient";
 import RecentItemsLinks from "@/components/RecentItemsLinks";
-import SectionIntro from "@/components/SectionIntro";
 import { marketByCode } from "@/lib/serverMarket";
 import { MARKETS } from "@/lib/markets";
 
@@ -55,9 +54,7 @@ export default async function MarketSectionPage(
 
   return (
     <>
-      <SectionIntro title={`مزوّدو الخدمات العقارية في ${m.nameAr}`}>
-        {`اعثر على مزوّدي الخدمات في ${m.nameAr} على مسكني: مقاولو بناء ومهندسون وفنيّو كهرباء وسباكة وتكييف، وخدمات ديكور وصيانة وتنظيف في ${cities} وغيرها، مع معرض أعمال وتقييمات المستخدمين وتواصل مباشر بلا عمولات.`}
-      </SectionIntro>
+      {/* الكتلة التعريفية حُذفت كما في العقارات — `h1` انتقل إلى سطر العدد. */}
       <ServicesListClient />
       <RecentItemsLinks endpoint="/services/" hrefPrefix="/services" heading="أحدث مزوّدي الخدمات" />
     </>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import JobsListClient from "@/app/jobs/JobsListClient";
-import SectionIntro from "@/components/SectionIntro";
 import { marketByCode } from "@/lib/serverMarket";
 import { MARKETS } from "@/lib/markets";
 
@@ -54,9 +53,7 @@ export default async function MarketSectionPage(
 
   return (
     <>
-      <SectionIntro title={`طلبات الخدمات في ${m.nameAr}`}>
-        {`طلبات خدمات من عملاء في ${m.nameAr}: صيانة ونقل وتصميم وبناء في ${cities} وغيرها. إن كنت مزوّد خدمة فاطّلع على الطلبات وقدّم عرضك مباشرةً لصاحب الطلب.`}
-      </SectionIntro>
+      {/* الكتلة التعريفية حُذفت كما في العقارات — `h1` انتقل إلى سطر العدد. */}
       <JobsListClient />
     </>
   );

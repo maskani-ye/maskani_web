@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import RequestsListClient from "@/app/requests/RequestsListClient";
-import SectionIntro from "@/components/SectionIntro";
 import { marketByCode } from "@/lib/serverMarket";
 import { MARKETS } from "@/lib/markets";
 
@@ -54,9 +53,7 @@ export default async function MarketSectionPage(
 
   return (
     <>
-      <SectionIntro title={`طلبات العقارات في ${m.nameAr}`}>
-        {`طلبات شراء وإيجار حقيقية من باحثين في ${m.nameAr}: اطّلع على ما يبحث عنه الناس في ${cities} وغيرها — النوع والميزانية والمدينة — وقدّم عرضك مباشرةً إن كان لديك ما يناسب.`}
-      </SectionIntro>
+      {/* الكتلة التعريفية حُذفت كما في العقارات — `h1` انتقل إلى سطر العدد. */}
       <RequestsListClient />
     </>
   );

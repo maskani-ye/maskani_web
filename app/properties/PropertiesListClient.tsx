@@ -529,7 +529,7 @@ function PropertiesContent() {
       <div className="min-w-0">
       {/* Properties Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-cards-sm gap-x-4 gap-y-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="bg-white rounded-2xl card-shadow overflow-hidden animate-pulse">
               <div className="h-44 bg-gray-200" />
@@ -548,7 +548,7 @@ function PropertiesContent() {
           <p className="text-gray-400 text-sm mt-1">جرّب تغيير معايير البحث</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 min-[560px]:grid-cols-2 gap-x-4 gap-y-6">
+        <div className="grid grid-cols-cards-sm gap-x-4 gap-y-6">
           {properties.map((property) => (
             <PropertyCardFlat key={property.id} property={property} />
           ))}
