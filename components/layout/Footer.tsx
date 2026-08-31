@@ -192,7 +192,10 @@ export function Footer() {
         </div>
 
         {/* ─── الشريط السفليّ ───────────────────────────────────────────── */}
-        <div className="flex flex-col gap-3 border-t border-white/10 py-6 sm:flex-row sm:items-center sm:justify-between">
+        {/* ⚠️ **حشوٌ سفليّ يتجاوز الزرّ العائم**: زرّ «المساعدة» ثابتٌ في زاوية
+            الشاشة، فكان يغطّي طرف هذا الشريط ويبتر آخر سطر فيه. الحشو يفتح
+            المساحة تحته بدل أن نُزيح الزرّ — الزرّ يجب أن يبقى في متناول اليد. */}
+        <div className="flex flex-col gap-3 border-t border-white/10 pb-24 pt-6 sm:flex-row sm:items-center sm:justify-between lg:pb-6">
           <p className="text-caption text-white/45">
             © {formatNumber(new Date().getFullYear())} مسكني — جميع الحقوق محفوظة
           </p>
@@ -205,7 +208,9 @@ export function Footer() {
           </div>
           {/* ⚠️ عبارةٌ **قابلة للتحقّق**: لا بوّابة دفع في المنصّة إطلاقاً — وهي
               أنفع للزائر من «منصّة موثوقة وآمنة» التي كانت هنا ولا تقول شيئاً. */}
-          <p className="text-caption text-white/30">لا مدفوعات داخل المنصّة — التواصل مباشر بين الطرفين</p>
+          <p className="text-caption text-white/30 lg:pe-28">
+            لا مدفوعات داخل المنصّة — التواصل مباشر بين الطرفين
+          </p>
         </div>
       </div>
     </footer>
