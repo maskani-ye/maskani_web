@@ -73,7 +73,11 @@ export function Footer() {
     <footer className="mt-16 bg-ink text-white">
       <div className="w-full px-3 sm:px-5 lg:px-6">
         {/* ─── الصفّ العريض ─────────────────────────────────────────────── */}
-        <div className="grid gap-10 py-12 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
+        {/* ⚠️ **«تواصل معنا» عمودٌ مستقلّ**: كان ملحقاً تحت عمود الأسواق، فبدا
+            تابعاً لها لا قسماً قائماً — والزائر الذي يبحث عن وسيلة تواصل يمسح
+            رؤوس الأعمدة، فلا يجد عنواناً يدلّه. خمسة أعمدة على الشاشة الواسعة،
+            وتنطوي إلى صفوف على الأضيق. */}
+        <div className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_repeat(4,minmax(0,1fr))]">
           {/* العلامة */}
           <div>
             <div className="flex items-center gap-2.5">
@@ -133,9 +137,8 @@ export function Footer() {
             </ul>
           </nav>
 
-          {/* الأسواق + التواصل */}
-          <div className="space-y-8">
-            <nav aria-label="الأسواق">
+          {/* الأسواق */}
+          <nav aria-label="الأسواق">
               <h2 className="flex items-center gap-2 text-caption font-bold text-white">
                 <Global className="h-4 w-4 text-gold" /> الأسواق
               </h2>
@@ -156,38 +159,38 @@ export function Footer() {
                     </NextLink>
                   </li>
                 ))}
-              </ul>
-            </nav>
+            </ul>
+          </nav>
 
-            <div>
-              <h2 className="text-caption font-bold text-white">تواصل معنا</h2>
-              <ul className="mt-4 space-y-2.5">
-                {wa && (
-                  <li>
-                    <a
-                      href={`https://wa.me/${wa}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-caption text-white/60 transition-colors hover:text-white"
-                    >
-                      <Phone className="h-4 w-4 text-white/35 transition-colors group-hover:text-gold" />
-                      واتساب
-                    </a>
-                  </li>
-                )}
+          {/* تواصل معنا — عمود قائم بذاته */}
+          <div>
+            <h2 className="text-caption font-bold text-white">تواصل معنا</h2>
+            <ul className="mt-4 space-y-2.5">
+              {wa && (
                 <li>
-                  <NextLink href="/contact" className="group inline-flex items-center gap-2 text-caption text-white/60 transition-colors hover:text-white">
-                    <Letter className="h-4 w-4 text-white/35 transition-colors group-hover:text-gold" />
-                    نموذج المراسلة
-                  </NextLink>
+                  <a
+                    href={`https://wa.me/${wa}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-2 text-caption text-white/60 transition-colors hover:text-white"
+                  >
+                    <Phone className="h-4 w-4 text-white/35 transition-colors group-hover:text-gold" />
+                    واتساب
+                  </a>
                 </li>
-                <li>
-                  <NextLink href="/offices" className="text-caption font-semibold text-gold transition-colors hover:text-gold/80">
-                    للمكاتب العقارية والدلّالين ←
-                  </NextLink>
-                </li>
-              </ul>
-            </div>
+              )}
+              <li>
+                <NextLink href="/contact" className="group inline-flex items-center gap-2 text-caption text-white/60 transition-colors hover:text-white">
+                  <Letter className="h-4 w-4 text-white/35 transition-colors group-hover:text-gold" />
+                  نموذج المراسلة
+                </NextLink>
+              </li>
+              <li>
+                <NextLink href="/offices" className="text-caption font-semibold text-gold transition-colors hover:text-gold/80">
+                  للمكاتب العقارية والدلّالين ←
+                </NextLink>
+              </li>
+            </ul>
           </div>
         </div>
 

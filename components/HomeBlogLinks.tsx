@@ -1,26 +1,29 @@
 import Link from "next/link";
+import { BlogCard, type BlogCardData } from "@/components/blog/BlogCard";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
-interface Row {
-  slug: string;
-  title: string;
-}
+/**
+ * ثلاث مقالات من المدوّنة على واجهة السوق — **بنفس بطاقة المدوّنة**.
+ *
+ * ⚠️ **كان يعرض أربعاً وعشرين عنواناً كشرائح نصّية**: صفٌّ طويل من الأقراص
+ * يملأ الشاشة بعناوين متشابهة بلا صورة ولا مقتطف، فلا يُقرأ منه شيء ولا
+ * يُنقَر. الغرض المعلن كان تمرير قوّة الزحف إلى المقالات، لكن **أربعاً
+ * وعشرين رابطاً في كتلة واحدة** لا يمرّر قوّة بل يبدّدها — وجوجل يقرؤها كتلة
+ * روابط لا توصية.
+ *
+ * ⚠️ **والبطاقة هي بطاقة المدوّنة نفسها** (`BlogCard`) لا نسخةً منها: تعديل
+ * شكل بطاقة المقال يقع مرّة واحدة ويسري على الموضعين.
+ */
+const TAKE = 3;
 
-// خادمي — يجلب أحدث مقالات المدوّنة ويصيّرها روابط <a> في HTML الخام على الصفحة
-// الرئيسية (الصفحة الوحيدة المفهرسة حالياً). يمرّر قوّة الزحف من الرئيسية إلى
-// المقالات «المُكتشَفة وغير المفهرَسة» ويقلّل عمق النقر إليها إلى نقرة واحدة.
-async function getArticles(): Promise<Row[]> {
+async function getArticles(): Promise<BlogCardData[]> {
   try {
-    const res = await fetch(`${API}/blog/?limit=24&offset=0`, {
+    const res = await fetch(`${API}/blog/?limit=${TAKE}&offset=0`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
-    const data = await res.json();
-    return (data.results ?? []).map((a: { slug: string; title: string }) => ({
-      slug: a.slug,
-      title: a.title,
-    }));
+    return (await res.json()).results ?? [];
   } catch {
     return [];
   }
@@ -31,31 +34,20 @@ export default async function HomeBlogLinks() {
   if (!articles.length) return null;
 
   return (
-    <nav aria-labelledby="home-blog-heading" className="max-w-7xl mx-auto px-4 sm:px-6 mt-2 mb-12">
-      <div className="flex items-center justify-between mb-4">
-        <h2 id="home-blog-heading" className="text-lg font-bold text-ink">
+    <section aria-labelledby="home-blog-heading" className="w-full px-3 sm:px-5 lg:px-6 mt-2 mb-12">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 id="home-blog-heading" className="text-h3 text-ink">
           من مدوّنة مسكني
         </h2>
-        <Link href="/blog" className="text-sm font-semibold text-primary hover:underline">
-          كل المقالات
+        <Link href="/blog" className="text-caption font-semibold text-primary-400 hover:underline">
+          كل المقالات ←
         </Link>
       </div>
-      <ul className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-cards gap-4">
         {articles.map((a) => (
-          /* ⚠️ `min-w-0` على عنصر القائمة شرطٌ لازم: عناصر الـflex لها
-             `min-width: auto` افتراضاً فترفض التقلّص تحت عرض محتواها مهما وُضع
-             `max-w-full` على ما بداخلها — وهذا ما جعل الشريحة تفيض 129 بكسل
-             على شاشة 320 بعد أن ظننتُ أنني أصلحتها. */
-          <li key={a.slug} className="min-w-0 max-w-full">
-            <Link
-              href={`/blog/${a.slug}`}
-              className="block max-w-full sm:max-w-[20rem] truncate rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm text-ink hover:border-primary hover:text-primary transition-colors"
-            >
-              {a.title}
-            </Link>
-          </li>
+          <BlogCard key={a.id} a={a} />
         ))}
-      </ul>
-    </nav>
+      </div>
+    </section>
   );
 }
