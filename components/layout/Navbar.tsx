@@ -19,11 +19,17 @@ import { cn } from "@/lib/utils";
 import type { City } from "@/types";
 import { toast } from "sonner";
 
+/**
+ * ⚠️ **`/jobs` يُعلّم «الطلبات»**: طلبات الخدمات قسمٌ شقيق لطلبات العقارات
+ * (يتنقّل بينهما شريط `RequestsTabs`)، لكنه مسارٌ آخر — فكان فتحُه يُطفئ كل
+ * روابط الشريط العلوي، فيبدو الزائر خارج أقسام المنصّة كلّها. الرابط الواحد
+ * قد يمثّل أكثر من مسار، والتعليم يتبع **القسم** لا تطابق النصّ.
+ */
 const navLinks = [
-  { href: "/properties", label: "العقارات", icon: Buildings2 },
-  { href: "/services", label: "الخدمات", icon: Settings },
-  { href: "/requests", label: "الطلبات", icon: ClipboardList },
-  { href: "/reports", label: "مجتمع الشكاوي", icon: ShieldWarning },
+  { href: "/properties", label: "العقارات", icon: Buildings2, match: ["/properties"] },
+  { href: "/services", label: "الخدمات", icon: Settings, match: ["/services"] },
+  { href: "/requests", label: "الطلبات", icon: ClipboardList, match: ["/requests", "/jobs"] },
+  { href: "/reports", label: "مجتمع الشكاوي", icon: ShieldWarning, match: ["/reports"] },
 ];
 
 export function Navbar() {
@@ -82,7 +88,10 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 glass border-b border-white/50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      {/* ⚠️ **بعرض الشاشة كاملاً**: صفحات التصفّح تملأ الشاشة، فشريطٌ محصور
+          في 80rem يترك العلامة والحساب معلّقين في الوسط بينما المحتوى تحتهما
+          يمتدّ إلى الحافة — انكسارُ محاذاةٍ رأسية يُقرأ خللاً لا تصميماً. */}
+      <div className="w-full px-3 sm:px-5 lg:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
@@ -98,7 +107,8 @@ export function Navbar() {
               const Icon = link.icon;
               // المسار يحمل بادئة سوق (`/sa/properties`) بينما الرابط مجرّد،
               // فتُنزع البادئة قبل المقارنة وإلا لم يُميَّز أي قسم كنشط.
-              const active = splitMarket(pathname || "/").rest.startsWith(link.href);
+              const rest = splitMarket(pathname || "/").rest;
+              const active = link.match.some((m) => rest.startsWith(m));
               return (
                 <Link
                   key={link.href}
@@ -127,36 +137,9 @@ export function Navbar() {
               <AddCircle className="h-4 w-4" />
               أضف عقارك
             </Link>
-            {/* مُحدِّد المدينة العام — مصدر واحد لكل الصفحات */}
-            <div className="relative">
-              <button
-                onClick={() => setCityOpen((v) => !v)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors text-sm font-semibold text-gray-700"
-                aria-label="اختر المدينة"
-                aria-expanded={cityOpen}
-              >
-                <MapPoint className="h-4 w-4 text-primary" />
-                <span className="max-w-28 truncate">{selectedCityName || "اختر مدينة"}</span>
-                <AltArrowDown className="h-4 w-4 text-gray-400" />
-              </button>
-              {cityOpen && (
-                <div className="absolute left-0 mt-2 w-52 max-h-80 overflow-y-auto bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
-                  {cities.map((c) => (
-                    <button
-                      key={c.id}
-                      onClick={() => { setCity(String(c.id), c.name_ar); setCityOpen(false); }}
-                      className={cn(
-                        "flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm w-full text-right",
-                        String(c.id) === cityId ? "text-primary font-bold" : "text-gray-700"
-                      )}
-                    >
-                      {c.name_ar}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
+            {/* ⚠️ **الدولة قبل المدينة**: الترتيب يعكس التبعيّة — المدينة
+                تابعةٌ للدولة، وتبديل الدولة يُعيد بناء قائمة المدن. عرضُ التابع
+                قبل متبوعه يجعل الزائر يختار مدينةً ثم يراها تُمسح أمامه. */}
             {/* مُبدِّل الدولة — يظهر فقط حين نخدم أكثر من دولة؛ بدولة واحدة
                 يكون خيارًا بلا معنى يزحم الشريط. */}
             {countryLoading && <span aria-hidden className="w-28 h-9" />}
@@ -192,6 +175,36 @@ export function Navbar() {
                 )}
               </div>
             )}
+            {/* مُحدِّد المدينة العام — مصدر واحد لكل الصفحات */}
+            <div className="relative">
+              <button
+                onClick={() => setCityOpen((v) => !v)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors text-sm font-semibold text-gray-700"
+                aria-label="اختر المدينة"
+                aria-expanded={cityOpen}
+              >
+                <MapPoint className="h-4 w-4 text-primary" />
+                <span className="max-w-28 truncate">{selectedCityName || "اختر مدينة"}</span>
+                <AltArrowDown className="h-4 w-4 text-gray-400" />
+              </button>
+              {cityOpen && (
+                <div className="absolute left-0 mt-2 w-52 max-h-80 overflow-y-auto bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                  {cities.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => { setCity(String(c.id), c.name_ar); setCityOpen(false); }}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm w-full text-right",
+                        String(c.id) === cityId ? "text-primary font-bold" : "text-gray-700"
+                      )}
+                    >
+                      {c.name_ar}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
 
             {user ? (
               <>

@@ -1,60 +1,26 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { createMarketSection } from "@/lib/marketSection";
 import RequestsListClient from "@/app/requests/RequestsListClient";
-import { marketByCode } from "@/lib/serverMarket";
-import { MARKETS } from "@/lib/markets";
 
 /**
- * طلبات العقارات في السوق — صفحة **داخل سوق**.
+ * طلبات العقارات في السوق — تُبنى من مصنع أقسام السوق.
  *
- * ⚠️ **النصّ يتبع السوق ولا يُكتب فيه اسم بلدٍ ثابت.** كانت النسخة العامّة
- * تقول «في اليمن» حرفياً، فكان زائر السعودية يقرأ عنواناً يخصّ بلداً آخر —
- * وجوجل يفهرس صفحةً واحدة لستّة أسواق. هنا الاسم والمدن من الـAPI لكل سوق.
- *
- * ⚠️ **السوق الفارغ لا يُفهرَس**: صفحة قائمة بلا عناصر محتوى رقيق، وإرسالها
- * إلى جوجل يعود بتقرير «اكتُشفت ولم تُفهرَس» ويستهلك ميزانية الزحف.
+ * ⚠️ **لا تنسخ هيكل الصفحة هنا**: `revalidate` وقاعدة `noindex` للسوق الفارغ
+ * و`generateStaticParams` كلّها في `lib/marketSection` — تعديلها هناك يسري على
+ * الأقسام الأربعة دفعةً واحدة. ما يخصّ هذا القسم وحده: عنوانه ووصفه ومكوّنه.
  */
+const section = createMarketSection({
+  slug: "requests",
+  title: (m) => `طلبات العقارات في ${m.nameAr}`,
+  description: (m, cities) => `ما يبحث عنه الناس في ${m.nameAr}: طلبات شراء وإيجار بميزانياتها ومدنها (${cities} وغيرها).`,
+  render: () => <RequestsListClient />,
+});
+
+// ⚠️ **قيمتان حرفيّتان لا مُستوردتان.** يرفض Next أي `revalidate` أو
+// `dynamicParams` لا يستطيع قراءتها ساكنةً وقت البناء («It needs to be a
+// static boolean») — فهذان السطران وحدهما لا يمكن استخراجهما إلى المصنع مهما
+// تكرّرا. الباقي (البيانات الوصفية والمسارات والصفحة) مستخرَجٌ كلّه.
 export const revalidate = 3600;
 export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return MARKETS.map((market) => ({ market }));
-}
-
-export async function generateMetadata(
-  { params }: { params: Promise<{ market: string }> },
-): Promise<Metadata> {
-  const { market } = await params;
-  const m = await marketByCode(market);
-  if (!m) return {};
-  const cities = m.cities.join(" و") || m.nameAr;
-  const title = `طلبات العقارات في ${m.nameAr}`;
-  const description = `ما يبحث عنه الناس في ${m.nameAr}: طلبات شراء وإيجار بميزانياتها ومدنها (${cities} وغيرها).`;
-  return {
-    title: { absolute: `${title} | مسكني` },
-    description,
-    // ⚠️ **السوق الفارغ لا يُفهرَس.** صفحة قائمة بلا عنصر واحد محتوى رقيق:
-    // جوجل يردّ عليها بـ«اكتُشفت ولم تُفهرَس» ويستهلك ميزانية زحفنا، وملفّ
-    // أدسنس عندنا رُفض مرّة بسبب «شاشات بلا محتوى ناشر». تُفتح الفهرسة تلقائياً
-    // بأوّل عقار يُنشر — لا حاجة لتدخّل.
-    robots: m.count > 0 ? undefined : { index: false, follow: true },
-    alternates: { canonical: `/${market}/requests` },
-    openGraph: { title, description, url: `/${market}/requests`, siteName: "مسكني", locale: "ar_AR" },
-  };
-}
-
-export default async function MarketSectionPage(
-  { params }: { params: Promise<{ market: string }> },
-) {
-  const { market } = await params;
-  const m = await marketByCode(market);
-  if (!m) notFound();
-  const cities = m.cities.join(" و") || m.nameAr;
-
-  return (
-    <>
-      {/* الكتلة التعريفية حُذفت كما في العقارات — `h1` انتقل إلى سطر العدد. */}
-      <RequestsListClient />
-    </>
-  );
-}
+export const generateStaticParams = section.generateStaticParams;
+export const generateMetadata = section.generateMetadata;
+export default section.Page;

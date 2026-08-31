@@ -1,3 +1,5 @@
+import { LegalPage } from "@/components/legal/LegalPage";
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -31,16 +33,10 @@ export default async function PrivacyPolicyPage() {
   const doc = await getPrivacy();
 
   return (
-    <main dir="rtl" className="min-h-screen bg-cream px-5 py-12">
-      <article className="mx-auto max-w-3xl rounded-2xl bg-white p-6 shadow-sm sm:p-10">
-        <h1 className="mb-1 text-3xl font-extrabold text-primary">
-          {doc?.title || "سياسة الخصوصية"}
-        </h1>
-        {doc?.updated_at && (
-          <p className="mb-8 text-sm text-[#1A1A1A]/60">
-            آخر تحديث: {new Date(doc.updated_at).toLocaleDateString("ar")}
-          </p>
-        )}
+    <LegalPage
+      title={doc?.title || "سياسة الخصوصية"}
+      updatedAt={doc?.updated_at ? new Date(doc.updated_at).toLocaleDateString(NUMERIC_LOCALE) : undefined}
+    >
 
         {doc ? (
           <div
@@ -56,16 +52,6 @@ export default async function PrivacyPolicyPage() {
         <p className="mt-10 border-t border-black/10 pt-6 text-sm text-[#1A1A1A]/60">
           © {new Date().getFullYear()} مسكني — جميع الحقوق محفوظة.
         </p>
-      </article>
-
-      {/* تنسيق محتوى الـHTML القادم من الباك اند */}
-      <style>{`
-        .legal-body h2 { color: #171539; font-weight: 700; font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
-        .legal-body ul { list-style: disc; padding-inline-start: 1.25rem; }
-        .legal-body li { margin: 0.25rem 0; }
-        .legal-body a { color: #403B9B; text-decoration: underline; font-weight: 600; }
-        .legal-body strong { font-weight: 700; }
-      `}</style>
-    </main>
+    </LegalPage>
   );
 }

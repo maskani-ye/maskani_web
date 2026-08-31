@@ -14,7 +14,8 @@ const TABS = [
   { href: "/", label: "الرئيسية", icon: Home2, exact: true },
   { href: "/properties", label: "العقارات", icon: Buildings2 },
   { href: "/services", label: "الخدمات", icon: Settings },
-  { href: "/requests", label: "الطلبات", icon: ClipboardList },
+  // ⚠️ `/jobs` قسمٌ شقيق لـ`/requests` — يُعلّم نفس التبويب (انظر Navbar).
+  { href: "/requests", label: "الطلبات", icon: ClipboardList, match: ["/requests", "/jobs"] },
   { href: "/profile", label: "حسابي", icon: User, auth: true },
 ];
 
@@ -34,7 +35,9 @@ export function BottomNav() {
           const Icon = tab.icon;
           // المقارنة على المسار **منزوع بادئة السوق** — انظر Navbar.
           const rest = splitMarket(pathname || "/").rest || "/";
-          const active = tab.exact ? rest === tab.href : rest.startsWith(tab.href);
+          const active = tab.exact
+            ? rest === tab.href
+            : (tab.match ?? [tab.href]).some((m) => rest.startsWith(m));
           const handleClick = (e: React.MouseEvent) => {
             if (tab.auth && !user) {
               e.preventDefault();

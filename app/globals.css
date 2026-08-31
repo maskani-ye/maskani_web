@@ -136,3 +136,12 @@ select {
   border: 1.5px solid rgba(255, 255, 255, 0.9);
 }
 .maskani-price-marker:hover span { background: #403B9B; }
+
+/* أنماط النصّ القانونيّ — كانت مكرّرة داخل <style> في صفحتَي الشروط
+   والخصوصية. مكانها هنا: تُعرَّف مرّة وتُستعمل في أي صفحة قانونية قادمة. */
+.legal-body h2 { color: #171539; font-weight: 700; font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
+.legal-body h3 { color: #050536; font-weight: 700; margin: 1rem 0 0.35rem; }
+.legal-body p { margin: 0.5rem 0; }
+.legal-body a { color: #403B9B; text-decoration: underline; font-weight: 600; }
+.legal-body ul { list-style: disc; padding-inline-start: 1.25rem; }
+.legal-body li { margin: 0.25rem 0; }

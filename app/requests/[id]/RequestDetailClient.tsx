@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useStartConversation } from "@/hooks/useStartConversation";
 import { useAuthGate } from "@/context/AuthGate";
 import { formatPrice, formatRelativeTime, propertyTypeName } from "@/lib/utils";
 import type { ClientRequest, RequestOffer, Property, PaginatedResponse } from "@/types";
@@ -31,6 +32,7 @@ const offerTypeLabels: Record<string, string> = {
 
 export default function RequestDetailClient({ id, initialRequest }: { id: string; initialRequest: ClientRequest | null }) {
   const router = useRouter();
+  const { start: startChatRaw, starting: startingChat } = useStartConversation();
   const { user } = useAuth();
   const { requireAuth } = useAuthGate();
   const [request, setRequest] = useState<ClientRequest | null>(initialRequest);
@@ -41,7 +43,6 @@ export default function RequestDetailClient({ id, initialRequest }: { id: string
   const [contactPhone, setContactPhone] = useState("");
   const [selectedProperty, setSelectedProperty] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [startingChat, setStartingChat] = useState(false);
 
   // مطابقة العقارات بالذكاء الاصطناعي (تحميل عند الطلب)
   type MatchProperty = PropertyCardData & { match_score?: number; match_reason?: string };
@@ -65,19 +66,9 @@ export default function RequestDetailClient({ id, initialRequest }: { id: string
   const isOwner = !!user && !!request && user.id === request.client;
 
   // "مراسلة" — بدء/فتح محادثة خاصة (DM) مع صاحب الطلب.
-  const startConversation = async () => {
-    if (!requireAuth()) return;
-    if (!request) return;
-    setStartingChat(true);
-    try {
-      const { data } = await api.post("/chat/conversations/", { recipient_id: request.client });
-      router.push(`/chat/${data.id}`);
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    } finally {
-      setStartingChat(false);
-    }
-  };
+
+  // `request` قد يكون null قبل التحميل — الخطّاف نفسه يتجاهل المعرّف الفارغ.
+  const startChat = () => startChatRaw(request?.client);
 
   const loadOffers = useCallback(() => {
     api.get(`/requests/${id}/offers/`)
@@ -214,7 +205,7 @@ export default function RequestDetailClient({ id, initialRequest }: { id: string
         </div>
 
         {!isOwner && (
-          <Button className="mt-4" fullWidth variant="primary" onClick={startConversation} loading={startingChat}>
+          <Button className="mt-4" fullWidth variant="primary" onClick={startChat} loading={startingChat}>
             <ChatRoundDots className="h-4 w-4" /> مراسلة صاحب الطلب
           </Button>
         )}

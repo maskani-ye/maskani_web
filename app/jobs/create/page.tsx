@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { PhoneField } from "@/components/ui/PhoneField";
 import { MoneyInput } from "@/components/ui/MoneyInput";
 import { toast } from "sonner";
+import { CategorySelect } from "@/components/forms/CategorySelect";
 import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
 import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
 import { toEnglishDigits } from "@/lib/digits";
@@ -103,13 +104,11 @@ export default function CreateJobPage() {
           <label className="block text-sm font-medium text-gray-700 mb-1.5">عنوان الطلب *</label>
           <input className={field} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="مثال: أحتاج سبّاكاً لإصلاح تسريب" />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">التخصص *</label>
-          <select className={`${field} h-11 bg-white`} value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value ? Number(e.target.value) : "" }))}>
-            <option value="">اختر التخصص</option>
-            {categories.map((c) => <option key={c.id} value={c.id}>{c.name_ar}</option>)}
-          </select>
-        </div>
+        <CategorySelect
+          required
+          value={form.category === "" ? "" : String(form.category)}
+          onChange={(v) => setForm((f) => ({ ...f, category: v ? Number(v) : "" }))}
+        />
         <div>
           <div className="flex items-center justify-between gap-2 mb-1.5">
             <label className="block text-sm font-medium text-gray-700">الوصف *</label>

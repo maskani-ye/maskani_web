@@ -9,6 +9,7 @@ import { JobCard } from "@/components/jobs/JobCard";
 import type { PaginatedResponse, City } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { BrowseToolbar } from "@/components/browse/BrowseToolbar";
+import { FilterPanel } from "@/components/browse/FilterPanel";
 import { RequestsTabs } from "@/components/layout/RequestsTabs";
 import { Select } from "@/components/ui/Select";
 import { Settings, AddCircle, MapPoint, Dollar, ClockCircle, AltArrowRight } from "@solar-icons/react";
@@ -104,7 +105,7 @@ export default function JobsPage() {
         }
       >
         {showFilters && (
-          <div className="grid gap-3 border-t border-ink/[0.07] p-3 sm:grid-cols-2 sm:p-5">
+          <FilterPanel cols={2}>
             <Select
               label="المدينة"
               options={cities.map((c) => ({ value: c.id, label: c.name_ar }))}
@@ -122,7 +123,7 @@ export default function JobsPage() {
               onChange={(e) => setCategory(e.target.value)}
               placeholder="كل التخصّصات"
             />
-          </div>
+          </FilterPanel>
         )}
 
         <div className="p-3 sm:p-5">

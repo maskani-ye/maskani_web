@@ -8,6 +8,7 @@ import type { ServiceProvider, PaginatedResponse, City, ServiceCategoryItem } fr
 import { Select } from "@/components/ui/Select";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { BrowseToolbar } from "@/components/browse/BrowseToolbar";
+import { FilterPanel } from "@/components/browse/FilterPanel";
 import { StarRating } from "@/components/ui/StarRating";
 import { Settings, User, CheckCircle, MapPoint, Phone } from "@solar-icons/react";
 import { toast } from "sonner";
@@ -96,7 +97,7 @@ export default function ServicesPage() {
         }
       >
         {showFilters && (
-          <div className="grid gap-3 border-t border-ink/[0.07] p-3 sm:grid-cols-2 sm:p-5">
+          <FilterPanel cols={2}>
             <Select
               label="المدينة"
               options={cities.map((c) => ({ value: c.id, label: c.name_ar }))}
@@ -114,7 +115,7 @@ export default function ServicesPage() {
               onChange={(e) => setFilters((p) => ({ ...p, category: e.target.value }))}
               placeholder="كل التصنيفات"
             />
-          </div>
+          </FilterPanel>
         )}
 
         <div className="p-3 sm:p-5">

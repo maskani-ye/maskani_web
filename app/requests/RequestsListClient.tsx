@@ -11,6 +11,7 @@ import type { ClientRequest, PaginatedResponse, City, PropertyTypeItem } from "@
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { BrowseToolbar } from "@/components/browse/BrowseToolbar";
+import { FilterPanel } from "@/components/browse/FilterPanel";
 import { RequestsTabs } from "@/components/layout/RequestsTabs";
 import { PenNewSquare, AddCircle, MapPoint, Bed, Dollar, ClockCircle, AltArrowRight } from "@solar-icons/react";
 import { useAuth } from "@/context/AuthContext";
@@ -115,7 +116,7 @@ export default function RequestsPage() {
         }
       >
         {showFilters && (
-          <div className="grid gap-3 border-t border-ink/[0.07] p-3 sm:grid-cols-3 sm:p-5">
+          <FilterPanel cols={3}>
             <Select
               label="المدينة"
               options={cities.map((c) => ({ value: c.id, label: c.name_ar }))}
@@ -143,7 +144,7 @@ export default function RequestsPage() {
               onChange={(e) => setFilters((p) => ({ ...p, offer_type: e.target.value }))}
               placeholder="الكل"
             />
-          </div>
+          </FilterPanel>
         )}
 
         <div className="p-3 sm:p-5">

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useStartConversation } from "@/hooks/useStartConversation";
 import { useAuthGate } from "@/context/AuthGate";
 import { formatPrice, formatRelativeTime } from "@/lib/utils";
 import type { PaginatedResponse } from "@/types";
@@ -58,6 +59,7 @@ interface ServiceOffer {
 
 export default function JobDetailClient({ id, initialRequest }: { id: string; initialRequest: ServiceRequest | null }) {
   const router = useRouter();
+  const { start: startChatRaw, starting: startingChat } = useStartConversation();
   const { user } = useAuth();
   const { requireAuth } = useAuthGate();
   const [request, setRequest] = useState<ServiceRequest | null>(initialRequest);
@@ -67,7 +69,6 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("YER");
   const [submitting, setSubmitting] = useState(false);
-  const [startingChat, setStartingChat] = useState(false);
   const [busy, setBusy] = useState(false);
 
   // مطابقة مزوّدي الخدمة بالذكاء الاصطناعي (عند الطلب)
@@ -98,6 +99,9 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
       .finally(() => setLoading(false));
   }, [id]);
 
+  // `request` قد يكون null قبل التحميل — الخطّاف نفسه يتجاهل المعرّف الفارغ.
+  const startChat = () => startChatRaw(request?.client);
+
   const loadOffers = useCallback(() => {
     api.get(`/jobs/${id}/offers/`)
       .then((r) => setOffers(r.data.results ?? r.data ?? []))
@@ -111,16 +115,6 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  const startConversation = async () => {
-    if (!requireAuth()) return;
-    if (!request) return;
-    setStartingChat(true);
-    try {
-      const { data } = await api.post("/chat/conversations/", { recipient_id: request.client });
-      router.push(`/chat/${data.id}`);
-    } catch (err) { toast.error(getErrorMessage(err)); }
-    finally { setStartingChat(false); }
-  };
 
   const submitOffer = async () => {
     if (!requireAuth()) return;
@@ -230,7 +224,7 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
             <Button className="mt-4" fullWidth variant="outline" onClick={closeRequest} loading={busy}>إغلاق الطلب</Button>
           )
         ) : (
-          <Button className="mt-4" fullWidth variant="primary" onClick={startConversation} loading={startingChat}>
+          <Button className="mt-4" fullWidth variant="primary" onClick={startChat} loading={startingChat}>
             <ChatRoundDots className="h-4 w-4" /> مراسلة صاحب الطلب
           </Button>
         )}
