@@ -12,27 +12,66 @@ export interface BlogCardData {
   reading_minutes: number;
 }
 
-/** بطاقة مقال موحّدة — تُستخدم في /blog وصفحات التصنيف (لا تكرار). */
+/**
+ * بطاقة مقال موحّدة — تُستخدم في /blog وصفحات التصنيف وواجهة السوق (لا تكرار).
+ *
+ * ⚠️ **البديل كان كلمة «مسكني» بحجم ضخم مكرّرة في كل بطاقة.** قياس
+ * 2026-08-31: **صفر من المقالات له صورة غلاف**، فصفُّ المدوّنة على واجهة السوق
+ * ثلاث كتلٍ متطابقة تقول اسم العلامة ثلاث مرّات ولا تقول شيئاً عن المقال.
+ * البديل يرفع **التصنيف** إلى السطح — وهو يختلف بين المقالات فتتمايز البطاقات،
+ * ويقول للزائر نوع ما سيقرأ قبل أن يقرأ العنوان.
+ *
+ * ⚠️ **والطباعة على السُلَّم**: كانت `text-base/sm/xs` ورماديّ Tailwind
+ * (`gray-900/500/400`) — وهما بندان يعدّهما حارس نظام التصميم انحرافاً، لأنّ
+ * المقاس يُختار بالذوق كل مرّة والنصّ يفقد كحليّ الهوية.
+ */
+/** أسطح الغلاف البديلة — تدور بمعرّف المقال فلا يتشابه صفّ البطاقات. */
+const COVER_SURFACES = [
+  "bg-gradient-to-br from-primary-400/90 via-primary-500 to-primary-700",
+  "bg-gradient-to-tr from-primary-600 via-primary-500 to-primary-300/80",
+  "bg-gradient-to-b from-primary-400 to-primary-800",
+];
+
 export function BlogCard({ a }: { a: BlogCardData }) {
   return (
-    <Link href={`/blog/${a.slug}`}
-      className="group bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-200 overflow-hidden flex flex-col">
-      <div className="relative h-44 bg-primary/5 overflow-hidden">
+    <Link
+      href={`/blog/${a.slug}`}
+      className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-e1 ring-1 ring-ink/[0.06] transition-all duration-200 hover:shadow-e3 hover:ring-ink/[0.10]"
+    >
+      <div className="relative h-44 overflow-hidden bg-primary-500">
         {a.cover_image ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={a.cover_image} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+          <img
+            src={a.cover_image}
+            alt=""
+            aria-hidden
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-primary/30 text-4xl font-extrabold">مسكني</div>
+          /* ⚠️ **التصنيف كان أكبر من العنوان** (26 بكسل مقابل 15): قلبٌ
+             للتراتبية — العين تقرأ «نصائح ومقالات» قبل موضوع المقال، والبطاقتان
+             من التصنيف نفسه تبدوان نسخةً واحدة. الآن شريحةٌ صغيرة، والسطح
+             يتفاوت بمعرّف المقال فيتمايز الصفّ. */
+          <span
+            aria-hidden
+            className={`absolute inset-0 ${COVER_SURFACES[a.id % COVER_SURFACES.length]}`}
+          />
         )}
-        <span className="absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full bg-white/90 text-primary">{a.category_display}</span>
+        <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-caption font-bold text-primary">
+          {a.category_display}
+        </span>
       </div>
-      <div className="p-4 flex-1 flex flex-col">
-        <h2 className="font-bold text-gray-900 text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">{a.title}</h2>
-        <p className="text-sm text-gray-500 mt-1.5 line-clamp-2 flex-1">{a.excerpt}</p>
-        <div className="flex items-center gap-3 text-xs text-gray-400 mt-3">
-          <span>{a.author_name}</span>
-          <span>·</span>
-          <span>{a.reading_minutes} دقائق قراءة</span>
+
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="text-body font-bold leading-snug text-ink line-clamp-2 transition-colors group-hover:text-primary-400">
+          {a.title}
+        </h3>
+        <p className="mt-1.5 flex-1 text-caption text-muted line-clamp-2">{a.excerpt}</p>
+        <div className="mt-3 flex items-center gap-2 text-caption text-muted/70">
+          <span className="truncate">{a.author_name}</span>
+          <span aria-hidden>·</span>
+          <span className="flex-shrink-0 tabular-nums">{a.reading_minutes} دقائق قراءة</span>
         </div>
       </div>
     </Link>

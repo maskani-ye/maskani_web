@@ -42,13 +42,13 @@ const RULES: Rule[] = [
     // السُلّم: display h1 h2 h3 body-lg body caption price price-sm
     find: (s) =>
       s.match(/\btext-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl)\b/g) ?? [],
-    budget: 1082,
+    budget: 1004,
     why: "مقاس يُختار بالذوق كل مرّة بدل دورٍ معرّف",
   },
   {
     name: "رمادي Tailwind بدل كحليّ الهوية",
     find: (s) => s.match(/\btext-gray-(700|800|900)\b/g) ?? [],
-    budget: 351,
+    budget: 335,
     why: "نصّ العنوان يجب أن يحمل لون العلامة (ink) لا رماديّ القالب",
   },
   {
@@ -61,7 +61,7 @@ const RULES: Rule[] = [
   {
     name: "أرقام سحرية (مقاسات مكتوبة يدوياً)",
     find: (s) => s.match(/\[(\d+)px\]/g) ?? [],
-    budget: 89,
+    budget: 88,
     why: "ثلاثة عروض بطاقات مختلفة في صفحة واحدة = صفوف غير متحاذية",
   },
 ];

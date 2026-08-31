@@ -159,6 +159,9 @@ export default function HomeClient({
     .filter((p) => p.id !== spotlight?.id)
     .slice(0, 4);
   const loadingProps = properties === null;
+  /** الأعمدة الثلاثة خلت جميعاً (بعد التحميل) — يُطوى النطاق إلى دعوة واحدة. */
+  const allQuietZone =
+    services?.length === 0 && requests?.length === 0 && serviceReqs?.length === 0;
 
   return (
     <div className="bg-white">
@@ -290,6 +293,44 @@ export default function HomeClient({
 
       {/* ─── ⑥ الخدمات والطلبات — نطاق واحد بثلاثة أعمدة ───────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+        {/* ⚠️ **ترويسة أمّ تجمع الأعمدة الثلاثة.**
+            قياس 2026-08-31: أربعة عناوين أقسام بـ36 بكسل وخمسة بـ20 بكسل في
+            **المستوى البنيويّ نفسه** — فيقرأ الزائر «مزوّدو الخدمات» تابعاً لما
+            قبله لا قسماً مستقلّاً، ويقرؤه قارئ الشاشة عنواناً من الرتبة الثانية
+            بلا أمّ. الأعمدة الثلاثة وجهٌ واحد لسؤالٍ واحد: ما الذي يدور في
+            السوق الآن؟ — فترويستها واحدة وعناوينها الداخلية من رتبة ثالثة. */}
+        <SectionHead
+          title="ما يدور في السوق الآن"
+          subtitle="خدمات معروضة وطلبات مفتوحة — تصفّحها أو قدّم عرضك"
+          href="/services"
+        />
+        {/* ⚠️ **ترويسة كبيرة فوق ثلاثة أعمدة تقول «لا يوجد» ثلاث مرّات.**
+            هذا حال كل سوقٍ جديد، وهو أسوأ من غياب القسم: يَعِد الزائرَ بقسمٍ
+            ثم يريه فراغاً مثلّثاً. حين تخلو الثلاثة جميعاً تُطوى إلى دعوةٍ
+            واحدة — والفراغ يصير فرصة لا اعتذاراً. */}
+        {allQuietZone ? (
+          <div className="rounded-3xl bg-cream px-6 py-12 text-center ring-1 ring-ink/[0.06]">
+            <p className="text-h3 text-ink">كن أوّل من يفتح هذا الباب في {where}</p>
+            <p className="mx-auto mt-2 max-w-lg text-body leading-relaxed text-muted">
+              لا خدمة معروضة ولا طلب مفتوح هنا بعد. اعرض خدمتك أو اطلب ما تحتاجه،
+              فيصلك أهل السوق مباشرةً.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/services/create"
+                className="rounded-xl bg-primary px-6 py-3 text-body font-bold text-white transition-colors hover:bg-primary-600"
+              >
+                اعرض خدمتك
+              </Link>
+              <Link
+                href="/requests/create"
+                className="rounded-xl bg-white px-6 py-3 text-body font-bold text-ink ring-1 ring-ink/10 transition-colors hover:bg-cream"
+              >
+                اطلب عقاراً
+              </Link>
+            </div>
+          </div>
+        ) : (
         <div className="grid gap-10 lg:gap-8 lg:grid-cols-3">
           <MiniSection
             title="مزوّدو الخدمات"
@@ -324,6 +365,7 @@ export default function HomeClient({
             {serviceReqs?.map((j) => <JobCard key={j.id} job={j} />)}
           </MiniSection>
         </div>
+        )}
       </section>
 
       {/* ─── ⑦ لماذا مسكني ─────────────────────────────────────────────── */}
@@ -334,7 +376,13 @@ export default function HomeClient({
       </section>
 
       {/* ─── ⑧ النشر والبلاغ — نطاق ختاميّ واحد ───────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+        <div className="mb-7">
+          <h2 className="text-h1 text-ink text-balance">شارك في السوق</h2>
+          <p className="text-body text-muted mt-2">
+            المنصّة تكبر بما ينشره أهلها وبما يكشفونه من تجاوز
+          </p>
+        </div>
         <div className="grid gap-5 md:grid-cols-2">
           <ClosingCard
             Icon={Home2}
@@ -393,7 +441,7 @@ function MiniSection({ title, subtitle, href, loading, empty, emptyText, childre
     <div>
       <div className="flex items-baseline justify-between gap-3 mb-5 pb-3 border-b border-ink/[0.08]">
         <div>
-          <h2 className="text-h3 text-ink">{title}</h2>
+          <h3 className="text-h3 text-ink">{title}</h3>
           <p className="text-caption text-muted mt-0.5">{subtitle}</p>
         </div>
         <Link href={href} className="text-caption font-bold text-primary flex-shrink-0 hover:underline">
@@ -458,6 +506,14 @@ function EmptyState({ Icon, title, body, cta }: {
  * صفر عقار فخٌّ يقود إلى صفحة فارغة. البلاطة تحمل الصورة **والعدد**، والمدن
  * ذات المخزون تتقدّم.
  */
+/** أسطح البلاطات — تدور بالترتيب فيتمايز الشريط بلا صور. */
+const TILE_SURFACES = [
+  "bg-gradient-to-br from-primary-400/90 via-primary-500 to-primary-700",
+  "bg-gradient-to-tr from-primary-600 via-primary-500 to-primary-300/80",
+  "bg-gradient-to-b from-primary-400 to-primary-800",
+  "bg-gradient-to-bl from-primary-300/70 via-primary-500 to-primary-700",
+];
+
 function CitiesTiles({ cities }: { cities: City[] }) {
   const router = useRouter();
   const { cityId, setCity } = useCity();
@@ -482,8 +538,14 @@ function CitiesTiles({ cities }: { cities: City[] }) {
         </p>
       </div>
 
+      {/* ⚠️ **البلاطة لا تعتمد على الصورة.**
+          قياس 2026-08-31: **صفر من مدن السعودية الثماني لها صورة** (`City.image`
+          يُرفع من اللوحة، والأسواق الجديدة تصل قبل صورها) — فكان الشريط ثماني
+          بلاطات رمادية متطابقة بنقشٍ مائل، وهي أسوأ ما في الصفحة. البديل يجعل
+          **الرقم** بطل البلاطة: هو ما يبحث عنه المستخدم أصلاً («كم عقاراً في
+          الرياض؟») وهو متوفّر دائماً، بينما الصورة زينةٌ تأتي إن جاءت. */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {shown.map((c) => {
+        {shown.map((c, i) => {
           const on = cityId === String(c.id);
           const count = c.properties_count ?? 0;
           return (
@@ -491,14 +553,10 @@ function CitiesTiles({ cities }: { cities: City[] }) {
               key={c.id}
               onClick={() => pick(c)}
               aria-pressed={on}
-              // خلفية كحلية تحت الصورة: بعض صور المحافظات مرفوعة بقصٍّ دائريّ
-              // شفّاف الزوايا، وبلا خلفية داكنة تظهر الزوايا لوناً غريباً.
-              className={`group relative h-36 sm:h-40 rounded-2xl overflow-hidden text-start ring-1 transition-all bg-ink ${
-                on ? "ring-2 ring-primary shadow-e3" : "ring-ink/[0.06] hover:shadow-e2"
+              className={`group relative h-36 sm:h-40 overflow-hidden rounded-2xl bg-primary-500 text-start ring-1 transition-all ${
+                on ? "ring-2 ring-gold shadow-e3" : "ring-ink/[0.06] hover:shadow-e3"
               }`}
             >
-              {/* الصورة من الخادم فقط. غيابها ليس خطأً بل مدينة لم تُرفع صورتها
-                  من اللوحة بعد — يظهر سطحٌ محايد بنقشٍ خفيف، لا أصل محلّي. */}
               {c.image ? (
                 <Image
                   src={c.image}
@@ -507,18 +565,34 @@ function CitiesTiles({ cities }: { cities: City[] }) {
                   fill
                   sizes="(max-width: 640px) 45vw, 300px"
                   quality={68}
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               ) : (
-                <PlaceholderSurface Icon={MapPoint} tone="primary" />
+                /* سطحٌ من لوحة العلامة لا نقشٌ رماديّ. والتفاوت **منفَّذ** لا
+                   موصوف: أربعة اتجاهات تدور بالترتيب، فلا يبدو الشريط ثماني
+                   نسخٍ من بلاطة واحدة. */
+                <span
+                  aria-hidden
+                  className={`absolute inset-0 ${TILE_SURFACES[i % TILE_SURFACES.length]}`}
+                />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-3.5">
-                <span className="block text-body font-bold text-white">{c.name_ar}</span>
-                <span className="block text-caption text-white/70 tabular-nums mt-0.5">
-                  {count > 0 ? `${count.toLocaleString(NUMERIC_LOCALE)} عقار` : "لا عقارات بعد"}
+              <span
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-transparent"
+              />
+
+              <span className="absolute inset-x-0 bottom-0 p-3.5">
+                {/* الرقم أوّلاً وبأكبر وزن — هو الجواب على سؤال الزائر. */}
+                <span className="block text-h2 font-extrabold tabular-nums text-white">
+                  {count > 0 ? count.toLocaleString(NUMERIC_LOCALE) : "—"}
                 </span>
-              </div>
+                <span className="mt-0.5 flex items-baseline gap-1.5">
+                  <span className="text-body font-bold text-white">{c.name_ar}</span>
+                  <span className="text-caption text-white/60">
+                    {count > 0 ? "عقار" : "قريباً"}
+                  </span>
+                </span>
+              </span>
             </button>
           );
         })}
@@ -558,7 +632,7 @@ function ClosingCard({ Icon, tone, title, body, href, cta }: {
         <Icon weight="Bold" className="h-6 w-6" />
       </span>
       <div className="flex-1 min-w-0">
-        <h2 className={`text-h3 ${isPrimary ? "text-white" : "text-ink"}`}>{title}</h2>
+        <h3 className={`text-h3 ${isPrimary ? "text-white" : "text-ink"}`}>{title}</h3>
         <p className={`text-caption mt-1 ${isPrimary ? "text-white/75" : "text-muted"}`}>{body}</p>
       </div>
       <Link href={href} className="flex-shrink-0 w-full xs:w-auto">

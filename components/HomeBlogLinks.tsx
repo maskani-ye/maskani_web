@@ -34,13 +34,25 @@ export default async function HomeBlogLinks() {
   if (!articles.length) return null;
 
   return (
-    <section aria-labelledby="home-blog-heading" className="w-full px-3 sm:px-5 lg:px-6 mt-2 mb-12">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 id="home-blog-heading" className="text-h3 text-ink">
-          من مدوّنة مسكني
-        </h2>
-        <Link href="/blog" className="text-caption font-semibold text-primary-400 hover:underline">
-          كل المقالات ←
+    // ⚠️ **الترويسة كانت 20 بكسل بين أقسامٍ بـ36**: قسمٌ كامل بوزن عنوانٍ
+    // فرعيّ، فيبدو ذيلاً للقسم السابق. وحشوُه `mt-2 mb-12` خالف إيقاع بقيّة
+    // النطاقات (`py-14 md:py-20`) فبدا الفاصل مبتوراً من فوق ومتراخياً من تحت.
+    <section aria-labelledby="home-blog-heading" className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+      <div className="mb-7 flex items-end justify-between gap-6">
+        <div>
+          <h2 id="home-blog-heading" className="text-h1 text-ink text-balance">
+            من مدوّنة مسكني
+          </h2>
+          <p className="text-body text-muted mt-2">
+            أدلّة وشروح عن التوثيق والأسعار وحقوق الطرفين
+          </p>
+        </div>
+        <Link
+          href="/blog"
+          className="group hidden flex-shrink-0 items-center gap-1.5 text-body font-bold text-primary transition-all hover:gap-2.5 sm:flex"
+        >
+          كل المقالات
+          <span aria-hidden>←</span>
         </Link>
       </div>
       <div className="grid grid-cols-cards gap-4">
