@@ -74,7 +74,7 @@ export default function AreaConverter({
       {/* ① الدولة */}
       <div>
         <p className="text-sm font-semibold text-gray-700 mb-2">① اختر الدولة</p>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 [&>*]:min-w-0">
           {COUNTRIES.map((c) => (
             <button key={c.code} type="button" onClick={() => pickCountry(c.code)}
               className={`text-sm rounded-xl border px-3 py-1.5 transition-colors ${
@@ -93,7 +93,7 @@ export default function AreaConverter({
       {/* ② المساحة والوحدة */}
       <div>
         <p className="text-sm font-semibold text-gray-700 mb-2">② أدخل المساحة واختر وحدتها</p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 [&>*]:min-w-0">
           <input value={value} onChange={(e) => setValue(toEnglishDigits(e.target.value))}
             inputMode="decimal" placeholder="1" aria-label="المساحة"
             className="flex-1 min-w-0 rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg font-bold text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
@@ -125,7 +125,7 @@ export default function AreaConverter({
           <p className="text-xs text-gray-500">بالمتر المربّع</p>
           <p className="text-2xl font-extrabold text-primary tabular-nums">{smart(inM2)} م²</p>
         </div>
-        <div className="grid sm:grid-cols-2 gap-2">
+        <div className="grid sm:grid-cols-2 gap-2 [&>*]:min-w-0">
           {units.filter((u) => u.key !== from.key).map((u) => (
             <div key={u.key} className="rounded-xl border border-gray-100 bg-white px-3.5 py-2.5 flex items-center justify-between gap-3">
               <div className="min-w-0">
@@ -150,9 +150,9 @@ export default function AreaConverter({
             الأرقام أعلاه هي المعمول بها في الإقليم، وقد يختلف العرف بين مديريّة وأخرى.
             إن كانت وحدتك تُحسب بقيمة مختلفة عندكم فأدخِلها هنا ليطابق التحويل واقعك.
           </p>
-          <div className="grid sm:grid-cols-2 gap-3 mt-3">
+          <div className="grid sm:grid-cols-2 gap-3 mt-3 [&>*]:min-w-0">
             {editable.map((u) => (
-              <label key={u.key} className="flex flex-col gap-1">
+              <label key={u.key} className="flex flex-col gap-1 [&>*]:min-w-0">
                 <span className="text-xs font-semibold text-gray-700">{u.name} — م² للوحدة</span>
                 <input value={overrides[u.key] ?? String(u.m2)} inputMode="decimal"
                   onChange={(e) => setOverrides({ ...overrides, [u.key]: toEnglishDigits(e.target.value) })}

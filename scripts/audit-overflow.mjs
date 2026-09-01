@@ -24,19 +24,36 @@ const WIDTHS = [320, 360, 390, 768];
 
 const probe = () => {
   const de = document.documentElement;
-  const over = de.scrollWidth - de.clientWidth;
-  if (over <= 1) return { over: 0, culprits: [] };
+  // ⚠️ **`scrollWidth` يعمى تحت `overflow-x: clip`.** حين تُقصّ الصفحة يساوي
+  // عرضَها فيبدو كل شيء سليماً — بينما العناصر الفائضة **تُقطع** فيرى الزائر
+  // بطاقةً مبتورة أو زرّاً نصفه خارج الشاشة. القصّ يوقف الانزلاق ولا يُصلح
+  // التجاوب. فالقياس صار على **كل عنصر** مباشرةً لا على تمرير المستند.
+  const vw = de.clientWidth;
   // ⚠️ **الاتّجاه يقلب جهة الفائض.** الموقع RTL، فالعنصر الأعرض من الشاشة
   // يخرج من **اليسار** بإحداثيّ سالب لا من اليمين. قياسُ الحافّة اليمنى وحدها
   // أعطى «فائض 122px وصفر عنصر متجاوز» — تناقضٌ ظاهر كشف الخطأ في القياس.
-  const lim = de.clientWidth + 1;
+  const lim = vw + 1;
   const outside = (r) => r.right > lim || r.left < -1;
+
+  // ⚠️ **الشريط الذي يمرّر بقصدٍ ليس خللاً.** شريط أنواع العقارات في الرئيسية
+  // وبلاطات الخريطة تمتدّ خارج الشاشة عمداً — لأنّ حاويتها هي التي تمرّر، لا
+  // الصفحة. عدّها خللاً يقود إلى «إصلاح» ما هو سليم: أوّل قياسٍ لي أعطى 11
+  // صفحة، تسعٌ منها من هذا الصنف.
+  const contained = (e) => {
+    for (let n = e.parentElement; n && n !== document.body; n = n.parentElement) {
+      const ox = getComputedStyle(n).overflowX;
+      if (ox && ox !== "visible") return true;
+    }
+    return false;
+  };
   const culprits = [];
+  let over = 0;
   for (const e of document.querySelectorAll("body *")) {
     const r = e.getBoundingClientRect();
-    if (r.width === 0 || !outside(r)) continue;
+    if (r.width === 0 || !outside(r) || contained(e)) continue;
     // العنصر متجاوز، لكن أباه قد يكون هو المتجاوز الحقيقيّ — نُبلغ عن الأصغر
     // (الأعمق) كي نصل إلى العنصر المسؤول لا إلى الغلاف.
+    over = Math.max(over, Math.round(Math.max(r.right - lim, -r.left)));
     if ([...e.children].some((c) => outside(c.getBoundingClientRect()))) continue;
     const cls = (e.className || "").toString().replace(/\s+/g, " ").slice(0, 70);
     culprits.push(
@@ -45,7 +62,7 @@ const probe = () => {
       (e.textContent ? ` «${e.textContent.trim().replace(/\s+/g, " ").slice(0, 26)}»` : ""),
     );
   }
-  return { over, culprits: [...new Set(culprits)].slice(0, 5) };
+  return { over, culprits: [...new Set(culprits)].slice(0, 6) };
 };
 
 const b = await chromium.launch();
@@ -59,7 +76,7 @@ for (const w of WIDTHS) {
       const { over, culprits } = await page.evaluate(probe);
       if (over > 1) {
         bad++;
-        console.log(`\n✗ ${w}px ${path} — فائض ${over}px`);
+        console.log(`\n✗ ${w}px ${path} — أوسع عنصر يتجاوز ${over}px`);
         culprits.forEach((c) => console.log("   " + c));
       }
     } catch (e) { console.log(`⚠️  ${w}px ${path}: ${String(e).slice(0, 50)}`); }
@@ -67,5 +84,5 @@ for (const w of WIDTHS) {
   await page.close();
 }
 await b.close();
-console.log(bad ? `\n❌ ${bad} صفحة تنزلق أفقياً` : "\n✅ لا تمرير أفقيّ في أي عرض");
+console.log(bad ? `\n❌ ${bad} صفحة فيها عنصرٌ يتجاوز عرض الشاشة` : "\n✅ كل العناصر داخل عرض الشاشة");
 process.exit(bad ? 1 : 0);
