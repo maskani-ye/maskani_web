@@ -61,7 +61,14 @@ export default function AreaConverter({
   };
 
   return (
-    <div className="grid gap-5">
+    {/* ⚠️ **`min-width: auto` هو ما كان يُنزلق الصفحة أفقياً.**
+        عنصر الشبكة (وكذلك المرن) لا يتقلّص دون عرض محتواه افتراضياً، فأيّ
+        `select` بخياراتٍ طويلة أو صفّ شرائح يفرض عرضه على الشبكة كلّها —
+        وتخرج الزيادة في RTL من اليسار بإحداثيّ سالب فتمتدّ مساحة تمرير
+        المستند. `min-w-0` على الأبناء يسمح لهم بالتقلّص فيلتفّ المحتوى.
+        (كان الظنّ أنّ السبب `min-w-[420px]` على الجدول — وقد أُصلح، فبقي
+        الانزلاق 52px وكشف أنّ المسؤول غيره.) */}
+    <div className="grid gap-5 [&>*]:min-w-0">
       {/* ① الدولة */}
       <div>
         <p className="text-sm font-semibold text-gray-700 mb-2">① اختر الدولة</p>
@@ -89,7 +96,7 @@ export default function AreaConverter({
             inputMode="decimal" placeholder="1" aria-label="المساحة"
             className="flex-1 min-w-0 rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg font-bold text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
           <select value={fromKey} onChange={(e) => setFromKey(e.target.value)} aria-label="الوحدة"
-            className="rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm font-semibold text-ink outline-none focus:border-primary max-w-[48%]">
+            className="rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm font-semibold text-ink outline-none focus:border-primary max-w-[48%] min-w-0">
             {local.length > 0 && (
               <optgroup label={`وحدات ${country.name}`}>
                 {local.map((u) => (
