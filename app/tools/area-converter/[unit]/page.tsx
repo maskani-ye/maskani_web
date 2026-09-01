@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { isMarket } from "@/lib/markets";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -63,6 +64,9 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
   if (!u) notFound();
 
   const country = countryByCode(u.country);
+  // سوق المنصّة المقابل لدولة الوحدة — الوحدات المعياريّة («*») ودولٌ لا سوق
+  // لها (السودان · فلسطين …) لا تُنتج رابطاً: وعدٌ بسوقٍ لا نملكه أسوأ من صمت.
+  const marketCode = isMarket(u.country.toLowerCase()) ? u.country.toLowerCase() : null;
   const siblings = u.country === "*"
     ? GLOBAL_UNITS.filter((x) => x.key !== u.key)
     : unitsOfCountry(u.country).filter((x) => x.key !== u.key);
@@ -192,6 +196,38 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
                 <span className="text-sm font-bold text-primary tabular-nums shrink-0">{fmt(s.m2)} م²</span>
               </Link>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* ⚠️ **22,263 ظهوراً في ثلاثين يوماً على صفحات الأدوات — و210 نقرة
+          للموقع كلّه.** استعلامات «القيراط كم متر» يجيب عنها جوجل في النتيجة
+          نفسها فلا يدخل الزائر، ومن يدخل لا يجد **بابا واحداً إلى العقارات**:
+          الصفحة تحوّل ولا تعرض. وهذه الوحدة تعرف دولتها (`u.country`) فالسوق
+          معروفٌ بلا تخمين — والرابط يمرّر سُلطة هذه الصفحات إلى صفحات البيع
+          بدل أن تُهدر، ويحوّل زائراً يقيس أرضاً إلى زائرٍ يبحث عنها. */}
+      {marketCode && (
+        <section className="mb-8 rounded-2xl bg-primary-50 ring-1 ring-primary/10 p-5 sm:p-6">
+          <h2 className="text-h3 text-ink">
+            تبحث عن أرض أو عقار في {country?.name}؟
+          </h2>
+          <p className="mt-1.5 text-body leading-relaxed text-muted">
+            حوّلتَ المساحة — والخطوة التالية أن ترى ما هو معروضٌ فعلاً بهذه المساحة
+            وسعرها ورقم صاحبها مباشرةً، بلا عمولة.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            <Link
+              href={`/${marketCode}/properties`}
+              className="rounded-xl bg-primary px-5 py-2.5 text-body font-bold text-white transition-colors hover:bg-primary-600"
+            >
+              عقارات {country?.name}
+            </Link>
+            <Link
+              href={`/${marketCode}/requests`}
+              className="rounded-xl bg-white px-5 py-2.5 text-body font-bold text-ink ring-1 ring-ink/10 transition-colors hover:bg-cream"
+            >
+              من يبحث الآن
+            </Link>
           </div>
         </section>
       )}

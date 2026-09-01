@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { isMarket, MARKET_NAMES, type MarketCode } from "@/lib/markets";
 import Link from "@/components/nav/MarketLink";
 import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -26,6 +27,8 @@ interface ArticleCard {
   author_name: string; reading_minutes: number; published_at: string | null;
 }
 interface Article extends ArticleCard {
+  /** رمز سوق المقال — فارغ يعني مقالاً عامّاً. */
+  country_code?: string | null;
   body: string;
   meta_title: string; meta_description: string; meta_keywords: string;
   updated_at: string; views_count: number; tags: string[];
@@ -89,6 +92,11 @@ export default async function ArticlePage(
   if (!a) notFound();
 
   const url = `${SITE_URL}/blog/${slug}`;
+  // سوق المقال — يُبنى منه رابطٌ دقيق بدل مسارٍ مجرّد يُحوَّل إلى الافتراضيّ.
+  const market = isMarket((a.country_code || "").toLowerCase())
+    ? (a.country_code as string).toLowerCase()
+    : null;
+  const marketName = market ? MARKET_NAMES[market as MarketCode] : "";
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
@@ -171,7 +179,16 @@ export default async function ArticlePage(
         <p className="text-white/80 text-sm mb-4">انشره مجاناً على مسكني ويصلك الباحث على رقمك مباشرة — بلا عمولة.</p>
         <div className="flex flex-wrap gap-2 justify-center">
           <Link href="/properties/create" className="inline-block bg-white text-primary font-bold rounded-xl px-6 py-2.5 hover:bg-white/90 transition-colors">أضِف عقارك مجاناً</Link>
-          <Link href="/properties" className="inline-block border border-white/60 text-white font-bold rounded-xl px-6 py-2.5 hover:bg-white/10 transition-colors">تصفّح العقارات</Link>
+          {/* ⚠️ **رابطٌ إلى سوق المقال لا إلى مسارٍ يُحوَّل.** كان `/properties`
+              وهو تحويلة 308 إلى السوق الافتراضيّ — فمقالٌ عن الطابو العراقيّ
+              يُنزل قارئه في سوق اليمن. والمقال صار يحمل سوقه (`country_code`)
+              فالرابط يصير دقيقاً، والمقال العامّ يبقى على المسار المجرّد. */}
+          <Link
+            href={market ? `/${market}/properties` : "/properties"}
+            className="inline-block border border-white/60 text-white font-bold rounded-xl px-6 py-2.5 hover:bg-white/10 transition-colors"
+          >
+            {market ? `تصفّح عقارات ${marketName}` : "تصفّح العقارات"}
+          </Link>
         </div>
       </div>
 

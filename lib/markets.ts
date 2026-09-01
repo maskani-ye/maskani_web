@@ -14,6 +14,22 @@ export type MarketCode = (typeof MARKETS)[number];
 
 export const DEFAULT_MARKET: MarketCode = "ye";
 
+/**
+ * اسم كل سوق بالعربية — للنصوص التي تُبنى في الخادم قبل تحميل سياق الدول.
+ *
+ * ⚠️ **مصدرٌ واحد لا نسخةٌ في كل صفحة.** الأسماء تُكتب في نصوص الروابط
+ * («تصفّح عقارات العراق») وفي عناوين الصفحات، وتكرارها يعني أنّ تصحيح اسمٍ
+ * واحد يحتاج تعقّبه في ملفّات شتّى.
+ */
+export const MARKET_NAMES: Record<MarketCode, string> = {
+  ye: "اليمن",
+  sa: "السعودية",
+  jo: "الأردن",
+  eg: "مصر",
+  iq: "العراق",
+  om: "عُمان",
+};
+
 export function isMarket(code: string | undefined | null): code is MarketCode {
   return !!code && (MARKETS as readonly string[]).includes(code.toLowerCase());
 }
