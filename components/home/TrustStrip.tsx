@@ -56,13 +56,16 @@ export function TrustStrip() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* ⚠️ **عمودٌ واحد على الجوال كان يمدّ القسم إلى ألف بكسل** — خُمس
+          الصفحة لأربع بطاقاتٍ نصّها سطران. البطاقة تحتمل عمودين على 390 بكسل
+          (أيقونة 44 + نصّ قصير)، فالتقسيم يوفّر نصف الارتفاع بلا حذف كلمة. */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {SIGNALS.map(({ Icon, title, body, href, cta }) => (
           <div
             key={title}
-            className="bg-white rounded-2xl p-6 ring-1 ring-ink/[0.06] flex flex-col"
+            className="bg-white rounded-2xl p-4 sm:p-6 ring-1 ring-ink/[0.06] flex flex-col"
           >
-            <span className="w-11 h-11 rounded-xl bg-primary-50 text-primary flex items-center justify-center mb-4">
+            <span className="w-11 h-11 rounded-xl bg-primary-50 text-primary flex items-center justify-center mb-3 sm:mb-4">
               <Icon weight="Bold" className="h-5 w-5" />
             </span>
             <h3 className="text-h3 text-ink">{title}</h3>

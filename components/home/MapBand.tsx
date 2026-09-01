@@ -43,6 +43,8 @@ export function MapBand({
   const holder = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
   const [pins, setPins] = useState<Pin[] | null>(null);
+  /** العدد الحقيقيّ من الخادم — النقاط المرسَلة مقصوصة، فلا تصلح للعرض. */
+  const [total, setTotal] = useState<number | null>(null);
 
   useEffect(() => {
     const el = holder.current;
@@ -61,8 +63,11 @@ export function MapBand({
     if (cityId) params.city = cityId;
     else if (countryCode) params.country = countryCode;
     api
-      .get<{ results?: Pin[] }>("/properties/map/", { params })
-      .then((r) => setPins(r.data.results ?? []))
+      .get<{ results?: Pin[]; count?: number }>("/properties/map/", { params })
+      .then((r) => {
+        setPins(r.data.results ?? []);
+        setTotal(typeof r.data.count === "number" ? r.data.count : null);
+      })
       .catch(() => setPins([]));
   }, [visible, cityId, countryCode]);
 
@@ -91,18 +96,22 @@ export function MapBand({
             ما حوله من طرق وخدمات، ثم تواصل مع المالك مباشرةً.
           </p>
 
-          <dl className="flex flex-wrap gap-x-8 gap-y-4 mt-7">
-            <div>
-              <dt className="text-caption text-white/55">عقارات بموقع محدّد</dt>
-              <dd className="text-h2 tabular-nums mt-0.5">
-                {points.length.toLocaleString(NUMERIC_LOCALE)}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-caption text-white/55">تصفّح</dt>
-              <dd className="text-h2 mt-0.5">بالحيّ لا بالقائمة</dd>
-            </div>
-          </dl>
+          {/* ⚠️ **كان رقماً وشعاراً في قائمة إحصاءات واحدة.**
+              «٥٠٠» و«بالحيّ لا بالقائمة» تحت وسمَي `dt/dd` بمقاس واحد: أحدهما
+              قياسٌ والآخر عبارة تسويقية، فيقرؤهما الزائر إحصاءين ولا يجد للثاني
+              معنًى — وعرضاهما متباعدان جداً فيبدو الصفّ مائلاً.
+              **والرقم كان كاذباً**: نقاط الخريطة مقصوصة عند 500 في الخادم،
+              فكانت السعودية (2,947 عقاراً بإحداثيات) تقول «٥٠٠». الآن العدد
+              الحقيقيّ من `count`، والعبارة التسويقية حُذفت — العنوان فوقها
+              يقولها أصلاً. */}
+          <p className="mt-7 flex items-baseline gap-3">
+            <span className="text-display tabular-nums">
+              {(total ?? points.length).toLocaleString(NUMERIC_LOCALE)}
+            </span>
+            <span className="text-body-lg text-white/60">
+              عقاراً بموقعه الدقيق على الخريطة
+            </span>
+          </p>
 
           <Link
             href={href}

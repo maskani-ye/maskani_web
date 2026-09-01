@@ -267,8 +267,14 @@ export default function HomeClient({
             <div className="sm:col-span-2 lg:row-span-2">
               <PropertyCard property={spotlight} variant="featured" />
             </div>
-            {grid.map((p) => (
-              <PropertyCard key={p.id} property={p} />
+            {/* ⚠️ **خمس بطاقات مرصوصة = 2,362 بكسل، رُبع الصفحة على الجوال.**
+                البطاقة الواحدة ≈470 بكسل، والزائر لا يمسح خمساً قبل أن يقرّر —
+                يمسح اثنتين أو ثلاثاً ثم ينقر «عرض الكل». الأخيرتان تظهران من
+                640 بكسل فصاعداً حيث تصطفّان في عمودين ولا تكلّفان ارتفاعاً. */}
+            {grid.map((p, i) => (
+              <div key={p.id} className={i >= 2 ? "hidden sm:block" : undefined}>
+                <PropertyCard property={p} />
+              </div>
             ))}
           </div>
         ) : (

@@ -17,11 +17,18 @@ const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1
  */
 const TAKE = 3;
 
-async function getArticles(): Promise<BlogCardData[]> {
+/**
+ * ⚠️ **كانت صفحة السعودية تعرض مقالات عن عُمان.** المقالات مولَّدة بمواضيع
+ * خاصّة بكل سوق (الصكّ ≠ سند الملكية ≠ الطابو)، فمقالٌ عن الدقم على واجهة
+ * الرياض محتوًى في غير موضعه — يضرّ الزائر وترتيب الصفحة معاً. الخادم صار
+ * يفلتر بـ`?country=`، ويضمّ المقالات العامّة (بلا سوق) إلى كل سوق.
+ */
+async function getArticles(market: string): Promise<BlogCardData[]> {
   try {
-    const res = await fetch(`${API}/blog/?limit=${TAKE}&offset=0`, {
-      next: { revalidate: 3600 },
-    });
+    const res = await fetch(
+      `${API}/blog/?limit=${TAKE}&offset=0&country=${market.toUpperCase()}`,
+      { next: { revalidate: 3600 } },
+    );
     if (!res.ok) return [];
     return (await res.json()).results ?? [];
   } catch {
@@ -29,8 +36,8 @@ async function getArticles(): Promise<BlogCardData[]> {
   }
 }
 
-export default async function HomeBlogLinks() {
-  const articles = await getArticles();
+export default async function HomeBlogLinks({ market }: { market: string }) {
+  const articles = await getArticles(market);
   if (!articles.length) return null;
 
   return (
