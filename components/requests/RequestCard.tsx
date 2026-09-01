@@ -38,6 +38,18 @@ import {
   offerTypeLabels,
 } from "@/lib/utils";
 
+/**
+ * صيغة العرض في جملةٍ عربية سليمة.
+ *
+ * ⚠️ اشتقاقُها من `offerTypeLabels` بإضافة لام يُنتج «مطلوب شقة **للإيجار
+ * شهري** في إب» — تركيبٌ مكسور. الجدول الصريح أقصر من التحايل النحويّ وأصحّ.
+ */
+const FOR_OFFER: Record<string, string> = {
+  sale: "للبيع",
+  rent_monthly: "للإيجار الشهري",
+  rent_yearly: "للإيجار السنوي",
+};
+
 /** بيانات بطاقة الطلب العقاري — متوافق بنيوياً مع كائنات الطلب في الصفحات. */
 export interface RequestCardData {
   id: number;
@@ -69,6 +81,19 @@ export function RequestCard({ request: req }: { request: RequestCardData }) {
   // ميزانيةٌ حقيقية = رقم موجب. الصفر والفراغ يعنيان «مفتوحة» لا «بلا مقابل».
   const hasBudget = Number(req.budget_max) > 0;
 
+  // ⚠️ **البديل كان اسم صاحب الطلب** — «عبدالرحمن يبحث عن عقار» على خمس
+  // بطاقات متجاورة، فلا يفرّق بينها شيء. والاسم لا يعني الباحثَ في شيء أصلاً؛
+  // ما يعنيه **ما يُطلَب وأين**. فالبديل يُركَّب من حقول الطلب نفسها بنفس
+  // صيغة العناوين المكتوبة بيد أصحابها («مطلوب شقة للإيجار في إب»).
+  const composed = [
+    "مطلوب",
+    type || "عقار",
+    FOR_OFFER[req.offer_type ?? ""] ?? "",
+    req.city_name ? `في ${req.city_name}` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <Link href={`/requests/${req.id}`} className={CARD_SHELL}>
       <div className={CARD_PAD}>
@@ -79,7 +104,7 @@ export function RequestCard({ request: req }: { request: RequestCardData }) {
                 («عبدالرحمن يبحث عن…»)، فالقصّ عند سطرٍ واحد يمحو ما يفرّقها.
                 والحجز يجعل كل البطاقات بارتفاع واحد. */}
             <h3 className="line-clamp-2 min-h-[2.6em] text-body font-bold leading-snug text-ink">
-              {req.title || `${req.client_name ?? "باحث"} يبحث عن عقار`}
+              {req.title || composed}
             </h3>
             <p className="mt-1 flex items-center gap-1.5 text-caption text-ink/70">
               <MapPoint className="h-4 w-4 shrink-0 text-muted" />
