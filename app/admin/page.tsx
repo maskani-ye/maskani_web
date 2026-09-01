@@ -68,8 +68,8 @@ const statusLabels: Record<string, string> = {
   available: "متاح", reserved: "محجوز", sold_rented: "مباع / مؤجّر",
 };
 
-const tooltipStyle = { fontFamily: "Cairo", borderRadius: 12, fontSize: 12 } as const;
-const axisTick = { fontFamily: "Cairo", fontSize: 11 } as const;
+const tooltipStyle = { fontFamily: "IBM Plex Sans Arabic", borderRadius: 12, fontSize: 12 } as const;
+const axisTick = { fontFamily: "IBM Plex Sans Arabic", fontSize: 11 } as const;
 
 // أيقونات Solar تُعرّف weight كنوع اتحادي، بينما StatCard/EmptyState تتوقّع
 // ComponentType بعرض أوسع. نُوسّع النوع لأيقونة تكفيها className (وهو ما تستخدمه هذه

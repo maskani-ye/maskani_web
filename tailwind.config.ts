@@ -114,7 +114,7 @@ const config: Config = {
         border: "#E5E7EB",
       },
       fontFamily: {
-        arabic: ["var(--font-cairo)", "Cairo", "Tajawal", "sans-serif"],
+        arabic: ["var(--font-plex)", "IBM Plex Sans Arabic", "Tajawal", "sans-serif"],
       },
 
       /**

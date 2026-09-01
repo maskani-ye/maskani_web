@@ -1,15 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Cairo } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "sonner";
 
-// خطّ Cairo ذاتيّ الاستضافة عبر next/font — غير حاجب للعرض (يحسّن LCP وCore Web
-// Vitals) بدل رابط Google Fonts. يُعرَّف كمتغيّر CSS يستهلكه Tailwind (font-arabic).
-const cairo = Cairo({
-  subsets: ["arabic", "latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+/**
+ * **IBM Plex Sans Arabic** — خطّ الواجهة.
+ *
+ * ⚠️ **مستضافٌ ذاتياً بملفّات WOFF2 لا من مزوّدٍ خارجيّ**: الملفّات الأصلية
+ * TTF بلغت 1.15 م.ب للأوزان الخمسة، وبعد التحويل **351 ك.ب** — وهذا يهمّ على
+ * الشبكات التي نخدمها. و`display: swap` يمنع حجب النصّ ريثما يُحمَّل.
+ *
+ * ⚠️ **الترخيص**: IBM Plex تحت SIL OFL ويسمح بالتضمين صراحةً. وفي المجلّد
+ * المصدر كان `HelveticaNeue.ttc` — **خطٌّ ملكيّ تجاريّ** يحتاج ترخيص ويب
+ * مدفوعاً، فلم يُضمَّن.
+ */
+const plex = localFont({
+  src: [
+    { path: "./fonts/IBMPlexSansArabic-Light.woff2", weight: "300", style: "normal" },
+    { path: "./fonts/IBMPlexSansArabic-Regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/IBMPlexSansArabic-Medium.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/IBMPlexSansArabic-SemiBold.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/IBMPlexSansArabic-Bold.woff2", weight: "700", style: "normal" },
+  ],
   display: "swap",
-  variable: "--font-cairo",
+  variable: "--font-plex",
 });
 import { AuthProvider } from "@/context/AuthContext";
 import { CityProvider } from "@/context/CityContext";
@@ -88,7 +102,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={cairo.variable}>
+    <html lang="ar" dir="rtl" className={plex.variable}>
       <body className="font-arabic antialiased bg-cream min-h-screen">
         <Analytics />
         <VisitTracker />
