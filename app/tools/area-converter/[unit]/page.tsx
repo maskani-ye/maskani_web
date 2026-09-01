@@ -136,7 +136,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
             {u.region ? ` (${u.region})` : ""}.
           </span>
         </p>
-        <div className="flex flex-wrap gap-2 mt-3 text-xs">
+        <div className="flex flex-wrap gap-2 mt-3 text-xs [&>*]:min-w-0">
           <span className="rounded-lg bg-gray-100 text-gray-600 px-2.5 py-1 font-semibold">
             {BASIS_LABEL[u.basis]}
           </span>
@@ -193,7 +193,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
               ? "قيم ثابتة لا تختلف بين منطقة وأخرى."
               : "اشتقاقات تحمل الاسم نفسه بقيم مختلفة — تأكّد أيّها المقصود في وثيقتك قبل الحساب."}
           </p>
-          <div className="grid sm:grid-cols-2 gap-2">
+          <div className="grid sm:grid-cols-2 gap-2 [&>*]:min-w-0">
             {siblings.map((s) => (
               <Link key={s.key} href={`/tools/area-converter/${s.slug}`}
                 className="rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 flex items-center justify-between gap-3 hover:border-primary transition-colors">
@@ -242,7 +242,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
 
       <section>
         <h2 className="text-lg font-bold text-ink mb-3">وحدات دول أخرى</h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 [&>*]:min-w-0">
           {ALL_UNITS.filter((x) => x.country !== u.country).slice(0, 18).map((x) => (
             <Link key={x.key} href={`/tools/area-converter/${x.slug}`}
               className="text-xs rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-gray-600 hover:border-primary hover:text-primary transition-colors">
