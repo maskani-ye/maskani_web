@@ -1,11 +1,16 @@
 "use client";
 
 /**
- * بطاقة عقار **مسطّحة** — لشاشة التصفّح وحدها، مطابقة للمرجع المعتمد.
+ * بطاقة عقار شاشة التصفّح — **وهيكلها العظميّ من الملفّ نفسه**.
  *
- * ⚠️ **بلا إطار ولا ظلّ ولا سطح**: البطاقة في المرجع صورةٌ ونصٌّ يقفان مباشرةً
- * على أرضية بيضاء. كل إطارٍ إضافي حول أربع بطاقات بجانب خريطة يُنتج شبكة خطوط
- * تتنافس مع خطوط الخريطة، فتبدو الشاشة مزدحمة. الفراغ هو ما يفصل، لا الخطوط.
+ * ⚠️ **الهيكل كان يَعِد بشكلٍ وتأتي البطاقة بشكلٍ آخر.** أثناء التحميل تظهر
+ * بطاقةٌ بيضاء بظلٍّ وحشو، ثم تحلّ محلّها بطاقةٌ مسطّحة بلا سطح: فيرى الزائر
+ * الشبكة **تتغيّر تحت عينه** في كل صفحة. وكان ذلك حتمياً لأنّ الهيكل مكتوبٌ
+ * بيده داخل صفحة القائمة والبطاقة في ملفّ آخر — نسختان تتباعدان مع كل تعديل.
+ *
+ * الآن `PropertyCardFlatSkeleton` يُصدَّر من هنا ويستعمل **ثوابت الغلاف نفسها**
+ * (`SHELL` · `MEDIA` · `PAD`)، فلا يمكن أن يفترقا: تعديل شكل البطاقة يُعدّل
+ * هيكلها في اللحظة نفسها.
  *
  * ⚠️ **ولا شارات فوق الصورة**: كانت البطاقة القديمة تحمل «للبيع» و«مالك موثّق»
  * و«انخفض السعر» — ثلاث رسائل تسبق السعر نفسه. المرجع يضع **السعر أوّلاً** لأنه
@@ -23,6 +28,14 @@ import { formatPrice, formatNumber, propertyTypeName } from "@/lib/utils";
 
 const PLACEHOLDER = "/placeholder.webp";
 
+/** غلاف البطاقة — سطحٌ أبيض بظلٍّ خفيف وزوايا كبيرة. */
+const SHELL =
+  "block overflow-hidden rounded-2xl bg-white shadow-e1 ring-1 ring-ink/[0.06] transition-all";
+/** كتلة الصورة — نسبة ٣:٢ لا ارتفاعاً ثابتاً: الثابت يشوّه الصورة على العروض المختلفة. */
+const MEDIA = "relative aspect-[3/2] w-full overflow-hidden bg-cream";
+/** حشو المحتوى — واحدٌ للبطاقة وهيكلها. */
+const PAD = "p-4";
+
 export function PropertyCardFlat({ property }: { property: Property }) {
   const imgs = (property.images ?? []).map((i) => i.image).filter(Boolean);
   const cover = property.main_image || imgs[0] || PLACEHOLDER;
@@ -34,11 +47,11 @@ export function PropertyCardFlat({ property }: { property: Property }) {
     .join(" — ");
 
   return (
-    <Link href={`/properties/${property.id}`} className="group block">
-      {/* ⚠️ **٣:٢ لا ٤:٣**: البطاقة بلا إطار، فالصورة هي كتلتها البصرية كلّها.
-          نسبة ٤:٣ ترفع ارتفاعها حتى يهبط السعر خارج النظرة الأولى — والمرجع
-          يضع السعر مباشرةً تحت صورة عريضة. */}
-      <div className="relative aspect-[3/2] w-full overflow-hidden rounded-xl bg-cream">
+    <Link href={`/properties/${property.id}`} className={`group ${SHELL} hover:shadow-e3`}>
+      {/* ⚠️ **٣:٢ لا ارتفاعاً ثابتاً**: الارتفاع الثابت يقصّ الصورة قصّاً
+          مختلفاً على كل عرض شاشة، والنسبة تُبقيها متّسقة — وتُبقي **موضع
+          السعر واحداً** في كل البطاقات، وهو محور المسح البصريّ. */}
+      <div className={MEDIA}>
         <Image
           src={cover}
           alt={property.title}
@@ -63,12 +76,13 @@ export function PropertyCardFlat({ property }: { property: Property }) {
       {/* ⚠️ **«السعر عند التواصل» ليس سعراً** — إظهاره بمقاس السعر البارز يمنح
           غيابَ المعلومة وزنَ المعلومة، ويجعل أربع بطاقات متطابقة بصرياً. حين
           لا رقم: سطرٌ هادئ بحجم النصّ العادي، والعنوان يأخذ الصدارة بدلاً منه. */}
+      <div className={PAD}>
       {hasPrice ? (
-        <p className="mt-3 text-h3 font-extrabold text-ink">
+        <p className="text-h3 font-extrabold text-ink">
           {formatPrice(property.price, property.currency)}
         </p>
       ) : (
-        <p className="mt-3 text-body font-bold text-ink line-clamp-1">{property.title}</p>
+        <p className="text-body font-bold text-ink line-clamp-1">{property.title}</p>
       )}
       {hasPrice ? null : (
         <p className="mt-0.5 text-caption text-muted">السعر عند التواصل</p>
@@ -104,7 +118,28 @@ export function PropertyCardFlat({ property }: { property: Property }) {
           <span>{propertyTypeName(property.property_type)}</span>
         )}
       </p>
+      </div>
     </Link>
+  );
+}
+
+/**
+ * هيكل البطاقة — **نفس الغلاف والنسبة والحشو**، فلا قفزة تخطيط عند الوصول.
+ *
+ * ⚠️ لا تنسخه إلى صفحةٍ أخرى: استورده. النسخة المنسوخة هي ما جعل الهيكل
+ * والبطاقة شكلين مختلفين أصلاً.
+ */
+export function PropertyCardFlatSkeleton() {
+  return (
+    <div className={`${SHELL} animate-pulse`} aria-hidden>
+      <div className={MEDIA} />
+      <div className={PAD}>
+        {/* الأشرطة بارتفاع أسطر البطاقة الحقيقية وترتيبها: سعر · موقع · تفاصيل */}
+        <div className="h-7 w-1/2 rounded bg-ink/[0.07]" />
+        <div className="mt-1 h-4 w-3/4 rounded bg-ink/[0.06]" />
+        <div className="mt-1.5 h-4 w-2/3 rounded bg-ink/[0.06]" />
+      </div>
+    </div>
   );
 }
 

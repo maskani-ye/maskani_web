@@ -10,7 +10,10 @@ import type { Property, City, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { PropertyCardFlat } from "@/components/properties/PropertyCardFlat";
+import {
+  PropertyCardFlat,
+  PropertyCardFlatSkeleton,
+} from "@/components/properties/PropertyCardFlat";
 import {
   Magnifer, SliderHorizontal, Buildings2, MapPoint, Bed, Bath,
   Ruler, Eye, Heart, AltArrowRight, AltArrowLeft, AltArrowDown,
@@ -530,15 +533,10 @@ function PropertiesContent() {
       {/* Properties Grid */}
       {loading ? (
         <div className="grid grid-cols-cards-sm gap-x-4 gap-y-6">
+          {/* ⚠️ **الهيكل من ملفّ البطاقة لا مكتوباً هنا.** النسخة اليدوية هي
+              ما جعلته يَعِد بشكلٍ ثمّ تأتي البطاقة بشكلٍ آخر. */}
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl card-shadow overflow-hidden animate-pulse">
-              <div className="h-44 bg-gray-200" />
-              <div className="p-4 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-3 bg-gray-200 rounded w-1/2" />
-                <div className="h-5 bg-gray-200 rounded w-1/3 mt-3" />
-              </div>
-            </div>
+            <PropertyCardFlatSkeleton key={i} />
           ))}
         </div>
       ) : properties.length === 0 ? (
