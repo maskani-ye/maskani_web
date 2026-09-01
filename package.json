@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prebuild": "npm run audit && tsx scripts/audit-broker-claim.ts && tsx scripts/audit-market-links.ts",
+    "prebuild": "npm run audit && tsx scripts/audit-broker-claim.ts && tsx scripts/audit-market-links.ts && tsx scripts/audit-single-market-claim.ts",
     "audit": "npm run audit:ads && npm run audit:units && npm run audit:digits && npm run audit:notfound && npm run audit:design",
     "audit:ads": "tsx scripts/audit-ads.ts",
     "audit:notfound": "tsx scripts/audit-notfound-cache.ts",

@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "مسكني — المنصة العقارية الاجتماعية",
     short_name: "مسكني",
     description:
-      "منصة عقارية اجتماعية في اليمن — بيع وإيجار العقارات، خدمات، طلبات، ومجتمع لمكافحة الاحتيال العقاري.",
+      "منصة عقارية اجتماعية في ستّة أسواق عربية — بيع وإيجار العقارات، خدمات، طلبات، ومجتمع لمكافحة الاحتيال العقاري.",
     start_url: "/",
     display: "standalone",
     background_color: "#F6F6FB",

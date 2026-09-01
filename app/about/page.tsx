@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "من نحن — مسكني",
   description:
-    "مسكني منصّة عقارية عربية تربط صاحب العقار بالباحث عنه مباشرةً بلا عمولة، في اليمن والسعودية والأردن ومصر والعراق.",
+    "مسكني منصّة عقارية عربية تربط صاحب العقار بالباحث عنه مباشرةً بلا عمولة، في السعودية والأردن ومصر والعراق وعُمان واليمن.",
   alternates: { canonical: "/about" },
 };
 
@@ -56,12 +56,13 @@ export default function AboutPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-bold text-ink">أين نعمل</h2>
         <p className="text-gray-600 leading-relaxed">
-          نغطّي خمسة أسواق بمدنها وأحيائها:{" "}
+          نغطّي ستّة أسواق بمدنها وأحيائها:{" "}
           <Link href="/properties/country/yemen" className="text-primary hover:underline">اليمن</Link> ·{" "}
           <Link href="/properties/country/saudi-arabia" className="text-primary hover:underline">السعودية</Link> ·{" "}
           <Link href="/properties/country/jordan" className="text-primary hover:underline">الأردن</Link> ·{" "}
           <Link href="/properties/country/egypt" className="text-primary hover:underline">مصر</Link> ·{" "}
-          <Link href="/properties/country/iraq" className="text-primary hover:underline">العراق</Link>
+          <Link href="/properties/country/iraq" className="text-primary hover:underline">العراق</Link> ·{" "}
+          <Link href="/properties/country/oman" className="text-primary hover:underline">عُمان</Link>
           {" "}— لكلٍّ منها عملته ووحدات مساحته ومصطلحاته العقارية، لأن سوقاً لا
           يُقاس بمقاييس سوقٍ آخر.
         </p>

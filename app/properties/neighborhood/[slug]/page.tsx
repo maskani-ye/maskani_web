@@ -28,6 +28,7 @@ interface Neighborhood {
   slug: string;
   city: number;
   city_name: string;
+  country_name?: string | null;
   properties_count?: number;
 }
 
@@ -92,13 +93,15 @@ export async function generateMetadata(
   const hood = await resolveNeighborhood(slug);
   if (!hood) return {};
   const title = `عقارات في ${hood.name} — ${hood.city_name} | شقق وفلل وأراضٍ`;
-  const description = `أحدث العقارات في حي ${hood.name} بمحافظة ${hood.city_name}: شقق وفلل وأراضٍ للبيع والإيجار على مسكني، مع الأسعار والصور والتواصل المباشر بلا عمولات.`;
+  const description = `أحدث العقارات في حي ${hood.name} — ${hood.city_name}: شقق وفلل وأراضٍ للبيع والإيجار على مسكني، مع الأسعار والصور والتواصل المباشر بلا عمولات.`;
   return {
     title,
     description,
     keywords: [
       `عقارات ${hood.name}`, `شقق ${hood.name}`, `أراضي ${hood.name}`,
-      `عقارات ${hood.city_name}`, "عقارات اليمن",
+      // ⚠️ نفس عطل صفحة المدينة: «عقارات اليمن» على حيٍّ في الرياض.
+      `عقارات ${hood.city_name}`,
+      hood.country_name ? `عقارات ${hood.country_name}` : "عقارات",
     ],
     alternates: { canonical: `/properties/neighborhood/${hood.slug}` },
     openGraph: {

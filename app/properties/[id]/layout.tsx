@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+
+import { NUMERIC_LOCALE } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import SimilarProperties from "@/components/properties/SimilarProperties";
 
@@ -73,7 +75,21 @@ export async function generateMetadata(
   const { id } = await params;
   const l = await getProperty(id);
   if (!l || l === "NOT_FOUND") return {};
-  const title: string = l.meta_title || (l.city_name ? `${l.title} — ${l.city_name}` : l.title);
+  // ⚠️ **عناوين متطابقة على صفحاتٍ مختلفة.**
+  //
+  // قياس 2026-09-01: **226 عقاراً** تتشارك عنواناً وحرفياً مع عقارٍ آخر في
+  // المدينة نفسها — «شقة للبيع في شارع ناردين» خمس مرّات. وهي وحداتٌ مختلفة
+  // فعلاً (أسعارها ومساحاتها تختلف)، لكنّ جوجل يرى خمس صفحات بعنوان `<title>`
+  // واحد فيقيسها تكراراً ويطوي أربعاً منها.
+  //
+  // التمييز يأتي ممّا **يفرّقها حقاً**: المساحة والسعر — وهما ما يبحث عنه
+  // القارئ أصلاً، فالعنوان يصير أنفع لا أطول فحسب.
+  const marks = [
+    l.area ? `${Number(l.area).toLocaleString(NUMERIC_LOCALE)} م²` : "",
+    l.city_name || "",
+  ].filter(Boolean);
+  const title: string =
+    l.meta_title || [l.title, ...marks].join(" — ");
   const description: string | undefined =
     l.meta_description || (l.description || "").slice(0, 160) || undefined;
   const keywords: string | undefined = l.meta_keywords || undefined;

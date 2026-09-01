@@ -25,6 +25,8 @@ interface City {
   id: number;
   name_ar: string;
   name_en: string;
+  /** اسم الدولة من الخادم — تُبنى منه الكلمة المفتاحية بدل «اليمن» الثابتة. */
+  country_name?: string | null;
 }
 
 interface PropertyRow {
@@ -113,7 +115,11 @@ export async function generateMetadata(
     ...(stock === 0 ? { robots: { index: false, follow: true } } : {}),
     keywords: [
       `عقارات ${city.name_ar}`, `شقق للإيجار ${city.name_ar}`, `شقق للبيع ${city.name_ar}`,
-      `أراضي ${city.name_ar}`, `فلل ${city.name_ar}`, "عقارات اليمن",
+      `أراضي ${city.name_ar}`, `فلل ${city.name_ar}`,
+      // ⚠️ **كانت «عقارات اليمن» على كل مدينة** — بما فيها الرياض والقاهرة
+      // وبغداد. كلمةٌ مفتاحية تناقض محتوى الصفحة تُضعف صلتها لا تقوّيها،
+      // وتُقرأ حشواً. الدولة تُقرأ من المدينة نفسها.
+      city.country_name ? `عقارات ${city.country_name}` : "عقارات",
     ],
     alternates: { canonical: `/properties/city/${slug}` },
     openGraph: {
