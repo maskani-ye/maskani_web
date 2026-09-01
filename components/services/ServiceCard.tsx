@@ -1,8 +1,27 @@
 "use client";
 
+/**
+ * بطاقة مزوّد خدمة — أُعيد بناؤها من الصفر (2026-09-01).
+ *
+ * ⚠️ **الترتيب كان مقلوباً**: الاسم («عبدالرحمن») أبرز من الخدمة («مقاول
+ * بناء»). ومن يتصفّح هذه الشاشة يبحث عن **خدمة** لا عن شخص — لا يعرف الأسماء
+ * أصلاً. فالخدمة صارت العنوان، والاسم سطراً ثانوياً تحته.
+ *
+ * ⚠️ **وتكرارٌ ظاهر**: شارة «مقاول» تحت الاسم، ثمّ «مقاول بناء» سطراً تحتها —
+ * المعلومة نفسها مرّتين في بطاقةٍ لا تتّسع لمرّة.
+ *
+ * ⚠️ **و«لا يوجد تقييم بعد» بلونٍ باهت** في موضع التقييم: جملةٌ سلبية تُقال
+ * لكل مزوّدٍ جديد. الغياب لا يُعلَن — يُترك المكان لما ينفع (الخبرة والمدن).
+ *
+ * ⚠️ **وزرّ «تواصل» كان نصّاً صغيراً في زاوية**: وهو **الفعل الوحيد** الذي
+ * تريده البطاقة. صار زرّاً كامل العرض في الذيل.
+ */
+
 import Link from "next/link";
-import { StarRating } from "@/components/ui/StarRating";
-import { User, CheckCircle, MapPoint, Phone } from "@solar-icons/react";
+import { User, CheckCircle, MapPoint, Phone, Star } from "@solar-icons/react";
+
+import { CARD_FOOT, CARD_PAD, CARD_SHELL } from "@/components/cards/shell";
+import { formatNumber } from "@/lib/utils";
 
 /** بيانات بطاقة مزوّد الخدمة — متوافق بنيوياً مع كائنات الخدمة في الصفحات. */
 export interface ServiceCardData {
@@ -20,60 +39,103 @@ export interface ServiceCardData {
 }
 
 const categoryName = (cat: unknown): string =>
-  cat && typeof cat === "object" ? ((cat as { name_ar?: string }).name_ar ?? "") : (typeof cat === "string" ? cat : "");
+  cat && typeof cat === "object"
+    ? ((cat as { name_ar?: string }).name_ar ?? "")
+    : typeof cat === "string"
+      ? cat
+      : "";
 
 /**
  * بطاقة مزوّد خدمة موحّدة — مصدر واحد لكل الصفحات (القائمة/الرئيسية/الملف).
  * ❌ لا تُكرّر بطاقة خدمة في أي صفحة.
  */
 export function ServiceCard({ provider: p }: { provider: ServiceCardData }) {
+  const cat = categoryName(p.category);
+  const rated = Number(p.average_rating) > 0;
+
   return (
-    <Link href={`/services/${p.id}`}>
-      <div className="bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-200 p-5 cursor-pointer h-full">
-        <div className="flex items-start gap-3 mb-3">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
+    <Link href={`/services/${p.id}`} className={CARD_SHELL}>
+      <div className={CARD_PAD}>
+        <div className="flex items-start gap-3">
+          {/* الصورة الشخصية مرساةُ البطاقة — وهي الكيان الوحيد هنا الذي قد
+              تكون له صورة حقيقية، فتُستعمل حين توجد. */}
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-primary-50 text-primary-400">
             {p.user_avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={p.user_avatar} alt={p.title || "مزوّد خدمة"} className="w-full h-full object-cover" />
+              <img
+                src={p.user_avatar}
+                alt=""
+                aria-hidden
+                className="h-full w-full object-cover"
+              />
             ) : (
-              <User className="h-6 w-6 text-primary" />
+              <User weight="Bold" className="h-5 w-5" />
             )}
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-1">
-              <span className="font-bold text-gray-900 text-sm truncate">{p.user_name}</span>
-              {p.user_verified && <CheckCircle className="h-3.5 w-3.5 text-primary shrink-0" />}
-            </div>
-            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-              {categoryName(p.category)}
-            </span>
+          </span>
+
+          <div className="min-w-0 flex-1">
+            {/* **الخدمة هي العنوان** — لا اسم صاحبها. */}
+            <h3 className="line-clamp-2 min-h-[2.6em] text-body font-bold leading-snug text-ink">
+              {p.title || cat || "مزوّد خدمة"}
+            </h3>
+            <p className="mt-1 flex items-center gap-1 text-caption text-ink/70">
+              <span className="truncate">{p.user_name}</span>
+              {p.user_verified && (
+                <CheckCircle
+                  weight="Bold"
+                  className="h-3.5 w-3.5 shrink-0 text-primary-400"
+                  aria-label="حساب موثّق"
+                />
+              )}
+            </p>
           </div>
         </div>
-        <p className="font-semibold text-gray-800 text-sm mb-1 line-clamp-1">{p.title}</p>
-        <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
-          {p.experience_years != null && <span>{p.experience_years} سنة خبرة</span>}
-          {p.cities_names && p.cities_names.length > 0 && (
-            <span className="flex items-center gap-0.5"><MapPoint className="h-3 w-3 text-primary" />{p.cities_names.slice(0, 2).join("، ")}</span>
+
+        {/* ما يفرّق مزوّداً عن آخر: تخصّصه وخبرته وأين يعمل. */}
+        <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          {cat && (
+            <span className="inline-flex shrink-0 items-center rounded-full bg-primary-50 px-2.5 py-1 text-caption font-bold text-primary-400">
+              {cat}
+            </span>
+          )}
+          {p.experience_years != null && p.experience_years > 0 && (
+            <span className="text-caption text-muted">
+              {formatNumber(p.experience_years)} سنة خبرة
+            </span>
           )}
         </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            {p.average_rating ? (
-              <>
-                <StarRating rating={p.average_rating} size="sm" />
-                <span className="text-xs text-gray-400">({p.reviews_count})</span>
-              </>
-            ) : (
-              <span className="text-xs text-gray-400">لا يوجد تقييم بعد</span>
-            )}
-          </div>
+
+        {p.cities_names && p.cities_names.length > 0 && (
+          <p className="mt-2 flex items-center gap-1.5 text-caption text-muted">
+            <MapPoint className="h-4 w-4 shrink-0" />
+            <span className="truncate">{p.cities_names.slice(0, 3).join(" · ")}</span>
+          </p>
+        )}
+
+        <div className={CARD_FOOT}>
+          {/* التقييم يظهر حين يوجد فقط — غيابه لا يُعلَن. */}
+          {rated ? (
+            <span className="inline-flex items-center gap-1 text-caption font-bold text-ink">
+              <Star weight="Bold" className="h-3.5 w-3.5 text-gold-600" />
+              {Number(p.average_rating).toFixed(1)}
+              <span className="font-normal text-muted">
+                ({formatNumber(p.reviews_count ?? 0)})
+              </span>
+            </span>
+          ) : (
+            <span aria-hidden />
+          )}
+
           {p.contact_phone && (
-            <a href={`tel:${p.contact_phone}`} onClick={(e) => e.stopPropagation()} className="text-xs text-primary flex items-center gap-1 font-semibold hover:underline">
-              <Phone className="h-3 w-3" /> تواصل
-            </a>
+            <span className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-caption font-bold text-white transition-colors group-hover:bg-primary-600">
+              <Phone weight="Bold" className="h-4 w-4" />
+              تواصل
+            </span>
           )}
         </div>
       </div>
     </Link>
   );
 }
+
+export default ServiceCard;
