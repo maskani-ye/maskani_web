@@ -153,17 +153,25 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
 
       <section className="mb-8">
         <h2 className="text-lg font-bold text-ink mb-3">جدول تحويل جاهز</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[420px]">
+        {/* ⚠️ **هذه الصفحة وحدها كانت تنزلق أفقياً** (فائض 122px عند 320،
+            و52 عند 390). السبب `min-w-[420px]` على الجدول: الحاوية
+            `overflow-x-auto` تفترض أنّها تحتويه، لكنّ المحتوى في RTL يخرج
+            بإحداثيّ **سالب** من اليسار فيمدّ مساحة تمرير المستند نفسه — وهو
+            ما جعل كاشفي الأوّل يقول «فائض 122 وصفر عنصر متجاوز»، لأنّه كان
+            يقيس الحافّة اليمنى وحدها.
+            و`max-w-full` على الجدول يجعله يتقلّص بدل أن يفرض عرضاً، فيبقى
+            التمرير داخل الحاوية لمن يحتاجه ولا تنزلق الصفحة. */}
+        <div className="w-full max-w-full overflow-x-auto">
+          <table className="w-full max-w-full text-caption tabular-nums">
             <thead>
-              <tr className="text-xs text-gray-400 text-right border-b border-gray-100">
+              <tr className="border-b border-ink/10 text-start text-caption text-muted">
                 <th className="pb-2 font-medium">{u.short}</th>
                 {targets.map((t) => <th key={t.name} className="pb-2 font-medium">{t.name}</th>)}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-ink/[0.06]">
               {quick.map((q) => (
-                <tr key={q} className="text-gray-700 tabular-nums">
+                <tr key={q} className="text-ink/80">
                   <td className="py-2 font-bold text-ink">{q}</td>
                   {targets.map((t) => (
                     <td key={t.name} className="py-2">{fmt((q * u.m2) / t.m2)}</td>

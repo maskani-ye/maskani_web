@@ -283,7 +283,7 @@ export default function AdminSeoPage() {
               <SectionHeader icon={<Ranking className="h-5 w-5" />} title="فرص قريبة"
                              subtitle="كلمات ترتيبك فيها 4–20: دفعة صغيرة تنقلها إلى الثلاثة الأوائل حيث النقرات" />
               <div className="mt-4 overflow-x-auto">
-                <table className="w-full text-sm min-w-[560px]">
+                <table className="w-full max-w-full text-sm">
                   <thead>
                     <tr className="text-xs text-gray-400 text-right">
                       <th className="pb-2 font-medium">الكلمة</th>

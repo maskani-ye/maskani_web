@@ -9,6 +9,8 @@
     "audit": "npm run audit:ads && npm run audit:units && npm run audit:digits && npm run audit:notfound && npm run audit:design",
     "audit:ads": "tsx scripts/audit-ads.ts",
     "audit:notfound": "tsx scripts/audit-notfound-cache.ts",
+    "audit:overflow": "node scripts/audit-overflow.mjs",
+    "audit:spacing": "node scripts/audit-spacing.mjs",
     "audit:design": "tsx scripts/audit-design-system.ts",
     "audit:responsive": "tsx scripts/audit-responsive.ts",
     "start": "next start",

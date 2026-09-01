@@ -73,20 +73,24 @@ export function PropertyCardFlat({ property }: { property: Property }) {
         )}
       </div>
 
-      {/* ⚠️ **«السعر عند التواصل» ليس سعراً** — إظهاره بمقاس السعر البارز يمنح
-          غيابَ المعلومة وزنَ المعلومة، ويجعل أربع بطاقات متطابقة بصرياً. حين
-          لا رقم: سطرٌ هادئ بحجم النصّ العادي، والعنوان يأخذ الصدارة بدلاً منه. */}
       <div className={PAD}>
+      {/* ⚠️ **العنوان كان يختفي كلّما وُجد سعر.** كانت البطاقة تعرض السعر *أو*
+          العنوان لا كليهما، فما إنْ يُذكر السعر حتى تصير البطاقة رقماً ومدينةً
+          بلا وصفٍ لما يُباع — و«أرض للبيع في حي بني كلب» هو أنفع نصٍّ فيها.
+          الآن السعر أوّلاً (محور المسح البصريّ) والعنوان تحته دائماً. */}
       {hasPrice ? (
         <p className="text-h3 font-extrabold text-ink">
           {formatPrice(property.price, property.currency)}
         </p>
       ) : (
-        <p className="text-body font-bold text-ink line-clamp-1">{property.title}</p>
+        <p className="text-body font-bold text-ink">السعر عند التواصل</p>
       )}
-      {hasPrice ? null : (
-        <p className="mt-0.5 text-caption text-muted">السعر عند التواصل</p>
-      )}
+
+      {/* ⚠️ **سطران محجوزان**: عناوين العقارات متفاوتة الطول، والحجز يُبقي
+          البطاقات بارتفاعٍ واحد فلا يتعرّج الصفّ. */}
+      <h3 className="mt-1 line-clamp-2 min-h-[2.6em] text-body font-semibold leading-snug text-ink/90">
+        {property.title}
+      </h3>
 
       <p className="mt-1 flex items-center gap-1.5 text-caption text-ink/70">
         <MapPoint className="h-4 w-4 shrink-0 text-muted" />
