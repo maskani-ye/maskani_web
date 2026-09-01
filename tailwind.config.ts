@@ -114,7 +114,10 @@ const config: Config = {
         border: "#E5E7EB",
       },
       fontFamily: {
-        arabic: ["var(--font-plex)", "IBM Plex Sans Arabic", "Tajawal", "sans-serif"],
+        // ⚠️ **بلا `Tajawal` في سلسلة الاحتياط.** لا نُحمّل الخطّ، فكان يظهر عند
+        // من يملكه مثبَّتاً على جهازه وحده — فيرى رسماً مختلفاً عن بقيّة
+        // المستخدمين. الاحتياط الصحيح `system-ui`: خطّ النظام، معروفٌ أنّه بديل.
+        arabic: ["var(--font-plex)", "IBM Plex Sans Arabic", "system-ui", "sans-serif"],
       },
 
       /**

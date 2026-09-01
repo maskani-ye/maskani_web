@@ -21,7 +21,7 @@ html {
 }
 
 body {
-  font-family: "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
   background-color: var(--cream);
   color: #050536;
   min-height: 100vh;
@@ -68,7 +68,7 @@ body {
 }
 
 /* ─── Leaflet Map (ألوان مسكني + RTL) ────────────────────────────── */
-.maskani-map { font-family: "IBM Plex Sans Arabic", "Tajawal", sans-serif; }
+.maskani-map { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; }
 .leaflet-container { font-family: inherit; background: #e8eef0; }
 
 /* أيقونة العلامة المخصّصة — بلا خلفية */
@@ -85,7 +85,7 @@ body {
   background-color: #171539;
   color: #fff;
   font-weight: 700;
-  font-family: "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
 }
 
 /* نافذة العلامة (popup) */
@@ -93,7 +93,7 @@ body {
 .leaflet-popup-content { margin: 0.5rem; }
 
 /* الإسناد + أدوات التحكّم بمحاذاة RTL-aware */
-.leaflet-control-attribution { font-family: "IBM Plex Sans Arabic", "Tajawal", sans-serif; font-size: 10px; direction: ltr; }
+.leaflet-control-attribution { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; font-size: 10px; direction: ltr; }
 
 /* ─── محتوى مقال المدونة (article-body) ─────────────────────────────── */
 .article-body h2 { font-size: 1.3rem; font-weight: 800; color: #050536; margin: 1.9rem 0 0.6rem; }
