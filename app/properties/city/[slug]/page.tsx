@@ -27,6 +27,8 @@ interface City {
   name_en: string;
   /** اسم الدولة من الخادم — تُبنى منه الكلمة المفتاحية بدل «اليمن» الثابتة. */
   country_name?: string | null;
+  /** المخزون — يقرّر أيّ مدينة تُبنى سلفاً وأيّها تُؤجَّل. */
+  properties_count?: number;
 }
 
 interface PropertyRow {
@@ -92,10 +94,26 @@ async function getCityProperties(cityId: number): Promise<{ items: PropertyRow[]
 // مدن دولة جديدة لا توجد في قائمة البناء السابقة — تُبنى عند أوّل طلب.
 export const dynamicParams = true;
 
+/**
+ * نولّد مسبقاً المدن **ذات المخزون** فقط — والبقية عند الطلب.
+ *
+ * ⚠️ **هذا ما أسقط نشرتين متتاليتين (2026-09-01).** بعد فتح ستّة أسواق صار
+ * الجدول 372 مدينة، فطلب البناء 591 صفحة ساكنة بعاملٍ واحد، وكل صفحة تنادي
+ * الـAPI مرّتين عبر القارّات (≈1.3ث للطلب) — فتجاوزت `/properties/city/cairo`
+ * مهلة الستّين ثانية وفشل النشر كلّه (`BUILD_ERROR`). والنشرة التي قبلها سقطت
+ * بـ`fetch failed` من الصنف نفسه.
+ *
+ * والمدينة الفارغة لا تخسر شيئاً بالتأجيل: `generateMetadata` يضع لها
+ * `noindex` أصلاً ما دامت بلا عقار، فتوليدها سلفاً دفعُ ثمنٍ لصفحةٍ لا نريد
+ * فهرستها. و`dynamicParams` يُبقي رابطها حيّاً لمن يصله.
+ */
 export async function generateStaticParams() {
   // بلا تخزين — انظر التعليق نفسه في صفحة الدولة.
   const list = await getCities();
-  return list.map((c) => ({ slug: citySlug(c.name_en) })).filter((p) => p.slug);
+  return list
+    .filter((c) => (c.properties_count ?? 0) > 0)
+    .map((c) => ({ slug: citySlug(c.name_en) }))
+    .filter((p) => p.slug);
 }
 
 export async function generateMetadata(
