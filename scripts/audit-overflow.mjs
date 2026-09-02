@@ -39,6 +39,14 @@ const probe = () => {
   // وبلاطات الخريطة تمتدّ خارج الشاشة عمداً — لأنّ حاويتها هي التي تمرّر، لا
   // الصفحة. عدّها خللاً يقود إلى «إصلاح» ما هو سليم: أوّل قياسٍ لي أعطى 11
   // صفحة، تسعٌ منها من هذا الصنف.
+  // ⚠️ **العنصر المثبَّت (`fixed`) لا يُنتج فائضاً في التخطيط.** حاوية
+  // الإشعارات المنبثقة (sonner) عنصرٌ مثبَّت بإزاحةٍ 16 بكسلاً، فبدت «قائمة
+  // مرقّمة تتجاوز الشاشة» في ثلاث صفحات — وهي لا تُرى أصلاً حتى يظهر إشعار.
+  const floats = (e) => {
+    const pos = getComputedStyle(e).position;
+    return pos === "fixed" || pos === "sticky";
+  };
+
   const contained = (e) => {
     for (let n = e.parentElement; n && n !== document.body; n = n.parentElement) {
       const ox = getComputedStyle(n).overflowX;
@@ -50,7 +58,7 @@ const probe = () => {
   let over = 0;
   for (const e of document.querySelectorAll("body *")) {
     const r = e.getBoundingClientRect();
-    if (r.width === 0 || !outside(r) || contained(e)) continue;
+    if (r.width === 0 || !outside(r) || contained(e) || floats(e)) continue;
     // العنصر متجاوز، لكن أباه قد يكون هو المتجاوز الحقيقيّ — نُبلغ عن الأصغر
     // (الأعمق) كي نصل إلى العنصر المسؤول لا إلى الغلاف.
     over = Math.max(over, Math.round(Math.max(r.right - lim, -r.left)));
