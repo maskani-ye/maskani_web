@@ -147,7 +147,7 @@ export default function AdminUserReportsPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none"
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none"
         >
           {STATUS_FILTER.map(({ value, label }) => (
             <option key={value} value={value}>{label}</option>
@@ -163,7 +163,7 @@ export default function AdminUserReportsPage() {
           {loading ? (
             <div className="space-y-px">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-14 bg-gray-50 animate-pulse mx-4 my-2 rounded-xl" />
+                <div key={i} className="h-14 bg-muted-50 animate-pulse mx-4 my-2 rounded-xl" />
               ))}
             </div>
           ) : items.length === 0 ? (
@@ -173,28 +173,28 @@ export default function AdminUserReportsPage() {
               message="لم يتم العثور على بلاغات مطابقة للفلتر الحالي."
             />
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+            <table className="w-full text-body">
+              <thead className="bg-muted-50 border-b border-muted-100">
                 <tr>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600">المُبلِّغ ← المُبلَّغ عنه</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden md:table-cell">السبب</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600">الحالة</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden sm:table-cell">التاريخ</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600">المُبلِّغ ← المُبلَّغ عنه</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600 hidden md:table-cell">السبب</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600">الحالة</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600 hidden sm:table-cell">التاريخ</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-muted-50">
                 {items.map((it) => (
                   <tr
                     key={it.id}
                     onClick={() => setSelected(it)}
-                    className={`cursor-pointer hover:bg-gray-50 transition-colors ${selected?.id === it.id ? "bg-primary/5" : ""}`}
+                    className={`cursor-pointer hover:bg-muted-50 transition-colors ${selected?.id === it.id ? "bg-primary/5" : ""}`}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-medium text-gray-700">{it.reporter_name}</span>
-                        <AltArrowLeft className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                        <span className="font-semibold text-gray-900">{it.reported_name}</span>
+                        <span className="font-medium text-muted-700">{it.reporter_name}</span>
+                        <AltArrowLeft className="h-3.5 w-3.5 text-muted shrink-0" />
+                        <span className="font-semibold text-ink">{it.reported_name}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
@@ -203,13 +203,13 @@ export default function AdminUserReportsPage() {
                     <td className="px-4 py-3">
                       <Badge variant={STATUS_COLORS[it.status]}>{STATUS_LABELS[it.status]}</Badge>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 hidden sm:table-cell whitespace-nowrap">
+                    <td className="px-4 py-3 text-muted-500 hidden sm:table-cell whitespace-nowrap">
                       {new Date(it.created_at).toLocaleDateString("ar-YE")}
                     </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); setSelected(it); }}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-primary transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-muted-100 text-muted hover:text-primary transition-colors"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
@@ -222,8 +222,8 @@ export default function AdminUserReportsPage() {
 
           {/* Pagination */}
           {total > LIMIT && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-              <span className="text-xs text-gray-500">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-muted-100">
+              <span className="text-caption text-muted-500">
                 {offset + 1}–{Math.min(offset + LIMIT, total)} من {total}
               </span>
               <div className="flex gap-2">
@@ -249,7 +249,7 @@ export default function AdminUserReportsPage() {
               <Badge variant={STATUS_COLORS[selected.status]}>{STATUS_LABELS[selected.status]}</Badge>
               <button
                 onClick={() => setSelected(null)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted hover:text-muted-600"
                 aria-label="إغلاق"
               >
                 <CloseCircle className="h-5 w-5" />
@@ -258,33 +258,33 @@ export default function AdminUserReportsPage() {
 
             {/* Reporter */}
             <div className="mb-3">
-              <p className="text-xs font-semibold text-gray-600 mb-1">المُبلِّغ</p>
-              <p className="text-sm font-medium text-gray-900">{selected.reporter_name}</p>
-              <p className="text-xs text-gray-500" dir="ltr">{selected.reporter_phone}</p>
+              <p className="text-caption font-semibold text-muted-600 mb-1">المُبلِّغ</p>
+              <p className="text-body font-medium text-ink">{selected.reporter_name}</p>
+              <p className="text-caption text-muted-500" dir="ltr">{selected.reporter_phone}</p>
             </div>
 
             {/* Reported */}
             <div className="mb-3">
-              <p className="text-xs font-semibold text-gray-600 mb-1">المُبلَّغ عنه</p>
-              <p className="text-sm font-medium text-gray-900">{selected.reported_name}</p>
-              <p className="text-xs text-gray-500" dir="ltr">{selected.reported_phone}</p>
+              <p className="text-caption font-semibold text-muted-600 mb-1">المُبلَّغ عنه</p>
+              <p className="text-body font-medium text-ink">{selected.reported_name}</p>
+              <p className="text-caption text-muted-500" dir="ltr">{selected.reported_phone}</p>
             </div>
 
             {/* Reason */}
             <div className="mb-3">
-              <p className="text-xs font-semibold text-gray-600 mb-1.5">السبب</p>
+              <p className="text-caption font-semibold text-muted-600 mb-1.5">السبب</p>
               <Badge variant="gray">{REASON_LABELS[selected.reason]}</Badge>
             </div>
 
             {/* Detail */}
             <div className="mb-4">
-              <p className="text-xs font-semibold text-gray-600 mb-1.5">التفاصيل</p>
+              <p className="text-caption font-semibold text-muted-600 mb-1.5">التفاصيل</p>
               {selected.detail ? (
-                <p className="text-sm text-gray-700 bg-gray-50 rounded-xl p-3 leading-relaxed whitespace-pre-wrap break-words">
+                <p className="text-body text-muted-700 bg-muted-50 rounded-xl p-3 leading-relaxed whitespace-pre-wrap break-words">
                   {selected.detail}
                 </p>
               ) : (
-                <p className="text-sm text-gray-400">لا توجد تفاصيل</p>
+                <p className="text-body text-muted">لا توجد تفاصيل</p>
               )}
             </div>
 
@@ -306,7 +306,7 @@ export default function AdminUserReportsPage() {
               </Button>
             </div>
 
-            <p className="text-xs text-gray-400 text-center mt-4">
+            <p className="text-caption text-muted text-center mt-4">
               بُلِّغ في {new Date(selected.created_at).toLocaleDateString("ar-YE")}
             </p>
           </div>

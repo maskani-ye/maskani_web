@@ -104,24 +104,24 @@ export function NeighborhoodsAdmin({ cities }: { cities: City[] }) {
             <AddCircle className="h-4 w-4" /> إضافة حي
           </Button>
         </div>
-        <p className="text-xs text-gray-400 mt-2">
+        <p className="text-caption text-muted mt-2">
           الأحياء بُذرت آلياً ممّا كتبه المستخدمون — احذف ما ليس حيّاً (شارع/عنوان)
           وأضِف الأحياء الناقصة. الحذف لا يمسّ العقارات.
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl card-shadow divide-y divide-gray-100">
+      <div className="bg-white rounded-2xl card-shadow divide-y divide-muted-100">
         {loading ? (
-          <div className="py-12 text-center text-gray-400 text-sm">جارٍ التحميل…</div>
+          <div className="py-12 text-center text-muted text-body">جارٍ التحميل…</div>
         ) : items.length === 0 ? (
-          <div className="py-12 text-center text-gray-400 text-sm">لا توجد أحياء بعد</div>
+          <div className="py-12 text-center text-muted text-body">لا توجد أحياء بعد</div>
         ) : (
           items.map((n) => (
             <div key={n.id} className="flex items-center gap-3 p-3">
-              <MapPoint className="h-4 w-4 text-gray-300 shrink-0" />
+              <MapPoint className="h-4 w-4 text-muted-200 shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-ink truncate">{n.name}</p>
-                <p className="text-xs text-gray-500">{n.city_name}</p>
+                <p className="text-body font-semibold text-ink truncate">{n.name}</p>
+                <p className="text-caption text-muted-500">{n.city_name}</p>
               </div>
               <button onClick={() => toggle(n)}>
                 <Badge variant={n.is_active ? "success" : "default"}>

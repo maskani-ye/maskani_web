@@ -30,7 +30,7 @@ import { toEnglishDigits } from "@/lib/digits";
 // خريطة الاختيار تُحمَّل ديناميكياً (Leaflet يحتاج window).
 const LocationPickerMap = dynamic(() => import("@/components/map/LocationPickerMap"), {
   ssr: false,
-  loading: () => <div className="h-full w-full bg-gray-100 animate-pulse rounded-2xl" />,
+  loading: () => <div className="h-full w-full bg-muted-100 animate-pulse rounded-2xl" />,
 });
 
 const STEP_TITLES = ["الأساسيات", "الموقع", "الصور والتواصل"];
@@ -191,7 +191,7 @@ export default function CreatePropertyPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
-      <h1 className="text-xl font-bold text-gray-900 mb-5">إضافة عقار جديد</h1>
+      <h1 className="text-h3 font-bold text-ink mb-5">إضافة عقار جديد</h1>
 
       {/* مؤشّر التقدّم */}
       <Stepper step={step} />
@@ -245,18 +245,18 @@ function Stepper({ step }: { step: number }) {
           <div key={i} className="flex items-start flex-1 last:flex-none">
             <div className="flex flex-col items-center">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-colors ${
-                  done || active ? "bg-primary border-primary text-white" : "bg-white border-gray-200 text-gray-400"
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-body font-bold border-2 transition-colors ${
+                  done || active ? "bg-primary border-primary text-white" : "bg-white border-muted-200 text-muted"
                 }`}
               >
                 {done ? <CheckCircle weight="Bold" className="h-4 w-4" /> : i + 1}
               </div>
-              <span className={`text-[11px] mt-1.5 ${active ? "text-primary font-semibold" : "text-gray-500"}`}>
+              <span className={`text-[11px] mt-1.5 ${active ? "text-primary font-semibold" : "text-muted-500"}`}>
                 {title}
               </span>
             </div>
             {i < STEP_TITLES.length - 1 && (
-              <div className={`h-0.5 flex-1 mt-4 ${done ? "bg-primary" : "bg-gray-200"}`} />
+              <div className={`h-0.5 flex-1 mt-4 ${done ? "bg-primary" : "bg-muted-200"}`} />
             )}
           </div>
         );
@@ -268,7 +268,7 @@ function Stepper({ step }: { step: number }) {
 // ─── عناصر مشتركة ────────────────────────────────────────────────────────────
 function SectionLabel({ text, required }: { text: string; required?: boolean }) {
   return (
-    <label className="text-sm font-semibold text-gray-700 mb-2 block">
+    <label className="text-body font-semibold text-muted-700 mb-2 block">
       {text}
       {required && <span className="text-red-500"> *</span>}
     </label>
@@ -280,10 +280,10 @@ function Chip({ label, selected, onClick, icon }: { label: string; selected: boo
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border text-sm transition-colors ${
+      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border text-body transition-colors ${
         selected
           ? "bg-primary/15 border-primary text-primary font-bold"
-          : "bg-white border-gray-200 text-gray-500 hover:border-primary/40"
+          : "bg-white border-muted-200 text-muted-500 hover:border-primary/40"
       }`}
     >
       {icon}
@@ -293,7 +293,7 @@ function Chip({ label, selected, onClick, icon }: { label: string; selected: boo
 }
 
 const inputCls =
-  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
+  "w-full border border-muted-200 rounded-xl px-4 py-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
 
 // ─── ① الأساسيات ─────────────────────────────────────────────────────────────
 function StepBasics({
@@ -360,18 +360,18 @@ function StepBasics({
 
       <div className="h-5" />
       {/* تفاصيل إضافية (اختياري) — مطوية */}
-      <div className="border border-gray-200 rounded-xl overflow-hidden">
+      <div className="border border-muted-200 rounded-xl overflow-hidden">
         <button
           type="button"
           onClick={() => setDetailsOpen(!detailsOpen)}
           className="w-full flex items-center gap-2.5 px-3.5 py-3.5"
         >
-          <Tuning4 className="h-5 w-5 text-gray-400" />
-          <span className="flex-1 text-start text-sm font-semibold text-gray-700">تفاصيل إضافية (اختياري)</span>
-          {detailsOpen ? <AltArrowUp className="h-4 w-4 text-gray-400" /> : <AltArrowDown className="h-4 w-4 text-gray-400" />}
+          <Tuning4 className="h-5 w-5 text-muted" />
+          <span className="flex-1 text-start text-body font-semibold text-muted-700">تفاصيل إضافية (اختياري)</span>
+          {detailsOpen ? <AltArrowUp className="h-4 w-4 text-muted" /> : <AltArrowDown className="h-4 w-4 text-muted" />}
         </button>
         {detailsOpen && (
-          <div className="px-3.5 pb-4 border-t border-gray-100 pt-3">
+          <div className="px-3.5 pb-4 border-t border-muted-100 pt-3">
             <div className="flex items-center justify-between gap-2">
               <SectionLabel text="الوصف" />
               <SuggestDescriptionButton kind="property" title={form.title} fields={{ "السعر": form.price, "المساحة": form.area, "الغرف": form.rooms }} onSuggest={(d) => setField("description", d)} />
@@ -391,7 +391,7 @@ function StepBasics({
             <SectionLabel text="المساحة" />
             <div className="relative">
               <input className={inputCls} type="number" placeholder="0" value={form.area} onChange={(e) => setField("area", toEnglishDigits(e.target.value))} />
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">م²</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body text-muted">م²</span>
             </div>
 
             {!isLand && (
@@ -440,11 +440,11 @@ function StepBasics({
                     key={key}
                     type="button"
                     onClick={() => setField(key, !active as never)}
-                    className={`flex items-center gap-2 text-sm px-3 py-2.5 rounded-xl border transition-colors ${
-                      active ? "bg-primary/10 border-primary text-primary font-semibold" : "bg-white border-gray-200 text-gray-500 hover:border-primary/40"
+                    className={`flex items-center gap-2 text-body px-3 py-2.5 rounded-xl border transition-colors ${
+                      active ? "bg-primary/10 border-primary text-primary font-semibold" : "bg-white border-muted-200 text-muted-500 hover:border-primary/40"
                     }`}
                   >
-                    <span className={`w-4 h-4 rounded border flex items-center justify-center ${active ? "bg-primary border-primary" : "border-gray-300"}`}>
+                    <span className={`w-4 h-4 rounded border flex items-center justify-center ${active ? "bg-primary border-primary" : "border-muted-200"}`}>
                       {active && <CheckCircle weight="Bold" className="h-3 w-3 text-white" />}
                     </span>
                     {label}
@@ -474,9 +474,9 @@ function StepLocation({
     <div>
       <SectionLabel text="المدينة" required />
       <div className="relative">
-        <CityIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+        <CityIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted pointer-events-none" />
         <select
-          className={`${inputCls} appearance-none pr-11 ${form.city ? "text-gray-900" : "text-gray-400"}`}
+          className={`${inputCls} appearance-none pr-11 ${form.city ? "text-ink" : "text-muted"}`}
           value={form.city}
           onChange={(e) => setField("city", e.target.value)}
         >
@@ -485,7 +485,7 @@ function StepLocation({
             <option key={c.id} value={c.id}>{c.name_ar}</option>
           ))}
         </select>
-        <AltArrowDown className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+        <AltArrowDown className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted pointer-events-none" />
       </div>
 
       <div className="h-4" />
@@ -505,11 +505,11 @@ function StepLocation({
         value={form.video_url}
         onChange={(e) => setField("video_url", e.target.value)}
       />
-      <p className="text-xs text-gray-400 mt-1">جولة مصوّرة داخل العقار تزيد الثقة وتختصر الأسئلة.</p>
+      <p className="text-caption text-muted mt-1">جولة مصوّرة داخل العقار تزيد الثقة وتختصر الأسئلة.</p>
 
       <div className="h-5" />
       <SectionLabel text="موقع العقار على الخريطة (اختياري)" />
-      <div className="h-56 rounded-2xl overflow-hidden border border-gray-200">
+      <div className="h-56 rounded-2xl overflow-hidden border border-muted-200">
         <LocationPickerMap
           lat={loc?.lat ?? null}
           lng={loc?.lng ?? null}
@@ -518,9 +518,9 @@ function StepLocation({
         />
       </div>
       {loc ? (
-        <div className="flex items-center gap-1.5 mt-2 text-xs">
+        <div className="flex items-center gap-1.5 mt-2 text-caption">
           <MapPoint weight="Bold" className="h-4 w-4 text-primary" />
-          <span className="text-gray-500">
+          <span className="text-muted-500">
             تم تحديد الموقع ({loc.lat.toFixed(5)}, {loc.lng.toFixed(5)})
           </span>
           <button type="button" onClick={() => setLoc(null)} className="mr-auto text-red-500 font-semibold">
@@ -528,7 +528,7 @@ function StepLocation({
           </button>
         </div>
       ) : (
-        <p className="text-xs text-gray-400 mt-2">اضغط على الخريطة لتحديد موقع العقار</p>
+        <p className="text-caption text-muted mt-2">اضغط على الخريطة لتحديد موقع العقار</p>
       )}
     </div>
   );
@@ -555,7 +555,7 @@ function StepMedia({
       <button
         type="button"
         onClick={() => setField("contact_phone", user.phone)}
-        className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+        className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1.5 rounded-full bg-primary/10 text-primary text-caption font-semibold"
       >
         <Phone className="h-3.5 w-3.5" /> استخدم رقمي
       </button>
@@ -567,7 +567,7 @@ function StepMedia({
       <button
         type="button"
         onClick={() => setField("contact_whatsapp", form.contact_phone)}
-        className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+        className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1.5 rounded-full bg-primary/10 text-primary text-caption font-semibold"
       >
         <Copy className="h-3.5 w-3.5" /> نفس رقم التواصل
       </button>
@@ -575,9 +575,9 @@ function StepMedia({
       <div className="h-6" />
       <div className="flex items-center justify-between">
         <SectionLabel text="الصور (اختياري)" />
-        <span className="text-sm text-gray-400">{images.length}/10</span>
+        <span className="text-body text-muted">{images.length}/10</span>
       </div>
-      <p className="text-xs text-gray-400 -mt-1 mb-2.5">الصورة الأولى ستكون الصورة الرئيسية للعقار</p>
+      <p className="text-caption text-muted -mt-1 mb-2.5">الصورة الأولى ستكون الصورة الرئيسية للعقار</p>
       <div className="flex flex-wrap gap-2">
         {images.map((img, i) => (
           <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden">
@@ -596,9 +596,9 @@ function StepMedia({
           </div>
         ))}
         {images.length < 10 && (
-          <label className="w-20 h-20 border-2 border-gray-200 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/40 bg-gray-50">
-            <GalleryAdd className="h-5 w-5 text-gray-400" />
-            <span className="text-[10px] text-gray-400">إضافة</span>
+          <label className="w-20 h-20 border-2 border-muted-200 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/40 bg-muted-50">
+            <GalleryAdd className="h-5 w-5 text-muted" />
+            <span className="text-[10px] text-muted">إضافة</span>
             <input type="file" multiple accept="image/*" onChange={onImages} className="hidden" />
           </label>
         )}

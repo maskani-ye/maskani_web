@@ -70,7 +70,7 @@ export function AdSlot({
   return (
     <div className={`my-6 ${className}`}>
       {label && (
-        <p className="text-[10px] text-gray-400 mb-1 text-center tracking-wide">إعلان</p>
+        <p className="text-[10px] text-muted mb-1 text-center tracking-wide">إعلان</p>
       )}
       <ins
         className="adsbygoogle block"

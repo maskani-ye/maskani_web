@@ -112,13 +112,13 @@ export function PropertyFormFields({ form, setField, cities, propertyTypes }: Pr
       />
 
       <div>
-        <label className="text-sm font-semibold text-gray-700 mb-1.5 block">الوصف</label>
+        <label className="text-body font-semibold text-muted-700 mb-1.5 block">الوصف</label>
         <textarea
           value={form.description}
           onChange={(e) => setField("description", e.target.value)}
           rows={4}
           placeholder="اكتب وصفاً تفصيلياً للعقار..."
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+          className="w-full border border-muted-200 rounded-xl px-4 py-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
         />
       </div>
 
@@ -142,8 +142,8 @@ export function PropertyFormFields({ form, setField, cities, propertyTypes }: Pr
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
-            السعر <span className="text-gray-400 font-normal">(اختياري)</span>
+          <label className="text-body font-semibold text-muted-700 mb-1.5 block">
+            السعر <span className="text-muted font-normal">(اختياري)</span>
           </label>
           <MoneyInput
             value={form.price}
@@ -235,7 +235,7 @@ export function PropertyFormFields({ form, setField, cities, propertyTypes }: Pr
 
       {/* المميزات */}
       <div>
-        <label className="text-sm font-semibold text-gray-700 mb-2 block">المميزات</label>
+        <label className="text-body font-semibold text-muted-700 mb-2 block">المميزات</label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {FEATURE_TOGGLES.map(({ key, label, icon: Icon }) => {
             const active = form[key as keyof PropertyFormState] as boolean;
@@ -244,10 +244,10 @@ export function PropertyFormFields({ form, setField, cities, propertyTypes }: Pr
                 key={key}
                 type="button"
                 onClick={() => setField(key as keyof PropertyFormState, !active as never)}
-                className={`flex items-center gap-2 text-sm px-3 py-2.5 rounded-xl border transition-colors ${
+                className={`flex items-center gap-2 text-body px-3 py-2.5 rounded-xl border transition-colors ${
                   active
                     ? "bg-primary/10 border-primary text-primary font-semibold"
-                    : "bg-white border-gray-200 text-gray-500 hover:border-primary/40"
+                    : "bg-white border-muted-200 text-muted-500 hover:border-primary/40"
                 }`}
               >
                 <Icon className="h-4 w-4" />

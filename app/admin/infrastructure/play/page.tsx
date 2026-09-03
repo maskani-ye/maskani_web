@@ -48,7 +48,7 @@ export default function PlayPage() {
             {apps.map((a) => (
               <Panel key={a.package} title={`${LABEL[a.package] ?? a.package} — ${a.package}`}>
                 {a.error ? (
-                  <p className="text-sm text-red-600">{a.error}</p>
+                  <p className="text-body text-red-600">{a.error}</p>
                 ) : (
                   <Table<Track>
                     rows={a.tracks ?? []}

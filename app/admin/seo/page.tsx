@@ -153,21 +153,21 @@ export default function AdminSeoPage() {
       />
 
       {notice && (
-        <div className={`rounded-2xl px-4 py-3.5 text-sm flex items-start gap-2.5 ${
+        <div className={`rounded-2xl px-4 py-3.5 text-body flex items-start gap-2.5 ${
           notice.ok ? "bg-primary/5 text-primary border border-primary/15" : "bg-red-50 text-red-700 border border-red-200"}`}>
           {notice.ok ? <CheckCircle weight="Bold" className="h-5 w-5 shrink-0" /> : <CloseCircle weight="Bold" className="h-5 w-5 shrink-0" />}
           <span className="leading-relaxed">{notice.text}</span>
         </div>
       )}
       {error && (
-        <div className="rounded-2xl px-4 py-3.5 text-sm flex items-center gap-2.5 bg-red-50 text-red-700 border border-red-200">
+        <div className="rounded-2xl px-4 py-3.5 text-body flex items-center gap-2.5 bg-red-50 text-red-700 border border-red-200">
           <CloseCircle weight="Bold" className="h-5 w-5 shrink-0" /> {error}
         </div>
       )}
 
       {loading && !report && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[0, 1, 2, 3].map((i) => <Card key={i} className="h-24 animate-pulse bg-gray-50">{" "}</Card>)}
+          {[0, 1, 2, 3].map((i) => <Card key={i} className="h-24 animate-pulse bg-muted-50">{" "}</Card>)}
         </div>
       )}
 
@@ -211,24 +211,24 @@ export default function AdminSeoPage() {
               <SectionHeader icon={<ChartSquare className="h-5 w-5" />} title="تغطية الفهرسة حسب السبب"
                              subtitle={`عيّنة ${nf(cov?.inspected ?? 0)} رابط من أصل ${nf(cov?.sitemap_total ?? 0)} في الخريطة`} />
               <div className="mt-4 space-y-3">
-                {(cov?.by_reason ?? []).length === 0 && <p className="text-sm text-gray-500">لا بيانات تغطية بعد.</p>}
+                {(cov?.by_reason ?? []).length === 0 && <p className="text-body text-muted-500">لا بيانات تغطية بعد.</p>}
                 {(cov?.by_reason ?? []).map((b) => {
                   const total = cov?.inspected || 1;
                   const pct = Math.round((b.count / total) * 100);
                   return (
                     <div key={b.key}>
-                      <div className="flex items-center justify-between text-sm mb-1">
-                        <span className="text-gray-700 flex items-center gap-2">
+                      <div className="flex items-center justify-between text-body mb-1">
+                        <span className="text-muted-700 flex items-center gap-2">
                           <span className={`w-2.5 h-2.5 rounded-full ${REASON_TONE[b.key] ?? "bg-slate-300"}`} />
                           {b.reason}
                         </span>
-                        <span className="text-gray-400 tabular-nums">{nf(b.count)} · {pct}%</span>
+                        <span className="text-muted tabular-nums">{nf(b.count)} · {pct}%</span>
                       </div>
-                      <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                      <div className="h-2 rounded-full bg-muted-100 overflow-hidden">
                         <div className={`h-full rounded-full ${REASON_TONE[b.key] ?? "bg-slate-300"}`} style={{ width: `${pct}%` }} />
                       </div>
                       {REASON_MEANING[b.key] && (
-                        <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">{REASON_MEANING[b.key]}</p>
+                        <p className="text-[11px] text-muted mt-1 leading-relaxed">{REASON_MEANING[b.key]}</p>
                       )}
                     </div>
                   );
@@ -240,9 +240,9 @@ export default function AdminSeoPage() {
               <SectionHeader icon={<ChartSquare className="h-5 w-5" />} title="اتجاه الأداء"
                              subtitle={`الظهور والنقرات — آخر ${perf?.days ?? 30} يوماً`} />
               <Sparkline trend={report.trend ?? []} />
-              <div className="flex items-center gap-4 mt-3 text-xs">
-                <span className="flex items-center gap-1.5 text-gray-500"><span className="w-2.5 h-2.5 rounded-full bg-primary" /> الظهور</span>
-                <span className="flex items-center gap-1.5 text-gray-500"><span className="w-2.5 h-2.5 rounded-full bg-gold" /> النقرات</span>
+              <div className="flex items-center gap-4 mt-3 text-caption">
+                <span className="flex items-center gap-1.5 text-muted-500"><span className="w-2.5 h-2.5 rounded-full bg-primary" /> الظهور</span>
+                <span className="flex items-center gap-1.5 text-muted-500"><span className="w-2.5 h-2.5 rounded-full bg-gold" /> النقرات</span>
               </div>
             </Card>
           </div>
@@ -283,9 +283,9 @@ export default function AdminSeoPage() {
               <SectionHeader icon={<Ranking className="h-5 w-5" />} title="فرص قريبة"
                              subtitle="كلمات ترتيبك فيها 4–20: دفعة صغيرة تنقلها إلى الثلاثة الأوائل حيث النقرات" />
               <div className="mt-4 overflow-x-auto">
-                <table className="w-full max-w-full text-sm">
+                <table className="w-full max-w-full text-body">
                   <thead>
-                    <tr className="text-xs text-gray-400 text-right">
+                    <tr className="text-caption text-muted text-right">
                       <th className="pb-2 font-medium">الكلمة</th>
                       <th className="pb-2 font-medium">الصفحة</th>
                       <th className="pb-2 font-medium text-center">الترتيب</th>
@@ -293,23 +293,23 @@ export default function AdminSeoPage() {
                       <th className="pb-2 font-medium text-center">نقرات</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-muted-100">
                     {report.opportunities!.map((o) => (
-                      <tr key={`${o.query}-${o.page}`} className="text-gray-700">
+                      <tr key={`${o.query}-${o.page}`} className="text-muted-700">
                         <td className="py-2.5 font-semibold">{o.query}</td>
-                        <td className="py-2.5 text-gray-400 text-xs" dir="ltr">
+                        <td className="py-2.5 text-muted text-caption" dir="ltr">
                           <a href={o.page} target="_blank" rel="noopener noreferrer" className="hover:text-primary">
                             {shortPath(o.page)}
                           </a>
                         </td>
                         <td className="py-2.5 text-center">
-                          <span className={`text-xs font-bold rounded-lg px-2 py-1 ${
+                          <span className={`text-caption font-bold rounded-lg px-2 py-1 ${
                             o.position <= 10 ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
                             {o.position}
                           </span>
                         </td>
                         <td className="py-2.5 text-center tabular-nums">{nf(o.impressions)}</td>
-                        <td className="py-2.5 text-center tabular-nums text-gray-400">{nf(o.clicks)}</td>
+                        <td className="py-2.5 text-center tabular-nums text-muted">{nf(o.clicks)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -327,9 +327,9 @@ export default function AdminSeoPage() {
                 {report.zero_click!.map((z) => (
                   <a key={z.query} href={`https://www.google.com/search?q=${encodeURIComponent(z.query)}`}
                      target="_blank" rel="noopener noreferrer"
-                     className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:border-primary hover:text-primary transition-colors">
+                     className="rounded-xl border border-muted-200 bg-white px-3 py-2 text-body text-muted-700 hover:border-primary hover:text-primary transition-colors">
                     {z.query}
-                    <span className="text-[11px] text-gray-400 ms-2 tabular-nums">{nf(z.impressions)} ظهور · #{z.position}</span>
+                    <span className="text-[11px] text-muted ms-2 tabular-nums">{nf(z.impressions)} ظهور · #{z.position}</span>
                   </a>
                 ))}
               </div>
@@ -343,28 +343,28 @@ export default function AdminSeoPage() {
                              subtitle="ترتيبها جيّد لكن نقرها أقل بكثير من المتوقّع من موضعها — عيبُ عنوان ووصف لا عيبُ ترتيب" />
               <div className="mt-4 space-y-3">
                 {report.ctr_bleeding!.map((b) => (
-                  <div key={b.page} className="rounded-xl border border-gray-100 p-4">
+                  <div key={b.page} className="rounded-xl border border-muted-100 p-4">
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <a href={b.page} target="_blank" rel="noopener noreferrer"
-                         className="text-sm font-semibold text-gray-800 hover:text-primary truncate" dir="ltr">
+                         className="text-body font-semibold text-ink hover:text-primary truncate" dir="ltr">
                         {shortPath(b.page)}
                       </a>
-                      <span className="text-xs font-bold text-red-600 bg-red-50 rounded-lg px-2 py-1 shrink-0">
+                      <span className="text-caption font-bold text-red-600 bg-red-50 rounded-lg px-2 py-1 shrink-0">
                         ~{nf(b.lost_clicks)} نقرة ضائعة
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
-                      <span>الترتيب <strong className="text-gray-700">{b.position}</strong></span>
-                      <span>الظهور <strong className="text-gray-700">{nf(b.impressions)}</strong></span>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-caption text-muted-500">
+                      <span>الترتيب <strong className="text-muted-700">{b.position}</strong></span>
+                      <span>الظهور <strong className="text-muted-700">{nf(b.impressions)}</strong></span>
                       <span>
                         النقر الفعليّ <strong className="text-red-600">{(b.ctr * 100).toFixed(2)}%</strong>
-                        {" "}مقابل متوقّع <strong className="text-gray-700">{(b.expected_ctr * 100).toFixed(1)}%</strong>
+                        {" "}مقابل متوقّع <strong className="text-muted-700">{(b.expected_ctr * 100).toFixed(1)}%</strong>
                       </span>
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+              <p className="text-caption text-muted mt-4 leading-relaxed">
                 العلاج: أعِد صياغة عنوان الصفحة ووصفها ليقولا للباحث ما يجده بالداخل — أرخص تحسين
                 في السيو وأسرعه أثراً، ولا يحتاج تغيير ترتيب.
               </p>
@@ -382,13 +382,13 @@ export default function AdminSeoPage() {
                     const max = Math.max(1, ...(report.countries ?? []).map((x) => x.impressions));
                     return (
                       <div key={c.country}>
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-gray-700">{COUNTRY_AR[c.country] ?? c.country}</span>
-                          <span className="text-gray-400 text-xs tabular-nums">
+                        <div className="flex items-center justify-between text-body mb-1">
+                          <span className="text-muted-700">{COUNTRY_AR[c.country] ?? c.country}</span>
+                          <span className="text-muted text-caption tabular-nums">
                             {nf(c.impressions)} ظهور · ترتيب {c.position}
                           </span>
                         </div>
-                        <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                        <div className="h-2 rounded-full bg-muted-100 overflow-hidden">
                           <div className="h-full rounded-full bg-primary"
                                style={{ width: `${Math.round((c.impressions / max) * 100)}%` }} />
                         </div>
@@ -407,13 +407,13 @@ export default function AdminSeoPage() {
                     const pct = Math.round((d.impressions / total) * 100);
                     return (
                       <div key={d.device}>
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-gray-700">{DEVICE_AR[d.device] ?? d.device}</span>
-                          <span className="text-gray-400 text-xs tabular-nums">
+                        <div className="flex items-center justify-between text-body mb-1">
+                          <span className="text-muted-700">{DEVICE_AR[d.device] ?? d.device}</span>
+                          <span className="text-muted text-caption tabular-nums">
                             {pct}% · {nf(d.impressions)} ظهور
                           </span>
                         </div>
-                        <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                        <div className="h-2 rounded-full bg-muted-100 overflow-hidden">
                           <div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
@@ -435,28 +435,28 @@ export default function AdminSeoPage() {
                 { k: "missing", label: `غير مُفهرَسة (${report.pages.filter((x) => !x.indexed).length})` },
               ] as const).map((tab) => (
                 <button key={tab.k} type="button" onClick={() => setPageFilter(tab.k)}
-                  className={`text-xs rounded-xl px-3 py-1.5 font-semibold transition-colors ${
-                    pageFilter === tab.k ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                  className={`text-caption rounded-xl px-3 py-1.5 font-semibold transition-colors ${
+                    pageFilter === tab.k ? "bg-primary text-white" : "bg-muted-100 text-muted-600 hover:bg-muted-200"}`}>
                   {tab.label}
                 </button>
               ))}
               <input value={pageSearch} onChange={(e) => setPageSearch(toEnglishDigits(e.target.value))}
                 placeholder="ابحث في المسارات…" dir="ltr"
-                className="ms-auto w-full sm:w-52 rounded-xl border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-primary" />
+                className="ms-auto w-full sm:w-52 rounded-xl border border-muted-200 px-3 py-1.5 text-caption outline-none focus:border-primary" />
             </div>
-            <div className="mt-3 divide-y divide-gray-100 max-h-[420px] overflow-y-auto">
+            <div className="mt-3 divide-y divide-muted-100 max-h-[420px] overflow-y-auto">
               {report.pages
                 .filter((p) => pageFilter === "all" || (pageFilter === "indexed" ? p.indexed : !p.indexed))
                 .filter((p) => !pageSearch || shortPath(p.url).includes(pageSearch))
                 .map((p) => (
                 <div key={p.url} className="flex items-center gap-3 py-3 first:pt-0">
                   <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                    p.indexed ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-400"}`}>
+                    p.indexed ? "bg-emerald-50 text-emerald-600" : "bg-muted-100 text-muted"}`}>
                     {p.indexed ? <CheckCircle weight="Bold" className="h-5 w-5" /> : <CloseCircle weight="Bold" className="h-5 w-5" />}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate" dir="ltr">{shortPath(p.url)}</p>
-                    <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1.5">
+                    <p className="text-body font-semibold text-ink truncate" dir="ltr">{shortPath(p.url)}</p>
+                    <p className="text-caption text-muted mt-0.5 flex items-center gap-1.5">
                       <span className={`w-2 h-2 rounded-full ${REASON_TONE[p.reason_key] ?? "bg-slate-300"}`} />
                       {p.reason} · {fmtDate(p.last_crawl)}
                     </p>
@@ -464,7 +464,7 @@ export default function AdminSeoPage() {
                   {/* رابط مباشر لأداة فحص الروابط في Search Console — للفحص/طلب الفهرسة يدويًا. */}
                   <a href={gscInspectUrl(p.url)} target="_blank" rel="noopener noreferrer"
                      title="افحص واطلب الفهرسة في Search Console"
-                     className="shrink-0 text-gray-300 hover:text-primary transition-colors">
+                     className="shrink-0 text-muted-200 hover:text-primary transition-colors">
                     <Global className="h-4 w-4" />
                   </a>
                   <Badge variant={p.indexed ? "success" : "default"}>{p.indexed ? "مُفهرَسة" : "غير مُفهرَسة"}</Badge>
@@ -477,11 +477,11 @@ export default function AdminSeoPage() {
           <Card className="p-6">
             <SectionHeader icon={<DocumentAdd className="h-5 w-5" />} title="خرائط الموقع" subtitle="آخر قراءة من Google لملف الـsitemap" />
             <div className="mt-4 space-y-4">
-              {report.sitemaps.length === 0 && <p className="text-sm text-gray-500">لا sitemap مُرسَل بعد.</p>}
+              {report.sitemaps.length === 0 && <p className="text-body text-muted-500">لا sitemap مُرسَل بعد.</p>}
               {report.sitemaps.map((m) => (
-                <div key={m.path} className="rounded-xl border border-gray-100 p-4">
-                  <p className="font-semibold text-gray-800 flex items-center gap-2 mb-3" dir="ltr">
-                    <Global className="h-4 w-4 text-gray-400 shrink-0" /><span className="truncate">{m.path}</span>
+                <div key={m.path} className="rounded-xl border border-muted-100 p-4">
+                  <p className="font-semibold text-ink flex items-center gap-2 mb-3" dir="ltr">
+                    <Global className="h-4 w-4 text-muted shrink-0" /><span className="truncate">{m.path}</span>
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={m.errors ? "danger" : "success"}>أخطاء: {m.errors}</Badge>
@@ -501,9 +501,9 @@ export default function AdminSeoPage() {
                         </Badge>
                       );
                     })()}
-                    <span className="text-xs text-gray-400 ms-auto">آخر قراءة: {fmtDate(m.last_downloaded)}</span>
+                    <span className="text-caption text-muted ms-auto">آخر قراءة: {fmtDate(m.last_downloaded)}</span>
                   </div>
-                  <p className="text-[11px] text-gray-400 mt-2.5 leading-relaxed">
+                  <p className="text-[11px] text-muted mt-2.5 leading-relaxed">
                     عدّاد «مُفهرَسة» في هذا الجدول يُبقيه جوجل صفراً غالباً ولا يعني أن صفحاتك
                     غير مفهرسة — المرجع الصحيح هو بطاقة «تغطية الفهرسة» أعلاه المبنيّة على فحص
                     كل رابط على حدة.
@@ -520,7 +520,7 @@ export default function AdminSeoPage() {
 
 // ─── Sparkline (SVG، بلا مكتبات) ─────────────────────────────────────────────
 function Sparkline({ trend }: { trend: TrendPoint[] }) {
-  if (!trend.length) return <div className="h-24 mt-4 flex items-center justify-center text-xs text-gray-400">لا بيانات كافية بعد</div>;
+  if (!trend.length) return <div className="h-24 mt-4 flex items-center justify-center text-caption text-muted">لا بيانات كافية بعد</div>;
   const W = 300, H = 90, pad = 4;
   const line = (key: "impressions" | "clicks") => {
     const max = Math.max(1, ...trend.map((t) => t[key]));
@@ -546,18 +546,18 @@ function Sparkline({ trend }: { trend: TrendPoint[] }) {
         <polyline points={line("impressions")} fill="none" stroke="var(--primary,#171539)" strokeWidth="2" strokeLinejoin="round" />
         <polyline points={line("clicks")} fill="none" stroke="#FFC107" strokeWidth="2" strokeLinejoin="round" />
       </svg>
-      <div className="flex items-center justify-between text-[10px] text-gray-300 mt-1 tabular-nums">
+      <div className="flex items-center justify-between text-[10px] text-muted-200 mt-1 tabular-nums">
         <span>{dayFmt(trend[0].date)}</span>
         <span>{dayFmt(trend[trend.length - 1].date)}</span>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-        <div className="rounded-xl bg-gray-50 px-3 py-2">
-          <p className="text-gray-400 text-[11px]">أفضل يوم</p>
-          <p className="font-bold text-gray-800 tabular-nums">{nf(best.impressions)} <span className="font-normal text-gray-400 text-[11px]">{dayFmt(best.date)}</span></p>
+      <div className="mt-3 grid grid-cols-2 gap-2 text-caption">
+        <div className="rounded-xl bg-muted-50 px-3 py-2">
+          <p className="text-muted text-[11px]">أفضل يوم</p>
+          <p className="font-bold text-ink tabular-nums">{nf(best.impressions)} <span className="font-normal text-muted text-[11px]">{dayFmt(best.date)}</span></p>
         </div>
-        <div className="rounded-xl bg-gray-50 px-3 py-2">
-          <p className="text-gray-400 text-[11px]">متوسّط آخر 7 أيام</p>
-          <p className="font-bold text-gray-800 tabular-nums">
+        <div className="rounded-xl bg-muted-50 px-3 py-2">
+          <p className="text-muted text-[11px]">متوسّط آخر 7 أيام</p>
+          <p className="font-bold text-ink tabular-nums">
             {nf(last7)}/يوم
             {trendPct != null && trendPct !== 0 && (
               <span className={`ms-1.5 text-[11px] font-bold ${trendPct > 0 ? "text-emerald-600" : "text-red-500"}`}>
@@ -575,7 +575,7 @@ function RankedList({ rows, hrefOf }: {
   rows: { label: string; impressions: number; clicks: number; position: number }[];
   hrefOf?: (label: string) => string;
 }) {
-  if (!rows.length) return <p className="mt-4 text-sm text-gray-500">لا بيانات بعد.</p>;
+  if (!rows.length) return <p className="mt-4 text-body text-muted-500">لا بيانات بعد.</p>;
   const max = Math.max(1, ...rows.map((r) => r.impressions));
   const total = rows.reduce((s, r) => s + r.impressions, 0) || 1;
   return (
@@ -586,9 +586,9 @@ function RankedList({ rows, hrefOf }: {
         const share = Math.round((r.impressions / total) * 100);
         return (
           <div key={i}>
-            <div className="flex items-center justify-between gap-3 text-sm mb-1">
-              <span className="font-medium text-gray-800 truncate flex items-center gap-2" dir="auto">
-                <span className="text-[10px] text-gray-300 tabular-nums w-4 shrink-0">{i + 1}</span>
+            <div className="flex items-center justify-between gap-3 text-body mb-1">
+              <span className="font-medium text-ink truncate flex items-center gap-2" dir="auto">
+                <span className="text-[10px] text-muted-200 tabular-nums w-4 shrink-0">{i + 1}</span>
                 {hrefOf ? (
                   <a href={hrefOf(r.label)} target="_blank" rel="noopener noreferrer" className="hover:text-primary truncate">
                     {r.label}
@@ -598,18 +598,18 @@ function RankedList({ rows, hrefOf }: {
               <span className={`text-[11px] font-bold rounded-lg px-1.5 py-0.5 shrink-0 ${
                 r.position <= 3 ? "bg-emerald-50 text-emerald-600"
                 : r.position <= 10 ? "bg-amber-50 text-amber-600"
-                : "bg-gray-100 text-gray-500"}`}>#{r.position}</span>
+                : "bg-muted-100 text-muted-500"}`}>#{r.position}</span>
             </div>
-            <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+            <div className="h-1.5 rounded-full bg-muted-100 overflow-hidden">
               <div className="h-full rounded-full bg-primary/70" style={{ width: `${Math.round((r.impressions / max) * 100)}%` }} />
             </div>
-            <div className="flex items-center gap-x-3 gap-y-0.5 flex-wrap text-[11px] text-gray-400 mt-1 tabular-nums">
+            <div className="flex items-center gap-x-3 gap-y-0.5 flex-wrap text-[11px] text-muted mt-1 tabular-nums">
               <span>ظهور {nf(r.impressions)}</span>
               <span>نقر {nf(r.clicks)}</span>
               <span className={ctr === 0 ? "text-red-500 font-semibold" : ""}>
                 CTR {(ctr * 100).toFixed(1)}%
               </span>
-              <span className="text-gray-300">{share}% من ظهور القائمة</span>
+              <span className="text-muted-200">{share}% من ظهور القائمة</span>
             </div>
           </div>
         );
@@ -631,8 +631,8 @@ function RecCard({ rec }: { rec: Rec }) {
       <div className="flex items-start gap-2.5">
         <Icon weight="Bold" className={`h-5 w-5 shrink-0 ${tone.icon}`} />
         <div>
-          <p className="text-sm font-bold text-gray-800">{rec.title}</p>
-          <p className="text-xs text-gray-600 mt-1 leading-relaxed">{rec.detail}</p>
+          <p className="text-body font-bold text-ink">{rec.title}</p>
+          <p className="text-caption text-muted-600 mt-1 leading-relaxed">{rec.detail}</p>
         </div>
       </div>
     </div>
@@ -643,7 +643,7 @@ function Kpi({ icon, label, value, hint, tone, delta }: {
   icon: React.ReactNode; label: string; value: string; hint?: string;
   tone: "primary" | "gold" | "gray"; delta?: number | null;
 }) {
-  const toneCls = { primary: "bg-primary/10 text-primary", gold: "bg-gold/15 text-gold", gray: "bg-gray-100 text-gray-500" }[tone];
+  const toneCls = { primary: "bg-primary/10 text-primary", gold: "bg-gold/15 text-gold", gray: "bg-muted-100 text-muted-500" }[tone];
   return (
     <Card className="p-5">
       <div className="flex items-center justify-between mb-2.5">
@@ -655,9 +655,9 @@ function Kpi({ icon, label, value, hint, tone, delta }: {
           </span>
         )}
       </div>
-      <p className="text-2xl font-extrabold text-gray-900 tabular-nums leading-none">{value}</p>
-      <p className="text-xs text-gray-500 mt-1.5">{label}</p>
-      {hint && <p className="text-[11px] text-gray-400 mt-0.5">{hint}</p>}
+      <p className="text-h2 font-extrabold text-ink tabular-nums leading-none">{value}</p>
+      <p className="text-caption text-muted-500 mt-1.5">{label}</p>
+      {hint && <p className="text-[11px] text-muted mt-0.5">{hint}</p>}
     </Card>
   );
 }
@@ -666,9 +666,9 @@ function Kpi({ icon, label, value, hint, tone, delta }: {
 function MiniStat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <Card className="p-4">
-      <p className="text-xl font-extrabold text-gray-900 tabular-nums leading-none">{value}</p>
-      <p className="text-xs text-gray-500 mt-1.5">{label}</p>
-      {hint && <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">{hint}</p>}
+      <p className="text-h3 font-extrabold text-ink tabular-nums leading-none">{value}</p>
+      <p className="text-caption text-muted-500 mt-1.5">{label}</p>
+      {hint && <p className="text-[11px] text-muted mt-0.5 leading-relaxed">{hint}</p>}
     </Card>
   );
 }
@@ -678,8 +678,8 @@ function SectionHeader({ icon, title, subtitle }: { icon: React.ReactNode; title
     <div className="flex items-center gap-3">
       <span className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">{icon}</span>
       <div>
-        <h2 className="font-bold text-gray-900 leading-tight">{title}</h2>
-        {subtitle && <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>}
+        <h2 className="font-bold text-ink leading-tight">{title}</h2>
+        {subtitle && <p className="text-caption text-muted-500 mt-0.5">{subtitle}</p>}
       </div>
     </div>
   );

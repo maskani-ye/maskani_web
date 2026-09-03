@@ -132,10 +132,10 @@ export default function CreateRequestPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <div className="flex items-center gap-2 text-body text-muted mb-6">
         <Link href="/requests" className="hover:text-primary">طلبات العملاء</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
-        <span className="text-gray-700 font-medium">طلب جديد</span>
+        <span className="text-muted-700 font-medium">طلب جديد</span>
       </div>
 
       <div className="mb-6">
@@ -156,11 +156,11 @@ export default function CreateRequestPage() {
 
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="text-sm font-semibold text-gray-700 mb-1.5 block">أقل ميزانية</label>
+            <label className="text-body font-semibold text-muted-700 mb-1.5 block">أقل ميزانية</label>
             <MoneyInput value={form.budget_min} onChange={(raw) => setField("budget_min", raw)} placeholder="اختياري" />
           </div>
           <div>
-            <label className="text-sm font-semibold text-gray-700 mb-1.5 block">أعلى ميزانية</label>
+            <label className="text-body font-semibold text-muted-700 mb-1.5 block">أعلى ميزانية</label>
             <MoneyInput value={form.budget_max} onChange={(raw) => setField("budget_max", raw)} placeholder="اختياري" />
           </div>
           <Select label="العملة" options={CURRENCY_OPTS} value={form.currency} onChange={(e) => setField("currency", e.target.value)} />
@@ -173,7 +173,7 @@ export default function CreateRequestPage() {
 
         <div>
           <div className="flex items-center justify-between gap-2 mb-1.5">
-            <label className="text-sm font-semibold text-gray-700 block">مواصفات إضافية</label>
+            <label className="text-body font-semibold text-muted-700 block">مواصفات إضافية</label>
             <SuggestDescriptionButton kind="request" title={"طلب عقاري"} fields={{ "النوع": form.property_type, "العرض": form.offer_type, "الحي": form.neighborhood }} onSuggest={(d) => setField("additional_specs", d)} />
             {form.additional_specs?.trim().length >= 10 && (
               <ImproveTextButton kind="request" text={form.additional_specs} onImprove={(d) => setField("additional_specs", d)} />
@@ -184,7 +184,7 @@ export default function CreateRequestPage() {
             onChange={(e) => setField("additional_specs", e.target.value)}
             rows={4}
             placeholder="اذكر أي تفاصيل تساعد أصحاب العقارات على فهم طلبك..."
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+            className="w-full border border-muted-200 rounded-xl px-4 py-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
           />
         </div>
 

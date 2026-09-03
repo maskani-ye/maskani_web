@@ -94,14 +94,14 @@ export default function SavedSearchesPage() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-20 bg-gray-100 rounded-2xl animate-pulse" />
+            <div key={i} className="h-20 bg-muted-100 rounded-2xl animate-pulse" />
           ))}
         </div>
       ) : items.length === 0 ? (
         <div className="text-center py-16">
-          <Magnifer className="h-14 w-14 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 mb-1">لا عمليات بحث محفوظة</p>
-          <p className="text-sm text-gray-400">
+          <Magnifer className="h-14 w-14 text-muted-200 mx-auto mb-4" />
+          <p className="text-muted-500 mb-1">لا عمليات بحث محفوظة</p>
+          <p className="text-body text-muted">
             احفظ فلاتر البحث من صفحة العقارات لتصلك تنبيهات بالعقارات الجديدة المطابقة.
           </p>
         </div>
@@ -120,17 +120,17 @@ export default function SavedSearchesPage() {
                   <Magnifer className="h-5 w-5 text-primary" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-semibold text-gray-800 truncate">
+                  <span className="block font-semibold text-ink truncate">
                     {it.name || "بحث محفوظ"}
                   </span>
-                  <span className="block text-sm text-gray-500 truncate">{summarize(it.filters)}</span>
+                  <span className="block text-body text-muted-500 truncate">{summarize(it.filters)}</span>
                   {it.notify && (
-                    <span className="inline-flex items-center gap-1 text-xs text-primary mt-1">
+                    <span className="inline-flex items-center gap-1 text-caption text-primary mt-1">
                       <Bell className="h-3 w-3" /> التنبيهات مُفعّلة
                     </span>
                   )}
                 </span>
-                <AltArrowLeft className="h-4 w-4 text-gray-300 shrink-0" />
+                <AltArrowLeft className="h-4 w-4 text-muted-200 shrink-0" />
               </button>
               <button
                 onClick={() => remove(it.id)}

@@ -23,7 +23,7 @@ export function StarRating({ rating, max = 5, size = "md", interactive, onChange
             sizes[size],
             star <= Math.round(rating)
               ? "fill-amber-400 text-amber-400"
-              : "fill-gray-200 text-gray-200",
+              : "fill-muted-200 text-muted-200",
             interactive && "cursor-pointer hover:scale-110 transition-transform"
           )}
           onClick={() => interactive && onChange?.(star)}

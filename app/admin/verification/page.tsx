@@ -171,7 +171,7 @@ export default function AdminVerificationPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none"
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none"
         >
           {STATUS_FILTER.map(({ value, label }) => (
             <option key={value} value={value}>{label}</option>
@@ -187,7 +187,7 @@ export default function AdminVerificationPage() {
           {loading ? (
             <div className="space-y-px">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-14 bg-gray-50 animate-pulse mx-4 my-2 rounded-xl" />
+                <div key={i} className="h-14 bg-muted-50 animate-pulse mx-4 my-2 rounded-xl" />
               ))}
             </div>
           ) : items.length === 0 ? (
@@ -197,51 +197,51 @@ export default function AdminVerificationPage() {
               message="لم يتم العثور على طلبات مطابقة للفلتر الحالي."
             />
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+            <table className="w-full text-body">
+              <thead className="bg-muted-50 border-b border-muted-100">
                 <tr>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600">المستخدم</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden lg:table-cell">الملاحظة</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600">الحالة</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden sm:table-cell">التاريخ</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600">المستخدم</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600 hidden lg:table-cell">الملاحظة</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600">الحالة</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600 hidden sm:table-cell">التاريخ</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-muted-50">
                 {items.map((it) => (
                   <tr
                     key={it.id}
                     onClick={() => setSelected(it)}
-                    className={`cursor-pointer hover:bg-gray-50 transition-colors ${selected?.id === it.id ? "bg-primary/5" : ""}`}
+                    className={`cursor-pointer hover:bg-muted-50 transition-colors ${selected?.id === it.id ? "bg-primary/5" : ""}`}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         {it.user_avatar ? (
                           <img src={it.user_avatar} className="w-8 h-8 rounded-full object-cover" alt="" />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-caption">
                             {it.user_name?.charAt(0) ?? "؟"}
                           </div>
                         )}
                         <div>
-                          <p className="font-medium text-gray-900 leading-tight">{it.user_name}</p>
-                          <p className="text-xs text-gray-500" dir="ltr">{it.user_phone}</p>
+                          <p className="font-medium text-ink leading-tight">{it.user_name}</p>
+                          <p className="text-caption text-muted-500" dir="ltr">{it.user_phone}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 hidden lg:table-cell max-w-xs">
+                    <td className="px-4 py-3 text-muted-500 hidden lg:table-cell max-w-xs">
                       <span className="line-clamp-1">{it.note || "—"}</span>
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant={STATUS_COLORS[it.status]}>{STATUS_LABELS[it.status]}</Badge>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 hidden sm:table-cell whitespace-nowrap">
+                    <td className="px-4 py-3 text-muted-500 hidden sm:table-cell whitespace-nowrap">
                       {new Date(it.created_at).toLocaleDateString("ar-YE")}
                     </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); setSelected(it); }}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-primary transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-muted-100 text-muted hover:text-primary transition-colors"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
@@ -254,8 +254,8 @@ export default function AdminVerificationPage() {
 
           {/* Pagination */}
           {total > LIMIT && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-              <span className="text-xs text-gray-500">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-muted-100">
+              <span className="text-caption text-muted-500">
                 {offset + 1}–{Math.min(offset + LIMIT, total)} من {total}
               </span>
               <div className="flex gap-2">
@@ -282,12 +282,12 @@ export default function AdminVerificationPage() {
               {selected.user_avatar ? (
                 <img src={selected.user_avatar} className="w-16 h-16 rounded-full object-cover mb-3" alt="" />
               ) : (
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl mb-3">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-h2 mb-3">
                   {selected.user_name?.charAt(0) ?? "؟"}
                 </div>
               )}
-              <h2 className="font-bold text-gray-900">{selected.user_name}</h2>
-              <p className="text-sm text-gray-500" dir="ltr">{selected.user_phone}</p>
+              <h2 className="font-bold text-ink">{selected.user_name}</h2>
+              <p className="text-body text-muted-500" dir="ltr">{selected.user_phone}</p>
               <div className="mt-2 flex items-center gap-1.5">
                 <Badge variant={STATUS_COLORS[selected.status]}>{STATUS_LABELS[selected.status]}</Badge>
                 {selected.user_is_verified && <Badge variant="green">حساب موثّق ✓</Badge>}
@@ -296,21 +296,21 @@ export default function AdminVerificationPage() {
 
             {/* Note */}
             <div className="mb-4">
-              <p className="text-xs font-semibold text-gray-600 mb-1.5">ملاحظة مقدّم الطلب</p>
+              <p className="text-caption font-semibold text-muted-600 mb-1.5">ملاحظة مقدّم الطلب</p>
               {selected.note ? (
                 <>
-                  <p className="text-sm text-gray-700 bg-gray-50 rounded-xl p-3 leading-relaxed line-clamp-4 whitespace-pre-wrap break-words">
+                  <p className="text-body text-muted-700 bg-muted-50 rounded-xl p-3 leading-relaxed line-clamp-4 whitespace-pre-wrap break-words">
                     {selected.note}
                   </p>
                   {selected.note.length > 160 && (
                     <button
                       onClick={() => setNoteDialog(selected)}
-                      className="text-xs text-primary font-semibold mt-1.5 hover:underline"
+                      className="text-caption text-primary font-semibold mt-1.5 hover:underline"
                     >عرض الملاحظة كاملة</button>
                   )}
                 </>
               ) : (
-                <p className="text-sm text-gray-400">لا توجد ملاحظة</p>
+                <p className="text-body text-muted">لا توجد ملاحظة</p>
               )}
             </div>
 
@@ -320,7 +320,7 @@ export default function AdminVerificationPage() {
                 href={selected.document}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 mb-4 text-sm font-semibold text-primary bg-primary/5 rounded-xl px-3 py-2.5 hover:bg-primary/10 transition-colors"
+                className="flex items-center gap-2 mb-4 text-body font-semibold text-primary bg-primary/5 rounded-xl px-3 py-2.5 hover:bg-primary/10 transition-colors"
               >
                 <Document className="h-4 w-4 shrink-0" />
                 عرض المستند المرفق
@@ -330,14 +330,14 @@ export default function AdminVerificationPage() {
             {/* Review note (if reviewed) */}
             {selected.status === "rejected" && selected.review_note && (
               <div className="mb-4">
-                <p className="text-xs font-semibold text-gray-600 mb-1.5">سبب الرفض</p>
-                <p className="text-sm text-red-600 bg-red-50 rounded-xl p-3 leading-relaxed whitespace-pre-wrap break-words">
+                <p className="text-caption font-semibold text-muted-600 mb-1.5">سبب الرفض</p>
+                <p className="text-body text-red-600 bg-red-50 rounded-xl p-3 leading-relaxed whitespace-pre-wrap break-words">
                   {selected.review_note}
                 </p>
               </div>
             )}
             {selected.reviewed_by_name && (
-              <p className="text-xs text-gray-400 mb-4">تمت المراجعة بواسطة {selected.reviewed_by_name}</p>
+              <p className="text-caption text-muted mb-4">تمت المراجعة بواسطة {selected.reviewed_by_name}</p>
             )}
 
             {/* Actions */}
@@ -359,7 +359,7 @@ export default function AdminVerificationPage() {
             </div>
 
             {/* Requested at */}
-            <p className="text-xs text-gray-400 text-center mt-4">
+            <p className="text-caption text-muted text-center mt-4">
               قُدّم في {new Date(selected.created_at).toLocaleDateString("ar-YE")}
             </p>
           </div>
@@ -372,7 +372,7 @@ export default function AdminVerificationPage() {
         onClose={() => setNoteDialog(null)}
         title="ملاحظة طلب التوثيق"
       >
-        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
+        <p className="text-body text-muted-700 leading-relaxed whitespace-pre-wrap break-words">
           {noteDialog?.note}
         </p>
       </Dialog>
@@ -410,16 +410,16 @@ export default function AdminVerificationPage() {
           </>
         }
       >
-        <p className="text-sm text-gray-600 mb-3">
+        <p className="text-body text-muted-600 mb-3">
           سيتم رفض طلب <strong>{rejectTarget?.user_name}</strong> وإشعاره. يمكنك إضافة سبب اختياري.
         </p>
-        <label className="text-xs font-semibold text-gray-600 mb-1.5 block">سبب الرفض (اختياري)</label>
+        <label className="text-caption font-semibold text-muted-600 mb-1.5 block">سبب الرفض (اختياري)</label>
         <textarea
           value={rejectNote}
           onChange={(e) => setRejectNote(e.target.value)}
           rows={3}
           placeholder="مثال: المستند غير واضح، يرجى إعادة الرفع..."
-          className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+          className="w-full border border-muted-200 rounded-xl p-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
         />
       </Dialog>
     </div>

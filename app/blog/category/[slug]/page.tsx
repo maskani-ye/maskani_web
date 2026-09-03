@@ -89,14 +89,14 @@ export default async function BlogCategoryPage(
       ]} />
 
       <header className="mb-6">
-        <h1 className="text-3xl font-extrabold text-gray-900">{cat.label}</h1>
-        <p className="text-gray-600 mt-2 max-w-2xl leading-relaxed">{cat.description}</p>
+        <h1 className="text-h1 font-extrabold text-ink">{cat.label}</h1>
+        <p className="text-muted-600 mt-2 max-w-2xl leading-relaxed">{cat.description}</p>
       </header>
 
       <CategoryChips active={slug} categories={cats} />
 
       {count === 0 ? (
-        <div className="rounded-2xl border border-gray-200 bg-white py-16 text-center text-gray-500">
+        <div className="rounded-2xl border border-muted-200 bg-white py-16 text-center text-muted-500">
           لا مقالات في هذا التصنيف بعد.
         </div>
       ) : (

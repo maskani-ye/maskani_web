@@ -25,10 +25,10 @@ const variants = {
 };
 
 const sizes = {
-  sm: "h-8 px-3 text-sm rounded-lg",
-  md: "h-10 px-5 text-sm rounded-xl",
-  lg: "h-12 px-6 text-base rounded-xl",
-  icon: "h-10 w-10 p-0 text-sm rounded-xl", // square icon-only button
+  sm: "h-8 px-3 text-body rounded-lg",
+  md: "h-10 px-5 text-body rounded-xl",
+  lg: "h-12 px-6 text-body-lg rounded-xl",
+  icon: "h-10 w-10 p-0 text-body rounded-xl", // square icon-only button
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

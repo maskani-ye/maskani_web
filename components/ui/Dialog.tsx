@@ -118,13 +118,13 @@ export function Dialog({
       >
         {(title || !hideClose) && (
           <div className="flex items-center justify-between mb-4 gap-4">
-            {title ? <h2 className="font-bold text-gray-900 text-lg">{title}</h2> : <span />}
+            {title ? <h2 className="font-bold text-ink text-h3">{title}</h2> : <span />}
             {!hideClose && (
               <button
                 type="button"
                 onClick={requestClose}
                 aria-label="إغلاق"
-                className="text-gray-400 hover:text-gray-600 shrink-0"
+                className="text-muted hover:text-muted-600 shrink-0"
               >
                 <CloseCircle className="h-5 w-5" />
               </button>

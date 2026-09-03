@@ -70,7 +70,7 @@ export default function AdminBroadcastPage() {
         />
 
         <div className="flex flex-col gap-1.5 w-full">
-          <label className="text-sm font-semibold text-gray-700">
+          <label className="text-body font-semibold text-muted-700">
             محتوى الإشعار <span className="text-red-500 mr-1">*</span>
           </label>
           <textarea
@@ -78,23 +78,23 @@ export default function AdminBroadcastPage() {
             onChange={(e) => setBody(e.target.value)}
             placeholder="اكتب نص الإشعار هنا..."
             rows={4}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+            className="w-full border border-muted-200 rounded-xl px-4 py-3 text-body text-ink placeholder-muted transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
           />
         </div>
 
         {/* Target segment */}
         <div className="flex flex-col gap-1.5 w-full">
-          <label className="text-sm font-semibold text-gray-700">الفئة المستهدفة</label>
+          <label className="text-body font-semibold text-muted-700">الفئة المستهدفة</label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {TARGETS.map(({ value, label, icon: Icon }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setTarget(value)}
-                className={`flex items-center gap-2 h-11 px-3 rounded-xl border text-sm font-semibold transition-colors ${
+                className={`flex items-center gap-2 h-11 px-3 rounded-xl border text-body font-semibold transition-colors ${
                   target === value
                     ? "border-primary bg-primary/10 text-primary"
-                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                    : "border-muted-200 text-muted-600 hover:bg-muted-50"
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -111,7 +111,7 @@ export default function AdminBroadcastPage() {
         </div>
       </Card>
 
-      <p className="text-xs text-gray-400 text-center mt-4">
+      <p className="text-caption text-muted text-center mt-4">
         يُرسَل الإشعار داخل التطبيق وعبر إشعارات الدفع (FCM) للأجهزة المسجّلة.
       </p>
     </div>

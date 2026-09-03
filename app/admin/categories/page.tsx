@@ -169,19 +169,19 @@ export default function AdminServiceCategoriesPage() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-14 bg-gray-100 rounded-xl animate-pulse" />
+            <div key={i} className="h-14 bg-muted-100 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : categories.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-muted">
           <Widget className="h-12 w-12 mx-auto mb-3 opacity-30" />
           <p>لا توجد أصناف بعد</p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl card-shadow overflow-hidden">
-          <table className="w-full text-sm">
+          <table className="w-full text-body">
             <thead>
-              <tr className="bg-gray-50 text-gray-500 text-xs">
+              <tr className="bg-muted-50 text-muted-500 text-caption">
                 <th className="text-right py-3 px-4 font-semibold">الترتيب</th>
                 <th className="text-right py-3 px-4 font-semibold">الأيقونة</th>
                 <th className="text-right py-3 px-4 font-semibold">الاسم بالعربية</th>
@@ -191,24 +191,24 @@ export default function AdminServiceCategoriesPage() {
                 <th className="text-right py-3 px-4 font-semibold">إجراءات</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-muted-50">
               {categories.map((cat) => (
-                <tr key={cat.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="py-3 px-4 text-gray-400">{cat.order}</td>
+                <tr key={cat.id} className="hover:bg-muted-50/50 transition-colors">
+                  <td className="py-3 px-4 text-muted">{cat.order}</td>
                   <td className="py-3 px-4">
                     <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                       <ServiceIcon icon={cat.icon} className="h-5 w-5" />
                     </div>
                   </td>
-                  <td className="py-3 px-4 font-semibold text-gray-800">
+                  <td className="py-3 px-4 font-semibold text-ink">
                     {cat.name_ar}
                     {typeof cat.providers_count === "number" && (
-                      <span className="text-xs text-gray-400 font-normal mr-2">({cat.providers_count} مزوّد)</span>
+                      <span className="text-caption text-muted font-normal mr-2">({cat.providers_count} مزوّد)</span>
                     )}
                   </td>
-                  <td className="py-3 px-4 text-gray-500 hidden sm:table-cell">{cat.name_en || "—"}</td>
+                  <td className="py-3 px-4 text-muted-500 hidden sm:table-cell">{cat.name_en || "—"}</td>
                   <td className="py-3 px-4 hidden md:table-cell">
-                    <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">{cat.slug || "—"}</span>
+                    <span className="font-mono text-caption bg-muted-100 px-2 py-1 rounded">{cat.slug || "—"}</span>
                   </td>
                   <td className="py-3 px-4">
                     <button onClick={() => toggleActive(cat)}>
@@ -221,8 +221,8 @@ export default function AdminServiceCategoriesPage() {
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-2">
-                      <button onClick={() => openEdit(cat)} className="text-xs text-primary hover:underline font-medium">تعديل</button>
-                      <button onClick={() => setDeleteTarget(cat)} className="text-xs text-red-500 hover:underline font-medium">حذف</button>
+                      <button onClick={() => openEdit(cat)} className="text-caption text-primary hover:underline font-medium">تعديل</button>
+                      <button onClick={() => setDeleteTarget(cat)} className="text-caption text-red-500 hover:underline font-medium">حذف</button>
                     </div>
                   </td>
                 </tr>
@@ -232,8 +232,8 @@ export default function AdminServiceCategoriesPage() {
 
           {/* Pagination */}
           {total > LIMIT && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-              <span className="text-xs text-gray-500">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-muted-100">
+              <span className="text-caption text-muted-500">
                 {offset + 1}–{Math.min(offset + LIMIT, total)} من {total}
               </span>
               <div className="flex gap-2">
@@ -291,7 +291,7 @@ export default function AdminServiceCategoriesPage() {
                   onChange={(e) => setForm((p) => ({ ...p, is_active: e.target.checked }))}
                   className="rounded"
                 />
-                <span className="text-sm text-gray-700">مفعّل</span>
+                <span className="text-body text-muted-700">مفعّل</span>
               </label>
             </div>
           </div>
@@ -306,7 +306,7 @@ export default function AdminServiceCategoriesPage() {
       {/* ── Delete Confirm ── */}
       {deleteTarget && (
         <Modal title="تأكيد الحذف" onClose={() => setDeleteTarget(null)}>
-          <p className="text-gray-600 text-sm mb-6">
+          <p className="text-muted-600 text-body mb-6">
             سيتم حذف الصنف <strong>{deleteTarget.name_ar}</strong> نهائياً.
             {typeof deleteTarget.providers_count === "number" && deleteTarget.providers_count > 0 && (
               <span className="block mt-2 text-red-500">
@@ -333,8 +333,8 @@ function Modal({ title, children, onClose }: { title: string; children: React.Re
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl card-shadow w-full max-w-md p-6 relative">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="font-bold text-gray-900 text-lg">{title}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <h2 className="font-bold text-ink text-h3">{title}</h2>
+          <button onClick={onClose} className="text-muted hover:text-muted-600">
             <CloseCircle className="h-5 w-5" />
           </button>
         </div>

@@ -153,25 +153,25 @@ export default function AdminCurrenciesPage() {
       {/* حالة المهمّة اليومية — المهام الدورية تعمل في صمت، وسكوتها لا يُرى
           إلّا إن عُرض. */}
       <Card className={`p-5 border ${
-        job === null ? "bg-gray-50 border-gray-200"
+        job === null ? "bg-muted-50 border-muted-200"
           : job.ok ? "bg-emerald-50/60 border-emerald-200"
           : "bg-red-50/60 border-red-200"
       }`}>
         <div className="flex items-start gap-3">
           <ClockCircle className={`h-5 w-5 shrink-0 mt-0.5 ${
-            job === null ? "text-gray-400" : job.ok ? "text-emerald-600" : "text-red-600"
+            job === null ? "text-muted" : job.ok ? "text-emerald-600" : "text-red-600"
           }`} />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-ink">
+            <p className="text-body font-bold text-ink">
               التحديث التلقائي اليوميّ · {schedule || "—"}
             </p>
             {job === null ? (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-caption text-muted-500 mt-1">
                 لم تُسجَّل أي دورة بعد — أوّل تشغيل يظهر هنا بعد موعده القادم.
               </p>
             ) : (
               <>
-                <p className="text-xs text-gray-600 mt-1">
+                <p className="text-caption text-muted-600 mt-1">
                   آخر تشغيل:{" "}
                   <strong>
                     {new Date(job.ran_at).toLocaleString(NUMERIC_LOCALE, {
@@ -181,12 +181,12 @@ export default function AdminCurrenciesPage() {
                   · {job.ok ? "نجح" : "فشل"}
                 </p>
                 {job.updated.length > 0 && (
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-caption text-muted-600 mt-1">
                     حُدّثت: {job.updated.join(" · ")}
                   </p>
                 )}
                 {Object.keys(job.skipped ?? {}).length > 0 && (
-                  <div className="mt-2 text-xs text-amber-800 bg-amber-100/70 rounded-xl px-3 py-2">
+                  <div className="mt-2 text-caption text-amber-800 bg-amber-100/70 rounded-xl px-3 py-2">
                     <p className="font-semibold mb-1">
                       لم تُطبَّق (قفزة تتجاوز الحدّ — تحتاج قرارك):
                     </p>
@@ -198,7 +198,7 @@ export default function AdminCurrenciesPage() {
                   </div>
                 )}
                 {job.error && (
-                  <p className="text-xs text-red-700 mt-1">الخطأ: {job.error}</p>
+                  <p className="text-caption text-red-700 mt-1">الخطأ: {job.error}</p>
                 )}
               </>
             )}
@@ -207,7 +207,7 @@ export default function AdminCurrenciesPage() {
       </Card>
 
       <Card className="p-4 bg-amber-50/60 border border-amber-200">
-        <p className="text-sm text-amber-900 leading-relaxed">
+        <p className="text-body text-amber-900 leading-relaxed">
           يُدخَل السعر بصيغة <strong>كم وحدة مقابل دولار واحد</strong> — كما يُقال في
           السوق. تعديل أي سعر يُعيد فوراً حساب القيم المرجعية لكل العقارات والطلبات
           والعروض، فتبقى الفلترة والترتيب صحيحة.
@@ -215,8 +215,8 @@ export default function AdminCurrenciesPage() {
       </Card>
 
       <Card className="p-0 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-500 text-xs">
+        <table className="w-full text-body">
+          <thead className="bg-muted-50 text-muted-500 text-caption">
             <tr>
               <th className="text-start px-4 py-3 font-semibold">العملة</th>
               <th className="text-start px-4 py-3 font-semibold">للدولار الواحد</th>
@@ -225,12 +225,12 @@ export default function AdminCurrenciesPage() {
               <th className="px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-muted-100">
             {rates.map((r) => (
-              <tr key={r.id} className="hover:bg-gray-50/60">
+              <tr key={r.id} className="hover:bg-muted-50/60">
                 <td className="px-4 py-3">
                   <div className="font-bold text-ink">{r.label}</div>
-                  <div className="text-xs text-gray-400 flex items-center gap-1.5">
+                  <div className="text-caption text-muted flex items-center gap-1.5">
                     {r.code}
                     {PEGGED[r.code] && (
                       <Badge variant="info">{PEGGED[r.code]}</Badge>
@@ -247,8 +247,8 @@ export default function AdminCurrenciesPage() {
                     disabled={r.code === "USD"}
                   />
                 </td>
-                <td className="px-4 py-3 text-gray-500 tabular-nums">{r.rate_to_usd}</td>
-                <td className="px-4 py-3 text-xs text-gray-400">
+                <td className="px-4 py-3 text-muted-500 tabular-nums">{r.rate_to_usd}</td>
+                <td className="px-4 py-3 text-caption text-muted">
                   {new Date(r.updated_at).toLocaleDateString("ar", { dateStyle: "medium" })}
                 </td>
                 <td className="px-4 py-3">
@@ -276,7 +276,7 @@ export default function AdminCurrenciesPage() {
               </tr>
             ))}
             {!loading && rates.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-400">
+              <tr><td colSpan={5} className="px-4 py-10 text-center text-muted">
                 لا عملات مسجّلة.
               </td></tr>
             )}
@@ -285,7 +285,7 @@ export default function AdminCurrenciesPage() {
       </Card>
 
       <Card className="p-5">
-        <h2 className="text-sm font-bold text-ink mb-3 flex items-center gap-2">
+        <h2 className="text-body font-bold text-ink mb-3 flex items-center gap-2">
           <AddCircle className="h-4 w-4 text-primary" /> إضافة عملة
         </h2>
         <div className="flex flex-wrap items-end gap-3">
@@ -308,7 +308,7 @@ export default function AdminCurrenciesPage() {
           </div>
           <Button loading={saving === "new"} onClick={create}>إضافة</Button>
         </div>
-        <p className="text-xs text-gray-400 mt-3 leading-relaxed">
+        <p className="text-caption text-muted mt-3 leading-relaxed">
           الرمز يجب أن يكون معرّفاً في الخادم ضمن قائمة العملات المدعومة، وإلّا
           رُفض — فالعملة ليست سطراً في جدول فحسب، بل خيارٌ في نماذج النشر
           والتطبيقات أيضاً.

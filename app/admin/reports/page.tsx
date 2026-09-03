@@ -112,7 +112,7 @@ export default function AdminReportsPage() {
             <button
               key={s}
               onClick={() => { setFilters((p) => ({ ...p, status: filters.status === s ? "" : s })); setOffset(0); }}
-              className={`text-xs px-3 py-1.5 rounded-full font-semibold transition-all border ${filters.status === s ? reportStatusColors[s] + " border-transparent" : "border-gray-200 text-gray-500 hover:border-gray-300"}`}
+              className={`text-caption px-3 py-1.5 rounded-full font-semibold transition-all border ${filters.status === s ? reportStatusColors[s] + " border-transparent" : "border-muted-200 text-muted-500 hover:border-muted-200"}`}
             >
               {statusIcon(s)} {reportStatusLabels[s]}
             </button>
@@ -135,7 +135,7 @@ export default function AdminReportsPage() {
             <select
               value={filters.fraud_type}
               onChange={(e) => { setFilters((p) => ({ ...p, fraud_type: e.target.value })); setOffset(0); }}
-              className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
             >
               {FRAUD_TYPE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -145,11 +145,11 @@ export default function AdminReportsPage() {
           {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-20 bg-gray-100 rounded-2xl animate-pulse" />
+                <div key={i} className="h-20 bg-muted-100 rounded-2xl animate-pulse" />
               ))}
             </div>
           ) : reports.length === 0 ? (
-            <div className="text-center py-20 text-gray-400">
+            <div className="text-center py-20 text-muted">
               <ShieldWarning className="h-12 w-12 mx-auto mb-3 opacity-30" />
               <p>لا توجد بلاغات مطابقة</p>
             </div>
@@ -164,29 +164,29 @@ export default function AdminReportsPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${reportStatusColors[report.status]}`}>
+                        <span className={`inline-flex items-center gap-1 text-caption font-semibold px-2 py-0.5 rounded-full ${reportStatusColors[report.status]}`}>
                           {statusIcon(report.status)} {reportStatusLabels[report.status]}
                         </span>
-                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                        <span className="text-caption bg-muted-100 text-muted-500 px-2 py-0.5 rounded-full">
                           {fraudTypeLabels[report.fraud_type]}
                         </span>
                       </div>
-                      <p className="font-semibold text-gray-900 text-sm line-clamp-1">{report.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="font-semibold text-ink text-body line-clamp-1">{report.title}</p>
+                      <p className="text-caption text-muted-500 mt-0.5">
                         المتهم: <span className="text-red-600 font-medium">{report.accused_name}</span>
-                        {report.accused_phone && <span className="mr-2 text-gray-400">{report.accused_phone}</span>}
+                        {report.accused_phone && <span className="mr-2 text-muted">{report.accused_phone}</span>}
                       </p>
                     </div>
                     <div className="text-left flex-shrink-0">
-                      <p className="text-xs text-gray-400">{formatRelativeTime(report.created_at)}</p>
+                      <p className="text-caption text-muted">{formatRelativeTime(report.created_at)}</p>
                       <div className="flex items-center gap-2 mt-1 justify-end">
-                        <span className="flex items-center gap-0.5 text-xs text-green-600">
+                        <span className="flex items-center gap-0.5 text-caption text-green-600">
                           <Like className="h-3 w-3" />{report.votes_credible}
                         </span>
-                        <span className="flex items-center gap-0.5 text-xs text-red-500">
+                        <span className="flex items-center gap-0.5 text-caption text-red-500">
                           <Dislike className="h-3 w-3" />{report.votes_not_credible}
                         </span>
-                        <span className="flex items-center gap-0.5 text-xs text-gray-400">
+                        <span className="flex items-center gap-0.5 text-caption text-muted">
                           <ChatRound className="h-3 w-3" />{report.comments_count}
                         </span>
                       </div>
@@ -207,7 +207,7 @@ export default function AdminReportsPage() {
               >
                 <AltArrowRight className="h-4 w-4" /> السابق
               </Button>
-              <span className="text-sm text-gray-500">صفحة {currentPage} من {totalPages}</span>
+              <span className="text-body text-muted-500">صفحة {currentPage} من {totalPages}</span>
               <Button
                 variant="outline" size="sm"
                 onClick={() => setOffset((p) => p + limit)}
@@ -223,53 +223,53 @@ export default function AdminReportsPage() {
         <div className="w-96 flex-shrink-0">
           {loadingDetail ? (
             <div className="bg-white rounded-2xl card-shadow p-6 animate-pulse space-y-4">
-              <div className="h-6 bg-gray-200 rounded w-3/4" />
-              <div className="h-4 bg-gray-200 rounded w-1/2" />
-              <div className="h-24 bg-gray-200 rounded" />
+              <div className="h-6 bg-muted-200 rounded w-3/4" />
+              <div className="h-4 bg-muted-200 rounded w-1/2" />
+              <div className="h-24 bg-muted-200 rounded" />
             </div>
           ) : selected ? (
             <div className="bg-white rounded-2xl card-shadow p-5 sticky top-20 space-y-5 max-h-[calc(100vh-120px)] overflow-y-auto">
               {/* Status badges */}
               <div className="flex items-center justify-between">
-                <span className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full ${reportStatusColors[selected.status]}`}>
+                <span className={`inline-flex items-center gap-1 text-caption font-bold px-3 py-1.5 rounded-full ${reportStatusColors[selected.status]}`}>
                   {statusIcon(selected.status)} {reportStatusLabels[selected.status]}
                 </span>
-                <span className="text-xs text-gray-400">#{selected.id}</span>
+                <span className="text-caption text-muted">#{selected.id}</span>
               </div>
 
               {/* Title & type */}
               <div>
-                <h2 className="font-bold text-gray-900 text-lg leading-snug">{selected.title}</h2>
-                <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full mt-1 inline-block">
+                <h2 className="font-bold text-ink text-h3 leading-snug">{selected.title}</h2>
+                <span className="text-caption bg-muted-100 text-muted-500 px-2 py-1 rounded-full mt-1 inline-block">
                   {fraudTypeLabels[selected.fraud_type]}
                 </span>
               </div>
 
               {/* Accused */}
               <div className="bg-red-50 rounded-xl p-3 space-y-1">
-                <p className="text-xs font-bold text-red-700 mb-1">المتهم</p>
-                <p className="text-sm font-semibold text-gray-900">{selected.accused_name}</p>
+                <p className="text-caption font-bold text-red-700 mb-1">المتهم</p>
+                <p className="text-body font-semibold text-ink">{selected.accused_name}</p>
                 {selected.accused_phone && (
-                  <p className="text-xs text-gray-600 flex items-center gap-1">
+                  <p className="text-caption text-muted-600 flex items-center gap-1">
                     <span>📞</span> {selected.accused_phone}
                   </p>
                 )}
                 {selected.accused_profile_link && (
                   <a href={selected.accused_profile_link} target="_blank" rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline">رابط الملف الشخصي</a>
+                    className="text-caption text-primary hover:underline">رابط الملف الشخصي</a>
                 )}
               </div>
 
               {/* Details */}
               <div>
-                <p className="text-xs font-bold text-gray-500 mb-1">تفاصيل البلاغ</p>
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{selected.details}</p>
+                <p className="text-caption font-bold text-muted-500 mb-1">تفاصيل البلاغ</p>
+                <p className="text-body text-muted-700 leading-relaxed whitespace-pre-line">{selected.details}</p>
               </div>
 
               {/* Images */}
               {(selected.images?.length ?? 0) > 0 && (
                 <div>
-                  <p className="text-xs font-bold text-gray-500 mb-2">صور الأدلة ({selected.images?.length ?? 0})</p>
+                  <p className="text-caption font-bold text-muted-500 mb-2">صور الأدلة ({selected.images?.length ?? 0})</p>
                   <div className="grid grid-cols-3 gap-2">
                     {(selected.images ?? []).map((img) => (
                       <a key={img.id} href={img.image} target="_blank" rel="noopener noreferrer">
@@ -281,17 +281,17 @@ export default function AdminReportsPage() {
               )}
 
               {/* Reporter */}
-              <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-3">
+              <div className="flex items-center gap-2 bg-muted-50 rounded-xl p-3">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <User className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">مقدّم البلاغ</p>
-                  <p className="text-sm font-semibold text-gray-800">{selected.reporter_name}</p>
+                  <p className="text-caption text-muted">مقدّم البلاغ</p>
+                  <p className="text-body font-semibold text-ink">{selected.reporter_name}</p>
                 </div>
                 <div className="mr-auto text-left">
-                  <p className="text-xs text-gray-400">{formatRelativeTime(selected.created_at)}</p>
-                  {selected.city_name && <p className="text-xs text-gray-500">{selected.city_name}</p>}
+                  <p className="text-caption text-muted">{formatRelativeTime(selected.created_at)}</p>
+                  {selected.city_name && <p className="text-caption text-muted-500">{selected.city_name}</p>}
                 </div>
               </div>
 
@@ -299,33 +299,33 @@ export default function AdminReportsPage() {
               <div className="flex gap-3">
                 <div className="flex-1 bg-green-50 rounded-xl p-3 text-center">
                   <Like className="h-5 w-5 text-green-600 mx-auto mb-1" />
-                  <p className="text-lg font-bold text-green-700">{selected.votes_credible}</p>
-                  <p className="text-xs text-green-600">مصداقي</p>
+                  <p className="text-h3 font-bold text-green-700">{selected.votes_credible}</p>
+                  <p className="text-caption text-green-600">مصداقي</p>
                 </div>
                 <div className="flex-1 bg-red-50 rounded-xl p-3 text-center">
                   <Dislike className="h-5 w-5 text-red-500 mx-auto mb-1" />
-                  <p className="text-lg font-bold text-red-600">{selected.votes_not_credible}</p>
-                  <p className="text-xs text-red-500">غير مصداقي</p>
+                  <p className="text-h3 font-bold text-red-600">{selected.votes_not_credible}</p>
+                  <p className="text-caption text-red-500">غير مصداقي</p>
                 </div>
-                <div className="flex-1 bg-gray-50 rounded-xl p-3 text-center">
-                  <p className="text-lg font-bold text-gray-700">{selected.credibility_score > 0 ? "+" : ""}{selected.credibility_score}</p>
-                  <p className="text-xs text-gray-400">النقاط</p>
+                <div className="flex-1 bg-muted-50 rounded-xl p-3 text-center">
+                  <p className="text-h3 font-bold text-muted-700">{selected.credibility_score > 0 ? "+" : ""}{selected.credibility_score}</p>
+                  <p className="text-caption text-muted">النقاط</p>
                 </div>
               </div>
 
               {/* Comments */}
               {(selected.comments?.length ?? 0) > 0 && (
                 <div>
-                  <p className="text-xs font-bold text-gray-500 mb-2">التعليقات ({selected.comments?.length ?? 0})</p>
+                  <p className="text-caption font-bold text-muted-500 mb-2">التعليقات ({selected.comments?.length ?? 0})</p>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {(selected.comments ?? []).map((c) => (
-                      <div key={c.id} className="flex gap-2 bg-gray-50 rounded-xl p-2">
+                      <div key={c.id} className="flex gap-2 bg-muted-50 rounded-xl p-2">
                         <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                           <User className="h-3.5 w-3.5 text-primary" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-gray-700">{c.user_name}</p>
-                          <p className="text-xs text-gray-600 mt-0.5">{c.text}</p>
+                          <p className="text-caption font-semibold text-muted-700">{c.user_name}</p>
+                          <p className="text-caption text-muted-600 mt-0.5">{c.text}</p>
                         </div>
                       </div>
                     ))}
@@ -334,14 +334,14 @@ export default function AdminReportsPage() {
               )}
 
               {/* ── Admin Action ── */}
-              <div className="border-t border-gray-100 pt-4 space-y-3">
-                <p className="text-xs font-bold text-gray-700">قرار المشرف</p>
+              <div className="border-t border-muted-100 pt-4 space-y-3">
+                <p className="text-caption font-bold text-muted-700">قرار المشرف</p>
                 <textarea
                   value={adminNote}
                   onChange={(e) => setAdminNote(e.target.value)}
                   placeholder="ملاحظة المشرف (اختياري)..."
                   rows={2}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                  className="w-full border border-muted-200 rounded-xl px-3 py-2 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <Button
@@ -377,9 +377,9 @@ export default function AdminReportsPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl card-shadow p-8 text-center text-gray-400">
+            <div className="bg-white rounded-2xl card-shadow p-8 text-center text-muted">
               <ShieldWarning className="h-12 w-12 mx-auto mb-3 opacity-20" />
-              <p className="text-sm">اختر بلاغاً للاطلاع على تفاصيله</p>
+              <p className="text-body">اختر بلاغاً للاطلاع على تفاصيله</p>
             </div>
           )}
         </div>

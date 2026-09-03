@@ -40,7 +40,7 @@ export default function ConstructionCostCalc() {
         <ResultRow label="تكلفة التشطيب" value={fmtMoney(finishCost, cur)} />
         <ResultRow label="بنود إضافية" value={fmtMoney(num(extras), cur)} />
         <ResultRow label={`هامش الطوارئ (${num(contingency)}%)`} value={fmtMoney(contAmt, cur)} />
-        <p className="text-xs text-gray-400 leading-relaxed mt-1">
+        <p className="text-caption text-muted leading-relaxed mt-1">
           الأرقام تقديرية بناءً على مدخلاتك. الأسعار تتقلّب وتختلف بالمنطقة ومستوى التشطيب — للتقدير الأدقّ استشر مقاولاً.
           اقرأ <Link href="/blog/estimate-construction-cost-yemen" className="text-primary hover:underline">كيف تقدّر تكلفة البناء</Link>.
         </p>

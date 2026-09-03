@@ -31,8 +31,8 @@ export function PageHeader({
           {icon}
         </span>
         <div className="min-w-0">
-          <Heading className="text-xl font-bold text-gray-900 truncate">{title}</Heading>
-          {subtitle != null && <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>}
+          <Heading className="text-h3 font-bold text-ink truncate">{title}</Heading>
+          {subtitle != null && <p className="text-body text-muted-500 mt-0.5">{subtitle}</p>}
         </div>
       </div>
       {actions && <div className="flex items-center gap-2.5 shrink-0 flex-wrap">{actions}</div>}

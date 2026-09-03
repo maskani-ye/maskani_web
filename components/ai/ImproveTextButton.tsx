@@ -49,7 +49,7 @@ export function ImproveTextButton({
       disabled={loading}
       className={
         className ??
-        "inline-flex items-center gap-1.5 rounded-lg bg-primary/10 text-primary px-3 py-1.5 text-xs font-semibold hover:bg-primary/20 transition-colors disabled:opacity-60"
+        "inline-flex items-center gap-1.5 rounded-lg bg-primary/10 text-primary px-3 py-1.5 text-caption font-semibold hover:bg-primary/20 transition-colors disabled:opacity-60"
       }
     >
       {loading ? <Refresh className="h-3.5 w-3.5 animate-spin" /> : <Stars className="h-3.5 w-3.5" />}

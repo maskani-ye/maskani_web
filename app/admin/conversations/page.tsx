@@ -163,7 +163,7 @@ export default function AdminConversationsPage() {
             startIcon={<Magnifer className="h-4 w-4" />}
             endIcon={search ? (
               <button onClick={() => setSearch("")}>
-                <CloseCircle className="h-4 w-4 text-gray-400" />
+                <CloseCircle className="h-4 w-4 text-muted" />
               </button>
             ) : undefined}
           />
@@ -178,26 +178,26 @@ export default function AdminConversationsPage() {
               <div className="divide-y">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="p-4 animate-pulse flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-100" />
+                    <div className="w-10 h-10 rounded-full bg-muted-100" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3 bg-gray-100 rounded w-2/3" />
-                      <div className="h-3 bg-gray-100 rounded w-1/2" />
+                      <div className="h-3 bg-muted-100 rounded w-2/3" />
+                      <div className="h-3 bg-muted-100 rounded w-1/2" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : conversations.length === 0 ? (
-              <div className="py-20 text-center text-gray-400">
+              <div className="py-20 text-center text-muted">
                 <ChatRoundDots className="h-12 w-12 mx-auto mb-3 opacity-30" />
                 <p>لا توجد محادثات</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-50">
+              <div className="divide-y divide-muted-50">
                 {conversations.map((c) => (
                   <div
                     key={c.id}
                     onClick={() => openConversation(c)}
-                    className={`p-4 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${
+                    className={`p-4 flex items-center gap-3 cursor-pointer hover:bg-muted-50 transition-colors ${
                       selected?.id === c.id ? "bg-primary/5 border-r-2 border-primary" : ""
                     }`}
                   >
@@ -210,7 +210,7 @@ export default function AdminConversationsPage() {
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-sm text-gray-900 truncate">
+                        <span className="font-semibold text-body text-ink truncate">
                           {pairName(c)}
                         </span>
                         {c.unread_count > 0 && (
@@ -218,7 +218,7 @@ export default function AdminConversationsPage() {
                         )}
                         {c.property && <Badge variant="blue">عقار #{c.property}</Badge>}
                       </div>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                      <p className="text-caption text-muted-500 mt-1 line-clamp-1">
                         {c.last_message
                           ? (c.last_message.is_deleted ? "تم حذف الرسالة" : c.last_message.body)
                           : "لا توجد رسائل"}
@@ -227,8 +227,8 @@ export default function AdminConversationsPage() {
 
                     {/* Meta */}
                     <div className="text-left shrink-0">
-                      <p className="text-xs text-gray-400">{formatRelativeTime(c.updated_at)}</p>
-                      <p className="text-xs text-gray-400 mt-1 flex items-center gap-1 justify-end">
+                      <p className="text-caption text-muted">{formatRelativeTime(c.updated_at)}</p>
+                      <p className="text-caption text-muted mt-1 flex items-center gap-1 justify-end">
                         <ChatRoundDots className="h-3 w-3" /> {c.messages_count}
                       </p>
                     </div>
@@ -241,7 +241,7 @@ export default function AdminConversationsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-4 px-1">
-              <p className="text-sm text-gray-500">صفحة {currentPage} من {totalPages}</p>
+              <p className="text-body text-muted-500">صفحة {currentPage} من {totalPages}</p>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -268,20 +268,20 @@ export default function AdminConversationsPage() {
             <div className="bg-white rounded-2xl card-shadow p-5 sticky top-6 flex flex-col max-h-[calc(100vh-120px)]">
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-gray-900 text-sm truncate">{pairName(selected)}</h3>
+                <h3 className="font-bold text-ink text-body truncate">{pairName(selected)}</h3>
                 <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => setDeleteConvTarget(selected)}
-                    className="p-1 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
+                    className="p-1 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors"
                     title="حذف المحادثة"
                   >
                     <TrashBinTrash className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setSelected(null)}
-                    className="p-1 rounded-lg hover:bg-gray-100"
+                    className="p-1 rounded-lg hover:bg-muted-100"
                   >
-                    <CloseCircle className="h-4 w-4 text-gray-400" />
+                    <CloseCircle className="h-4 w-4 text-muted" />
                   </button>
                 </div>
               </div>
@@ -313,13 +313,13 @@ export default function AdminConversationsPage() {
                 {loadingMsgs && messages.length === 0 ? (
                   <div className="space-y-3">
                     {Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="h-12 bg-gray-100 rounded-xl animate-pulse" />
+                      <div key={i} className="h-12 bg-muted-100 rounded-xl animate-pulse" />
                     ))}
                   </div>
                 ) : displayMessages.length === 0 ? (
-                  <div className="py-16 text-center text-gray-400">
+                  <div className="py-16 text-center text-muted">
                     <ChatRoundDots className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                    <p className="text-sm">لا توجد رسائل</p>
+                    <p className="text-body">لا توجد رسائل</p>
                   </div>
                 ) : (
                   displayMessages.map((m) => {
@@ -332,17 +332,17 @@ export default function AdminConversationsPage() {
                         <Avatar p={m.sender} small />
                         <div className={`flex-1 min-w-0 ${mine ? "text-right" : "text-left"}`}>
                           <div
-                            className={`inline-block max-w-full rounded-2xl px-3 py-2 text-sm break-words ${
+                            className={`inline-block max-w-full rounded-2xl px-3 py-2 text-body break-words ${
                               m.is_deleted
-                                ? "bg-gray-50 text-gray-400 italic"
+                                ? "bg-muted-50 text-muted italic"
                                 : mine
-                                ? "bg-primary/10 text-gray-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-primary/10 text-ink"
+                                : "bg-muted-100 text-ink"
                             }`}
                           >
                             {m.is_deleted ? "تم حذف الرسالة" : m.body}
                           </div>
-                          <div className="flex items-center gap-1.5 mt-1 text-[10px] text-gray-400">
+                          <div className="flex items-center gap-1.5 mt-1 text-[10px] text-muted">
                             <span>{m.sender.full_name}</span>
                             <span>·</span>
                             <span>{formatRelativeTime(m.created_at)}</span>
@@ -350,7 +350,7 @@ export default function AdminConversationsPage() {
                             {m.is_read && <span>· مقروءة</span>}
                             <button
                               onClick={() => setDeleteMsgTarget(m)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-gray-400 hover:text-red-600"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-muted hover:text-red-600"
                               title="حذف الرسالة"
                             >
                               <TrashBinTrash className="h-3 w-3" />
@@ -369,9 +369,9 @@ export default function AdminConversationsPage() {
         {/* Empty detail hint (desktop) */}
         {!selected && (
           <div className="w-96 shrink-0 hidden lg:block">
-            <div className="bg-white rounded-2xl card-shadow p-8 text-center text-gray-400">
+            <div className="bg-white rounded-2xl card-shadow p-8 text-center text-muted">
               <Buildings2 className="h-12 w-12 mx-auto mb-3 opacity-20" />
-              <p className="text-sm">اختر محادثة لعرض رسائلها</p>
+              <p className="text-body">اختر محادثة لعرض رسائلها</p>
             </div>
           </div>
         )}

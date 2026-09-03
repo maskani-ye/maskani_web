@@ -11,7 +11,7 @@ import type { MiniMapLeafletProps } from "./MiniMapLeaflet";
 const MiniMapLeaflet = dynamic(() => import("./MiniMapLeaflet"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full w-full items-center justify-center rounded-2xl bg-primary-50 text-sm text-primary">
+    <div className="flex h-full w-full items-center justify-center rounded-2xl bg-primary-50 text-body text-primary">
       جاري تحميل الخريطة…
     </div>
   ),

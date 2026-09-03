@@ -147,37 +147,37 @@ export default function AdminPropertiesPage() {
       {/* Filters */}
       <div className="bg-white rounded-2xl card-shadow p-4 mb-6 flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-48">
-          <Magnifer className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Magnifer className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="ابحث بالعنوان أو المالك..."
-            className="w-full h-10 border border-gray-200 rounded-xl pr-9 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="w-full h-10 border border-muted-200 rounded-xl pr-9 pl-4 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
           {search && (
             <button onClick={() => setSearch("")} className="absolute left-3 top-1/2 -translate-y-1/2">
-              <CloseCircle className="h-4 w-4 text-gray-400" />
+              <CloseCircle className="h-4 w-4 text-muted" />
             </button>
           )}
         </div>
         <select value={offerFilter} onChange={(e) => setOffer(e.target.value)}
-          className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none">
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none">
           <option value="">كل أنواع العرض</option>
           {Object.entries(OFFER_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
         </select>
         <select value={typeFilter} onChange={(e) => setType(e.target.value)}
-          className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none">
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none">
           <option value="">كل أنواع العقار</option>
           {propertyTypes.map((t) => <option key={t.id} value={String(t.id)}>{t.name_ar}</option>)}
         </select>
         <select value={activeFilter} onChange={(e) => setActive(e.target.value)}
-          className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none">
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none">
           <option value="">كل الحالات</option>
           <option value="true">نشط</option>
           <option value="false">موقوف</option>
         </select>
         <select value={riskFilter} onChange={(e) => setRisk(e.target.value)}
-          className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none">
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none">
           <option value="">فحص AI: الكل</option>
           <option value="high">🔴 خطورة عالية</option>
           <option value="medium">🟡 مشتبه</option>
@@ -193,44 +193,44 @@ export default function AdminPropertiesPage() {
           {loading ? (
             <div className="p-4 space-y-2">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-14 bg-gray-50 animate-pulse rounded-xl" />
+                <div key={i} className="h-14 bg-muted-50 animate-pulse rounded-xl" />
               ))}
             </div>
           ) : properties.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <div className="flex flex-col items-center justify-center py-20 text-muted">
               <Buildings2 className="h-10 w-10 mb-3 opacity-30" />
-              <p className="text-sm">لا توجد عقارات</p>
+              <p className="text-body">لا توجد عقارات</p>
             </div>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+            <table className="w-full text-body">
+              <thead className="bg-muted-50 border-b border-muted-100">
                 <tr>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600">العقار</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden lg:table-cell">المالك</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600">النوع</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden md:table-cell">السعر</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600 hidden sm:table-cell">الحالة</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600">العقار</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600 hidden lg:table-cell">المالك</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600">النوع</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600 hidden md:table-cell">السعر</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-600 hidden sm:table-cell">الحالة</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-muted-50">
                 {properties.map((l) => (
                   <tr
                     key={l.id}
                     onClick={() => setSelected(l)}
-                    className={`cursor-pointer hover:bg-gray-50 transition-colors ${selected?.id === l.id ? "bg-primary/5" : ""}`}
+                    className={`cursor-pointer hover:bg-muted-50 transition-colors ${selected?.id === l.id ? "bg-primary/5" : ""}`}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 bg-gray-100">
+                        <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 bg-muted-100">
                           {l.main_image
                             ? <img src={l.main_image} className="w-full h-full object-cover" alt="" />
-                            : <div className="w-full h-full flex items-center justify-center"><Buildings2 className="h-4 w-4 text-gray-300" /></div>}
+                            : <div className="w-full h-full flex items-center justify-center"><Buildings2 className="h-4 w-4 text-muted-200" /></div>}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 leading-tight line-clamp-1">{l.title}</p>
+                          <p className="font-medium text-ink leading-tight line-clamp-1">{l.title}</p>
                           <div className="flex items-center gap-1.5">
-                            <p className="text-xs text-gray-400">{l.city_name}</p>
+                            <p className="text-caption text-muted">{l.city_name}</p>
                             {(l.ai_risk === "high" || l.ai_risk === "medium") && (
                               <span
                                 title={(l.ai_flags ?? []).join(" · ")}
@@ -242,16 +242,16 @@ export default function AdminPropertiesPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 hidden lg:table-cell">
-                      <p className="text-sm">{l.user_name}</p>
-                      <p className="text-xs text-gray-400" dir="ltr">{l.user_phone}</p>
+                    <td className="px-4 py-3 text-muted-600 hidden lg:table-cell">
+                      <p className="text-body">{l.user_name}</p>
+                      <p className="text-caption text-muted" dir="ltr">{l.user_phone}</p>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col gap-1">
                         <Badge variant={OFFER_COLORS[l.offer_type] ?? "gray"}>
                           {OFFER_LABELS[l.offer_type] ?? l.offer_type}
                         </Badge>
-                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                        <span className="flex items-center gap-1 text-caption text-muted-500">
                           {l.property_type ? (
                             <>
                               <ServiceIcon icon={l.property_type.icon} className="h-3.5 w-3.5" />
@@ -266,13 +266,13 @@ export default function AdminPropertiesPage() {
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       {l.is_active
-                        ? <span className="flex items-center gap-1 text-xs text-green-600 font-medium"><CheckCircle className="h-3.5 w-3.5" />نشط</span>
-                        : <span className="flex items-center gap-1 text-xs text-red-500 font-medium"><DangerCircle className="h-3.5 w-3.5" />موقوف</span>}
+                        ? <span className="flex items-center gap-1 text-caption text-green-600 font-medium"><CheckCircle className="h-3.5 w-3.5" />نشط</span>
+                        : <span className="flex items-center gap-1 text-caption text-red-500 font-medium"><DangerCircle className="h-3.5 w-3.5" />موقوف</span>}
                     </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); setSelected(l); }}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-primary transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-muted-100 text-muted hover:text-primary transition-colors"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
@@ -285,8 +285,8 @@ export default function AdminPropertiesPage() {
 
           {/* Pagination */}
           {total > LIMIT && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-              <span className="text-xs text-gray-500">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-muted-100">
+              <span className="text-caption text-muted-500">
                 {offset + 1}–{Math.min(offset + LIMIT, total)} من {total}
               </span>
               <div className="flex gap-2">
@@ -301,34 +301,34 @@ export default function AdminPropertiesPage() {
         {selected && (
           <div className="w-72 shrink-0 bg-white rounded-2xl card-shadow p-5 self-start sticky top-6">
             {/* Image */}
-            <div className="w-full h-36 rounded-xl overflow-hidden bg-gray-100 mb-4">
+            <div className="w-full h-36 rounded-xl overflow-hidden bg-muted-100 mb-4">
               {selected.main_image
                 ? <img src={selected.main_image} className="w-full h-full object-cover" alt="" />
-                : <div className="w-full h-full flex items-center justify-center"><Buildings2 className="h-8 w-8 text-gray-300" /></div>}
+                : <div className="w-full h-full flex items-center justify-center"><Buildings2 className="h-8 w-8 text-muted-200" /></div>}
             </div>
 
             {/* Info */}
-            <h2 className="font-bold text-gray-900 mb-1 leading-snug">{selected.title}</h2>
-            <p className="text-xs text-gray-500 mb-3">{selected.city_name} • {selected.neighborhood}</p>
+            <h2 className="font-bold text-ink mb-1 leading-snug">{selected.title}</h2>
+            <p className="text-caption text-muted-500 mb-3">{selected.city_name} • {selected.neighborhood}</p>
 
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <div className="bg-gray-50 rounded-xl p-2.5 text-center">
-                <p className="text-sm font-bold text-primary">{formatPrice(selected.price, selected.currency)}</p>
-                <p className="text-xs text-gray-500">السعر</p>
+              <div className="bg-muted-50 rounded-xl p-2.5 text-center">
+                <p className="text-body font-bold text-primary">{formatPrice(selected.price, selected.currency)}</p>
+                <p className="text-caption text-muted-500">السعر</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-2.5 text-center">
-                <p className="text-sm font-bold text-gray-900">{selected.views_count}</p>
-                <p className="text-xs text-gray-500">مشاهدة</p>
+              <div className="bg-muted-50 rounded-xl p-2.5 text-center">
+                <p className="text-body font-bold text-ink">{selected.views_count}</p>
+                <p className="text-caption text-muted-500">مشاهدة</p>
               </div>
             </div>
 
-            <div className="space-y-1.5 mb-4 text-sm">
+            <div className="space-y-1.5 mb-4 text-body">
               <div className="flex justify-between">
-                <span className="text-gray-500">نوع العرض</span>
+                <span className="text-muted-500">نوع العرض</span>
                 <span className="font-medium">{OFFER_LABELS[selected.offer_type] ?? selected.offer_type}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">نوع العقار</span>
+                <span className="text-muted-500">نوع العقار</span>
                 <span className="flex items-center gap-1 font-medium">
                   {selected.property_type ? (
                     <>
@@ -339,12 +339,12 @@ export default function AdminPropertiesPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">المالك</span>
+                <span className="text-muted-500">المالك</span>
                 <span className="font-medium">{selected.user_name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">الهاتف</span>
-                <span className="font-medium text-xs" dir="ltr">{selected.user_phone}</span>
+                <span className="text-muted-500">الهاتف</span>
+                <span className="font-medium text-caption" dir="ltr">{selected.user_phone}</span>
               </div>
             </div>
 
@@ -360,7 +360,7 @@ export default function AdminPropertiesPage() {
               </Button>
             </div>
 
-            <p className="text-xs text-gray-400 text-center mt-3">
+            <p className="text-caption text-muted text-center mt-3">
               {new Date(selected.created_at).toLocaleDateString("ar-YE")}
             </p>
           </div>

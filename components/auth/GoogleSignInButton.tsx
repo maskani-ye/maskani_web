@@ -95,13 +95,13 @@ export function GoogleSignInButton({ onCredential, disabled }: GoogleSignInButto
   }, []);
 
   if (error) {
-    return <p className="text-xs text-red-500 text-center">{error}</p>;
+    return <p className="text-caption text-red-500 text-center">{error}</p>;
   }
 
   return (
     <div className="relative flex justify-center">
       {!ready && (
-        <div className="h-11 w-full max-w-[320px] rounded-full bg-gray-100 animate-pulse" />
+        <div className="h-11 w-full max-w-[320px] rounded-full bg-muted-100 animate-pulse" />
       )}
       <div
         ref={containerRef}

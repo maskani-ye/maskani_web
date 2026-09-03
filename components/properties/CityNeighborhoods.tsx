@@ -36,10 +36,10 @@ export default async function CityNeighborhoods({
 
   return (
     <section aria-labelledby="city-neighborhoods" className="mt-10">
-      <h2 id="city-neighborhoods" className="text-lg font-bold text-ink mb-1">
+      <h2 id="city-neighborhoods" className="text-h3 font-bold text-ink mb-1">
         أحياء {cityName}
       </h2>
-      <p className="text-sm text-gray-500 mb-3">
+      <p className="text-body text-muted-500 mb-3">
         اختر حيّك لعرض عقاراته وحدها — {all.length} حيّاً في {cityName}
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -47,11 +47,11 @@ export default async function CityNeighborhoods({
           <Link
             key={n.id}
             href={`/properties/neighborhood/${n.slug}`}
-            className="text-sm rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-gray-700 hover:border-primary hover:text-primary transition-colors"
+            className="text-body rounded-xl border border-muted-200 bg-white px-3 py-1.5 text-muted-700 hover:border-primary hover:text-primary transition-colors"
           >
             {n.name}
             {n.properties_count ? (
-              <span className="text-gray-400 text-xs"> ({n.properties_count})</span>
+              <span className="text-muted text-caption"> ({n.properties_count})</span>
             ) : null}
           </Link>
         ))}

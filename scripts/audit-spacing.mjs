@@ -54,6 +54,21 @@ const probe = (minGap) => {
         if (overlapY > 4) { gap = Math.max(a.left, b.left) - Math.min(a.right, b.right); axis = "أفقياً"; }
         else if (overlapX > 4) { gap = Math.max(a.top, b.top) - Math.min(a.bottom, b.bottom); axis = "عمودياً"; }
         if (gap === null || gap < -1) continue;
+        // ⚠️ ثلاثة أنماطٍ التلاصقُ فيها **هو التصميم** لا خللاً فيه، وكانت
+        // تُغرق التقرير بسبعين بلاغاً كاذباً تُخفي الأزواج الحقيقية:
+        //  ١) روابط داخل نصٍّ جارٍ (`display:inline`) — سطران متتاليان من فقرة،
+        //     والمسافة بينهما سطريّة لا تخطيطية.
+        //  ٢) شريطٌ مقسَّم (تبويبات سفلية) — أبناؤه `flex-grow` يقتسمون عرضه
+        //     حافّةً بحافّة عمداً؛ الفجوة بينها تكسر الشريط.
+        //  ٣) أدوات المكتبات الأصلية (Leaflet) — لسنا من يرسمها.
+        const st = (e) => getComputedStyle(e);
+        const inline = (e) => st(e).display === "inline";
+        const segment = (e) => parseFloat(st(e).flexGrow) > 0;
+        const foreign = (e) => !!e.closest(".leaflet-container, .leaflet-control");
+        const A = group[i], B = group[j];
+        if (inline(A) && inline(B)) continue;
+        if (segment(A) && segment(B)) continue;
+        if (foreign(A) || foreign(B)) continue;
         // ⚠️ **الفجوة المرئية لا فجوة الصناديق.** رابطٌ بحشوٍ داخليّ صندوقه
         // يلامس جاره بينما نصّه بعيدٌ عنه بمقدار الحشوين — فقياس الصناديق
         // وحده يُنتج بلاغات كاذبة (خرج منها 85 زوجاً كلّها سليمة بالنظر).

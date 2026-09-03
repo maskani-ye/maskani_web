@@ -105,7 +105,7 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
 
   if (!provider) return (
     <div className="text-center py-20">
-      <p className="text-gray-500 text-lg">الخدمة غير موجودة</p>
+      <p className="text-muted-500 text-h3">الخدمة غير موجودة</p>
       <Link href="/services"><Button className="mt-4">العودة للخدمات</Button></Link>
     </div>
   );
@@ -115,13 +115,13 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <div className="flex items-center gap-2 text-body text-muted mb-6">
         <Link href="/" className="hover:text-primary">الرئيسية</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
         <Link href="/services" className="hover:text-primary">الخدمات</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
-        <span className="text-gray-700 font-medium line-clamp-1">{provider.title}</span>
-        <ShareButton title={provider.title} text={`خدمة على مسكني: ${provider.title}`} className="mr-auto w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center hover:bg-primary/10 transition-colors" />
+        <span className="text-muted-700 font-medium line-clamp-1">{provider.title}</span>
+        <ShareButton title={provider.title} text={`خدمة على مسكني: ${provider.title}`} className="mr-auto w-9 h-9 bg-muted-50 rounded-lg flex items-center justify-center hover:bg-primary/10 transition-colors" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -138,12 +138,12 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-xl font-bold text-gray-900">{provider.title}</h1>
+                <h1 className="text-h3 font-bold text-ink">{provider.title}</h1>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <span className="text-xs bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-medium">
+                  <span className="text-caption bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-medium">
                     {categoryName(provider.category)}
                   </span>
-                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                  <span className="text-caption text-muted-500 flex items-center gap-1">
                     <Case className="h-3.5 w-3.5" /> {provider.experience_years} سنة خبرة
                   </span>
                 </div>
@@ -151,10 +151,10 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
                   {provider.average_rating ? (
                     <>
                       <StarRating rating={provider.average_rating} size="sm" />
-                      <span className="text-xs text-gray-500">{provider.average_rating} ({provider.reviews_count} تقييم)</span>
+                      <span className="text-caption text-muted-500">{provider.average_rating} ({provider.reviews_count} تقييم)</span>
                     </>
                   ) : (
-                    <span className="text-xs text-gray-400">لا يوجد تقييم بعد</span>
+                    <span className="text-caption text-muted">لا يوجد تقييم بعد</span>
                   )}
                 </div>
               </div>
@@ -162,7 +162,7 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
 
             {provider.user_name && (
               <Link href={typeof provider.user === "number" ? `/users/${provider.user}` : `/users/${(provider.user as { id: number }).id}`}>
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600 hover:text-primary transition-colors">
+                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-muted-100 text-body text-muted-600 hover:text-primary transition-colors">
                   <User className="h-4 w-4" />
                   <span className="font-medium">{provider.user_name}</span>
                   {provider.user_verified && <CheckCircle className="h-3.5 w-3.5 text-primary" />}
@@ -174,10 +174,10 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
           {/* Description */}
           {provider.description && (
             <div className="bg-white rounded-2xl card-shadow p-6">
-              <h2 className="font-bold text-gray-800 mb-2">نبذة عن الخدمة</h2>
-              <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{provider.description}</p>
+              <h2 className="font-bold text-ink mb-2">نبذة عن الخدمة</h2>
+              <p className="text-muted-600 text-body leading-relaxed whitespace-pre-line">{provider.description}</p>
               {provider.cities_names && provider.cities_names.length > 0 && (
-                <div className="flex items-center gap-1.5 mt-4 text-sm text-gray-500">
+                <div className="flex items-center gap-1.5 mt-4 text-body text-muted-500">
                   <MapPoint className="h-4 w-4 text-primary" />
                   <span>{provider.cities_names.join("، ")}</span>
                 </div>
@@ -188,7 +188,7 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
           {/* فيديو الخدمة — أعمال المزوّد المصوّرة أقنع من وصف مكتوب. */}
           {provider.video_url && (
             <div className="bg-white rounded-2xl card-shadow p-6">
-              <h2 className="font-bold text-gray-800 mb-3">فيديو</h2>
+              <h2 className="font-bold text-ink mb-3">فيديو</h2>
               <YouTubePlayer url={provider.video_url} title={provider.title} />
             </div>
           )}
@@ -196,14 +196,14 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
           {/* Portfolio */}
           {provider.portfolio && provider.portfolio.length > 0 && (
             <div className="bg-white rounded-2xl card-shadow p-6">
-              <h2 className="font-bold text-gray-800 mb-3 flex items-center gap-1.5">
+              <h2 className="font-bold text-ink mb-3 flex items-center gap-1.5">
                 <Gallery className="h-5 w-5 text-primary" /> معرض الأعمال
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {provider.portfolio.map((item) => (
-                  <div key={item.id} className="rounded-xl overflow-hidden border border-gray-100">
+                  <div key={item.id} className="rounded-xl overflow-hidden border border-muted-100">
                     <img src={item.image} alt={item.title} className="w-full h-32 object-cover" />
-                    {item.title && <p className="text-xs text-gray-600 p-2 line-clamp-1">{item.title}</p>}
+                    {item.title && <p className="text-caption text-muted-600 p-2 line-clamp-1">{item.title}</p>}
                   </div>
                 ))}
               </div>
@@ -212,14 +212,14 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
 
           {/* Reviews */}
           <div className="bg-white rounded-2xl card-shadow p-6">
-            <h2 className="font-bold text-gray-800 mb-4">التقييمات ({reviews.length})</h2>
+            <h2 className="font-bold text-ink mb-4">التقييمات ({reviews.length})</h2>
 
             {/* Add review */}
             <div className="bg-cream rounded-2xl p-4 mb-5">
               {user ? (
                 <>
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm text-gray-600">تقييمك:</span>
+                    <span className="text-body text-muted-600">تقييمك:</span>
                     <StarRating rating={rating} interactive onChange={setRating} />
                   </div>
                   <textarea
@@ -227,7 +227,7 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
                     onChange={(e) => setComment(e.target.value)}
                     rows={3}
                     placeholder="شاركنا تجربتك مع مزوّد الخدمة..."
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none bg-white"
+                    className="w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none bg-white"
                   />
                   <Button size="sm" onClick={submitReview} loading={submitting} className="mt-3">
                     <Star className="h-4 w-4" /> إرسال التقييم
@@ -235,7 +235,7 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
                 </>
               ) : (
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-500">سجّل الدخول لإضافة تقييم</p>
+                  <p className="text-body text-muted-500">سجّل الدخول لإضافة تقييم</p>
                   <Button size="sm" variant="outline" onClick={() => requireAuth()}>تسجيل الدخول</Button>
                 </div>
               )}
@@ -252,11 +252,11 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-sm text-gray-800">{rev.reviewer_name}</span>
+                        <span className="font-semibold text-body text-ink">{rev.reviewer_name}</span>
                         <StarRating rating={rev.rating} size="sm" />
-                        <span className="text-xs text-gray-400 mr-auto">{formatRelativeTime(rev.created_at)}</span>
+                        <span className="text-caption text-muted mr-auto">{formatRelativeTime(rev.created_at)}</span>
                       </div>
-                      {rev.comment && <p className="text-sm text-gray-600">{rev.comment}</p>}
+                      {rev.comment && <p className="text-body text-muted-600">{rev.comment}</p>}
                     </div>
                   </div>
                 ))}
@@ -268,7 +268,7 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
         {/* Contact sidebar */}
         <div className="space-y-4">
           <div className="bg-white rounded-2xl card-shadow p-5 sticky top-20 space-y-3">
-            <h3 className="font-bold text-gray-800">تواصل مع مزوّد الخدمة</h3>
+            <h3 className="font-bold text-ink">تواصل مع مزوّد الخدمة</h3>
             {!isSelf && providerUserId != null && (
               <Button fullWidth variant="primary" onClick={startConversation} loading={startingChat}>
                 <ChatRoundDots className="h-4 w-4" /> مراسلة

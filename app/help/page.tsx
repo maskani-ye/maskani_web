@@ -80,12 +80,12 @@ export default function HelpPage() {
             <HeadphonesRound weight="Bold" className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">مركز المساعدة</h1>
-            <p className="text-xs text-gray-400">{socket.connected ? "متصل" : "…"} · فريق مسكني</p>
+            <h1 className="text-h3 font-bold text-ink">مركز المساعدة</h1>
+            <p className="text-caption text-muted">{socket.connected ? "متصل" : "…"} · فريق مسكني</p>
           </div>
         </div>
         <button onClick={() => send({ type: "restart" })} title="إعادة البدء"
-          className="text-gray-400 hover:text-primary p-2 rounded-lg hover:bg-primary/5">
+          className="text-muted hover:text-primary p-2 rounded-lg hover:bg-primary/5">
           <Refresh className="h-5 w-5" />
         </button>
       </div>
@@ -95,7 +95,7 @@ export default function HelpPage() {
       <div className="bg-cream rounded-3xl card-shadow p-3 sm:p-4 min-h-[58vh] flex flex-col">
         <div className="flex-1 space-y-1.5 overflow-y-auto pb-2">
           {loading ? (
-            <p className="text-center text-gray-400 py-16">جارٍ التحميل…</p>
+            <p className="text-center text-muted py-16">جارٍ التحميل…</p>
           ) : (
             <>
               {messages.map((m, i) => (
@@ -108,11 +108,11 @@ export default function HelpPage() {
           )}
         </div>
 
-        <div className="mt-2 flex items-center gap-2 bg-white rounded-full border border-gray-100 px-2 py-1.5 shadow-sm">
+        <div className="mt-2 flex items-center gap-2 bg-white rounded-full border border-muted-100 px-2 py-1.5 shadow-sm">
           <input value={text} onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") sendText(); }}
             placeholder="اكتب رسالتك…"
-            className="flex-1 bg-transparent outline-none text-sm px-3 text-gray-800 placeholder:text-gray-400" />
+            className="flex-1 bg-transparent outline-none text-body px-3 text-ink placeholder:text-muted" />
           <button onClick={sendText} disabled={busy || !text.trim()}
             className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center disabled:opacity-40 hover:bg-primary/90">
             <Plain className="h-4 w-4 -scale-x-100" />

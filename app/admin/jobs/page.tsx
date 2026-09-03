@@ -117,51 +117,51 @@ export default function AdminJobsPage() {
       {/* ── القائمة ── */}
       <div className="bg-white rounded-2xl card-shadow overflow-hidden">
         {loading ? (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-muted-100">
             {[0, 1, 2, 3, 4].map((i) => (
               <div key={i} className="flex items-center gap-4 p-4 animate-pulse">
-                <div className="w-11 h-11 rounded-xl bg-gray-100 shrink-0" />
+                <div className="w-11 h-11 rounded-xl bg-muted-100 shrink-0" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-3.5 bg-gray-100 rounded w-1/3" />
-                  <div className="h-3 bg-gray-50 rounded w-2/3" />
+                  <div className="h-3.5 bg-muted-100 rounded w-1/3" />
+                  <div className="h-3 bg-muted-50 rounded w-2/3" />
                 </div>
               </div>
             ))}
           </div>
         ) : items.length === 0 ? (
           <div className="py-16 flex flex-col items-center text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
-              <Case className="h-7 w-7 text-gray-300" />
+            <div className="w-14 h-14 rounded-2xl bg-muted-100 flex items-center justify-center mb-3">
+              <Case className="h-7 w-7 text-muted-200" />
             </div>
-            <p className="text-gray-500 font-medium">لا توجد طلبات خدمة</p>
-            <p className="text-sm text-gray-400 mt-0.5">جرّب تغيير البحث أو الفلتر</p>
+            <p className="text-muted-500 font-medium">لا توجد طلبات خدمة</p>
+            <p className="text-body text-muted mt-0.5">جرّب تغيير البحث أو الفلتر</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-muted-100">
             {items.map((r) => (
-              <div key={r.id} className="flex items-center gap-4 p-4 hover:bg-gray-50/70 transition-colors">
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${r.is_active ? "bg-primary/10" : "bg-gray-100"}`}>
-                  <Case className={`h-5 w-5 ${r.is_active ? "text-primary" : "text-gray-400"}`} />
+              <div key={r.id} className="flex items-center gap-4 p-4 hover:bg-muted-50/70 transition-colors">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${r.is_active ? "bg-primary/10" : "bg-muted-100"}`}>
+                  <Case className={`h-5 w-5 ${r.is_active ? "text-primary" : "text-muted"}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-gray-900 text-sm line-clamp-1">{r.title}</h3>
+                    <h3 className="font-bold text-ink text-body line-clamp-1">{r.title}</h3>
                     <Badge variant={r.is_active ? "success" : "default"}>{r.is_active ? "نشط" : "متوقّف"}</Badge>
                     {r.category_name && (
-                      <span className="text-[11px] font-medium bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{r.category_name}</span>
+                      <span className="text-[11px] font-medium bg-muted-100 text-muted-500 px-2 py-0.5 rounded-full">{r.category_name}</span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3.5 text-xs text-gray-500 mt-1.5 flex-wrap">
-                    <span className="flex items-center gap-1"><UserRounded className="h-3.5 w-3.5 text-gray-400" /> {r.client_name}</span>
-                    {r.city_name && <span className="flex items-center gap-1"><MapPoint className="h-3.5 w-3.5 text-gray-400" /> {r.city_name}</span>}
+                  <div className="flex items-center gap-3.5 text-caption text-muted-500 mt-1.5 flex-wrap">
+                    <span className="flex items-center gap-1"><UserRounded className="h-3.5 w-3.5 text-muted" /> {r.client_name}</span>
+                    {r.city_name && <span className="flex items-center gap-1"><MapPoint className="h-3.5 w-3.5 text-muted" /> {r.city_name}</span>}
                     <span className="flex items-center gap-1 text-primary font-semibold"><Wallet className="h-3.5 w-3.5" /> {budgetOf(r)}</span>
-                    <span className="flex items-center gap-1"><ChatRound className="h-3.5 w-3.5 text-gray-400" /> {r.offers_count} عرض</span>
+                    <span className="flex items-center gap-1"><ChatRound className="h-3.5 w-3.5 text-muted" /> {r.offers_count} عرض</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button onClick={() => toggleActive(r)} title={r.is_active ? "إيقاف" : "تفعيل"}
-                    className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center transition-colors">
-                    {r.is_active ? <CloseCircle className="h-4 w-4 text-gray-500" /> : <CheckCircle className="h-4 w-4 text-primary" />}
+                    className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center transition-colors">
+                    {r.is_active ? <CloseCircle className="h-4 w-4 text-muted-500" /> : <CheckCircle className="h-4 w-4 text-primary" />}
                   </button>
                   <button onClick={() => setDeleteTarget(r)} title="حذف"
                     className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors">
@@ -178,7 +178,7 @@ export default function AdminJobsPage() {
       {pages > 1 && (
         <div className="flex items-center justify-between">
           <Button variant="outline" size="sm" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - LIMIT))}>السابق</Button>
-          <span className="text-sm text-gray-500 tabular-nums">{Math.floor(offset / LIMIT) + 1} / {pages}</span>
+          <span className="text-body text-muted-500 tabular-nums">{Math.floor(offset / LIMIT) + 1} / {pages}</span>
           <Button variant="outline" size="sm" disabled={offset + LIMIT >= total} onClick={() => setOffset(offset + LIMIT)}>التالي</Button>
         </div>
       )}

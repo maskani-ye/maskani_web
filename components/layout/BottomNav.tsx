@@ -27,7 +27,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-gray-100 pb-[env(safe-area-inset-bottom)]"
+      className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-muted-100 pb-[env(safe-area-inset-bottom)]"
       aria-label="التنقّل السفلي"
     >
       <div className="flex items-stretch justify-around">
@@ -51,7 +51,7 @@ export function BottomNav() {
               onClick={handleClick}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[3.5rem] transition-colors",
-                active ? "text-primary" : "text-gray-400"
+                active ? "text-primary" : "text-muted"
               )}
               aria-current={active ? "page" : undefined}
             >

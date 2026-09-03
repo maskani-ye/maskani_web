@@ -66,7 +66,7 @@ export default function FirebasePage() {
                   header: "الحصّة",
                   render: (r) => (
                     <div className="flex items-center gap-2 min-w-32">
-                      <div className="h-1.5 flex-1 rounded-full bg-gray-100 overflow-hidden">
+                      <div className="h-1.5 flex-1 rounded-full bg-muted-100 overflow-hidden">
                         <div
                           className="h-full bg-primary rounded-full"
                           style={{ width: `${d.notifications_30d ? (r.count / d.notifications_30d) * 100 : 0}%` }}

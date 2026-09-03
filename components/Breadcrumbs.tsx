@@ -11,7 +11,7 @@ export interface Crumb {
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
     <nav aria-label="مسار التنقّل" className="mb-4">
-      <ol className="flex flex-wrap items-center gap-1.5 text-sm text-gray-500">
+      <ol className="flex flex-wrap items-center gap-1.5 text-body text-muted-500">
         {items.map((c, i) => {
           const last = i === items.length - 1;
           return (
@@ -25,14 +25,14 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
                 </Link>
               ) : (
                 <span
-                  className={last ? "text-gray-900 font-medium" : ""}
+                  className={last ? "text-ink font-medium" : ""}
                   aria-current={last ? "page" : undefined}
                 >
                   {c.name}
                 </span>
               )}
               {!last && (
-                <AltArrowLeft className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+                <AltArrowLeft className="w-3.5 h-3.5 text-muted-200 shrink-0" />
               )}
             </li>
           );

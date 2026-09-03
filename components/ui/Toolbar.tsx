@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  */
 export function Toolbar({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("bg-white rounded-2xl shadow-card p-4 flex flex-col sm:flex-row gap-3", className)}>
+    <div className={cn("bg-white rounded-2xl shadow-e2 p-4 flex flex-col sm:flex-row gap-3", className)}>
       {children}
     </div>
   );

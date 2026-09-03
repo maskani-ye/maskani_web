@@ -90,18 +90,18 @@ export default function CreateJobPage() {
     finally { setSaving(false); }
   };
 
-  const field = "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
+  const field = "w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <div className="flex items-center gap-2 text-body text-muted mb-6">
         <Link href="/jobs" className="hover:text-primary">طلبات الخدمات</Link>
-        <span>/</span><span className="text-gray-700 font-medium">طلب جديد</span>
+        <span>/</span><span className="text-muted-700 font-medium">طلب جديد</span>
       </div>
 
       <div className="bg-white rounded-2xl card-shadow p-5 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">عنوان الطلب *</label>
+          <label className="block text-body font-medium text-muted-700 mb-1.5">عنوان الطلب *</label>
           <input className={field} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="مثال: أحتاج سبّاكاً لإصلاح تسريب" />
         </div>
         <CategorySelect
@@ -111,7 +111,7 @@ export default function CreateJobPage() {
         />
         <div>
           <div className="flex items-center justify-between gap-2 mb-1.5">
-            <label className="block text-sm font-medium text-gray-700">الوصف *</label>
+            <label className="block text-body font-medium text-muted-700">الوصف *</label>
             <SuggestDescriptionButton kind="job" title={form.title} fields={{ "المدينة": form.city }} onSuggest={(d) => setForm((f) => ({ ...f, description: d }))} />
             {form.description?.trim().length >= 10 && (
               <ImproveTextButton kind="job" text={form.description} onImprove={(d) => setForm((f) => ({ ...f, description: d }))} />
@@ -120,7 +120,7 @@ export default function CreateJobPage() {
           <textarea rows={4} className={`${field} resize-none`} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="صف الخدمة التي تحتاجها بالتفصيل..." />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">رابط فيديو يوتيوب (اختياري)</label>
+          <label className="block text-body font-medium text-muted-700 mb-1.5">رابط فيديو يوتيوب (اختياري)</label>
           <input
             className={field}
             dir="ltr"
@@ -130,7 +130,7 @@ export default function CreateJobPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">المدينة *</label>
+          <label className="block text-body font-medium text-muted-700 mb-1.5">المدينة *</label>
           <select className={`${field} h-11 bg-white`} value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value ? Number(e.target.value) : "" }))}>
             <option value="">اختر المدينة</option>
             {cities.map((c) => <option key={c.id} value={c.id}>{c.name_ar ?? c.name}</option>)}
@@ -138,15 +138,15 @@ export default function CreateJobPage() {
         </div>
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">أدنى ميزانية</label>
+            <label className="block text-body font-medium text-muted-700 mb-1.5">أدنى ميزانية</label>
             <MoneyInput value={form.budget_min} onChange={(raw) => setForm((f) => ({ ...f, budget_min: raw }))} placeholder="اختياري" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">أقصى ميزانية</label>
+            <label className="block text-body font-medium text-muted-700 mb-1.5">أقصى ميزانية</label>
             <MoneyInput value={form.budget_max} onChange={(raw) => setForm((f) => ({ ...f, budget_max: raw }))} placeholder="اختياري" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">العملة</label>
+            <label className="block text-body font-medium text-muted-700 mb-1.5">العملة</label>
             <select className={`${field} h-11 bg-white`} value={form.currency} onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}>
               <option value="YER">ريال يمني</option>
               <option value="SAR">ريال سعودي</option>
@@ -156,7 +156,7 @@ export default function CreateJobPage() {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">مدة الطلب (أيام)</label>
+            <label className="block text-body font-medium text-muted-700 mb-1.5">مدة الطلب (أيام)</label>
             <input type="number" min={1} max={90} className={field} value={form.duration_days} onChange={(e) => setForm((f) => ({ ...f, duration_days: Number(toEnglishDigits(e.target.value)) || 30 }))} />
           </div>
           <PhoneField label="رقم التواصل" value={form.contact_phone} onChange={(v) => setForm((f) => ({ ...f, contact_phone: v }))} />

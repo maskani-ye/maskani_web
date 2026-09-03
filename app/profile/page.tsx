@@ -164,24 +164,24 @@ export default function ProfilePage() {
           {user.avatar ? (
             <img src={user.avatar} className="w-16 h-16 rounded-full object-cover" alt="" />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-h2">
               {user.full_name.charAt(0)}
             </div>
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg font-bold text-gray-900">{user.full_name}</h1>
+              <h1 className="text-h3 font-bold text-ink">{user.full_name}</h1>
               {user.is_verified && (
-                <span className="flex items-center gap-0.5 text-xs text-green-600 font-medium">
+                <span className="flex items-center gap-0.5 text-caption text-green-600 font-medium">
                   <CheckCircle className="h-3.5 w-3.5" /> موثّق
                 </span>
               )}
             </div>
-            <p className="text-sm text-gray-500" dir="ltr">{user.phone}</p>
+            <p className="text-body text-muted-500" dir="ltr">{user.phone}</p>
             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
               <Badge variant={ROLE_COLORS[user.role] ?? "gray"}>{ROLE_LABELS[user.role] ?? user.role}</Badge>
               {user.city_name && (
-                <span className="flex items-center gap-1 text-xs text-gray-500">
+                <span className="flex items-center gap-1 text-caption text-muted-500">
                   <MapPoint className="h-3 w-3" />{user.city_name}
                 </span>
               )}
@@ -193,18 +193,18 @@ export default function ProfilePage() {
         </div>
 
         {/* Quick stats */}
-        <div className="grid grid-cols-3 gap-3 mt-5 pt-5 border-t border-gray-100">
+        <div className="grid grid-cols-3 gap-3 mt-5 pt-5 border-t border-muted-100">
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{user.properties_count}</p>
-            <p className="text-xs text-gray-500">عقار</p>
+            <p className="text-h3 font-bold text-ink">{user.properties_count}</p>
+            <p className="text-caption text-muted-500">عقار</p>
           </div>
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{user.average_rating ?? "—"}</p>
-            <p className="text-xs text-gray-500">تقييم</p>
+            <p className="text-h3 font-bold text-ink">{user.average_rating ?? "—"}</p>
+            <p className="text-caption text-muted-500">تقييم</p>
           </div>
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{user.followers_count}</p>
-            <p className="text-xs text-gray-500">متابع</p>
+            <p className="text-h3 font-bold text-ink">{user.followers_count}</p>
+            <p className="text-caption text-muted-500">متابع</p>
           </div>
         </div>
       </div>
@@ -213,19 +213,19 @@ export default function ProfilePage() {
       <div className="grid grid-cols-3 gap-3 mb-6">
         <Link href="/favorites" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
           <Heart className="h-6 w-6 text-red-500" />
-          <span className="text-xs font-medium text-gray-700">المفضّلة</span>
+          <span className="text-caption font-medium text-muted-700">المفضّلة</span>
         </Link>
         <Link href="/notifications" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
           <Bell className="h-6 w-6 text-primary" />
-          <span className="text-xs font-medium text-gray-700">الإشعارات</span>
+          <span className="text-caption font-medium text-muted-700">الإشعارات</span>
         </Link>
         <Link href="/requests" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
           <PenNewSquare className="h-6 w-6 text-blue-500" />
-          <span className="text-xs font-medium text-gray-700">الطلبات</span>
+          <span className="text-caption font-medium text-muted-700">الطلبات</span>
         </Link>
         <Link href="/saved-searches" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
           <Magnifer className="h-6 w-6 text-primary" />
-          <span className="text-xs font-medium text-gray-700">عمليات البحث</span>
+          <span className="text-caption font-medium text-muted-700">عمليات البحث</span>
         </Link>
       </div>
 
@@ -234,41 +234,41 @@ export default function ProfilePage() {
         <div className="bg-white rounded-2xl card-shadow p-5 mb-6">
           <div className="flex items-center gap-2 mb-3">
             <ShieldCheck className="h-5 w-5 text-primary" />
-            <h2 className="font-bold text-gray-800">توثيق الحساب</h2>
+            <h2 className="font-bold text-ink">توثيق الحساب</h2>
           </div>
 
           {verif?.status === "pending" ? (
             <div className="flex items-start gap-2 bg-yellow-50 border border-yellow-100 rounded-xl p-3">
               <ClockCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-yellow-700">طلبك قيد المراجعة</p>
-                <p className="text-xs text-yellow-600 mt-0.5">سيتم إشعارك عند اتخاذ قرار من الإدارة.</p>
+                <p className="text-body font-semibold text-yellow-700">طلبك قيد المراجعة</p>
+                <p className="text-caption text-yellow-600 mt-0.5">سيتم إشعارك عند اتخاذ قرار من الإدارة.</p>
               </div>
             </div>
           ) : (
             <div className="space-y-3">
               {verif?.status === "rejected" && (
                 <div className="bg-red-50 border border-red-100 rounded-xl p-3">
-                  <p className="text-sm font-semibold text-red-700">تم رفض طلبك السابق</p>
-                  {verif.review_note && <p className="text-xs text-red-600 mt-0.5">السبب: {verif.review_note}</p>}
-                  <p className="text-xs text-gray-500 mt-1">يمكنك تقديم طلب جديد.</p>
+                  <p className="text-body font-semibold text-red-700">تم رفض طلبك السابق</p>
+                  {verif.review_note && <p className="text-caption text-red-600 mt-0.5">السبب: {verif.review_note}</p>}
+                  <p className="text-caption text-muted-500 mt-1">يمكنك تقديم طلب جديد.</p>
                 </div>
               )}
-              <p className="text-sm text-gray-500">وثّق حسابك لزيادة ثقة المستخدمين بك. أرفق مستنداً يثبت هويتك (اختياري).</p>
+              <p className="text-body text-muted-500">وثّق حسابك لزيادة ثقة المستخدمين بك. أرفق مستنداً يثبت هويتك (اختياري).</p>
               <textarea
                 value={verifNote}
                 onChange={(e) => setVerifNote(e.target.value)}
                 rows={2}
                 placeholder="ملاحظة للإدارة (اختياري)"
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                className="w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
               />
-              <label className="flex items-center justify-center gap-2 h-20 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors">
-                <CloudUpload className="h-5 w-5 text-gray-400" />
-                <span className="text-sm text-gray-400">{verifDoc ? verifDoc.name : "أرفق مستنداً (اختياري)"}</span>
+              <label className="flex items-center justify-center gap-2 h-20 border-2 border-dashed border-muted-200 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors">
+                <CloudUpload className="h-5 w-5 text-muted" />
+                <span className="text-body text-muted">{verifDoc ? verifDoc.name : "أرفق مستنداً (اختياري)"}</span>
                 <input type="file" accept="image/*,application/pdf" onChange={(e) => setVerifDoc(e.target.files?.[0] ?? null)} className="hidden" />
               </label>
               {verifDoc && (
-                <button onClick={() => setVerifDoc(null)} className="flex items-center gap-1 text-xs text-red-500">
+                <button onClick={() => setVerifDoc(null)} className="flex items-center gap-1 text-caption text-red-500">
                   <CloseCircle className="h-3.5 w-3.5" /> إزالة المستند
                 </button>
               )}
@@ -282,12 +282,12 @@ export default function ProfilePage() {
 
       {/* Tabs */}
       <div className="bg-white rounded-2xl card-shadow overflow-hidden">
-        <div className="flex border-b border-gray-100">
+        <div className="flex border-b border-muted-100">
           {(["info", "properties"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 py-3 text-sm font-medium transition-colors ${tab === t ? "text-primary border-b-2 border-primary" : "text-gray-500 hover:text-gray-700"}`}
+              className={`flex-1 py-3 text-body font-medium transition-colors ${tab === t ? "text-primary border-b-2 border-primary" : "text-muted-500 hover:text-muted-700"}`}
             >
               {t === "info" ? "البيانات" : "عقاراتي"}
             </button>
@@ -303,7 +303,7 @@ export default function ProfilePage() {
                 onChange={(e) => setForm((p) => ({ ...p, full_name: e.target.value }))}
               />
               {user.profile_incomplete && (
-                <p className="text-xs text-primary bg-primary/5 rounded-lg px-3 py-2">
+                <p className="text-caption text-primary bg-primary/5 rounded-lg px-3 py-2">
                   أكمل رقم هاتفك ومدينتك ليتمكّن أصحاب العقارات من التواصل معك (اختياري).
                 </p>
               )}
@@ -313,22 +313,22 @@ export default function ProfilePage() {
                 onChange={(v) => setForm((p) => ({ ...p, phone: v }))}
               />
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">البريد الإلكتروني</label>
+                <label className="block text-body font-medium text-muted-700 mb-1.5">البريد الإلكتروني</label>
                 {/* البريد من جوجل — للعرض فقط، غير قابل للتعديل. */}
                 <input
                   type="email"
                   value={user.email ?? ""}
                   disabled
                   dir="ltr"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
+                  className="w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body bg-muted-100 text-muted-500 cursor-not-allowed"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">المدينة</label>
+                <label className="block text-body font-medium text-muted-700 mb-1.5">المدينة</label>
                 <select
                   value={form.city}
                   onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white"
+                  className="w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 bg-white"
                 >
                   <option value="">بدون مدينة</option>
                   {cities.map((c) => (
@@ -337,12 +337,12 @@ export default function ProfilePage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">نبذة تعريفية</label>
+                <label className="block text-body font-medium text-muted-700 mb-1.5">نبذة تعريفية</label>
                 <textarea
                   value={form.bio}
                   onChange={(e) => setForm((p) => ({ ...p, bio: e.target.value }))}
                   rows={3}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                  className="w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
                   placeholder="اكتب نبذة عن نفسك..."
                 />
               </div>
@@ -354,12 +354,12 @@ export default function ProfilePage() {
             <div>
               {loadingProperties ? (
                 <div className="space-y-3">
-                  {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-20 bg-gray-100 animate-pulse rounded-xl" />)}
+                  {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-20 bg-muted-100 animate-pulse rounded-xl" />)}
                 </div>
               ) : myProperties.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">
+                <div className="text-center py-12 text-muted">
                   <Buildings2 className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">لا توجد عقارات بعد</p>
+                  <p className="text-body">لا توجد عقارات بعد</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -383,16 +383,16 @@ export default function ProfilePage() {
                     </div>
                   )}
                   {myProperties.map((l) => (
-                    <Link key={l.id} href={`/properties/${l.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-100">
+                    <Link key={l.id} href={`/properties/${l.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted-50 transition-colors">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-muted-100">
                         {l.main_image
                           ? <img src={l.main_image} className="w-full h-full object-cover" alt="" />
-                          : <div className="w-full h-full flex items-center justify-center"><Buildings2 className="h-6 w-6 text-gray-300" /></div>}
+                          : <div className="w-full h-full flex items-center justify-center"><Buildings2 className="h-6 w-6 text-muted-200" /></div>}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 truncate">{l.title}</p>
-                        <p className="text-xs text-gray-500">{l.city_name}</p>
-                        <p className="text-sm font-bold text-primary mt-0.5">{formatPrice(l.price, l.currency)}</p>
+                        <p className="font-medium text-ink truncate">{l.title}</p>
+                        <p className="text-caption text-muted-500">{l.city_name}</p>
+                        <p className="text-body font-bold text-primary mt-0.5">{formatPrice(l.price, l.currency)}</p>
                         {perf[l.id] && (
                           <p className="text-caption text-muted mt-1 tabular-nums">
                             {perf[l.id].views_total.toLocaleString(NUMERIC_LOCALE)} مشاهدة
@@ -409,7 +409,7 @@ export default function ProfilePage() {
                     </Link>
                   ))}
                   {propertiesTotal > 20 && (
-                    <p className="text-center text-xs text-gray-400 pt-2">يُعرض 20 من {propertiesTotal} عقار</p>
+                    <p className="text-center text-caption text-muted pt-2">يُعرض 20 من {propertiesTotal} عقار</p>
                   )}
                 </div>
               )}

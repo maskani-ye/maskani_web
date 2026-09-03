@@ -187,7 +187,7 @@ export function VoiceRecorder({ onSend, onRecordingChange, disabled }: VoiceReco
       >
         <TrashBinMinimalistic className="h-5 w-5" />
       </button>
-      <span className="shrink-0 text-xs font-medium tabular-nums text-primary">{formatClock(elapsed / 1000)}</span>
+      <span className="shrink-0 text-caption font-medium tabular-nums text-primary">{formatClock(elapsed / 1000)}</span>
       <div className="flex h-8 flex-1 items-center gap-[2px] overflow-hidden">
         {levels.map((lvl, i) => (
           <span

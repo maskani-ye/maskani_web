@@ -43,8 +43,8 @@ export function EmptyState({
           <Icon className="h-7 w-7" />
         </span>
       )}
-      <h3 className="font-bold text-gray-900 text-base">{title}</h3>
-      {message && <p className="text-sm text-gray-500 mt-1.5 max-w-sm">{message}</p>}
+      <h3 className="font-bold text-ink text-body-lg">{title}</h3>
+      {message && <p className="text-body text-muted-500 mt-1.5 max-w-sm">{message}</p>}
       {actionLabel && onAction && (
         <Button variant="primary" size="sm" className="mt-5" onClick={onAction}>
           {actionLabel}

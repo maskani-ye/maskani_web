@@ -150,7 +150,7 @@ export default function PublicProfilePage() {
 
   if (!profile) return (
     <div className="text-center py-20">
-      <p className="text-gray-500 text-lg">المستخدم غير موجود</p>
+      <p className="text-muted-500 text-h3">المستخدم غير موجود</p>
       <Link href="/properties"><Button className="mt-4">العودة للعقارات</Button></Link>
     </div>
   );
@@ -169,24 +169,24 @@ export default function PublicProfilePage() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-bold text-gray-900">{profile.full_name}</h1>
+              <h1 className="text-h3 font-bold text-ink">{profile.full_name}</h1>
               {profile.is_verified && (
-                <span className="flex items-center gap-0.5 text-xs text-green-600 font-medium">
+                <span className="flex items-center gap-0.5 text-caption text-green-600 font-medium">
                   <CheckCircle className="h-4 w-4" /> موثّق
                 </span>
               )}
             </div>
             {profile.city_name && (
-              <p className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+              <p className="flex items-center gap-1 text-body text-muted-500 mt-1">
                 <MapPoint className="h-3.5 w-3.5" /> {profile.city_name}
               </p>
             )}
             {profile.response_label && (
-              <p className="flex items-center gap-1 text-sm text-primary font-medium mt-1">
+              <p className="flex items-center gap-1 text-body text-primary font-medium mt-1">
                 <ChatRoundDots className="h-3.5 w-3.5" /> {profile.response_label}
               </p>
             )}
-            {profile.bio && <p className="text-sm text-gray-600 mt-2 leading-relaxed">{profile.bio}</p>}
+            {profile.bio && <p className="text-body text-muted-600 mt-2 leading-relaxed">{profile.bio}</p>}
           </div>
           {!isSelf && (
             <div className="flex flex-col gap-2 shrink-0">
@@ -213,18 +213,18 @@ export default function PublicProfilePage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mt-5 pt-5 border-t border-gray-100">
+        <div className="grid grid-cols-3 gap-3 mt-5 pt-5 border-t border-muted-100">
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{profile.properties_count}</p>
-            <p className="text-xs text-gray-500">عقار</p>
+            <p className="text-h3 font-bold text-ink">{profile.properties_count}</p>
+            <p className="text-caption text-muted-500">عقار</p>
           </div>
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{profile.average_rating ?? "—"}</p>
-            <p className="text-xs text-gray-500">متوسط التقييم</p>
+            <p className="text-h3 font-bold text-ink">{profile.average_rating ?? "—"}</p>
+            <p className="text-caption text-muted-500">متوسط التقييم</p>
           </div>
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{profile.followers_count}</p>
-            <p className="text-xs text-gray-500">متابع</p>
+            <p className="text-h3 font-bold text-ink">{profile.followers_count}</p>
+            <p className="text-caption text-muted-500">متابع</p>
           </div>
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function PublicProfilePage() {
         {/* Properties */}
         <div className="lg:col-span-2 space-y-5">
           <div className="bg-white rounded-2xl card-shadow p-6">
-            <h2 className="font-bold text-gray-800 mb-4 flex items-center gap-1.5">
+            <h2 className="font-bold text-ink mb-4 flex items-center gap-1.5">
               <Buildings2 className="h-5 w-5 text-primary" /> عقارات {profile.full_name}
             </h2>
             {properties.length === 0 ? (
@@ -253,7 +253,7 @@ export default function PublicProfilePage() {
           {/* Rate form */}
           {!isSelf && (
             <div className="bg-white rounded-2xl card-shadow p-5">
-              <h3 className="font-bold text-gray-800 mb-3">قيّم هذا المستخدم</h3>
+              <h3 className="font-bold text-ink mb-3">قيّم هذا المستخدم</h3>
               {me ? (
                 <>
                   <div className="flex items-center gap-2 mb-3">
@@ -264,7 +264,7 @@ export default function PublicProfilePage() {
                     onChange={(e) => setComment(e.target.value)}
                     rows={3}
                     placeholder="تعليق (اختياري)"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+                    className="w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
                   />
                   <Button size="sm" onClick={submitRating} loading={submitting} fullWidth className="mt-3">
                     <Star className="h-4 w-4" /> إرسال التقييم
@@ -272,7 +272,7 @@ export default function PublicProfilePage() {
                 </>
               ) : (
                 <div className="text-center">
-                  <p className="text-sm text-gray-500 mb-3">سجّل الدخول لتقييم المستخدم</p>
+                  <p className="text-body text-muted-500 mb-3">سجّل الدخول لتقييم المستخدم</p>
                   <Button size="sm" variant="outline" fullWidth onClick={() => requireAuth()}>تسجيل الدخول</Button>
                 </div>
               )}
@@ -281,9 +281,9 @@ export default function PublicProfilePage() {
 
           {/* Ratings list */}
           <div className="bg-white rounded-2xl card-shadow p-5">
-            <h3 className="font-bold text-gray-800 mb-4">التقييمات ({ratings.length})</h3>
+            <h3 className="font-bold text-ink mb-4">التقييمات ({ratings.length})</h3>
             {ratings.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">لا توجد تقييمات بعد</p>
+              <p className="text-body text-muted text-center py-4">لا توجد تقييمات بعد</p>
             ) : (
               <div className="space-y-4">
                 {ratings.map((r) => (
@@ -293,11 +293,11 @@ export default function PublicProfilePage() {
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="font-semibold text-sm text-gray-800">{r.rater_name}</span>
+                        <span className="font-semibold text-body text-ink">{r.rater_name}</span>
                         <StarRating rating={r.rating} size="sm" />
                       </div>
-                      {r.comment && <p className="text-sm text-gray-600">{r.comment}</p>}
-                      <p className="text-xs text-gray-400 mt-0.5">{formatRelativeTime(r.created_at)}</p>
+                      {r.comment && <p className="text-body text-muted-600">{r.comment}</p>}
+                      <p className="text-caption text-muted mt-0.5">{formatRelativeTime(r.created_at)}</p>
                     </div>
                   </div>
                 ))}
@@ -316,13 +316,13 @@ export default function PublicProfilePage() {
             className="bg-white rounded-2xl w-full max-w-md p-5 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-bold text-gray-900">الإبلاغ عن المستخدم</h3>
+            <h3 className="font-bold text-ink">الإبلاغ عن المستخدم</h3>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">السبب</label>
+              <label className="block text-body font-medium text-muted-700 mb-1.5">السبب</label>
               <select
                 value={reportReason}
                 onChange={(e) => setReportReason(e.target.value)}
-                className="w-full h-11 border border-gray-200 rounded-xl px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full h-11 border border-muted-200 rounded-xl px-3 text-body bg-white focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
                 <option value="spam">إزعاج/سبام</option>
                 <option value="harassment">تحرّش/إساءة</option>
@@ -332,13 +332,13 @@ export default function PublicProfilePage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">تفاصيل (اختياري)</label>
+              <label className="block text-body font-medium text-muted-700 mb-1.5">تفاصيل (اختياري)</label>
               <textarea
                 value={reportDetail}
                 onChange={(e) => setReportDetail(e.target.value)}
                 rows={3}
                 placeholder="اكتب تفاصيل إضافية..."
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                className="w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
               />
             </div>
             <div className="flex gap-2">

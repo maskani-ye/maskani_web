@@ -44,7 +44,7 @@ const emptyForm = {
   cities: [] as number[],
 };
 
-const field = "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
+const field = "w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
 
 export default function MyServicesPage() {
   const { user, loading: authLoading } = useAuth();
@@ -197,7 +197,7 @@ export default function MyServicesPage() {
   };
 
   if (authLoading || loading) {
-    return <div className="max-w-2xl mx-auto px-4 py-8"><div className="h-96 bg-gray-100 animate-pulse rounded-2xl" /></div>;
+    return <div className="max-w-2xl mx-auto px-4 py-8"><div className="h-96 bg-muted-100 animate-pulse rounded-2xl" /></div>;
   }
 
   const catName = (s: MyService) =>
@@ -207,7 +207,7 @@ export default function MyServicesPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-gray-900">خدماتي</h1>
+        <h1 className="text-h3 font-bold text-ink">خدماتي</h1>
         {!showForm && (
           <Button onClick={openCreate}><AddCircle className="h-4 w-4" /> أضف خدمة</Button>
         )}
@@ -219,13 +219,13 @@ export default function MyServicesPage() {
           {services.map((s) => (
             <div key={s.id} className="bg-white rounded-2xl card-shadow p-4 flex items-center gap-3">
               <Link href={`/services/${s.id}`} className="flex-1 min-w-0">
-                <p className="font-bold text-gray-900 truncate">{s.title}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{catName(s)}</p>
+                <p className="font-bold text-ink truncate">{s.title}</p>
+                <p className="text-caption text-muted-500 mt-0.5">{catName(s)}</p>
               </Link>
-              <button onClick={() => openEdit(s)} className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center text-gray-500 hover:text-primary" title="تعديل">
+              <button onClick={() => openEdit(s)} className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center text-muted-500 hover:text-primary" title="تعديل">
                 <PenNewSquare className="h-4 w-4" />
               </button>
-              <button onClick={() => remove(s)} disabled={deletingId === s.id} className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-red-50 flex items-center justify-center text-gray-500 hover:text-red-600 disabled:opacity-50" title="حذف">
+              <button onClick={() => remove(s)} disabled={deletingId === s.id} className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-red-50 flex items-center justify-center text-muted-500 hover:text-red-600 disabled:opacity-50" title="حذف">
                 <TrashBinTrash className="h-4 w-4" />
               </button>
             </div>
@@ -237,21 +237,21 @@ export default function MyServicesPage() {
       {showForm && (
         <div className="bg-white rounded-2xl card-shadow p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-gray-800">{editing ? "تعديل الخدمة" : "خدمة جديدة"}</h2>
+            <h2 className="font-bold text-ink">{editing ? "تعديل الخدمة" : "خدمة جديدة"}</h2>
             {services.length > 0 && (
-              <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-muted hover:text-muted-600">
                 <CloseCircle className="h-5 w-5" />
               </button>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">اسم الخدمة/النشاط *</label>
+            <label className="block text-body font-medium text-muted-700 mb-1.5">اسم الخدمة/النشاط *</label>
             <input className={field} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">التخصص *</label>
+            <label className="block text-body font-medium text-muted-700 mb-1.5">التخصص *</label>
             <select className={`${field} h-11 bg-white`} value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value ? Number(e.target.value) : "" }))}>
               <option value="">اختر التخصص</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name_ar}</option>)}
@@ -260,7 +260,7 @@ export default function MyServicesPage() {
 
           <div>
             <div className="flex items-center justify-between gap-2 mb-1.5">
-              <label className="block text-sm font-medium text-gray-700">الوصف</label>
+              <label className="block text-body font-medium text-muted-700">الوصف</label>
               <SuggestDescriptionButton kind="service" title={form.title} onSuggest={(d) => setForm((f) => ({ ...f, description: d }))} />
               {form.description?.trim().length >= 10 && (
                 <ImproveTextButton kind="service" text={form.description} onImprove={(d) => setForm((f) => ({ ...f, description: d }))} />
@@ -270,7 +270,7 @@ export default function MyServicesPage() {
           </div>
           <div>
             {/* فيديو أعمال المزوّد — أقنع من وصف مكتوب. */}
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">رابط فيديو يوتيوب (اختياري)</label>
+            <label className="block text-body font-medium text-muted-700 mb-1.5">رابط فيديو يوتيوب (اختياري)</label>
             <input
               className={field}
               dir="ltr"
@@ -282,28 +282,28 @@ export default function MyServicesPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">سنوات الخبرة</label>
+              <label className="block text-body font-medium text-muted-700 mb-1.5">سنوات الخبرة</label>
               <input type="number" min={0} className={field} value={form.experience_years} onChange={(e) => setForm((f) => ({ ...f, experience_years: toEnglishDigits(e.target.value) ? Number(toEnglishDigits(e.target.value)) : "" }))} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">رقم التواصل *</label>
+              <label className="block text-body font-medium text-muted-700 mb-1.5">رقم التواصل *</label>
               <PhoneField label="" value={form.contact_phone} onChange={(v) => setForm((f) => ({ ...f, contact_phone: v }))} />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">واتساب (اختياري)</label>
+            <label className="block text-body font-medium text-muted-700 mb-1.5">واتساب (اختياري)</label>
             <PhoneField label="" value={form.contact_whatsapp} onChange={(v) => setForm((f) => ({ ...f, contact_whatsapp: v }))} />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">مدن الخدمة * (اختر واحدة أو أكثر)</label>
+            <label className="block text-body font-medium text-muted-700 mb-1.5">مدن الخدمة * (اختر واحدة أو أكثر)</label>
             <div className="flex flex-wrap gap-2">
               {cities.map((c) => {
                 const on = form.cities.includes(c.id);
                 return (
                   <button key={c.id} type="button" onClick={() => toggleCity(c.id)}
-                    className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${on ? "bg-primary text-white border-primary" : "bg-white text-gray-600 border-gray-200 hover:border-primary/40"}`}>
+                    className={`px-3 py-1.5 rounded-full text-body border transition-colors ${on ? "bg-primary text-white border-primary" : "bg-white text-muted-600 border-muted-200 hover:border-primary/40"}`}>
                     {c.name_ar ?? c.name}
                   </button>
                 );
@@ -315,22 +315,22 @@ export default function MyServicesPage() {
 
           {/* معرض الأعمال — عند التعديل فقط */}
           {editing && (
-            <div className="border-t border-gray-100 pt-4">
+            <div className="border-t border-muted-100 pt-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-bold text-gray-800">معرض الأعمال</h3>
-                <label className="text-sm text-primary font-medium cursor-pointer">
+                <h3 className="font-bold text-ink">معرض الأعمال</h3>
+                <label className="text-body text-primary font-medium cursor-pointer">
                   {uploading ? "جارٍ الرفع..." : "+ إضافة صورة"}
                   <input type="file" accept="image/*" className="hidden" onChange={addPortfolio} disabled={uploading} />
                 </label>
               </div>
               {portfolio.length === 0 ? (
-                <p className="text-sm text-gray-400 text-center py-4">لا توجد صور بعد</p>
+                <p className="text-body text-muted text-center py-4">لا توجد صور بعد</p>
               ) : (
                 <div className="grid grid-cols-3 gap-3">
                   {portfolio.map((p) => (
-                    <div key={p.id} className="relative group rounded-xl overflow-hidden bg-gray-100 aspect-square">
+                    <div key={p.id} className="relative group rounded-xl overflow-hidden bg-muted-100 aspect-square">
                       <img src={p.image} alt={p.title ?? ""} className="w-full h-full object-cover" />
-                      <button onClick={() => deletePortfolio(p.id)} className="absolute top-1 left-1 bg-black/50 text-white rounded-full w-6 h-6 text-xs opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                      <button onClick={() => deletePortfolio(p.id)} className="absolute top-1 left-1 bg-black/50 text-white rounded-full w-6 h-6 text-caption opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
                     </div>
                   ))}
                 </div>

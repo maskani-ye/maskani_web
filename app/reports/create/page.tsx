@@ -87,23 +87,23 @@ export default function CreateFraudReportPage() {
           <Select label="المدينة" options={cities.map((c) => ({ value: c.id, label: c.name_ar }))} value={form.city} onChange={(e) => handleChange("city", e.target.value)} placeholder="اختر المدينة" />
         </div>
         <div>
-          <label className="text-sm font-semibold text-gray-700 mb-1.5 block">تفاصيل البلاغ <span className="text-red-500">*</span></label>
+          <label className="text-body font-semibold text-muted-700 mb-1.5 block">تفاصيل البلاغ <span className="text-red-500">*</span></label>
           <textarea
             value={form.details}
             onChange={(e) => handleChange("details", e.target.value)}
             rows={5}
             placeholder="اشرح ما حدث بالتفصيل — كلما كانت التفاصيل أدق كان البلاغ أكثر مصداقية"
             required
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+            className="w-full border border-muted-200 rounded-xl px-4 py-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
           />
         </div>
 
         {/* Image Upload */}
         <div>
-          <label className="text-sm font-semibold text-gray-700 mb-1.5 block">أدلة وصور (حتى 5 صور)</label>
-          <label className="flex items-center justify-center gap-2 h-24 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors">
-            <CloudUpload className="h-5 w-5 text-gray-400" />
-            <span className="text-sm text-gray-400">اضغط لرفع الصور</span>
+          <label className="text-body font-semibold text-muted-700 mb-1.5 block">أدلة وصور (حتى 5 صور)</label>
+          <label className="flex items-center justify-center gap-2 h-24 border-2 border-dashed border-muted-200 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors">
+            <CloudUpload className="h-5 w-5 text-muted" />
+            <span className="text-body text-muted">اضغط لرفع الصور</span>
             <input type="file" multiple accept="image/*" onChange={handleImages} className="hidden" />
           </label>
           {images.length > 0 && (

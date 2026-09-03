@@ -36,20 +36,20 @@ export function NumberField({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-semibold text-gray-700">{label}</span>
+      <span className="text-body font-semibold text-muted-700">{label}</span>
       <div className="relative">
         <input
           inputMode="decimal"
           value={value}
           onChange={(e) => onChange(toEnglishDigits(e.target.value).replace(/[^0-9.]/g, ""))}
           placeholder={placeholder}
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
+          className="w-full rounded-xl border border-muted-200 bg-white px-4 py-2.5 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
         />
         {suffix && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">{suffix}</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-caption text-muted">{suffix}</span>
         )}
       </div>
-      {hint && <span className="text-xs text-gray-400">{hint}</span>}
+      {hint && <span className="text-caption text-muted">{hint}</span>}
     </label>
   );
 }
@@ -57,11 +57,11 @@ export function NumberField({
 export function CurrencySelect({ value, onChange }: { value: Currency; onChange: (c: Currency) => void }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-semibold text-gray-700">العملة</span>
+      <span className="text-body font-semibold text-muted-700">العملة</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as Currency)}
-        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+        className="w-full rounded-xl border border-muted-200 bg-white px-4 py-2.5 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
       >
         {CURRENCIES.map((c) => (
           <option key={c} value={c}>{CUR_LABEL[c]}</option>
@@ -75,9 +75,9 @@ export function CurrencySelect({ value, onChange }: { value: Currency; onChange:
 export function ResultCard({ label, value, sub }: { label: string; value: string; sub?: ReactNode }) {
   return (
     <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-700 text-white p-5 text-center">
-      <p className="text-sm text-white/80 mb-1">{label}</p>
-      <p className="text-3xl font-extrabold tracking-tight" dir="ltr">{value}</p>
-      {sub && <div className="mt-2 text-sm text-white/85">{sub}</div>}
+      <p className="text-body text-white/80 mb-1">{label}</p>
+      <p className="text-h1 font-extrabold tracking-tight" dir="ltr">{value}</p>
+      {sub && <div className="mt-2 text-body text-white/85">{sub}</div>}
     </div>
   );
 }
@@ -86,7 +86,7 @@ export function ResultCard({ label, value, sub }: { label: string; value: string
 export function ResultRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between rounded-xl bg-cream px-4 py-2.5">
-      <span className="text-sm text-gray-600">{label}</span>
+      <span className="text-body text-muted-600">{label}</span>
       <span className="font-bold text-ink" dir="ltr">{value}</span>
     </div>
   );

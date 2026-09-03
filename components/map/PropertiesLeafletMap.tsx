@@ -192,22 +192,22 @@ export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filt
             >
               <Popup>
                 <Link href={`/properties/${m.id}`} className="block w-48 no-underline">
-                  <div className="h-24 w-full overflow-hidden rounded-lg bg-gray-100">
+                  <div className="h-24 w-full overflow-hidden rounded-lg bg-muted-100">
                     {m.main_image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={m.main_image} alt="" className="h-full w-full object-cover" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">
-                        <Buildings2 className="h-8 w-8 text-gray-300" />
+                        <Buildings2 className="h-8 w-8 text-muted-200" />
                       </div>
                     )}
                   </div>
                   <div className="pt-2">
-                    <p className="text-sm font-extrabold text-primary">
+                    <p className="text-body font-extrabold text-primary">
                       {formatPrice(m.price, m.currency)}
                     </p>
                     <div className="mt-1 flex items-center gap-1.5 text-[11px]">
-                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-600">
+                      <span className="rounded-full bg-muted-100 px-2 py-0.5 text-muted-600">
                         {propertyTypeName(m.property_type)}
                       </span>
                       <span
@@ -232,7 +232,7 @@ export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filt
       {/* تلميح: قرّب للتصفية عند اقتطاع النتائج */}
       {truncated && (
         <div className="pointer-events-none absolute inset-x-0 top-3 z-[1000] flex justify-center">
-          <span className="pointer-events-auto rounded-full bg-gold px-4 py-1.5 text-xs font-bold text-white shadow-lg">
+          <span className="pointer-events-auto rounded-full bg-gold px-4 py-1.5 text-caption font-bold text-white shadow-lg">
             قرّب للتصفية — النتائج كثيرة
           </span>
         </div>
@@ -240,7 +240,7 @@ export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filt
 
       {/* مؤشّر التحميل */}
       {loading && (
-        <div className="absolute right-3 top-3 z-[1000] rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-primary shadow">
+        <div className="absolute right-3 top-3 z-[1000] rounded-full bg-white/90 px-3 py-1 text-caption font-semibold text-primary shadow">
           جاري التحميل…
         </div>
       )}

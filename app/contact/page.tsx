@@ -41,8 +41,8 @@ export default async function ContactPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       <header>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-ink mb-3">تواصل معنا</h1>
-        <p className="text-gray-600 leading-relaxed">
+        <h1 className="text-h2 sm:text-h1 font-extrabold text-ink mb-3">تواصل معنا</h1>
+        <p className="text-muted-600 leading-relaxed">
           نقرأ كل رسالة. اختر القناة المناسبة لطلبك فيصل إلى الجهة الصحيحة أسرع.
         </p>
       </header>
@@ -50,11 +50,11 @@ export default async function ContactPage() {
       <div className="grid sm:grid-cols-2 gap-4">
         <Link
           href="/help"
-          className="rounded-2xl border border-gray-100 bg-white p-5 hover:border-primary transition-colors"
+          className="rounded-2xl border border-muted-100 bg-white p-5 hover:border-primary transition-colors"
         >
           <ChatRound className="h-6 w-6 text-primary mb-2" />
           <h2 className="font-bold text-ink mb-1">مركز المساعدة</h2>
-          <p className="text-sm text-gray-500 leading-relaxed">
+          <p className="text-body text-muted-500 leading-relaxed">
             القناة الأسرع: أسئلة شائعة بأجوبة جاهزة، وإن لم تجد جوابك تفتح تذكرة
             يردّ عليها الفريق.
           </p>
@@ -62,11 +62,11 @@ export default async function ContactPage() {
 
         <Link
           href="/reports/create"
-          className="rounded-2xl border border-gray-100 bg-white p-5 hover:border-primary transition-colors"
+          className="rounded-2xl border border-muted-100 bg-white p-5 hover:border-primary transition-colors"
         >
           <ShieldWarning className="h-6 w-6 text-primary mb-2" />
           <h2 className="font-bold text-ink mb-1">الإبلاغ عن احتيال</h2>
-          <p className="text-sm text-gray-500 leading-relaxed">
+          <p className="text-body text-muted-500 leading-relaxed">
             إعلان وهميّ أو محاولة نصب؟ البلاغ يظهر للجميع ويصوّت عليه المستخدمون،
             ويراجعه فريقنا.
           </p>
@@ -75,13 +75,13 @@ export default async function ContactPage() {
         {phone ? (
           <a
             href={`tel:${phone}`}
-            className="rounded-2xl border border-gray-100 bg-white p-5 hover:border-primary transition-colors"
+            className="rounded-2xl border border-muted-100 bg-white p-5 hover:border-primary transition-colors"
           >
             <Phone className="h-6 w-6 text-primary mb-2" />
             <h2 className="font-bold text-ink mb-1">هاتف الفريق</h2>
-            <p className="text-sm text-gray-500" dir="ltr">{phone}</p>
+            <p className="text-body text-muted-500" dir="ltr">{phone}</p>
             {digits && (
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-caption text-muted mt-1">
                 متاح أيضاً على واتساب على الرقم نفسه.
               </p>
             )}
@@ -90,20 +90,20 @@ export default async function ContactPage() {
 
         <Link
           href="/help"
-          className="rounded-2xl border border-gray-100 bg-white p-5 hover:border-primary transition-colors"
+          className="rounded-2xl border border-muted-100 bg-white p-5 hover:border-primary transition-colors"
         >
           <Letter className="h-6 w-6 text-primary mb-2" />
           <h2 className="font-bold text-ink mb-1">إزالة محتوى أو حقوق</h2>
-          <p className="text-sm text-gray-500 leading-relaxed">
+          <p className="text-body text-muted-500 leading-relaxed">
             طلبات إزالة إعلان أو صورة أو بيانات شخصية: افتح تذكرة واذكر رابط
             الصفحة وسبب الطلب.
           </p>
         </Link>
       </div>
 
-      <section className="rounded-2xl bg-cream border border-gray-100 p-5 space-y-2">
+      <section className="rounded-2xl bg-cream border border-muted-100 p-5 space-y-2">
         <h2 className="font-bold text-ink">قبل أن تراسلنا</h2>
-        <p className="text-sm text-gray-600 leading-relaxed">
+        <p className="text-body text-muted-600 leading-relaxed">
           مسكني منصّة تواصل مباشر بين الملّاك والباحثين — <strong>لا نبيع ولا
           نشتري ولا نتوسّط</strong>، ولا نتلقّى أي مدفوعات. أسعار العقارات
           وتفاصيلها من نشر أصحابها، والتعاقد يقع بينكم مباشرةً. اقرأ{" "}

@@ -154,25 +154,25 @@ export default async function NeighborhoodPropertiesPage(
       />
 
       <header className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h1 className="text-h2 sm:text-h1 font-bold text-ink">
           عقارات في حي {hood.name}
-          <span className="text-gray-400 font-normal"> — {hood.city_name}</span>
+          <span className="text-muted font-normal"> — {hood.city_name}</span>
         </h1>
-        <p className="text-gray-600 mt-2 leading-relaxed max-w-3xl">
+        <p className="text-muted-600 mt-2 leading-relaxed max-w-3xl">
           استكشف {count > 0 ? `${count} ` : ""}عقاراً في حي {hood.name} بمحافظة {hood.city_name} —
           شقق وفلل وأراضٍ ومحلات تجارية للبيع والإيجار، مع الأسعار والصور،
           وتواصل مباشر مع أصحاب العقارات بلا عمولات.
         </p>
         <Link
           href={`/properties?neighborhood_ref=${hood.id}`}
-          className="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary text-white px-5 py-2.5 text-sm font-semibold hover:bg-primary/90 transition-colors"
+          className="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary text-white px-5 py-2.5 text-body font-semibold hover:bg-primary/90 transition-colors"
         >
           تصفّح كل عقارات {hood.name} مع الفلاتر
         </Link>
       </header>
 
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-gray-200 bg-white py-16 text-center text-gray-500">
+        <div className="rounded-2xl border border-muted-200 bg-white py-16 text-center text-muted-500">
           لا توجد عقارات في حي {hood.name} بعد — كن أول من يضيف عقاراً هنا.
         </div>
       ) : (

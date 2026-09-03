@@ -29,14 +29,14 @@ export function StatCard({ label, value, icon: Icon, trend, sub, className }: St
   return (
     <Card className={cn("flex items-start justify-between gap-4", className)}>
       <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-500">{label}</p>
-        <p className="mt-1 text-2xl font-extrabold text-gray-900 truncate">{value}</p>
+        <p className="text-body font-medium text-muted-500">{label}</p>
+        <p className="mt-1 text-h2 font-extrabold text-ink truncate">{value}</p>
 
         <div className="mt-2 flex items-center gap-2 flex-wrap">
           {trend && (
             <span
               className={cn(
-                "inline-flex items-center gap-0.5 text-xs font-bold",
+                "inline-flex items-center gap-0.5 text-caption font-bold",
                 up ? "text-success-600" : "text-danger-600"
               )}
             >
@@ -44,7 +44,7 @@ export function StatCard({ label, value, icon: Icon, trend, sub, className }: St
               {trend.value}
             </span>
           )}
-          {sub && <span className="text-xs text-gray-400">{sub}</span>}
+          {sub && <span className="text-caption text-muted">{sub}</span>}
         </div>
       </div>
 

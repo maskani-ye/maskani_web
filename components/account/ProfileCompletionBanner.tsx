@@ -36,9 +36,9 @@ export function ProfileCompletionBanner() {
 
   return (
     <div className="bg-primary/5 border-b border-primary/10">
-      <div className="max-w-6xl mx-auto flex items-center gap-3 px-4 py-2.5 text-sm">
+      <div className="max-w-6xl mx-auto flex items-center gap-3 px-4 py-2.5 text-body">
         <MapPoint className="h-4 w-4 text-primary shrink-0" />
-        <p className="text-gray-700 flex-1">
+        <p className="text-muted-700 flex-1">
           أكمل رقم هاتفك ومدينتك ليتمكّن أصحاب العقارات من التواصل معك — اختياري.
         </p>
         <Link
@@ -51,7 +51,7 @@ export function ProfileCompletionBanner() {
           type="button"
           onClick={dismiss}
           aria-label="إغلاق"
-          className="text-gray-400 hover:text-gray-600 shrink-0"
+          className="text-muted hover:text-muted-600 shrink-0"
         >
           <CloseCircle className="h-4 w-4" />
         </button>

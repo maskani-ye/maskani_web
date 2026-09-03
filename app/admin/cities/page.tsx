@@ -224,12 +224,12 @@ export default function AdminCitiesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit mb-6">
+      <div className="flex gap-1 bg-muted-100 p-1 rounded-xl w-fit mb-6">
         {(["cities", "countries", "neighborhoods"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${tab === t ? "bg-white text-primary card-shadow" : "text-gray-500 hover:text-gray-700"}`}
+            className={`px-5 py-2 rounded-lg text-body font-semibold transition-all ${tab === t ? "bg-white text-primary card-shadow" : "text-muted-500 hover:text-muted-700"}`}
           >
             {t === "cities" ? (
               <span className="flex items-center gap-1.5"><MapPoint className="h-4 w-4" />المدن</span>
@@ -258,7 +258,7 @@ export default function AdminCitiesPage() {
           <select
             value={filterCountry}
             onChange={(e) => setFilterCountry(e.target.value === "" ? "" : Number(e.target.value))}
-            className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
             <option value="">كل الدول</option>
             {countries.map((c) => (
@@ -266,7 +266,7 @@ export default function AdminCitiesPage() {
             ))}
           </select>
         )}
-        <span className="text-sm text-gray-400 self-center">
+        <span className="text-body text-muted self-center">
           {tab === "cities" ? `${filteredCities.length} مدينة` : `${filteredCountries.length} دولة`}
         </span>
       </div>
@@ -275,7 +275,7 @@ export default function AdminCitiesPage() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-14 bg-gray-100 rounded-xl animate-pulse" />
+            <div key={i} className="h-14 bg-muted-100 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : tab === "cities" ? (
@@ -305,30 +305,30 @@ export default function AdminCitiesPage() {
             <Input label="المنطقة / المحافظة" value={cityForm.region} onChange={(e) => setCityForm((p) => ({ ...p, region: e.target.value }))} />
             {/* ── صورة المحافظة (معلم بارز) — تظهر في هوم التطبيق/الويب ── */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">صورة المحافظة</label>
+              <label className="block text-body font-medium text-muted-700 mb-1">صورة المحافظة</label>
               <div className="flex items-center gap-3">
                 {(cityImage || cityModal.editing?.image) && (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={cityImage ? URL.createObjectURL(cityImage) : (cityModal.editing?.image ?? "")}
                     alt=""
-                    className="w-16 h-16 rounded-xl object-cover border border-gray-200 flex-shrink-0"
+                    className="w-16 h-16 rounded-xl object-cover border border-muted-200 flex-shrink-0"
                   />
                 )}
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => setCityImage(e.target.files?.[0] ?? null)}
-                  className="text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-primary/10 file:text-primary file:px-3 file:py-1.5 file:text-sm file:font-semibold file:cursor-pointer"
+                  className="text-body text-muted-600 file:mr-3 file:rounded-lg file:border-0 file:bg-primary/10 file:text-primary file:px-3 file:py-1.5 file:text-body file:font-semibold file:cursor-pointer"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">الدولة *</label>
+              <label className="block text-body font-medium text-muted-700 mb-1">الدولة *</label>
               <select
                 value={cityForm.country}
                 onChange={(e) => setCityForm((p) => ({ ...p, country: Number(e.target.value) }))}
-                className="w-full h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
                 <option value="">اختر الدولة</option>
                 {countries.map((c) => <option key={c.id} value={c.id}>{c.name_ar}</option>)}
@@ -336,7 +336,7 @@ export default function AdminCitiesPage() {
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={cityForm.is_active} onChange={(e) => setCityForm((p) => ({ ...p, is_active: e.target.checked }))} className="rounded" />
-              <span className="text-sm text-gray-700">مفعّلة</span>
+              <span className="text-body text-muted-700">مفعّلة</span>
             </label>
           </div>
           <div className="flex gap-3 mt-6">
@@ -359,7 +359,7 @@ export default function AdminCitiesPage() {
               <Input label="سطر السوق (عربي)" value={countryForm.tagline_ar ?? ""} onChange={(e) => setCountryForm((p) => ({ ...p, tagline_ar: e.target.value }))} placeholder="صنعاء · عدن · تعز · إب" />
               <Input label="سطر السوق (إنجليزي)" value={countryForm.tagline_en ?? ""} onChange={(e) => setCountryForm((p) => ({ ...p, tagline_en: e.target.value }))} dir="ltr" placeholder="Sana'a · Aden · Taiz" />
             </div>
-            <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 space-y-2">
+            <div className="rounded-xl border border-muted-100 bg-muted-50 p-3 space-y-2">
               <p className="text-caption text-muted">
                 صورة السوق — خلفية الصفحة الأولى حين يمرّ الزائر على هذه الدولة.
               </p>
@@ -367,7 +367,7 @@ export default function AdminCitiesPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={countryImage ? URL.createObjectURL(countryImage) : (countryModal.editing?.hero_image ?? "")}
-                  alt="" className="w-full h-28 rounded-lg object-cover border border-gray-200"
+                  alt="" className="w-full h-28 rounded-lg object-cover border border-muted-200"
                 />
               )}
               <input type="file" accept="image/*" onChange={(e) => setCountryImage(e.target.files?.[0] ?? null)}
@@ -381,7 +381,7 @@ export default function AdminCitiesPage() {
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={countryForm.is_active} onChange={(e) => setCountryForm((p) => ({ ...p, is_active: e.target.checked }))} className="rounded" />
-              <span className="text-sm text-gray-700">مفعّلة</span>
+              <span className="text-body text-muted-700">مفعّلة</span>
             </label>
           </div>
           <div className="flex gap-3 mt-6">
@@ -394,7 +394,7 @@ export default function AdminCitiesPage() {
       {/* ── Delete Confirm ── */}
       {deleteConfirm && (
         <Modal title="تأكيد الحذف" onClose={() => setDeleteConfirm(null)}>
-          <p className="text-gray-600 text-sm mb-6">
+          <p className="text-muted-600 text-body mb-6">
             {deleteConfirm.type === "country"
               ? "سيتم حذف الدولة وجميع مدنها المرتبطة بها. هذا الإجراء لا يمكن التراجع عنه."
               : "سيتم حذف المدينة نهائياً. هذا الإجراء لا يمكن التراجع عنه."}
@@ -424,7 +424,7 @@ function CitiesTable({ cities, onEdit, onToggle, onDelete }: {
   onDelete: (id: number) => void;
 }) {
   if (cities.length === 0) return (
-    <div className="text-center py-16 text-gray-400">
+    <div className="text-center py-16 text-muted">
       <MapPoint className="h-12 w-12 mx-auto mb-3 opacity-30" />
       <p>لا توجد مدن مطابقة</p>
     </div>
@@ -432,9 +432,9 @@ function CitiesTable({ cities, onEdit, onToggle, onDelete }: {
 
   return (
     <div className="bg-white rounded-2xl card-shadow overflow-hidden">
-      <table className="w-full text-sm">
+      <table className="w-full text-body">
         <thead>
-          <tr className="bg-gray-50 text-gray-500 text-xs">
+          <tr className="bg-muted-50 text-muted-500 text-caption">
             <th className="text-right py-3 px-4 font-semibold">#</th>
             <th className="text-right py-3 px-4 font-semibold">الصورة</th>
             <th className="text-right py-3 px-4 font-semibold">الاسم بالعربية</th>
@@ -445,36 +445,36 @@ function CitiesTable({ cities, onEdit, onToggle, onDelete }: {
             <th className="text-right py-3 px-4 font-semibold">إجراءات</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-50">
+        <tbody className="divide-y divide-muted-50">
           {cities.map((city, i) => (
-            <tr key={city.id} className="hover:bg-gray-50/50 transition-colors">
-              <td className="py-3 px-4 text-gray-400">{i + 1}</td>
+            <tr key={city.id} className="hover:bg-muted-50/50 transition-colors">
+              <td className="py-3 px-4 text-muted">{i + 1}</td>
               <td className="py-3 px-4">
                 {city.image ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={city.image} alt={city.name_ar} className="w-12 h-12 rounded-lg object-cover border border-gray-200" />
+                  <img src={city.image} alt={city.name_ar} className="w-12 h-12 rounded-lg object-cover border border-muted-200" />
                 ) : (
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-gray-300">
+                  <div className="w-12 h-12 rounded-lg bg-muted-100 flex items-center justify-center text-muted-200">
                     <MapPoint className="h-5 w-5" />
                   </div>
                 )}
               </td>
-              <td className="py-3 px-4 font-semibold text-gray-800">{city.name_ar}</td>
-              <td className="py-3 px-4 text-gray-500">{city.name_en}</td>
-              <td className="py-3 px-4 text-gray-500">{city.region || "—"}</td>
+              <td className="py-3 px-4 font-semibold text-ink">{city.name_ar}</td>
+              <td className="py-3 px-4 text-muted-500">{city.name_en}</td>
+              <td className="py-3 px-4 text-muted-500">{city.region || "—"}</td>
               <td className="py-3 px-4">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">
+                <span className="text-caption bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">
                   {city.country_name}
                 </span>
               </td>
               <td className="py-3 px-4">
                 <button onClick={() => onToggle(city)} className="flex items-center gap-1">
                   {city.is_active !== false ? (
-                    <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                    <span className="flex items-center gap-1 text-caption text-green-600 bg-green-50 px-2 py-1 rounded-full">
                       <CheckCircle className="h-3.5 w-3.5" /> مفعّلة
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+                    <span className="flex items-center gap-1 text-caption text-muted bg-muted-100 px-2 py-1 rounded-full">
                       <DangerCircle className="h-3.5 w-3.5" /> معطّلة
                     </span>
                   )}
@@ -482,8 +482,8 @@ function CitiesTable({ cities, onEdit, onToggle, onDelete }: {
               </td>
               <td className="py-3 px-4">
                 <div className="flex gap-2">
-                  <button onClick={() => onEdit(city)} className="text-xs text-primary hover:underline font-medium">تعديل</button>
-                  <button onClick={() => onDelete(city.id)} className="text-xs text-red-500 hover:underline font-medium">حذف</button>
+                  <button onClick={() => onEdit(city)} className="text-caption text-primary hover:underline font-medium">تعديل</button>
+                  <button onClick={() => onDelete(city.id)} className="text-caption text-red-500 hover:underline font-medium">حذف</button>
                 </div>
               </td>
             </tr>
@@ -500,7 +500,7 @@ function CountriesTable({ countries, onEdit, onDelete }: {
   onDelete: (id: number) => void;
 }) {
   if (countries.length === 0) return (
-    <div className="text-center py-16 text-gray-400">
+    <div className="text-center py-16 text-muted">
       <Global className="h-12 w-12 mx-auto mb-3 opacity-30" />
       <p>لا توجد دول مطابقة</p>
     </div>
@@ -508,9 +508,9 @@ function CountriesTable({ countries, onEdit, onDelete }: {
 
   return (
     <div className="bg-white rounded-2xl card-shadow overflow-hidden">
-      <table className="w-full text-sm">
+      <table className="w-full text-body">
         <thead>
-          <tr className="bg-gray-50 text-gray-500 text-xs">
+          <tr className="bg-muted-50 text-muted-500 text-caption">
             <th className="text-right py-3 px-4 font-semibold">الاسم بالعربية</th>
             <th className="text-right py-3 px-4 font-semibold">الاسم بالإنجليزية</th>
             <th className="text-right py-3 px-4 font-semibold">الرمز</th>
@@ -519,35 +519,35 @@ function CountriesTable({ countries, onEdit, onDelete }: {
             <th className="text-right py-3 px-4 font-semibold">إجراءات</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-50">
+        <tbody className="divide-y divide-muted-50">
           {countries.map((country) => (
-            <tr key={country.id} className="hover:bg-gray-50/50 transition-colors">
-              <td className="py-3 px-4 font-semibold text-gray-800">{country.name_ar}</td>
-              <td className="py-3 px-4 text-gray-500">{country.name_en}</td>
+            <tr key={country.id} className="hover:bg-muted-50/50 transition-colors">
+              <td className="py-3 px-4 font-semibold text-ink">{country.name_ar}</td>
+              <td className="py-3 px-4 text-muted-500">{country.name_en}</td>
               <td className="py-3 px-4">
-                <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">{country.code}</span>
+                <span className="font-mono text-caption bg-muted-100 px-2 py-1 rounded">{country.code}</span>
               </td>
               <td className="py-3 px-4">
-                <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-medium">
+                <span className="text-caption bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-medium">
                   <Buildings2 className="h-3 w-3 inline ml-1" />
                   {country.cities?.length ?? 0} مدينة
                 </span>
               </td>
               <td className="py-3 px-4">
                 {country.is_active ? (
-                  <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full w-fit">
+                  <span className="flex items-center gap-1 text-caption text-green-600 bg-green-50 px-2 py-1 rounded-full w-fit">
                     <CheckCircle className="h-3.5 w-3.5" /> مفعّلة
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1 text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full w-fit">
+                  <span className="flex items-center gap-1 text-caption text-muted bg-muted-100 px-2 py-1 rounded-full w-fit">
                     <DangerCircle className="h-3.5 w-3.5" /> معطّلة
                   </span>
                 )}
               </td>
               <td className="py-3 px-4">
                 <div className="flex gap-2">
-                  <button onClick={() => onEdit(country)} className="text-xs text-primary hover:underline font-medium">تعديل</button>
-                  <button onClick={() => onDelete(country.id)} className="text-xs text-red-500 hover:underline font-medium">حذف</button>
+                  <button onClick={() => onEdit(country)} className="text-caption text-primary hover:underline font-medium">تعديل</button>
+                  <button onClick={() => onDelete(country.id)} className="text-caption text-red-500 hover:underline font-medium">حذف</button>
                 </div>
               </td>
             </tr>
@@ -563,8 +563,8 @@ function Modal({ title, children, onClose }: { title: string; children: React.Re
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl card-shadow w-full max-w-md p-6 relative">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="font-bold text-gray-900 text-lg">{title}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <h2 className="font-bold text-ink text-h3">{title}</h2>
+          <button onClick={onClose} className="text-muted hover:text-muted-600">
             <CloseCircle className="h-5 w-5" />
           </button>
         </div>

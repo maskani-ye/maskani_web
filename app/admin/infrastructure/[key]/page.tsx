@@ -17,8 +17,8 @@ import type { ServiceStatus } from "../page";
 function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="bg-white rounded-2xl card-shadow p-4">
-      <p className="text-xs text-gray-400">{label}</p>
-      <p className="text-lg font-bold text-ink mt-1">{value ?? "—"}</p>
+      <p className="text-caption text-muted">{label}</p>
+      <p className="text-h3 font-bold text-ink mt-1">{value ?? "—"}</p>
     </div>
   );
 }
@@ -30,17 +30,17 @@ function Rows({ title, rows }: { title: string; rows: Record<string, unknown>[] 
     <div className="bg-white rounded-2xl card-shadow p-4 mt-4">
       <p className="font-bold text-ink mb-3">{title}</p>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-body">
           <thead>
-            <tr className="text-gray-400 text-xs">
+            <tr className="text-muted text-caption">
               {cols.map((c) => <th key={c} className="text-right font-normal pb-2 px-2">{c}</th>)}
             </tr>
           </thead>
           <tbody>
             {rows.map((r, i) => (
-              <tr key={i} className="border-t border-gray-100">
+              <tr key={i} className="border-t border-muted-100">
                 {cols.map((c) => (
-                  <td key={c} className="py-2 px-2 text-gray-700 whitespace-nowrap">
+                  <td key={c} className="py-2 px-2 text-muted-700 whitespace-nowrap">
                     {r[c] === null || r[c] === undefined || r[c] === ""
                       ? "—"
                       : String(r[c])}
@@ -87,8 +87,8 @@ export default function ServiceDetailPage() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <div className="h-24 bg-gray-100 rounded-2xl animate-pulse mb-4" />
-        <div className="h-64 bg-gray-100 rounded-2xl animate-pulse" />
+        <div className="h-24 bg-muted-100 rounded-2xl animate-pulse mb-4" />
+        <div className="h-64 bg-muted-100 rounded-2xl animate-pulse" />
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default function ServiceDetailPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      <Link href="/admin/infrastructure" className="text-sm text-gray-500 flex items-center gap-1 mb-4">
+      <Link href="/admin/infrastructure" className="text-body text-muted-500 flex items-center gap-1 mb-4">
         <AltArrowRight className="h-4 w-4" /> كل الخدمات
       </Link>
 
@@ -114,8 +114,8 @@ export default function ServiceDetailPage() {
 
       {!data.ok && (
         <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4">
-          <p className="font-bold text-red-700 text-sm">تعذّرت القراءة من هذه الخدمة</p>
-          <p className="text-sm text-red-600 mt-1">{data.error}</p>
+          <p className="font-bold text-red-700 text-body">تعذّرت القراءة من هذه الخدمة</p>
+          <p className="text-body text-red-600 mt-1">{data.error}</p>
         </div>
       )}
 

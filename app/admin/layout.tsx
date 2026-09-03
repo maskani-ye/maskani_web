@@ -140,13 +140,13 @@ function SidebarInner({
   return (
     <>
     {/* الشعار */}
-    <div className="flex items-center gap-2 px-5 py-5 border-b border-gray-100">
+    <div className="flex items-center gap-2 px-5 py-5 border-b border-muted-100">
       <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
         <Home2 className="h-4 w-4 text-white" />
       </div>
       <div>
-        <p className="font-bold text-gray-900 text-sm leading-tight">مسكني</p>
-        <p className="text-xs text-gray-400">لوحة الإدارة</p>
+        <p className="font-bold text-ink text-body leading-tight">مسكني</p>
+        <p className="text-caption text-muted">لوحة الإدارة</p>
       </div>
     </div>
 
@@ -154,7 +154,7 @@ function SidebarInner({
     <nav ref={navRef} className="flex-1 py-4 px-3 overflow-y-auto">
       {NAV_GROUPS.map((group, gi) => (
         <div key={group.title} className={gi === 0 ? "" : "mt-5"}>
-          <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-400">
+          <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted">
             {group.title}
           </p>
           <div className="space-y-1">
@@ -167,10 +167,10 @@ function SidebarInner({
                   href={href}
                   ref={active ? activeRef : undefined}
                   onClick={onNavigate}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-body font-medium transition-colors ${
                     active
                       ? "bg-primary/10 text-primary"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      : "text-muted-600 hover:bg-muted-50 hover:text-ink"
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
@@ -184,19 +184,19 @@ function SidebarInner({
     </nav>
 
     {/* معلومات المشرف + تسجيل الخروج */}
-    <div className="px-4 py-4 border-t border-gray-100 space-y-3">
+    <div className="px-4 py-4 border-t border-muted-100 space-y-3">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-caption shrink-0">
           {(user?.full_name ?? "؟").charAt(0)}
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-gray-800 truncate">{user?.full_name}</p>
-          <p className="text-xs text-gray-400">مشرف</p>
+          <p className="text-caption font-semibold text-ink truncate">{user?.full_name}</p>
+          <p className="text-caption text-muted">مشرف</p>
         </div>
       </div>
       <button
         onClick={onLogout}
-        className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+        className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-body font-medium text-red-600 hover:bg-red-50 transition-colors"
       >
         <Logout2 className="h-4 w-4 shrink-0" />
         تسجيل الخروج
@@ -240,18 +240,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex min-h-screen bg-cream" dir="rtl">
       {/* الشريط الجانبي الثابت — يظهر من lg فأكثر */}
-      <aside className="hidden lg:flex w-56 shrink-0 bg-white border-l border-gray-100 flex-col sticky top-0 h-screen">
+      <aside className="hidden lg:flex w-56 shrink-0 bg-white border-l border-muted-100 flex-col sticky top-0 h-screen">
         <SidebarInner pathname={pathname} activeHref={activeItem?.href}
                       user={user} onLogout={handleLogout} />
       </aside>
 
       {/* درج الجوال — ينزلق من اليمين (RTL) */}
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} side="right" className="!bg-white lg:hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-          <span className="text-sm font-bold text-gray-800">القائمة</span>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-muted-100">
+          <span className="text-body font-bold text-ink">القائمة</span>
           <button
             onClick={() => setDrawerOpen(false)}
-            className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100"
+            className="p-1.5 rounded-lg text-muted-500 hover:bg-muted-100"
             aria-label="إغلاق القائمة"
           >
             <CloseCircle className="h-5 w-5" />
@@ -264,15 +264,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* العمود الرئيسي */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* الشريط العلوي */}
-        <header className="sticky top-0 z-30 flex items-center gap-3 h-14 px-4 lg:px-6 bg-white/85 glass border-b border-gray-100">
+        <header className="sticky top-0 z-30 flex items-center gap-3 h-14 px-4 lg:px-6 bg-white/85 glass border-b border-muted-100">
           <button
             onClick={() => setDrawerOpen(true)}
-            className="lg:hidden p-2 -mr-2 rounded-lg text-gray-600 hover:bg-gray-100"
+            className="lg:hidden p-2 -mr-2 rounded-lg text-muted-600 hover:bg-muted-100"
             aria-label="فتح القائمة"
           >
             <HamburgerMenu className="h-5 w-5" />
           </button>
-          <h1 className="text-sm font-bold text-gray-900 truncate">{pageTitle}</h1>
+          <h1 className="text-body font-bold text-ink truncate">{pageTitle}</h1>
           {/* خانة يمينية للإجراءات المستقبلية */}
           <div className="ms-auto flex items-center gap-2" />
         </header>

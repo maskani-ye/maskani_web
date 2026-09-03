@@ -113,7 +113,7 @@ export function DataTable<T>({
       {/* شريط الإجراءات الجماعية */}
       {selection && selectedSet.size > 0 && (
         <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-primary-50 border-b border-border">
-          <span className="text-sm font-semibold text-primary-700">
+          <span className="text-body font-semibold text-primary-700">
             محدّد: {selectedSet.size}
           </span>
           <div className="flex items-center gap-2">{selection.bulkActions}</div>
@@ -121,15 +121,15 @@ export function DataTable<T>({
       )}
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm text-start border-collapse">
-          <thead className="sticky top-0 z-10 bg-gray-50">
+        <table className="w-full text-body text-start border-collapse">
+          <thead className="sticky top-0 z-10 bg-muted-50">
             <tr className="border-b border-border">
               {selection && (
                 <th className="w-10 px-4 py-3 text-start">
                   <input
                     type="checkbox"
                     aria-label="تحديد الكل"
-                    className="rounded border-gray-300 text-primary focus:ring-primary/30"
+                    className="rounded border-muted-200 text-primary focus:ring-primary/30"
                     checked={allSelected}
                     ref={(el) => {
                       if (el) el.indeterminate = !allSelected && someSelected;
@@ -144,9 +144,9 @@ export function DataTable<T>({
                   <th
                     key={col.key}
                     className={cn(
-                      "px-4 py-3 font-bold text-gray-600 whitespace-nowrap",
+                      "px-4 py-3 font-bold text-muted-600 whitespace-nowrap",
                       alignClass[col.align ?? "start"],
-                      col.sortable && "cursor-pointer select-none hover:text-gray-900",
+                      col.sortable && "cursor-pointer select-none hover:text-ink",
                       col.headerClassName
                     )}
                     aria-sort={
@@ -190,7 +190,7 @@ export function DataTable<T>({
               <tr>
                 <td colSpan={colSpan} className="p-0">
                   {empty ?? (
-                    <div className="py-12 text-center text-sm text-gray-400">لا توجد بيانات</div>
+                    <div className="py-12 text-center text-body text-muted">لا توجد بيانات</div>
                   )}
                 </td>
               </tr>
@@ -208,7 +208,7 @@ export function DataTable<T>({
                     className={cn(
                       "border-b border-border last:border-0 transition-colors",
                       selected && "bg-primary-50/50",
-                      onRowClick && "cursor-pointer hover:bg-gray-50 focus:bg-gray-50 outline-none"
+                      onRowClick && "cursor-pointer hover:bg-muted-50 focus:bg-muted-50 outline-none"
                     )}
                   >
                     {selection && (
@@ -216,7 +216,7 @@ export function DataTable<T>({
                         <input
                           type="checkbox"
                           aria-label="تحديد الصف"
-                          className="rounded border-gray-300 text-primary focus:ring-primary/30"
+                          className="rounded border-muted-200 text-primary focus:ring-primary/30"
                           checked={selected}
                           disabled={selection.isSelectable ? !selection.isSelectable(row) : false}
                           onChange={() => toggleOne(id)}
@@ -227,7 +227,7 @@ export function DataTable<T>({
                       <td
                         key={col.key}
                         className={cn(
-                          "px-4 py-3 text-gray-700",
+                          "px-4 py-3 text-muted-700",
                           alignClass[col.align ?? "start"],
                           col.className
                         )}

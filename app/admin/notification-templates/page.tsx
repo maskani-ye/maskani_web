@@ -103,14 +103,14 @@ export default function AdminNotificationTemplatesPage() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />
+            <div key={i} className="h-16 bg-muted-100 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : (
         <div className="bg-white rounded-2xl card-shadow overflow-hidden">
-          <table className="w-full text-sm">
+          <table className="w-full text-body">
             <thead>
-              <tr className="bg-gray-50 text-gray-500 text-xs">
+              <tr className="bg-muted-50 text-muted-500 text-caption">
                 <th className="text-right py-3 px-4 font-semibold">النوع</th>
                 <th className="text-right py-3 px-4 font-semibold">العنوان</th>
                 <th className="text-right py-3 px-4 font-semibold hidden md:table-cell">النص</th>
@@ -118,12 +118,12 @@ export default function AdminNotificationTemplatesPage() {
                 <th className="text-right py-3 px-4 font-semibold">إجراء</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-muted-50">
               {items.map((t) => (
-                <tr key={t.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="py-3 px-4 font-semibold text-gray-800">{t.event_type_display}</td>
-                  <td className="py-3 px-4 text-gray-700">{t.title_template}</td>
-                  <td className="py-3 px-4 text-gray-500 hidden md:table-cell max-w-xs truncate">
+                <tr key={t.id} className="hover:bg-muted-50/50 transition-colors">
+                  <td className="py-3 px-4 font-semibold text-ink">{t.event_type_display}</td>
+                  <td className="py-3 px-4 text-muted-700">{t.title_template}</td>
+                  <td className="py-3 px-4 text-muted-500 hidden md:table-cell max-w-xs truncate">
                     {t.body_template}
                   </td>
                   <td className="py-3 px-4">
@@ -138,7 +138,7 @@ export default function AdminNotificationTemplatesPage() {
                   <td className="py-3 px-4">
                     <button
                       onClick={() => openEdit(t)}
-                      className="text-xs text-primary hover:underline font-medium"
+                      className="text-caption text-primary hover:underline font-medium"
                     >
                       تعديل
                     </button>
@@ -160,20 +160,20 @@ export default function AdminNotificationTemplatesPage() {
               onChange={(e) => setForm((p) => ({ ...p, title_template: e.target.value }))}
             />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">النص</label>
+              <label className="block text-body font-medium text-muted-700 mb-1.5">النص</label>
               <textarea
-                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none min-h-[90px] focus:border-primary focus:ring-1 focus:ring-primary"
+                className="w-full rounded-xl border border-muted-200 px-3 py-2 text-body outline-none min-h-[90px] focus:border-primary focus:ring-1 focus:ring-primary"
                 value={form.body_template}
                 onChange={(e) => setForm((p) => ({ ...p, body_template: e.target.value }))}
               />
             </div>
             {editing.variables.length > 0 && (
-              <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-3">
+              <div className="text-caption text-muted-500 bg-muted-50 rounded-lg p-3">
                 المتغيّرات المتاحة:
                 {editing.variables.map((v) => (
                   <code
                     key={v}
-                    className="mx-1 bg-white border border-gray-200 px-1.5 py-0.5 rounded text-primary"
+                    className="mx-1 bg-white border border-muted-200 px-1.5 py-0.5 rounded text-primary"
                   >
                     {`{${v}}`}
                   </code>
@@ -187,7 +187,7 @@ export default function AdminNotificationTemplatesPage() {
                 onChange={(e) => setForm((p) => ({ ...p, is_active: e.target.checked }))}
                 className="rounded"
               />
-              <span className="text-sm text-gray-700">مفعّل</span>
+              <span className="text-body text-muted-700">مفعّل</span>
             </label>
           </div>
           <div className="flex gap-3 mt-6">
@@ -217,8 +217,8 @@ function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl card-shadow w-full max-w-lg p-6 relative">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="font-bold text-gray-900 text-lg">{title}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <h2 className="font-bold text-ink text-h3">{title}</h2>
+          <button onClick={onClose} className="text-muted hover:text-muted-600">
             <CloseCircle className="h-5 w-5" />
           </button>
         </div>

@@ -19,7 +19,7 @@ export function FloatingHelp() {
       className="fixed z-40 bottom-20 md:bottom-6 left-4 md:left-6 flex items-center gap-2 rounded-full bg-primary text-white shadow-lg shadow-primary/30 px-4 h-12 hover:bg-primary/90 transition-colors"
     >
       <HeadphonesRound className="h-5 w-5" />
-      <span className="text-sm font-semibold hidden sm:inline">المساعدة</span>
+      <span className="text-body font-semibold hidden sm:inline">المساعدة</span>
     </Link>
   );
 }

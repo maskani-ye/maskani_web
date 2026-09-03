@@ -49,7 +49,7 @@ export function MoneyInput({
 }) {
   const hint = magnitudeHint(value);
   const inputCls =
-    "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
+    "w-full border border-muted-200 rounded-xl px-4 py-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
   return (
     <div>
       <div className="relative">
@@ -63,10 +63,10 @@ export function MoneyInput({
           onChange={(e) => onChange(toEnglishDigits(e.target.value).replace(/\D/g, ""))}
         />
         {symbol && (
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">{symbol}</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body text-muted">{symbol}</span>
         )}
       </div>
-      {hint && <p className="text-xs text-gray-400 mt-1.5">≈ {hint}</p>}
+      {hint && <p className="text-caption text-muted mt-1.5">≈ {hint}</p>}
     </div>
   );
 }

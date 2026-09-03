@@ -29,7 +29,7 @@ const STATUSES = [
 const STATUS_BADGE: Record<string, string> = {
   awaiting_agent: "bg-gold/15 text-gold-700",
   active: "bg-blue-100 text-blue-700",
-  closed: "bg-gray-100 text-gray-500",
+  closed: "bg-muted-100 text-muted-500",
 };
 
 export default function AdminHelpdeskPage() {
@@ -94,7 +94,7 @@ export default function AdminHelpdeskPage() {
       <div className="flex gap-2">
         {STATUSES.map((s) => (
           <button key={s.key} onClick={() => { setStatus(s.key); setSelected(null); }}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${status === s.key ? "bg-primary text-white" : "bg-white text-gray-600 border border-gray-200"}`}>
+            className={`px-3.5 py-1.5 rounded-full text-body font-medium transition-colors ${status === s.key ? "bg-primary text-white" : "bg-white text-muted-600 border border-muted-200"}`}>
             {s.label}
           </button>
         ))}
@@ -102,23 +102,23 @@ export default function AdminHelpdeskPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-5">
         {/* القائمة */}
-        <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-e2 overflow-hidden">
           {loading ? (
-            <div className="p-4 space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-14 bg-gray-50 animate-pulse rounded-xl" />)}</div>
+            <div className="p-4 space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-14 bg-muted-50 animate-pulse rounded-xl" />)}</div>
           ) : sessions.length === 0 ? (
-            <div className="py-16 text-center text-gray-400"><HeadphonesRound className="h-10 w-10 mx-auto mb-2 opacity-30" /><p>لا جلسات</p></div>
+            <div className="py-16 text-center text-muted"><HeadphonesRound className="h-10 w-10 mx-auto mb-2 opacity-30" /><p>لا جلسات</p></div>
           ) : (
-            <div className="divide-y divide-gray-50">
+            <div className="divide-y divide-muted-50">
               {sessions.map((s) => (
                 <button key={s.id} onClick={() => openSession(s)}
-                  className={`w-full text-right p-4 hover:bg-gray-50 transition-colors ${selected?.id === s.id ? "bg-primary/5" : ""}`}>
+                  className={`w-full text-right p-4 hover:bg-muted-50 transition-colors ${selected?.id === s.id ? "bg-primary/5" : ""}`}>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-800 text-sm flex-1 truncate">{s.user_name || `مستخدم #${s.user}`}</span>
+                    <span className="font-semibold text-ink text-body flex-1 truncate">{s.user_name || `مستخدم #${s.user}`}</span>
                     <span className={`text-[11px] px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] ?? ""}`}>
                       {STATUSES.find((x) => x.key === s.status)?.label ?? s.status}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">{new Date(s.updated_at).toLocaleString(NUMERIC_LOCALE)}</p>
+                  <p className="text-caption text-muted mt-1">{new Date(s.updated_at).toLocaleString(NUMERIC_LOCALE)}</p>
                 </button>
               ))}
             </div>
@@ -126,29 +126,29 @@ export default function AdminHelpdeskPage() {
         </div>
 
         {/* المحادثة */}
-        <div className="bg-white rounded-2xl shadow-card flex flex-col min-h-[400px]">
+        <div className="bg-white rounded-2xl shadow-e2 flex flex-col min-h-[400px]">
           {!selected ? (
-            <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">اختر جلسة لعرض المحادثة</div>
+            <div className="flex-1 flex items-center justify-center text-muted text-body">اختر جلسة لعرض المحادثة</div>
           ) : (
             <>
-              <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                <span className="font-bold text-gray-800">{selected.user_name || `مستخدم #${selected.user}`}</span>
+              <div className="flex items-center justify-between p-4 border-b border-muted-100">
+                <span className="font-bold text-ink">{selected.user_name || `مستخدم #${selected.user}`}</span>
                 {selected.status !== "closed" && (
                   <Button size="sm" variant="outline" onClick={closeSession}><CheckCircle className="h-4 w-4" /> إغلاق</Button>
                 )}
               </div>
               {/* نفس عناصر عرض محادثة التطبيق تمامًا (HelpdeskMessageRow) — عرض فقط */}
               <div className="flex-1 overflow-y-auto p-4 space-y-1.5 max-h-[55vh] bg-cream">
-                {loadingMsgs ? <p className="text-center text-gray-400 text-sm">جارٍ التحميل…</p> :
+                {loadingMsgs ? <p className="text-center text-muted text-body">جارٍ التحميل…</p> :
                   messages.map((m, i) => (
                     <HelpdeskMessageRow key={m.id} m={m as unknown as HdMsg}
                       isLatest={i === messages.length - 1} readOnly />
                   ))}
               </div>
               {selected.status !== "closed" && (
-                <div className="p-3 border-t border-gray-100 flex items-end gap-2">
+                <div className="p-3 border-t border-muted-100 flex items-end gap-2">
                   <textarea value={reply} onChange={(e) => setReply(e.target.value)} rows={1} placeholder="ردّ الموظّف…"
-                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    className="flex-1 border border-muted-200 rounded-xl px-3 py-2 text-body resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   <Button size="icon" loading={sending} onClick={sendReply} disabled={!reply.trim()}><Plain className="h-5 w-5" /></Button>
                 </div>
               )}

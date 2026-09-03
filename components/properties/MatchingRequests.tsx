@@ -56,28 +56,28 @@ export function MatchingRequests({ propertyId }: { propertyId: number }) {
           {matches.length === 1 ? "باحث واحد يطابق عقارك" : `${matches.length} باحثين يطابقون عقارك`}
         </h2>
       </div>
-      <p className="text-xs text-gray-400 mb-4">تواصل معهم مباشرة — هم يبحثون عمّا نشرته.</p>
+      <p className="text-caption text-muted mb-4">تواصل معهم مباشرة — هم يبحثون عمّا نشرته.</p>
 
       <div className="space-y-2">
         {matches.map((m) => (
           <Link
             key={m.id}
             href={`/requests/${m.id}`}
-            className="flex items-center justify-between gap-3 p-3 rounded-xl border border-gray-100 hover:border-primary/40 transition-colors"
+            className="flex items-center justify-between gap-3 p-3 rounded-xl border border-muted-100 hover:border-primary/40 transition-colors"
           >
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-ink truncate">
+              <p className="text-body font-semibold text-ink truncate">
                 {m.title || "طلب عقاري"}
               </p>
-              <p className="text-xs text-gray-500 truncate">
+              <p className="text-caption text-muted-500 truncate">
                 {[m.city_name, m.neighborhood].filter(Boolean).join(" · ")}
               </p>
-              <p className="text-xs font-bold text-primary mt-0.5">{budget(m)}</p>
+              <p className="text-caption font-bold text-primary mt-0.5">{budget(m)}</p>
               {m.match_reason && (
-                <p className="text-[11px] text-gray-400 mt-0.5 truncate">{m.match_reason}</p>
+                <p className="text-[11px] text-muted mt-0.5 truncate">{m.match_reason}</p>
               )}
             </div>
-            <AltArrowLeft className="h-4 w-4 text-gray-300 shrink-0" />
+            <AltArrowLeft className="h-4 w-4 text-muted-200 shrink-0" />
           </Link>
         ))}
       </div>

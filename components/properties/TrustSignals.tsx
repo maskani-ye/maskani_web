@@ -22,8 +22,8 @@ export function TrustSignals({ property }: { property: Property }) {
 
   return (
     <div className="bg-white rounded-2xl card-shadow p-4 mt-4">
-      <p className="text-sm font-bold text-ink mb-2">معلومات تساعدك على التحقّق</p>
-      <ul className="space-y-1.5 text-xs text-gray-600">
+      <p className="text-body font-bold text-ink mb-2">معلومات تساعدك على التحقّق</p>
+      <ul className="space-y-1.5 text-caption text-muted-600">
         {owner?.is_verified && (
           <li className="flex items-center gap-2">
             <ShieldCheck className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -32,26 +32,26 @@ export function TrustSignals({ property }: { property: Property }) {
         )}
         {memberSince && (
           <li className="flex items-center gap-2">
-            <ClockCircle className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+            <ClockCircle className="h-3.5 w-3.5 text-muted shrink-0" />
             عضو منذ {memberSince}
           </li>
         )}
         {propertiesCount ? (
           <li className="flex items-center gap-2">
-            <Buildings2 className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+            <Buildings2 className="h-3.5 w-3.5 text-muted shrink-0" />
             نشر {propertiesCount} عقارًا على المنصّة
           </li>
         ) : null}
         {phoneCount ? (
           <li className="flex items-center gap-2">
-            <Phone className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+            <Phone className="h-3.5 w-3.5 text-muted shrink-0" />
             رقم التواصل هذا منشور على {phoneCount} عقارًا
           </li>
         ) : null}
       </ul>
 
       {property.trust_note && (
-        <p className="flex items-start gap-2 text-xs text-amber-700 bg-amber-50 rounded-xl p-2.5 mt-3">
+        <p className="flex items-start gap-2 text-caption text-amber-700 bg-amber-50 rounded-xl p-2.5 mt-3">
           <DangerTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
           {property.trust_note}
         </p>

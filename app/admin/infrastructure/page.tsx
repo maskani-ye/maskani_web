@@ -133,10 +133,10 @@ function ServiceCard({ s }: { s: ServiceStatus }) {
           )}
           {s.cached && <Badge variant="default">مخزَّن</Badge>}
         </p>
-        <p className="text-xs text-gray-400">{s.role}</p>
-        <p className={`text-sm mt-1 truncate ${s.ok ? "text-gray-600" : "text-red-600"}`}>{summarize(s)}</p>
+        <p className="text-caption text-muted">{s.role}</p>
+        <p className={`text-body mt-1 truncate ${s.ok ? "text-muted-600" : "text-red-600"}`}>{summarize(s)}</p>
       </div>
-      <AltArrowLeft className="h-4 w-4 text-gray-300 shrink-0 mt-1" />
+      <AltArrowLeft className="h-4 w-4 text-muted-200 shrink-0 mt-1" />
     </Link>
   );
 }
@@ -195,7 +195,7 @@ export default function InfrastructurePage() {
 
       {!loading && down.length > 0 && (
         <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4">
-          <p className="font-bold text-red-700 text-sm">
+          <p className="font-bold text-red-700 text-body">
             {down.length} خدمة متعطّلة: {down.map((s) => s.name).join("، ")}
           </p>
         </div>
@@ -211,7 +211,7 @@ export default function InfrastructurePage() {
         <div className="space-y-6">
           {grouped.map((g) => (
             <section key={g.title}>
-              <h2 className="text-sm font-bold text-gray-400 mb-2">{g.title}</h2>
+              <h2 className="text-body font-bold text-muted mb-2">{g.title}</h2>
               <div className="grid sm:grid-cols-2 gap-3">
                 {g.items.map((s) => (
                   <ServiceCard key={s.key} s={s} />
@@ -221,7 +221,7 @@ export default function InfrastructurePage() {
           ))}
           {ungrouped.length > 0 && (
             <section>
-              <h2 className="text-sm font-bold text-gray-400 mb-2">أخرى</h2>
+              <h2 className="text-body font-bold text-muted mb-2">أخرى</h2>
               <div className="grid sm:grid-cols-2 gap-3">
                 {ungrouped.map((s) => (
                   <ServiceCard key={s.key} s={s} />
@@ -232,7 +232,7 @@ export default function InfrastructurePage() {
         </div>
       )}
 
-      <p className="text-xs text-gray-400 mt-6 leading-relaxed">
+      <p className="text-caption text-muted mt-6 leading-relaxed">
         القراءة تجري في الخادم بمفاتيح المنصّة — لا تصل أي أسرار إلى المتصفّح. النتائج مخزّنة
         مؤقتًا احترامًا لحصص المزوّدين؛ زرّ التحديث يتجاوز الكاش. الذكاء الاصطناعي له صفحته
         الخاصة في هذا القسم.

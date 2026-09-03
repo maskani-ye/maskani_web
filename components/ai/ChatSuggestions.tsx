@@ -54,12 +54,12 @@ export function ChatSuggestions({
               key={i}
               type="button"
               onClick={() => { onPick(s); setSuggestions([]); }}
-              className="rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs text-primary hover:bg-primary/10 transition-colors text-right"
+              className="rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-caption text-primary hover:bg-primary/10 transition-colors text-right"
             >
               {s}
             </button>
           ))}
-          <button type="button" onClick={() => setSuggestions([])} aria-label="إغلاق" className="text-gray-400 hover:text-gray-600">
+          <button type="button" onClick={() => setSuggestions([])} aria-label="إغلاق" className="text-muted hover:text-muted-600">
             <CloseCircle className="h-4 w-4" />
           </button>
         </div>
@@ -68,7 +68,7 @@ export function ChatSuggestions({
         type="button"
         onClick={fetchSuggestions}
         disabled={loading}
-        className="inline-flex items-center gap-1.5 rounded-lg bg-gold/10 text-gold-700 px-3 py-1 text-xs font-semibold hover:bg-gold/20 transition-colors disabled:opacity-60"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-gold/10 text-gold-700 px-3 py-1 text-caption font-semibold hover:bg-gold/20 transition-colors disabled:opacity-60"
       >
         {loading ? <Refresh className="h-3.5 w-3.5 animate-spin" /> : <Stars className="h-3.5 w-3.5" />}
         {loading ? "جارٍ الاقتراح…" : "اقتراح ردّ"}

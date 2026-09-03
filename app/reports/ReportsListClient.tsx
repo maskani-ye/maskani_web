@@ -65,7 +65,7 @@ export default function FraudReportsPage() {
   const statusIcon = (s: string) => {
     if (s === "verified") return <CheckCircle className="h-4 w-4 text-red-600" />;
     if (s === "pending") return <ClockCircle className="h-4 w-4 text-yellow-600" />;
-    return <DangerTriangle className="h-4 w-4 text-gray-400" />;
+    return <DangerTriangle className="h-4 w-4 text-muted" />;
   };
 
   return (
@@ -86,7 +86,7 @@ export default function FraudReportsPage() {
       {/* Warning Banner */}
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
         <DangerTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-        <p className="text-sm text-amber-800">
+        <p className="text-body text-amber-800">
           البلاغات المنشورة هنا لأغراض تحذيرية وقائية. يُرجى الالتزام بالمصداقية والدقة عند رفع أي بلاغ.
         </p>
       </div>
@@ -133,16 +133,16 @@ export default function FraudReportsPage() {
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="bg-white rounded-2xl card-shadow p-5 animate-pulse">
-              <div className="h-5 bg-gray-200 rounded w-2/3 mb-3" />
-              <div className="h-4 bg-gray-200 rounded w-full mb-2" />
-              <div className="h-4 bg-gray-200 rounded w-3/4" />
+              <div className="h-5 bg-muted-200 rounded w-2/3 mb-3" />
+              <div className="h-4 bg-muted-200 rounded w-full mb-2" />
+              <div className="h-4 bg-muted-200 rounded w-3/4" />
             </div>
           ))}
         </div>
       ) : reports.length === 0 ? (
         <div className="text-center py-20">
-          <ShieldWarning className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 text-lg">لا توجد بلاغات مطابقة</p>
+          <ShieldWarning className="h-16 w-16 text-muted-200 mx-auto mb-4" />
+          <p className="text-muted-500 text-h3">لا توجد بلاغات مطابقة</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -153,24 +153,24 @@ export default function FraudReportsPage() {
                   <div className="flex-1 min-w-0">
                     {/* Status & Type */}
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${reportStatusColors[report.status]}`}>
+                      <span className={`inline-flex items-center gap-1 text-caption font-semibold px-2.5 py-1 rounded-full ${reportStatusColors[report.status]}`}>
                         {statusIcon(report.status)}
                         {reportStatusLabels[report.status]}
                       </span>
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
+                      <span className="text-caption bg-muted-100 text-muted-600 px-2.5 py-1 rounded-full">
                         {fraudTypeLabels[report.fraud_type]}
                       </span>
                       {report.city_name && (
-                        <span className="text-xs text-gray-400">{report.city_name}</span>
+                        <span className="text-caption text-muted">{report.city_name}</span>
                       )}
                     </div>
 
-                    <h3 className="font-bold text-gray-900 mb-1 line-clamp-1">{report.title}</h3>
-                    <p className="text-sm text-gray-500 mb-1">
+                    <h3 className="font-bold text-ink mb-1 line-clamp-1">{report.title}</h3>
+                    <p className="text-body text-muted-500 mb-1">
                       <span className="text-red-600 font-semibold">المتهم:</span> {report.accused_name}
-                      {report.accused_phone && <span className="mr-2 text-gray-400">({report.accused_phone})</span>}
+                      {report.accused_phone && <span className="mr-2 text-muted">({report.accused_phone})</span>}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-caption text-muted">
                       بلاغ من {report.reporter_name} • {formatRelativeTime(report.created_at)}
                     </p>
                   </div>
@@ -180,26 +180,26 @@ export default function FraudReportsPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-4 mt-4 pt-3 border-t border-gray-100">
+                <div className="flex items-center gap-4 mt-4 pt-3 border-t border-muted-100">
                   <button
                     onClick={(e) => handleVote(report.id, true, e)}
-                    className="flex items-center gap-1.5 text-sm text-green-600 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 text-body text-green-600 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
                   >
                     <Like className="h-4 w-4" />
                     <span>مصداقي ({report.votes_credible})</span>
                   </button>
                   <button
                     onClick={(e) => handleVote(report.id, false, e)}
-                    className="flex items-center gap-1.5 text-sm text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 text-body text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
                   >
                     <Dislike className="h-4 w-4" />
                     <span>غير مصداقي ({report.votes_not_credible})</span>
                   </button>
-                  <div className="flex items-center gap-1 text-sm text-gray-400 mr-auto">
+                  <div className="flex items-center gap-1 text-body text-muted mr-auto">
                     <ChatRound className="h-4 w-4" />
                     <span>{report.comments_count} تعليق</span>
                   </div>
-                  <div className="text-sm font-bold text-gray-600">
+                  <div className="text-body font-bold text-muted-600">
                     النقاط: {report.credibility_score > 0 ? "+" : ""}{report.credibility_score}
                   </div>
                 </div>

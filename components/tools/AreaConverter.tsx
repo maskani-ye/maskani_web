@@ -73,32 +73,32 @@ export default function AreaConverter({
     <div className="grid gap-5 [&>*]:min-w-0">
       {/* ① الدولة */}
       <div>
-        <p className="text-sm font-semibold text-gray-700 mb-2">① اختر الدولة</p>
+        <p className="text-body font-semibold text-muted-700 mb-2">① اختر الدولة</p>
         <div className="flex flex-wrap gap-1.5 [&>*]:min-w-0">
           {COUNTRIES.map((c) => (
             <button key={c.code} type="button" onClick={() => pickCountry(c.code)}
-              className={`text-sm rounded-xl border px-3 py-1.5 transition-colors ${
+              className={`text-body rounded-xl border px-3 py-1.5 transition-colors ${
                 c.code === countryCode
                   ? "border-primary bg-primary/10 text-primary font-bold"
-                  : "border-gray-200 bg-white text-gray-600 hover:border-primary"}`}>
+                  : "border-muted-200 bg-white text-muted-600 hover:border-primary"}`}>
               <span className="me-1">{c.flag}</span>{c.name}
             </button>
           ))}
         </div>
         {country.hint && (
-          <p className="text-xs text-gray-500 leading-relaxed mt-2.5 bg-gray-50 rounded-xl p-3">{country.hint}</p>
+          <p className="text-caption text-muted-500 leading-relaxed mt-2.5 bg-muted-50 rounded-xl p-3">{country.hint}</p>
         )}
       </div>
 
       {/* ② المساحة والوحدة */}
       <div>
-        <p className="text-sm font-semibold text-gray-700 mb-2">② أدخل المساحة واختر وحدتها</p>
+        <p className="text-body font-semibold text-muted-700 mb-2">② أدخل المساحة واختر وحدتها</p>
         <div className="flex gap-2 [&>*]:min-w-0">
           <input value={value} onChange={(e) => setValue(toEnglishDigits(e.target.value))}
             inputMode="decimal" placeholder="1" aria-label="المساحة"
-            className="flex-1 min-w-0 rounded-xl border border-gray-200 bg-white px-4 py-3 text-lg font-bold text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+            className="flex-1 min-w-0 rounded-xl border border-muted-200 bg-white px-4 py-3 text-h3 font-bold text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
           <select value={fromKey} onChange={(e) => setFromKey(e.target.value)} aria-label="الوحدة"
-            className="rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm font-semibold text-ink outline-none focus:border-primary max-w-[48%] min-w-0">
+            className="rounded-xl border border-muted-200 bg-white px-3 py-3 text-body font-semibold text-ink outline-none focus:border-primary max-w-[48%] min-w-0">
             {local.length > 0 && (
               <optgroup label={`وحدات ${country.name}`}>
                 {local.map((u) => (
@@ -120,21 +120,21 @@ export default function AreaConverter({
 
       {/* ③ النتائج */}
       <div>
-        <p className="text-sm font-semibold text-gray-700 mb-2">③ النتيجة</p>
+        <p className="text-body font-semibold text-muted-700 mb-2">③ النتيجة</p>
         <div className="rounded-2xl bg-primary/5 border border-primary/15 px-4 py-3.5 mb-3">
-          <p className="text-xs text-gray-500">بالمتر المربّع</p>
-          <p className="text-2xl font-extrabold text-primary tabular-nums">{smart(inM2)} م²</p>
+          <p className="text-caption text-muted-500">بالمتر المربّع</p>
+          <p className="text-h2 font-extrabold text-primary tabular-nums">{smart(inM2)} م²</p>
         </div>
         <div className="grid sm:grid-cols-2 gap-2 [&>*]:min-w-0">
           {units.filter((u) => u.key !== from.key).map((u) => (
-            <div key={u.key} className="rounded-xl border border-gray-100 bg-white px-3.5 py-2.5 flex items-center justify-between gap-3">
+            <div key={u.key} className="rounded-xl border border-muted-100 bg-white px-3.5 py-2.5 flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-gray-800 truncate">{u.name}</p>
-                <p className="text-[11px] text-gray-400 truncate">
+                <p className="text-body font-semibold text-ink truncate">{u.name}</p>
+                <p className="text-[11px] text-muted truncate">
                   {u.region ? `${u.region} · ` : ""}{smart(m2Of(u))} م²{u.note ? ` · ${u.note}` : ""}
                 </p>
               </div>
-              <span className="text-sm font-bold text-ink tabular-nums shrink-0">{smart(inM2 / m2Of(u))}</span>
+              <span className="text-body font-bold text-ink tabular-nums shrink-0">{smart(inM2 / m2Of(u))}</span>
             </div>
           ))}
         </div>
@@ -143,27 +143,27 @@ export default function AreaConverter({
       {/* ④ ضبط الوحدات غير الرسمية */}
       {editable.length > 0 && (
         <details className="rounded-2xl border border-dashed border-amber-200 bg-amber-50/40 p-4">
-          <summary className="text-sm font-semibold text-amber-800 cursor-pointer">
+          <summary className="text-body font-semibold text-amber-800 cursor-pointer">
             قيمة الوحدة تختلف في منطقتك؟ اضبطها ({editable.length})
           </summary>
-          <p className="text-xs text-gray-500 leading-relaxed mt-2.5">
+          <p className="text-caption text-muted-500 leading-relaxed mt-2.5">
             الأرقام أعلاه هي المعمول بها في الإقليم، وقد يختلف العرف بين مديريّة وأخرى.
             إن كانت وحدتك تُحسب بقيمة مختلفة عندكم فأدخِلها هنا ليطابق التحويل واقعك.
           </p>
           <div className="grid sm:grid-cols-2 gap-3 mt-3 [&>*]:min-w-0">
             {editable.map((u) => (
               <label key={u.key} className="flex flex-col gap-1 [&>*]:min-w-0">
-                <span className="text-xs font-semibold text-gray-700">{u.name} — م² للوحدة</span>
+                <span className="text-caption font-semibold text-muted-700">{u.name} — م² للوحدة</span>
                 <input value={overrides[u.key] ?? String(u.m2)} inputMode="decimal"
                   onChange={(e) => setOverrides({ ...overrides, [u.key]: toEnglishDigits(e.target.value) })}
-                  className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary" />
+                  className="rounded-xl border border-muted-200 bg-white px-3 py-2 text-body outline-none focus:border-primary" />
               </label>
             ))}
           </div>
         </details>
       )}
 
-      <p className="text-xs text-gray-400 leading-relaxed">
+      <p className="text-caption text-muted leading-relaxed">
         عند إبرام الصفقة، المرجع هو المساحة المثبتة في الوثيقة ومحضر المسّاح. اقرأ{" "}
         <Link href="/blog/measure-land-before-buying" className="text-primary hover:underline">
           كيف تتحقّق من مساحة الأرض قبل الشراء

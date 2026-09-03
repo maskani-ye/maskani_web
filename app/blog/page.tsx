@@ -84,8 +84,8 @@ export default async function BlogPage(
       <Breadcrumbs items={[{ name: "الرئيسية", href: "/" }, { name: "المدونة" }]} />
 
       <header className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900">مدونة مسكني</h1>
-        <p className="text-gray-600 mt-2 max-w-2xl leading-relaxed">
+        <h1 className="text-h1 font-extrabold text-ink">مدونة مسكني</h1>
+        <p className="text-muted-600 mt-2 max-w-2xl leading-relaxed">
           أدلّة ونصائح عقارية موثوقة في السعودية والأردن ومصر والعراق وعُمان واليمن — شراء، بيع، إيجار، أدلّة المدن، وحماية من الاحتيال.
           كل ما تحتاج معرفته قبل قرارك العقاري.
         </p>
@@ -94,7 +94,7 @@ export default async function BlogPage(
       <CategoryChips categories={cats} />
 
       {count === 0 ? (
-        <div className="rounded-2xl border border-gray-200 bg-white py-16 text-center text-gray-500">
+        <div className="rounded-2xl border border-muted-200 bg-white py-16 text-center text-muted-500">
           لا مقالات منشورة بعد.
         </div>
       ) : (

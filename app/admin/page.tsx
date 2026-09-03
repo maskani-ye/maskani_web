@@ -159,8 +159,8 @@ export default function AdminDashboardPage() {
           <span className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
             <DangerTriangle className="h-7 w-7 text-red-600" />
           </span>
-          <h2 className="text-lg font-bold text-gray-900 mb-1">تعذّر تحميل الإحصائيات</h2>
-          <p className="text-sm text-gray-500 mb-6 max-w-sm">{error}</p>
+          <h2 className="text-h3 font-bold text-ink mb-1">تعذّر تحميل الإحصائيات</h2>
+          <p className="text-body text-muted-500 mb-6 max-w-sm">{error}</p>
           <Button variant="primary" onClick={fetchStats}>
             <Refresh className="h-4 w-4" /> إعادة المحاولة
           </Button>
@@ -216,11 +216,11 @@ export default function AdminDashboardPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/admin/helpdesk/flow"
-            className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3.5 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
+            className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3.5 py-2 text-body font-semibold text-primary transition-colors hover:bg-primary/10"
           >
             <Routing className="h-4 w-4" /> تدفّق محادثات البوت
           </Link>
-          <div className="text-xs bg-green-50 text-green-600 px-3 py-1.5 rounded-full flex items-center gap-1 font-medium">
+          <div className="text-caption bg-green-50 text-green-600 px-3 py-1.5 rounded-full flex items-center gap-1 font-medium">
             <CheckCircle className="h-3.5 w-3.5" /> البيانات مباشرة من الخادم
           </div>
         </div>
@@ -334,7 +334,7 @@ export default function AdminDashboardPage() {
 
         {/* أكثر المدن نشاطاً — قائمة أشرطة RTL (ليست recharts) */}
         <Card>
-          <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <h3 className="font-bold text-ink mb-4 flex items-center gap-2">
             <MapPoint className="h-4 w-4 text-primary" /> أكثر المدن نشاطاً
           </h3>
           {citiesData.length === 0 ? (
@@ -343,13 +343,13 @@ export default function AdminDashboardPage() {
             <div className="space-y-3">
               {citiesData.map((c, i) => (
                 <div key={c.name} className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-gray-400 w-5">{i + 1}</span>
+                  <span className="text-caption font-bold text-muted w-5">{i + 1}</span>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-sm font-medium text-gray-700">{c.name}</span>
-                      <span className="text-xs text-gray-400">{c.value}</span>
+                      <span className="text-body font-medium text-muted-700">{c.name}</span>
+                      <span className="text-caption text-muted">{c.value}</span>
                     </div>
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-muted-100 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-primary rounded-full"
                         style={{ width: `${(c.value / (citiesData[0]?.value || 1)) * 100}%` }}
@@ -367,21 +367,21 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Pending Reports */}
         <Card>
-          <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
             <ShieldWarning className="h-5 w-5 text-red-500" /> إدارة البلاغات
           </h3>
           <div className="flex gap-2 mb-4">
             <div className="flex-1 text-center bg-yellow-50 rounded-xl p-2">
-              <p className="text-lg font-bold text-yellow-700">{stats.pending_fraud}</p>
-              <p className="text-xs text-yellow-600">قيد المراجعة</p>
+              <p className="text-h3 font-bold text-yellow-700">{stats.pending_fraud}</p>
+              <p className="text-caption text-yellow-600">قيد المراجعة</p>
             </div>
             <div className="flex-1 text-center bg-green-50 rounded-xl p-2">
-              <p className="text-lg font-bold text-green-700">{stats.verified_fraud}</p>
-              <p className="text-xs text-green-600">موثّق</p>
+              <p className="text-h3 font-bold text-green-700">{stats.verified_fraud}</p>
+              <p className="text-caption text-green-600">موثّق</p>
             </div>
             <div className="flex-1 text-center bg-red-50 rounded-xl p-2">
-              <p className="text-lg font-bold text-red-700">{stats.rejected_fraud}</p>
-              <p className="text-xs text-red-600">مرفوض</p>
+              <p className="text-h3 font-bold text-red-700">{stats.rejected_fraud}</p>
+              <p className="text-caption text-red-600">مرفوض</p>
             </div>
           </div>
           <Button onClick={() => router.push("/admin/reports")} variant="outline" fullWidth>
@@ -391,10 +391,10 @@ export default function AdminDashboardPage() {
 
         {/* Cities */}
         <Card>
-          <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
             <MapPoint className="h-5 w-5 text-primary" /> إدارة المدن والدول
           </h3>
-          <p className="text-gray-500 text-sm mb-4">إضافة وتعديل المدن والدول المتاحة في المنصة</p>
+          <p className="text-muted-500 text-body mb-4">إضافة وتعديل المدن والدول المتاحة في المنصة</p>
           <Button onClick={() => router.push("/admin/cities")} variant="outline" fullWidth>
             إدارة المدن
           </Button>
@@ -402,10 +402,10 @@ export default function AdminDashboardPage() {
 
         {/* Users */}
         <Card>
-          <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
             <UsersGroupRounded className="h-5 w-5 text-primary" /> إدارة المستخدمين
           </h3>
-          <p className="text-gray-500 text-sm mb-4">عرض وتعديل وتوثيق وتعليق حسابات المستخدمين</p>
+          <p className="text-muted-500 text-body mb-4">عرض وتعديل وتوثيق وتعليق حسابات المستخدمين</p>
           <Button onClick={() => router.push("/admin/users")} variant="outline" fullWidth>
             إدارة المستخدمين
           </Button>
@@ -413,7 +413,7 @@ export default function AdminDashboardPage() {
 
         {/* Broadcast */}
         <Card>
-          <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
             <Bell className="h-5 w-5 text-primary" /> إشعار جماعي
           </h3>
           <div className="space-y-2">
@@ -421,19 +421,19 @@ export default function AdminDashboardPage() {
               placeholder="عنوان الإشعار"
               value={broadcast.title}
               onChange={(e) => setBroadcast((p) => ({ ...p, title: e.target.value }))}
-              className="w-full h-10 border border-gray-200 rounded-xl px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full h-10 border border-muted-200 rounded-xl px-4 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
             <textarea
               placeholder="محتوى الإشعار"
               value={broadcast.body}
               onChange={(e) => setBroadcast((p) => ({ ...p, body: e.target.value }))}
               rows={2}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+              className="w-full border border-muted-200 rounded-xl px-4 py-2 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
             />
             <select
               value={broadcast.role}
               onChange={(e) => setBroadcast((p) => ({ ...p, role: e.target.value }))}
-              className="w-full h-10 border border-gray-200 rounded-xl px-4 text-sm focus:outline-none"
+              className="w-full h-10 border border-muted-200 rounded-xl px-4 text-body focus:outline-none"
             >
               <option value="">الكل</option>
               <option value="user">المستخدمون</option>

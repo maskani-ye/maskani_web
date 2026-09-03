@@ -26,8 +26,8 @@ export default function ToolsHub() {
       <JsonLd data={itemList("أدوات وحاسبات عقارية", TOOLS.map((t) => `/tools/${t.slug}`))} />
 
       <header className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-ink leading-tight">أدوات وحاسبات عقارية</h1>
-        <p className="text-gray-600 mt-3 leading-relaxed max-w-3xl">
+        <h1 className="text-h2 sm:text-h1 font-extrabold text-ink leading-tight">أدوات وحاسبات عقارية</h1>
+        <p className="text-muted-600 mt-3 leading-relaxed max-w-3xl">
           مجموعة أدوات مجّانية تساعدك على اتّخاذ قرارات عقارية أذكى في سوقك — من تقدير تكلفة البناء وحساب العائد الإيجاريّ والأقساط، إلى تحويل وحدات مساحة الأراضي. كلّها فورية وتعمل من متصفّحك مباشرة.
         </p>
       </header>
@@ -37,11 +37,11 @@ export default function ToolsHub() {
           <Link
             key={t.slug}
             href={`/tools/${t.slug}`}
-            className="rounded-2xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-card-hover transition-all group"
+            className="rounded-2xl border border-muted-200 bg-white p-5 hover:border-primary hover:shadow-e3 transition-all group"
           >
-            <h2 className="font-bold text-ink text-lg group-hover:text-primary transition-colors">{t.cardTitle}</h2>
-            <p className="text-gray-500 text-sm mt-1.5 leading-relaxed">{t.cardDesc}</p>
-            <span className="inline-block mt-3 text-primary text-sm font-semibold">افتح الأداة ←</span>
+            <h2 className="font-bold text-ink text-h3 group-hover:text-primary transition-colors">{t.cardTitle}</h2>
+            <p className="text-muted-500 text-body mt-1.5 leading-relaxed">{t.cardDesc}</p>
+            <span className="inline-block mt-3 text-primary text-body font-semibold">افتح الأداة ←</span>
           </Link>
         ))}
       </div>

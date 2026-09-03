@@ -75,10 +75,10 @@ export default function AdSensePage() {
 
             {notReady.length > 0 && (
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-                <p className="font-bold text-amber-800 text-sm">
+                <p className="font-bold text-amber-800 text-body">
                   {notReady.length} موقع لا يعرض إعلانات بعد
                 </p>
-                <p className="text-sm text-amber-700 mt-1 leading-relaxed">
+                <p className="text-body text-amber-700 mt-1 leading-relaxed">
                   {notReady.map((s) => `${s.domain} (${s.state})`).join("، ")} — الأرباح تبقى صفرًا
                   حتى تنتقل الحالة إلى READY.
                 </p>

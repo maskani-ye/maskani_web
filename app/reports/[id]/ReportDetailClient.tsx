@@ -80,7 +80,7 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
 
   if (!report) return (
     <div className="text-center py-20">
-      <p className="text-gray-500 text-lg">البلاغ غير موجود</p>
+      <p className="text-muted-500 text-h3">البلاغ غير موجود</p>
       <Link href="/reports"><Button className="mt-4">العودة للشكاوي</Button></Link>
     </div>
   );
@@ -91,16 +91,16 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <div className="flex items-center gap-2 text-body text-muted mb-6">
         <Link href="/reports" className="hover:text-primary">مجتمع الشكاوي</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
-        <span className="text-gray-700 font-medium line-clamp-1">{report.title}</span>
+        <span className="text-muted-700 font-medium line-clamp-1">{report.title}</span>
       </div>
 
       {/* Warning banner */}
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
         <DangerTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-        <p className="text-sm text-amber-800">
+        <p className="text-body text-amber-800">
           هذا بلاغ تحذيري من المجتمع. تحقّق دائماً بنفسك قبل اتخاذ أي قرار.
         </p>
       </div>
@@ -113,37 +113,37 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
           >
             {reportStatusLabels[report.status]}
           </Badge>
-          <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
+          <span className="text-caption bg-muted-100 text-muted-600 px-2.5 py-1 rounded-full">
             {fraudTypeLabels[report.fraud_type]}
           </span>
-          {report.city_name && <span className="text-xs text-gray-400 flex items-center gap-1"><MapPoint className="h-3.5 w-3.5" />{report.city_name}</span>}
+          {report.city_name && <span className="text-caption text-muted flex items-center gap-1"><MapPoint className="h-3.5 w-3.5" />{report.city_name}</span>}
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">{report.title}</h1>
+        <h1 className="text-h2 font-bold text-ink mb-3">{report.title}</h1>
 
         {/* Accused */}
         <div className="bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
-          <p className="text-sm font-semibold text-red-700 mb-1">المُبلَّغ عنه</p>
-          <p className="text-gray-800 font-bold">{report.accused_name}</p>
+          <p className="text-body font-semibold text-red-700 mb-1">المُبلَّغ عنه</p>
+          <p className="text-ink font-bold">{report.accused_name}</p>
           {report.accused_phone && (
-            <a href={`tel:${report.accused_phone}`} className="flex items-center gap-1 text-sm text-gray-600 mt-1" dir="ltr">
+            <a href={`tel:${report.accused_phone}`} className="flex items-center gap-1 text-body text-muted-600 mt-1" dir="ltr">
               <Phone className="h-3.5 w-3.5" /> {report.accused_phone}
             </a>
           )}
           {report.accused_profile_link && (
-            <a href={report.accused_profile_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm text-primary mt-1 hover:underline break-all">
+            <a href={report.accused_profile_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-body text-primary mt-1 hover:underline break-all">
               <LinkIcon className="h-3.5 w-3.5 flex-shrink-0" /> {report.accused_profile_link}
             </a>
           )}
         </div>
 
         {/* Details */}
-        <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line mb-4">{report.details}</p>
+        <p className="text-muted-600 text-body leading-relaxed whitespace-pre-line mb-4">{report.details}</p>
 
         {/* Images */}
         {images.length > 0 && (
           <div className="mb-4">
-            <div className="rounded-2xl overflow-hidden bg-gray-100 mb-2">
+            <div className="rounded-2xl overflow-hidden bg-muted-100 mb-2">
               <img src={images[activeImage]?.image} alt="" className="w-full max-h-96 object-contain" />
             </div>
             {images.length > 1 && (
@@ -158,18 +158,18 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
           </div>
         )}
 
-        <div className="flex items-center gap-3 pt-3 border-t border-gray-100 text-xs text-gray-400">
+        <div className="flex items-center gap-3 pt-3 border-t border-muted-100 text-caption text-muted">
           <span>بلاغ من {report.reporter_name}</span>
           <span>•</span>
           <span>{formatRelativeTime(report.created_at)}</span>
-          <span className="mr-auto font-bold text-gray-600">النقاط: {report.credibility_score > 0 ? "+" : ""}{report.credibility_score}</span>
+          <span className="mr-auto font-bold text-muted-600">النقاط: {report.credibility_score > 0 ? "+" : ""}{report.credibility_score}</span>
         </div>
 
         {/* Voting */}
         <div className="flex items-center gap-3 mt-4">
           <button
             onClick={() => handleVote(myVote === true ? null : true)}
-            className={`flex items-center gap-1.5 text-sm px-4 py-2 rounded-xl border transition-colors ${
+            className={`flex items-center gap-1.5 text-body px-4 py-2 rounded-xl border transition-colors ${
               myVote === true ? "bg-green-600 text-white border-green-600" : "text-green-600 border-green-200 hover:bg-green-50"
             }`}
           >
@@ -177,7 +177,7 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
           </button>
           <button
             onClick={() => handleVote(myVote === false ? null : false)}
-            className={`flex items-center gap-1.5 text-sm px-4 py-2 rounded-xl border transition-colors ${
+            className={`flex items-center gap-1.5 text-body px-4 py-2 rounded-xl border transition-colors ${
               myVote === false ? "bg-red-500 text-white border-red-500" : "text-red-500 border-red-200 hover:bg-red-50"
             }`}
           >
@@ -188,7 +188,7 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
 
       {/* Comments */}
       <div className="bg-white rounded-2xl card-shadow p-6 mt-6">
-        <h2 className="font-bold text-gray-800 mb-4 flex items-center gap-1.5">
+        <h2 className="font-bold text-ink mb-4 flex items-center gap-1.5">
           <ChatRound className="h-5 w-5 text-primary" /> التعليقات ({comments.length})
         </h2>
 
@@ -198,13 +198,13 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="أضف تعليقاً أو معلومة..."
-              className="flex-1 h-10 border border-gray-200 rounded-xl px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="flex-1 h-10 border border-muted-200 rounded-xl px-4 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
             />
             <Button size="sm" onClick={addComment}>نشر</Button>
           </div>
         ) : (
           <div className="flex items-center justify-between mb-5">
-            <p className="text-sm text-gray-500">سجّل الدخول للتعليق</p>
+            <p className="text-body text-muted-500">سجّل الدخول للتعليق</p>
             <Button size="sm" variant="outline" onClick={() => requireAuth()}>تسجيل الدخول</Button>
           </div>
         )}
@@ -220,10 +220,10 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-sm text-gray-800">{c.user_name}</span>
-                    <span className="text-xs text-gray-400">{formatRelativeTime(c.created_at)}</span>
+                    <span className="font-semibold text-body text-ink">{c.user_name}</span>
+                    <span className="text-caption text-muted">{formatRelativeTime(c.created_at)}</span>
                   </div>
-                  <p className="text-sm text-gray-600">{c.text}</p>
+                  <p className="text-body text-muted-600">{c.text}</p>
                 </div>
               </div>
             ))}

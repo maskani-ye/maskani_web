@@ -22,7 +22,7 @@ export function Pagination({
     <div className="flex items-center justify-between">
       <Button variant="outline" size="sm" disabled={offset === 0}
         onClick={() => onChange(Math.max(0, offset - limit))}>السابق</Button>
-      <span className="text-sm text-gray-500 tabular-nums">{current} / {pages}</span>
+      <span className="text-body text-muted-500 tabular-nums">{current} / {pages}</span>
       <Button variant="outline" size="sm" disabled={offset + limit >= total}
         onClick={() => onChange(offset + limit)}>التالي</Button>
     </div>

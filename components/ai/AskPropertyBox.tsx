@@ -3,8 +3,8 @@
 /**
  * ودجت «اسأل عن العقار» — يجيب من بيانات العقار عبر الذكاء الاصطناعي.
  *
- * ⚠️ **شرائح الأسئلة كانت تبدو معطّلة**: نصٌّ رماديّ (`gray-600`) على سطحٍ
- * رماديّ (`gray-50`) بحدٍّ رماديّ — ثلاث درجات رمادية متجاورة تُقرأ «زرٌّ لا
+ * ⚠️ **شرائح الأسئلة كانت تبدو معطّلة**: نصٌّ رماديّ (`muted-600`) على سطحٍ
+ * رماديّ (`muted-50`) بحدٍّ رماديّ — ثلاث درجات رمادية متجاورة تُقرأ «زرٌّ لا
  * يعمل»، فلا يلمسها أحد. وهي **الفعل الأسهل** في الودجت كلّه: سؤالٌ جاهز
  * بنقرةٍ واحدة. صارت تحمل لون العلامة على سطحه الفاتح، فتُقرأ قابلة للنقر.
  */
@@ -62,7 +62,7 @@ export function AskPropertyBox({ propertyId }: { propertyId: number }) {
           اسأل
         </button>
       </div>
-      <div className="flex flex-wrap gap-1.5 mt-2.5">
+      <div className="mt-3 flex flex-wrap gap-2">
         {SUGGESTED.map((s) => (
           <button key={s} type="button" onClick={() => ask(s)} disabled={loading}
             className="rounded-full bg-primary-50 px-3 py-1.5 text-caption font-semibold text-primary-400 transition-colors hover:bg-primary hover:text-white disabled:opacity-60">

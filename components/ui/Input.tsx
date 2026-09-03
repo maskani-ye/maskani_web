@@ -30,36 +30,36 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-col gap-1.5 w-full">
         {label && (
-          <label htmlFor={inputId} className="text-sm font-semibold text-gray-700">
+          <label htmlFor={inputId} className="text-body font-semibold text-muted-700">
             {label}
             {props.required && <span className="text-red-500 mr-1">*</span>}
           </label>
         )}
         <div className="relative flex items-center">
           {startIcon && (
-            <span className="absolute right-3 text-gray-400 pointer-events-none">{startIcon}</span>
+            <span className="absolute right-3 text-muted pointer-events-none">{startIcon}</span>
           )}
           <input
             ref={ref}
             id={inputId}
             className={cn(
-              "w-full h-11 border rounded-xl bg-white text-gray-900 placeholder-gray-400",
-              "transition-all duration-200 text-sm",
+              "w-full h-11 border rounded-xl bg-white text-ink placeholder-muted",
+              "transition-all duration-200 text-body",
               "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary",
               startIcon ? "pr-10 pl-4" : "px-4",
               endIcon ? "pl-10" : "",
-              error ? "border-red-400 focus:ring-red-200 focus:border-red-500" : "border-gray-200",
+              error ? "border-red-400 focus:ring-red-200 focus:border-red-500" : "border-muted-200",
               className
             )}
             {...props}
             onChange={onChange}
           />
           {endIcon && (
-            <span className="absolute left-3 text-gray-400">{endIcon}</span>
+            <span className="absolute left-3 text-muted">{endIcon}</span>
           )}
         </div>
-        {error && <p className="text-xs text-red-500 flex items-center gap-1">{error}</p>}
-        {hint && !error && <p className="text-xs text-gray-400">{hint}</p>}
+        {error && <p className="text-caption text-red-500 flex items-center gap-1">{error}</p>}
+        {hint && !error && <p className="text-caption text-muted">{hint}</p>}
       </div>
     );
   }

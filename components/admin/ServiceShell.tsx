@@ -75,7 +75,7 @@ export function ServiceShell<T extends ServiceData>({
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <Link
         href="/admin/infrastructure"
-        className="text-sm text-gray-500 flex items-center gap-1 mb-4 hover:text-primary"
+        className="text-body text-muted-500 flex items-center gap-1 mb-4 hover:text-primary"
       >
         <AltArrowRight className="h-4 w-4" /> كل الخدمات
       </Link>
@@ -106,7 +106,7 @@ export function ServiceShell<T extends ServiceData>({
       ) : !data ? null : !data.ok ? (
         <div className="bg-red-50 border border-red-200 rounded-2xl p-5">
           <p className="font-bold text-red-700">تعذّرت القراءة من هذه الخدمة</p>
-          <p className="text-sm text-red-600 mt-1 leading-relaxed">{data.error}</p>
+          <p className="text-body text-red-600 mt-1 leading-relaxed">{data.error}</p>
         </div>
       ) : (
         <div className="space-y-4">{children(data)}</div>

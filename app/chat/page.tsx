@@ -79,14 +79,14 @@ export default function ChatListPage() {
             message="ابدأ محادثة من صفحة عقار أو ملف مستخدم"
           />
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-muted-50">
             {conversations.map((c) => {
               const other = c.other_participant;
               return (
                 <Link
                   key={c.id}
                   href={`/chat/${c.id}`}
-                  className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-3 p-4 hover:bg-muted-50 transition-colors"
                 >
                   <div className="relative shrink-0">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
@@ -102,15 +102,15 @@ export default function ChatListPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <p className={`text-sm text-gray-900 truncate ${c.unread_count > 0 ? "font-bold" : "font-semibold"}`}>
+                      <p className={`text-body text-ink truncate ${c.unread_count > 0 ? "font-bold" : "font-semibold"}`}>
                         {other?.full_name ?? "مستخدم"}
                       </p>
                       {c.last_message?.created_at && (
-                        <span className="text-xs text-gray-400 shrink-0">{formatRelativeTime(c.last_message.created_at)}</span>
+                        <span className="text-caption text-muted shrink-0">{formatRelativeTime(c.last_message.created_at)}</span>
                       )}
                     </div>
                     <div className="flex items-center justify-between gap-2 mt-0.5">
-                      <p className={`text-sm truncate ${c.unread_count > 0 ? "text-gray-800 font-medium" : "text-gray-500"}`}>
+                      <p className={`text-body truncate ${c.unread_count > 0 ? "text-ink font-medium" : "text-muted-500"}`}>
                         {c.last_message?.body ?? "لا توجد رسائل بعد"}
                       </p>
                       {c.unread_count > 0 && (

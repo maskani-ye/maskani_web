@@ -136,32 +136,32 @@ export default function BulkImportPage() {
 
       <Card className="p-6">
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <label className="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-3.5 py-2 text-sm font-semibold text-gray-700 cursor-pointer hover:border-primary">
+          <label className="inline-flex items-center gap-2 rounded-xl border border-muted-200 px-3.5 py-2 text-body font-semibold text-muted-700 cursor-pointer hover:border-primary">
             <Upload className="h-4 w-4" /> اختر ملف CSV
             <input type="file" accept=".csv,.txt,text/csv" onChange={onFile} className="hidden" />
           </label>
           <button
             type="button"
             onClick={() => setText(SAMPLE)}
-            className="text-xs rounded-xl bg-gray-100 px-3 py-2 text-gray-600 hover:bg-gray-200"
+            className="text-caption rounded-xl bg-muted-100 px-3 py-2 text-muted-600 hover:bg-muted-200"
           >
             أدرِج مثالاً
           </button>
           <button
             type="button"
             onClick={downloadTemplate}
-            className="text-xs rounded-xl bg-gray-100 px-3 py-2 text-gray-600 hover:bg-gray-200"
+            className="text-caption rounded-xl bg-muted-100 px-3 py-2 text-muted-600 hover:bg-muted-200"
           >
             نزّل القالب للمكتب
           </button>
           <button
             type="button"
             onClick={copyMessage}
-            className="text-xs rounded-xl bg-gold/20 px-3 py-2 font-semibold text-ink hover:bg-gold/30"
+            className="text-caption rounded-xl bg-gold/20 px-3 py-2 font-semibold text-ink hover:bg-gold/30"
           >
             انسخ رسالة واتساب
           </button>
-          <span className="text-xs text-gray-400 ms-auto">
+          <span className="text-caption text-muted ms-auto">
             الأعمدة: {COLUMNS.join(" · ")}
           </span>
         </div>
@@ -172,11 +172,11 @@ export default function BulkImportPage() {
           rows={10}
           dir="ltr"
           placeholder="الصق محتوى CSV هنا…"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-mono outline-none focus:border-primary"
+          className="w-full rounded-xl border border-muted-200 bg-white px-4 py-3 text-body font-mono outline-none focus:border-primary"
         />
 
         <div className="flex flex-wrap items-center gap-3 mt-4">
-          <span className="text-sm text-gray-500">
+          <span className="text-body text-muted-500">
             صفوف مقروءة: <strong className="text-ink tabular-nums">{rows.length}</strong>
           </span>
           {/* الفحص قبل الكتابة: خطأ في عمودٍ يُكتشف قبل إنشاء مئة عقار لا بعده. */}
@@ -191,19 +191,19 @@ export default function BulkImportPage() {
         </div>
 
         {error && (
-          <div className="mt-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          <div className="mt-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-body text-red-700">
             {error}
           </div>
         )}
       </Card>
 
       <Card className="p-6">
-        <p className="text-sm font-bold text-ink mb-1">رسالة الدعوة للمكاتب العقارية</p>
-        <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+        <p className="text-body font-bold text-ink mb-1">رسالة الدعوة للمكاتب العقارية</p>
+        <p className="text-caption text-muted-500 mb-3 leading-relaxed">
           انسخها وأرسلها كما هي. الآلة جاهزة — ما ينقصها هو الجدول، وهذه الرسالة تجلبه.
           {copied && <span className="text-emerald-600 font-semibold"> · نُسخت ✓</span>}
         </p>
-        <pre className="whitespace-pre-wrap rounded-xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-700 max-h-60 overflow-y-auto">
+        <pre className="whitespace-pre-wrap rounded-xl bg-muted-50 p-4 text-caption leading-relaxed text-muted-700 max-h-60 overflow-y-auto">
 {WHATSAPP_MSG}
         </pre>
       </Card>
@@ -225,7 +225,7 @@ export default function BulkImportPage() {
             )}
           </div>
 
-          <div className="divide-y divide-gray-100 max-h-[420px] overflow-y-auto">
+          <div className="divide-y divide-muted-100 max-h-[420px] overflow-y-auto">
             {result.results.map((r) => (
               <div key={r.row} className="flex items-start gap-3 py-2.5">
                 <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
@@ -234,14 +234,14 @@ export default function BulkImportPage() {
                         : <CloseCircle weight="Bold" className="h-4 w-4" />}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-gray-800 truncate">
+                  <p className="text-body font-semibold text-ink truncate">
                     صفّ {r.row}: {r.title || "—"}
                   </p>
                   {r.errors?.length ? (
-                    <p className="text-xs text-red-600 mt-0.5">{r.errors.join(" · ")}</p>
+                    <p className="text-caption text-red-600 mt-0.5">{r.errors.join(" · ")}</p>
                   ) : r.id ? (
                     <a href={`/properties/${r.id}`} target="_blank" rel="noopener noreferrer"
-                       className="text-xs text-primary hover:underline">عرض العقار #{r.id}</a>
+                       className="text-caption text-primary hover:underline">عرض العقار #{r.id}</a>
                   ) : null}
                 </div>
               </div>
@@ -249,7 +249,7 @@ export default function BulkImportPage() {
           </div>
 
           {!result.dry_run && result.new_owners > 0 && (
-            <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+            <p className="text-caption text-muted mt-4 leading-relaxed">
               أُنشئت {result.new_owners} حسابات وسيطة بأرقام الملّاك. متى دخل المالك بجوجل
               بنفس الرقم استحوذ على حسابه ووجد عقاراته منسوبةً إليه — بلا أي خطوة إضافية منه.
             </p>

@@ -42,13 +42,13 @@ const RULES: Rule[] = [
     // السُلّم: display h1 h2 h3 body-lg body caption price price-sm
     find: (s) =>
       s.match(/\btext-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl)\b/g) ?? [],
-    budget: 1004,
+    budget: 0,
     why: "مقاس يُختار بالذوق كل مرّة بدل دورٍ معرّف",
   },
   {
-    name: "رمادي Tailwind بدل كحليّ الهوية",
-    find: (s) => s.match(/\btext-gray-(700|800|900)\b/g) ?? [],
-    budget: 335,
+    name: "رماديّ Tailwind بدل رمادي الهوية (muted/ink)",
+    find: (s) => s.match(/\bgray-[0-9]{2,3}\b/g) ?? [],
+    budget: 0,
     why: "نصّ العنوان يجب أن يحمل لون العلامة (ink) لا رماديّ القالب",
   },
   {
@@ -59,9 +59,18 @@ const RULES: Rule[] = [
     why: 'toLocaleString("ar") يعطي أرقاماً غربية في Node وهندية في Chrome — عدم تطابق ترطيب',
   },
   {
+    // ⚠️ `shadow-card` و`shadow-card-hover` مرادفان لـ`e2`/`e3` بالقيمة نفسها —
+    // اسمان لارتفاعٍ واحد يعنيان سُلَّمين متوازيين، فيُختار الظلّ بالاسم لا
+    // بالمرتبة. السُلَّم `e1..e5` هو المرجع الوحيد.
+    name: "ظلّ خارج سُلَّم الارتفاع",
+    find: (s) => s.match(/\bshadow-card(-hover)?\b/g) ?? [],
+    budget: 0,
+    why: "اسمان لظلٍّ واحد = سُلَّمان متوازيان، فيُختار الارتفاع بالذوق",
+  },
+  {
     name: "أرقام سحرية (مقاسات مكتوبة يدوياً)",
     find: (s) => s.match(/\[(\d+)px\]/g) ?? [],
-    budget: 88,
+    budget: 87,
     why: "ثلاثة عروض بطاقات مختلفة في صفحة واحدة = صفوف غير متحاذية",
   },
 ];

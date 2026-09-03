@@ -32,7 +32,7 @@ export function HelpdeskMessageRow({ m, ...h }: { m: HdMessage } & Handlers) {
   if (isUser) {
     return (
       <div className="flex justify-start">
-        <div className="max-w-[82%] bg-gradient-to-b from-primary to-[#255c44] text-white rounded-2xl rounded-tr-md px-3.5 py-2 text-sm leading-relaxed shadow-sm">
+        <div className="max-w-[82%] bg-gradient-to-b from-primary to-[#255c44] text-white rounded-2xl rounded-tr-md px-3.5 py-2 text-body leading-relaxed shadow-sm">
           {e.body}
         </div>
       </div>
@@ -44,7 +44,7 @@ export function HelpdeskMessageRow({ m, ...h }: { m: HdMessage } & Handlers) {
       <div className="max-w-[88%] w-fit">
         {isAgent && (
           <div className="flex items-center gap-1.5 mb-1 pr-1 justify-end">
-            <span className="text-xs font-semibold text-primary">فريق الدعم</span>
+            <span className="text-caption font-semibold text-primary">فريق الدعم</span>
             <div className="w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center">
               <HeadphonesRound className="h-3 w-3 text-primary" />
             </div>
@@ -58,12 +58,12 @@ export function HelpdeskMessageRow({ m, ...h }: { m: HdMessage } & Handlers) {
 
 function Bubble({ children, tone = "bot" }: { children: React.ReactNode; tone?: "bot" | "success" | "error" | "confirm" }) {
   const cls = {
-    bot: "bg-white border-gray-100",
+    bot: "bg-white border-muted-100",
     success: "bg-green-50 border-green-200",
     error: "bg-red-50 border-red-200",
     confirm: "bg-white border-primary/60",
   }[tone];
-  return <div className={`rounded-2xl rounded-tl-md border px-3.5 py-2.5 text-sm shadow-sm ${cls}`}>{children}</div>;
+  return <div className={`rounded-2xl rounded-tl-md border px-3.5 py-2.5 text-body shadow-sm ${cls}`}>{children}</div>;
 }
 
 function BotEnvelope({ e, onButton, onConfirm, busy, isAgent, isLatest, readOnly }: { e: Envelope; isAgent: boolean } & Handlers) {
@@ -90,33 +90,33 @@ function BotEnvelope({ e, onButton, onConfirm, busy, isAgent, isLatest, readOnly
       <Bubble tone="confirm">
         <div className="flex items-start gap-2">
           <DangerCircle weight="Bold" className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-          <p className="font-bold text-gray-900 leading-relaxed">{e.body}</p>
+          <p className="font-bold text-ink leading-relaxed">{e.body}</p>
         </div>
-        <p className="text-center text-gray-600 mt-2.5">هل تريد المتابعة؟</p>
+        <p className="text-center text-muted-600 mt-2.5">هل تريد المتابعة؟</p>
         <div className="flex gap-2 mt-2.5">
           <button disabled={disabled} onClick={() => onConfirm?.(true)}
-            className="flex-1 py-2 rounded-xl bg-primary text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90">نعم، تابع</button>
+            className="flex-1 py-2 rounded-xl bg-primary text-white font-semibold text-body disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90">نعم، تابع</button>
           <button disabled={disabled} onClick={() => onConfirm?.(false)}
-            className="flex-1 py-2 rounded-xl border border-gray-200 text-gray-700 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">لا</button>
+            className="flex-1 py-2 rounded-xl border border-muted-200 text-muted-700 font-semibold text-body disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted-50">لا</button>
         </div>
       </Bubble>
     );
   }
 
   if (e.type === "handoff") {
-    return <div className="mx-auto text-center bg-gold/10 text-[#8a6d10] rounded-full px-4 py-1.5 text-xs font-medium">{e.body || "جارٍ تحويلك لموظّف الدعم…"}</div>;
+    return <div className="mx-auto text-center bg-gold/10 text-[#8a6d10] rounded-full px-4 py-1.5 text-caption font-medium">{e.body || "جارٍ تحويلك لموظّف الدعم…"}</div>;
   }
   if (e.type === "end") {
-    return <Bubble><p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{e.body}</p></Bubble>;
+    return <Bubble><p className="text-ink leading-relaxed whitespace-pre-wrap">{e.body}</p></Bubble>;
   }
 
   if (e.type === "list") {
     const cards = e.cards ?? [];
     return (
       <Bubble>
-        {question && <p className="font-bold text-gray-900 whitespace-pre-wrap mb-2">{question}</p>}
-        {e.note && <p className="text-xs text-gray-400 mb-2">{e.note}</p>}
-        {cards.length === 0 ? <p className="text-sm text-gray-400 py-1">لا توجد عناصر متاحة حاليًا</p> : (
+        {question && <p className="font-bold text-ink whitespace-pre-wrap mb-2">{question}</p>}
+        {e.note && <p className="text-caption text-muted mb-2">{e.note}</p>}
+        {cards.length === 0 ? <p className="text-body text-muted py-1">لا توجد عناصر متاحة حاليًا</p> : (
           <div className="space-y-2">
             {cards.map((c) => <ListItemRow key={c.id} c={c} onButton={onButton} disabled={disabled} />)}
           </div>
@@ -129,7 +129,7 @@ function BotEnvelope({ e, onButton, onConfirm, busy, isAgent, isLatest, readOnly
   return (
     <Bubble>
       {question && (
-        <p className={`whitespace-pre-wrap leading-relaxed ${navButtons.length > 0 ? "font-bold text-gray-900" : "text-gray-800"} ${isAgent ? "font-normal" : ""}`}>{question}</p>
+        <p className={`whitespace-pre-wrap leading-relaxed ${navButtons.length > 0 ? "font-bold text-ink" : "text-ink"} ${isAgent ? "font-normal" : ""}`}>{question}</p>
       )}
       {navButtons.length > 0 && <ChoiceRows buttons={navButtons} onButton={onButton} disabled={disabled} className="mt-2" />}
     </Bubble>
@@ -143,8 +143,8 @@ function ChoiceRows({ buttons, onButton, disabled, className = "" }: { buttons: 
         <button key={b.id} disabled={disabled} onClick={() => onButton?.(b)}
           className="w-full flex items-center gap-2.5 bg-primary/[0.07] hover:bg-primary/[0.12] rounded-xl px-3 py-2.5 text-right transition-colors disabled:opacity-45 disabled:cursor-not-allowed disabled:hover:bg-primary/[0.07]">
           <QuestionCircle className="h-[18px] w-[18px] text-primary shrink-0" />
-          <span className="flex-1 text-sm text-gray-800 font-medium">{b.label}</span>
-          <AltArrowLeft className="h-4 w-4 text-gray-300 shrink-0" />
+          <span className="flex-1 text-body text-ink font-medium">{b.label}</span>
+          <AltArrowLeft className="h-4 w-4 text-muted-200 shrink-0" />
         </button>
       ))}
     </div>
@@ -171,30 +171,30 @@ function ListItemRow({ c, onButton, disabled }: { c: HdCard; onButton?: (b: HdBt
         <img src={String(c.image)} alt="" className="w-11 h-11 rounded-lg object-cover shrink-0" />
       ) : null}
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm text-gray-800 truncate">{c.label}</p>
-        {subtitle && <p className="text-xs text-gray-400 truncate">{subtitle}</p>}
+        <p className="font-semibold text-body text-ink truncate">{c.label}</p>
+        {subtitle && <p className="text-caption text-muted truncate">{subtitle}</p>}
       </div>
-      {single && <AltArrowLeft className="h-4 w-4 text-gray-300 shrink-0" />}
+      {single && <AltArrowLeft className="h-4 w-4 text-muted-200 shrink-0" />}
     </div>
   );
 
   if (single) {
     return (
       <button disabled={disabled} onClick={() => onButton?.(single, c.id)}
-        className="w-full rounded-xl border border-gray-100 bg-white overflow-hidden hover:border-primary/40 hover:bg-primary/[0.03] transition-colors disabled:opacity-45 disabled:cursor-not-allowed">
+        className="w-full rounded-xl border border-muted-100 bg-white overflow-hidden hover:border-primary/40 hover:bg-primary/[0.03] transition-colors disabled:opacity-45 disabled:cursor-not-allowed">
         {inner}
       </button>
     );
   }
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white overflow-hidden">
+    <div className="rounded-xl border border-muted-100 bg-white overflow-hidden">
       {inner}
       {buttons.length > 0 && (
         <div className="flex flex-wrap gap-1.5 px-2.5 pb-2.5">
           {buttons.map((b) => (
             <button key={b.id} disabled={disabled} onClick={() => onButton?.(b, c.id)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary/[0.08] text-primary hover:bg-primary/15 disabled:opacity-45 disabled:cursor-not-allowed">{b.label}</button>
+              className="text-caption font-semibold px-3 py-1.5 rounded-lg bg-primary/[0.08] text-primary hover:bg-primary/15 disabled:opacity-45 disabled:cursor-not-allowed">{b.label}</button>
           ))}
         </div>
       )}
@@ -205,9 +205,9 @@ function ListItemRow({ c, onButton, disabled }: { c: HdCard; onButton?: (b: HdBt
 export function TypingDots() {
   return (
     <div className="flex justify-end">
-      <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-md px-3.5 py-2.5 shadow-sm">
+      <div className="bg-white border border-muted-100 rounded-2xl rounded-tl-md px-3.5 py-2.5 shadow-sm">
         <div className="flex gap-1">
-          {[0, 1, 2].map((i) => <span key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />)}
+          {[0, 1, 2].map((i) => <span key={i} className="w-1.5 h-1.5 rounded-full bg-muted-200 animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />)}
         </div>
       </div>
     </div>

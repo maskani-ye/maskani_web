@@ -86,18 +86,18 @@ export function Gauge({
   return (
     <Card className="p-4">
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-sm font-medium text-gray-500">{label}</p>
-        <p className={cn("text-lg font-extrabold tabular-nums", c.text)}>
+        <p className="text-body font-medium text-muted-500">{label}</p>
+        <p className={cn("text-h3 font-extrabold tabular-nums", c.text)}>
           {pct == null ? "—" : `${value.toFixed(1)}%`}
         </p>
       </div>
-      <div className="mt-2 h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+      <div className="mt-2 h-2 w-full rounded-full bg-muted-100 overflow-hidden">
         <div
           className={cn("h-full rounded-full transition-all", c.bar)}
           style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
         />
       </div>
-      {caption && <p className="mt-2 text-xs text-gray-400">{caption}</p>}
+      {caption && <p className="mt-2 text-caption text-muted">{caption}</p>}
     </Card>
   );
 }
@@ -123,11 +123,11 @@ export function Metric({
   }[tone];
   return (
     <Card className="p-4">
-      <p className="text-sm font-medium text-gray-500">{label}</p>
-      <p className={cn("mt-1 text-2xl font-extrabold truncate tabular-nums", toneClass)}>
+      <p className="text-body font-medium text-muted-500">{label}</p>
+      <p className={cn("mt-1 text-h2 font-extrabold truncate tabular-nums", toneClass)}>
         {value ?? "—"}
       </p>
-      {sub && <p className="mt-1 text-xs text-gray-400">{sub}</p>}
+      {sub && <p className="mt-1 text-caption text-muted">{sub}</p>}
     </Card>
   );
 }
@@ -223,12 +223,12 @@ export function Panel({
 }
 
 export function Table<T>({ cols, rows }: { cols: Col<T>[]; rows: T[] }) {
-  if (!rows.length) return <p className="text-sm text-gray-400">لا توجد بيانات.</p>;
+  if (!rows.length) return <p className="text-body text-muted">لا توجد بيانات.</p>;
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-body">
         <thead>
-          <tr className="text-gray-400 text-xs">
+          <tr className="text-muted text-caption">
             {cols.map((c) => (
               <th key={c.key} className="text-right font-normal pb-2 px-2 whitespace-nowrap">
                 {c.header}
@@ -238,9 +238,9 @@ export function Table<T>({ cols, rows }: { cols: Col<T>[]; rows: T[] }) {
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={i} className="border-t border-gray-100">
+            <tr key={i} className="border-t border-muted-100">
               {cols.map((c) => (
-                <td key={c.key} className="py-2 px-2 text-gray-700 whitespace-nowrap">
+                <td key={c.key} className="py-2 px-2 text-muted-700 whitespace-nowrap">
                   {c.render
                     ? c.render(r)
                     : ((r as Record<string, unknown>)[c.key] as ReactNode) ?? "—"}
@@ -258,7 +258,7 @@ export function Table<T>({ cols, rows }: { cols: Col<T>[]; rows: T[] }) {
 
 /** حالة نصّية → شارة ملوّنة. تعرف مفردات المزوّدين (RUNNING/READY/success…). */
 export function StatePill({ state }: { state?: string | null }) {
-  if (!state) return <span className="text-gray-400">—</span>;
+  if (!state) return <span className="text-muted">—</span>;
   const s = state.toLowerCase();
   const good = ["running", "ready", "success", "active", "completed", "available"];
   const bad = ["error", "failure", "stopped", "terminated", "cancelled", "failed"];
@@ -269,6 +269,6 @@ export function StatePill({ state }: { state?: string | null }) {
 /** ملاحظة صريحة عمّا لا يوفّره المزوّد — أصدق من عرض صفر بلا تفسير. */
 export function Note({ children }: { children: ReactNode }) {
   return (
-    <p className="text-xs text-gray-400 leading-relaxed bg-gray-50 rounded-xl p-3">{children}</p>
+    <p className="text-caption text-muted leading-relaxed bg-muted-50 rounded-xl p-3">{children}</p>
   );
 }

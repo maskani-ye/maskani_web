@@ -61,11 +61,11 @@ export function AvailabilityPrompt({
 
   return (
     <div className="bg-gold/10 border border-gold/30 rounded-2xl p-4 mb-4">
-      <p className="flex items-center gap-2 font-bold text-ink text-sm">
+      <p className="flex items-center gap-2 font-bold text-ink text-body">
         <ClockCircle className="h-4 w-4 text-gold" />
         هل ما زال هذا العقار متاحًا؟
       </p>
-      <p className="text-xs text-gray-600 mt-1 mb-3">
+      <p className="text-caption text-muted-600 mt-1 mb-3">
         {daysLeft > 0
           ? `ينتهي عرضه خلال ${daysLeft} يوم. أكّد توفّره ليبقى ظاهرًا للباحثين.`
           : "انتهى عرضه. أكّد توفّره ليعود للظهور."}

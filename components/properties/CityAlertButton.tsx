@@ -39,7 +39,7 @@ export default function CityAlertButton({
 
   if (state === "done") {
     return (
-      <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700">
+      <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-body font-semibold text-emerald-700">
         <CheckCircle weight="Bold" className="h-4 w-4" />
         التنبيه مُفعَّل لـ{cityName}
       </span>
@@ -51,7 +51,7 @@ export default function CityAlertButton({
       type="button"
       onClick={subscribe}
       disabled={state === "busy"}
-      className="inline-flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10 transition-colors disabled:opacity-60"
+      className="inline-flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-2.5 text-body font-semibold text-primary hover:bg-primary/10 transition-colors disabled:opacity-60"
     >
       <Bell className="h-4 w-4" />
       {state === "busy" ? "جارٍ التفعيل…" : `نبّهني بأي عقار جديد في ${cityName}`}

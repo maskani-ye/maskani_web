@@ -30,27 +30,27 @@ export function BlogPagination({
   });
 
   const cellBase =
-    "min-w-10 h-10 px-3 inline-flex items-center justify-center rounded-xl text-sm font-medium transition-colors";
+    "min-w-10 h-10 px-3 inline-flex items-center justify-center rounded-xl text-body font-medium transition-colors";
 
   return (
     <nav className="flex items-center justify-center gap-1.5 flex-wrap mt-10" aria-label="ترقيم الصفحات">
       {page > 1 ? (
         <Link href={hrefFor(page - 1)} rel="prev"
-          className={`${cellBase} bg-white text-gray-600 border border-gray-200 hover:border-primary`}>السابق</Link>
+          className={`${cellBase} bg-white text-muted-600 border border-muted-200 hover:border-primary`}>السابق</Link>
       ) : (
-        <span className={`${cellBase} bg-gray-50 text-gray-300 border border-gray-100 cursor-not-allowed`}>السابق</span>
+        <span className={`${cellBase} bg-muted-50 text-muted-200 border border-muted-100 cursor-not-allowed`}>السابق</span>
       )}
 
       {withGaps.map((n, i) =>
         n === "…" ? (
-          <span key={`gap-${i}`} className={`${cellBase} text-gray-400`}>…</span>
+          <span key={`gap-${i}`} className={`${cellBase} text-muted`}>…</span>
         ) : n === page ? (
           <span key={n} aria-current="page" className={`${cellBase} bg-primary text-white`}>
             {n.toLocaleString(NUMERIC_LOCALE)}
           </span>
         ) : (
           <Link key={n} href={hrefFor(n)}
-            className={`${cellBase} bg-white text-gray-600 border border-gray-200 hover:border-primary tabular-nums`}>
+            className={`${cellBase} bg-white text-muted-600 border border-muted-200 hover:border-primary tabular-nums`}>
             {n.toLocaleString(NUMERIC_LOCALE)}
           </Link>
         ),
@@ -58,9 +58,9 @@ export function BlogPagination({
 
       {page < totalPages ? (
         <Link href={hrefFor(page + 1)} rel="next"
-          className={`${cellBase} bg-white text-gray-600 border border-gray-200 hover:border-primary`}>التالي</Link>
+          className={`${cellBase} bg-white text-muted-600 border border-muted-200 hover:border-primary`}>التالي</Link>
       ) : (
-        <span className={`${cellBase} bg-gray-50 text-gray-300 border border-gray-100 cursor-not-allowed`}>التالي</span>
+        <span className={`${cellBase} bg-muted-50 text-muted-200 border border-muted-100 cursor-not-allowed`}>التالي</span>
       )}
     </nav>
   );

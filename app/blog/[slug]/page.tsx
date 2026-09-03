@@ -115,21 +115,21 @@ export default async function ArticlePage(
         { name: a.title },
       ]} />
 
-      <article className="bg-white rounded-3xl shadow-card overflow-hidden">
+      <article className="bg-white rounded-3xl shadow-e2 overflow-hidden">
         {a.cover_image && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={a.cover_image} alt={a.title} className="w-full h-56 sm:h-72 object-cover" />
         )}
         <div className="p-6 sm:p-9">
-          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">{a.category_display}</span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-3 leading-tight text-balance">{a.title}</h1>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-400 mt-3">
-            <span className="text-gray-600 font-medium">{a.author_name}</span>
+          <span className="text-caption font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">{a.category_display}</span>
+          <h1 className="text-h2 sm:text-h1 font-extrabold text-ink mt-3 leading-tight text-balance">{a.title}</h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-body text-muted mt-3">
+            <span className="text-muted-600 font-medium">{a.author_name}</span>
             {a.published_at && <><span>·</span><time dateTime={a.published_at}>{fmtDate(a.published_at)}</time></>}
             <span>·</span><span>{a.reading_minutes} دقائق قراءة</span>
           </div>
 
-          <div className="my-5 pb-5 border-b border-gray-100">
+          <div className="my-5 pb-5 border-b border-muted-100">
             <ShareBar url={url} title={a.title} />
           </div>
 
@@ -137,7 +137,7 @@ export default async function ArticlePage(
           <AdSlot slot={AD_SLOTS.articleTop} />
 
           <div
-            className="article-body text-[15px] leading-loose text-gray-800"
+            className="article-body text-[15px] leading-loose text-ink"
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: a.body }}
           />
@@ -145,9 +145,9 @@ export default async function ArticlePage(
           <AdSlot slot={AD_SLOTS.articleMid} layout="in-article" format="fluid" />
 
           {a.tags?.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-6 pt-5 border-t border-gray-100">
+            <div className="flex flex-wrap gap-2 mt-6 pt-5 border-t border-muted-100">
               {a.tags.map((t) => (
-                <span key={t} className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">#{t}</span>
+                <span key={t} className="text-caption bg-muted-100 text-muted-600 px-2.5 py-1 rounded-full">#{t}</span>
               ))}
             </div>
           )}
@@ -155,8 +155,8 @@ export default async function ArticlePage(
           {/* إفصاحٌ عن طريقة الإعداد — توصي به إرشادات جوجل للمحتوى المُعان
               بالذكاء الاصطناعي، وهو صدقٌ مع القارئ قبل أن يكون امتثالاً.
               ⚠️ لا ندّعي مراجعةً بشرية لم تقع: النصّ يصف ما جرى فعلاً. */}
-          <aside className="mt-8 rounded-2xl bg-cream border border-gray-100 p-4">
-            <p className="text-xs text-gray-500 leading-relaxed">
+          <aside className="mt-8 rounded-2xl bg-cream border border-muted-100 p-4">
+            <p className="text-caption text-muted-500 leading-relaxed">
               أُعدّ هذا الدليل بمساعدة أدوات الذكاء الاصطناعي اعتماداً على أنظمة
               السوق العقاريّ المحلّي ومصطلحاته، ويُحدَّث كلّما تغيّرت الإجراءات.
               وهو معلومات عامّة لا استشارة قانونية — ارجع إلى الجهة الرسمية
@@ -167,7 +167,7 @@ export default async function ArticlePage(
 
           <AdSlot slot={AD_SLOTS.articleBottom} />
 
-          <div className="mt-6 pt-5 border-t border-gray-100">
+          <div className="mt-6 pt-5 border-t border-muted-100">
             <ShareBar url={url} title={a.title} />
           </div>
         </div>
@@ -175,8 +175,8 @@ export default async function ArticlePage(
 
       {/* CTA */}
       <div className="mt-6 rounded-2xl bg-primary text-white p-6 text-center">
-        <p className="font-bold text-lg mb-1">عندك عقار للبيع أو الإيجار؟</p>
-        <p className="text-white/80 text-sm mb-4">انشره مجاناً على مسكني ويصلك الباحث على رقمك مباشرة — بلا عمولة.</p>
+        <p className="font-bold text-h3 mb-1">عندك عقار للبيع أو الإيجار؟</p>
+        <p className="text-white/80 text-body mb-4">انشره مجاناً على مسكني ويصلك الباحث على رقمك مباشرة — بلا عمولة.</p>
         <div className="flex flex-wrap gap-2 justify-center">
           <Link href="/properties/create" className="inline-block bg-white text-primary font-bold rounded-xl px-6 py-2.5 hover:bg-white/90 transition-colors">أضِف عقارك مجاناً</Link>
           {/* ⚠️ **رابطٌ إلى سوق المقال لا إلى مسارٍ يُحوَّل.** كان `/properties`
@@ -197,14 +197,14 @@ export default async function ArticlePage(
       {/* Related */}
       {a.related && a.related.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">مقالات ذات صلة</h2>
+          <h2 className="text-h3 font-bold text-ink mb-4">مقالات ذات صلة</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {a.related.map((r) => (
               <Link key={r.id} href={`/blog/${r.slug}`}
-                className="bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all p-4 block">
-                <span className="text-xs font-bold text-primary">{r.category_display}</span>
-                <h3 className="font-bold text-gray-900 text-sm mt-1 line-clamp-2">{r.title}</h3>
-                <p className="text-xs text-gray-400 mt-2">{r.reading_minutes} دقائق قراءة</p>
+                className="bg-white rounded-2xl shadow-e2 hover:shadow-e3 transition-all p-4 block">
+                <span className="text-caption font-bold text-primary">{r.category_display}</span>
+                <h3 className="font-bold text-ink text-body mt-1 line-clamp-2">{r.title}</h3>
+                <p className="text-caption text-muted mt-2">{r.reading_minutes} دقائق قراءة</p>
               </Link>
             ))}
           </div>

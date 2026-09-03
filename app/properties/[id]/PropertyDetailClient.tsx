@@ -162,13 +162,13 @@ export default function PropertyDetailClient(
 
   if (loading) return (
     <div className="max-w-5xl mx-auto px-4 py-8 animate-pulse">
-      <div className="h-80 bg-gray-200 rounded-3xl mb-6" />
+      <div className="h-80 bg-muted-200 rounded-3xl mb-6" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-3/4" />
-          <div className="h-4 bg-gray-200 rounded w-1/2" />
+          <div className="h-8 bg-muted-200 rounded w-3/4" />
+          <div className="h-4 bg-muted-200 rounded w-1/2" />
         </div>
-        <div className="h-48 bg-gray-200 rounded-2xl" />
+        <div className="h-48 bg-muted-200 rounded-2xl" />
       </div>
     </div>
   );
@@ -179,8 +179,8 @@ export default function PropertyDetailClient(
       <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
         <DangerTriangle className="h-7 w-7 text-red-500" />
       </div>
-      <p className="text-gray-800 font-bold text-lg mb-1">تعذّر تحميل العقار</p>
-      <p className="text-gray-500 text-sm mb-5">{error.message}</p>
+      <p className="text-ink font-bold text-h3 mb-1">تعذّر تحميل العقار</p>
+      <p className="text-muted-500 text-body mb-5">{error.message}</p>
       <div className="flex items-center justify-center gap-3">
         <Button onClick={loadProperty}>
           <Refresh className="h-4 w-4" /> إعادة المحاولة
@@ -193,7 +193,7 @@ export default function PropertyDetailClient(
   // 404 حقيقي أو غياب البيانات — العقار غير موجود فعلاً.
   if (!property) return (
     <div className="text-center py-20">
-      <p className="text-gray-500 text-lg">العقار غير موجود</p>
+      <p className="text-muted-500 text-h3">العقار غير موجود</p>
       <Link href="/properties"><Button className="mt-4">العودة للعقارات</Button></Link>
     </div>
   );
@@ -207,12 +207,12 @@ export default function PropertyDetailClient(
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <div className="flex items-center gap-2 text-body text-muted mb-6">
         <Link href="/" className="hover:text-primary">الرئيسية</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
         <Link href="/properties" className="hover:text-primary">العقارات</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
-        <span className="text-gray-700 font-medium line-clamp-1">{property.title}</span>
+        <span className="text-muted-700 font-medium line-clamp-1">{property.title}</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -220,7 +220,7 @@ export default function PropertyDetailClient(
         <div className="lg:col-span-2 space-y-5">
           {/* Image Gallery */}
           <div className="bg-white rounded-3xl overflow-hidden card-shadow">
-            <div className="relative h-72 md:h-96 bg-gray-100">
+            <div className="relative h-72 md:h-96 bg-muted-100">
               {images.length > 0 ? (
                 <AnimatePresence mode="wait">
                   <motion.img
@@ -236,15 +236,15 @@ export default function PropertyDetailClient(
                 </AnimatePresence>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Buildings2 className="h-20 w-20 text-gray-300" />
+                  <Buildings2 className="h-20 w-20 text-muted-200" />
                 </div>
               )}
               {/* Overlay Badges */}
               <div className="absolute top-4 right-4 flex gap-2">
-                <span className={`text-sm font-bold px-3 py-1.5 rounded-full ${property.offer_type === "sale" ? "bg-primary text-white" : "bg-gold text-white"}`}>
+                <span className={`text-body font-bold px-3 py-1.5 rounded-full ${property.offer_type === "sale" ? "bg-primary text-white" : "bg-gold text-white"}`}>
                   {offerTypeLabels[property.offer_type]}
                 </span>
-                <span className={`text-sm font-bold px-3 py-1.5 rounded-full ${statusColors[property.status]}`}>
+                <span className={`text-body font-bold px-3 py-1.5 rounded-full ${statusColors[property.status]}`}>
                   {statusLabels[property.status]}
                 </span>
               </div>
@@ -269,19 +269,19 @@ export default function PropertyDetailClient(
           <div className="bg-white rounded-2xl card-shadow p-6">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">{property.title}</h1>
-                <div className="flex items-center gap-1 text-gray-500 text-sm">
+                <h1 className="text-h2 font-bold text-ink mb-1">{property.title}</h1>
+                <div className="flex items-center gap-1 text-muted-500 text-body">
                   <MapPoint className="h-4 w-4 text-primary" />
                   <span>{property.city_name}{property.neighborhood && ` — ${property.neighborhood}`}</span>
                 </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={handleFavorite} className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center hover:bg-red-50 transition-colors">
-                  <Heart className={`h-5 w-5 ${favorited ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
+                <button onClick={handleFavorite} className="w-10 h-10 bg-muted-50 rounded-xl flex items-center justify-center hover:bg-red-50 transition-colors">
+                  <Heart className={`h-5 w-5 ${favorited ? "fill-red-500 text-red-500" : "text-muted"}`} />
 
                 </button>
-                <button onClick={handleShare} className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors">
-                  <Share className="h-5 w-5 text-gray-400" />
+                <button onClick={handleShare} className="w-10 h-10 bg-muted-50 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors">
+                  <Share className="h-5 w-5 text-muted" />
                 </button>
               </div>
             </div>
@@ -300,8 +300,8 @@ export default function PropertyDetailClient(
                 return (
                   <div key={i} className="bg-cream rounded-xl p-3 text-center">
                     <Icon className="h-5 w-5 text-primary mx-auto mb-1" />
-                    <p className="text-xs text-gray-400">{spec.label}</p>
-                    <p className="text-sm font-bold text-gray-800">{spec.value}</p>
+                    <p className="text-caption text-muted">{spec.label}</p>
+                    <p className="text-body font-bold text-ink">{spec.value}</p>
                   </div>
                 );
               })}
@@ -309,12 +309,12 @@ export default function PropertyDetailClient(
 
             {/* Features */}
             <div className="mb-5">
-              <h3 className="font-bold text-gray-800 mb-3">المميزات</h3>
+              <h3 className="font-bold text-ink mb-3">المميزات</h3>
               <div className="flex flex-wrap gap-2">
                 {featuresList.map(({ key, label }) => {
                   const has = property[key as keyof Property] as boolean;
                   return (
-                    <span key={key} className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-medium ${has ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400 line-through"}`}>
+                    <span key={key} className={`flex items-center gap-1.5 text-caption px-3 py-1.5 rounded-full font-medium ${has ? "bg-primary/10 text-primary" : "bg-muted-100 text-muted line-through"}`}>
                       {has ? <CheckCircle className="h-3.5 w-3.5" /> : <CloseCircle className="h-3.5 w-3.5" />}
                       {label}
                     </span>
@@ -325,19 +325,19 @@ export default function PropertyDetailClient(
 
             {/* Description */}
             <div>
-              <h3 className="font-bold text-gray-800 mb-2">الوصف</h3>
-              <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{property.description}</p>
+              <h3 className="font-bold text-ink mb-2">الوصف</h3>
+              <p className="text-muted-600 text-body leading-relaxed whitespace-pre-line">{property.description}</p>
             </div>
 
             {/* فيديو الإعلان — يُعرض بعد الوصف مباشرةً حيث يبحث عنه المهتمّ. */}
             {property.video_url && (
               <div>
-                <h3 className="font-bold text-gray-800 mb-2">فيديو</h3>
+                <h3 className="font-bold text-ink mb-2">فيديو</h3>
                 <YouTubePlayer url={property.video_url} title={property.title} />
               </div>
             )}
 
-            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-muted-100 text-caption text-muted">
               <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {property.views_count} مشاهدة</span>
               <span>نُشر {formatRelativeTime(property.created_at)}</span>
             </div>
@@ -350,7 +350,7 @@ export default function PropertyDetailClient(
           {hasCoords && (
             <div className="bg-white rounded-2xl card-shadow p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-gray-800 flex items-center gap-1.5">
+                <h3 className="font-bold text-ink flex items-center gap-1.5">
                   <MapPoint className="h-5 w-5 text-primary" /> الموقع
                 </h3>
                 <Link href={`/properties?view=map&lat=${lat}&lng=${lng}`}>
@@ -367,14 +367,14 @@ export default function PropertyDetailClient(
 
           {/* Comments */}
           <div className="bg-white rounded-2xl card-shadow p-6">
-            <h3 className="font-bold text-gray-800 mb-4">التعليقات ({comments.length})</h3>
+            <h3 className="font-bold text-ink mb-4">التعليقات ({comments.length})</h3>
             {user && (
               <div className="flex gap-3 mb-5">
                 <input
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="اكتب تعليقك..."
-                  className="flex-1 h-10 border border-gray-200 rounded-xl px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  className="flex-1 h-10 border border-muted-200 rounded-xl px-4 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 />
                 <Button size="sm" onClick={handleComment}>نشر</Button>
               </div>
@@ -389,15 +389,15 @@ export default function PropertyDetailClient(
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-sm text-gray-800">{c.user_name}</span>
-                        <span className="text-xs text-gray-400">{formatRelativeTime(c.created_at)}</span>
+                        <span className="font-semibold text-body text-ink">{c.user_name}</span>
+                        <span className="text-caption text-muted">{formatRelativeTime(c.created_at)}</span>
                       </div>
-                      <p className="text-sm text-gray-600">{c.text}</p>
+                      <p className="text-body text-muted-600">{c.text}</p>
                       {canReply && (
                         <button
                           onClick={() => startPrivateReply(c.id, c.user as number)}
                           disabled={replyingTo === c.id}
-                          className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 disabled:opacity-50 transition-colors"
+                          className="mt-2 inline-flex items-center gap-1 text-caption font-semibold text-primary hover:text-primary/80 disabled:opacity-50 transition-colors"
                         >
                           <ChatRoundDots className="h-3.5 w-3.5" />
                           {replyingTo === c.id ? "جارٍ الفتح…" : "رد خاص"}
@@ -441,22 +441,22 @@ export default function PropertyDetailClient(
             {(property.is_promoted || property.price_reduced) && (
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {property.is_promoted && (
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-gold text-white">مميّز</span>
+                  <span className="text-caption font-bold px-2.5 py-1 rounded-full bg-gold text-white">مميّز</span>
                 )}
                 {property.price_reduced && (
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-green-600 text-white">انخفض السعر</span>
+                  <span className="text-caption font-bold px-2.5 py-1 rounded-full bg-green-600 text-white">انخفض السعر</span>
                 )}
               </div>
             )}
             {property.price_reduced && property.previous_price && (
-              <p className="text-sm text-gray-400 line-through">{formatPrice(property.previous_price, property.currency)}</p>
+              <p className="text-body text-muted line-through">{formatPrice(property.previous_price, property.currency)}</p>
             )}
-            <p className="text-3xl font-extrabold text-primary mb-1">{formatPrice(property.price, property.currency)}</p>
+            <p className="text-h1 font-extrabold text-primary mb-1">{formatPrice(property.price, property.currency)}</p>
             {property.offer_type !== "sale" && (
-              <p className="text-sm text-gray-400">{property.offer_type === "rent_monthly" ? "شهرياً" : "سنوياً"}</p>
+              <p className="text-body text-muted">{property.offer_type === "rent_monthly" ? "شهرياً" : "سنوياً"}</p>
             )}
 
-            <hr className="my-4 border-gray-100" />
+            <hr className="my-4 border-muted-100" />
 
             {/* Contact */}
             <div className="space-y-3">
@@ -493,12 +493,12 @@ export default function PropertyDetailClient(
               )}
             </div>
 
-            <hr className="my-4 border-gray-100" />
+            <hr className="my-4 border-muted-100" />
 
             {/* Owner Card */}
             {typeof property.user === "object" && (
               <Link href={`/users/${property.user.id}`}>
-                <div className="flex items-center gap-3 hover:bg-gray-50 rounded-xl p-2 transition-colors">
+                <div className="flex items-center gap-3 hover:bg-muted-50 rounded-xl p-2 transition-colors">
                   <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                     {property.user.avatar ? (
                       <img src={property.user.avatar} alt="" className="w-full h-full object-cover" />
@@ -507,7 +507,7 @@ export default function PropertyDetailClient(
                     )}
                   </div>
                   <div>
-                    <p className="font-bold text-gray-800 text-sm flex items-center gap-1">
+                    <p className="font-bold text-ink text-body flex items-center gap-1">
                       {property.user.full_name}
                       {property.user.is_verified && <CheckCircle className="h-3.5 w-3.5 text-primary" />}
                     </p>
@@ -517,7 +517,7 @@ export default function PropertyDetailClient(
                     {/* مؤشّر الاستجابة — محسوب من بيانات الشات لا من ادّعاء
                         المُعلِن. الخادم يخفيه حين تكون العيّنة غير كافية. */}
                     {property.user_response_label && (
-                      <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                      <p className="text-caption text-muted-500 mt-0.5 flex items-center gap-1">
                         <ChatRoundDots className="h-3 w-3 text-primary" />
                         {property.user_response_label}
                       </p>

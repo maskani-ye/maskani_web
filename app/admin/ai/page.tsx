@@ -272,7 +272,7 @@ export default function AdminAIPage() {
       )}
 
       {/* ── اختبار النموذج النشط ── */}
-      <div className="bg-white rounded-2xl shadow-card p-5">
+      <div className="bg-white rounded-2xl shadow-e2 p-5">
         <h2 className="font-bold text-ink flex items-center gap-2 mb-1">
           <Play className="h-5 w-5 text-primary" /> اختبار النموذج النشط
         </h2>
@@ -310,10 +310,10 @@ export default function AdminAIPage() {
 
       {/* ── إحصاء طلبات المنصّة ── */}
       {local && (
-        <div className="bg-white rounded-2xl shadow-card p-5">
+        <div className="bg-white rounded-2xl shadow-e2 p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-ink flex items-center gap-2"><ChartSquare className="h-5 w-5 text-primary" /> إحصاء طلبات المنصّة</h2>
-            <button onClick={fetchLocal} disabled={localLoading} title="تحديث" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center">
+            <button onClick={fetchLocal} disabled={localLoading} title="تحديث" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center">
               <Refresh className={`h-4 w-4 text-muted ${localLoading ? "animate-spin" : ""}`} />
             </button>
           </div>
@@ -329,7 +329,7 @@ export default function AdminAIPage() {
 
       {/* ── توزيع النماذج (استراتيجية مختلطة) ── */}
       {tiers && (
-        <div className="bg-white rounded-2xl shadow-card p-5">
+        <div className="bg-white rounded-2xl shadow-e2 p-5">
           <h2 className="font-bold text-ink mb-1">توزيع النماذج (مختلط)</h2>
           <p className="text-caption text-muted mb-4">المهام البسيطة تعمل بنموذج مجاني، والحسّاسة بنموذج مدفوع — توفيراً للتكلفة. النماذج التالية مأخوذة من <b>المزوّد النشط</b> (تُضبط لكل مزوّد في قسم «المزوّدون» أدناه، لأن المعرّفات تختلف بينها).</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
@@ -344,7 +344,7 @@ export default function AdminAIPage() {
           </div>
           <div className="space-y-1.5">
             {tiers.tasks.map((t) => (
-              <div key={t.name} className="flex items-center gap-2 text-body py-1.5 border-b border-gray-50 last:border-0">
+              <div key={t.name} className="flex items-center gap-2 text-body py-1.5 border-b border-muted-50 last:border-0">
                 <span className="font-semibold text-ink" dir="ltr">{t.name}</span>
                 <Badge variant={t.sensitive ? "warning" : "success"}>{t.sensitive ? "مدفوع" : "مجاني"}</Badge>
                 <span className="text-caption text-muted truncate flex-1 text-left" dir="ltr">{t.model}</span>
@@ -355,26 +355,26 @@ export default function AdminAIPage() {
       )}
 
       {/* ── قائمة المفاتيح ── */}
-      <div className="bg-white rounded-2xl shadow-card overflow-hidden">
-        <div className="px-5 py-3 border-b border-gray-100"><h2 className="font-bold text-ink">المفاتيح</h2></div>
+      <div className="bg-white rounded-2xl shadow-e2 overflow-hidden">
+        <div className="px-5 py-3 border-b border-muted-100"><h2 className="font-bold text-ink">المفاتيح</h2></div>
         {loading ? (
-          <div className="divide-y divide-gray-100">{[0, 1].map((i) => <div key={i} className="h-16 bg-gray-50 animate-pulse m-3 rounded-xl" />)}</div>
+          <div className="divide-y divide-muted-100">{[0, 1].map((i) => <div key={i} className="h-16 bg-muted-50 animate-pulse m-3 rounded-xl" />)}</div>
         ) : keys.length === 0 ? (
           <div className="py-16 text-center text-muted"><Stars className="h-12 w-12 mx-auto mb-3 opacity-30" /><p>لا مفاتيح بعد — أضِف أول مفتاح</p></div>
         ) : (
           <div className="p-3 space-y-2">
             {keys.map((key) => (
-              <div key={key.id} className={`flex items-center gap-4 p-3.5 rounded-xl transition-colors ${key.is_active ? "border-2 border-primary bg-primary/5" : "border border-gray-100 hover:bg-gray-50/70"}`}>
+              <div key={key.id} className={`flex items-center gap-4 p-3.5 rounded-xl transition-colors ${key.is_active ? "border-2 border-primary bg-primary/5" : "border border-muted-100 hover:bg-muted-50/70"}`}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-bold text-ink text-body">{key.name}</h3>
                     {key.is_active
                       ? <span className="inline-flex items-center gap-1 text-caption font-bold text-white bg-primary px-2 py-0.5 rounded-full"><CheckCircle className="h-3.5 w-3.5" /> نشط الآن</span>
-                      : <span className="text-caption text-muted bg-gray-100 px-2 py-0.5 rounded-full">غير نشط</span>}
+                      : <span className="text-caption text-muted bg-muted-100 px-2 py-0.5 rounded-full">غير نشط</span>}
                     <Badge variant="info">{provName(key.provider)}</Badge>
                   </div>
                   <div className="flex items-center gap-3 text-caption text-muted mt-1 flex-wrap">
-                    <span dir="ltr" className="font-mono bg-gray-100 px-1.5 py-0.5 rounded">{key.masked_key || "—"}</span>
+                    <span dir="ltr" className="font-mono bg-muted-100 px-1.5 py-0.5 rounded">{key.masked_key || "—"}</span>
                     {key.last_used_at && <span>آخر استخدام: {new Date(key.last_used_at).toLocaleDateString("ar")}</span>}
                   </div>
                   {!key.is_active && key.last_error && <p className="text-caption text-red-500 mt-1 line-clamp-1" title={key.last_error}>توقّف: {key.last_error}</p>}
@@ -385,8 +385,8 @@ export default function AdminAIPage() {
                       <CheckCircle className="h-4 w-4" /> تفعيل
                     </button>
                   )}
-                  <button onClick={() => openStats(key)} title="الإحصائيات" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center"><ChartSquare className="h-4 w-4 text-muted" /></button>
-                  <button onClick={() => openEdit(key)} title="تعديل" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-muted" /></button>
+                  <button onClick={() => openStats(key)} title="الإحصائيات" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center"><ChartSquare className="h-4 w-4 text-muted" /></button>
+                  <button onClick={() => openEdit(key)} title="تعديل" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-muted" /></button>
                   <button onClick={() => setDeleteTarget(key)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center"><TrashBinMinimalistic className="h-4 w-4 text-red-500" /></button>
                 </div>
               </div>
@@ -396,28 +396,28 @@ export default function AdminAIPage() {
       </div>
 
       {/* ── المزوّدون ── */}
-      <div className="bg-white rounded-2xl shadow-card overflow-hidden">
-        <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white rounded-2xl shadow-e2 overflow-hidden">
+        <div className="px-5 py-3 border-b border-muted-100 flex items-center justify-between">
           <h2 className="font-bold text-ink flex items-center gap-2"><ServerSquare className="h-5 w-5 text-primary" /> المزوّدون</h2>
           <Button size="sm" variant="outline" onClick={openNewProv}><AddCircle className="h-4 w-4" /> مزوّد جديد</Button>
         </div>
         {providers.length === 0 ? (
           <div className="py-10 text-center text-muted text-body">لا مزوّدون بعد</div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-muted-100">
             {providers.map((p) => (
-              <div key={p.id} className="flex items-center gap-4 p-4 hover:bg-gray-50/70 transition-colors">
+              <div key={p.id} className="flex items-center gap-4 p-4 hover:bg-muted-50/70 transition-colors">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-bold text-ink text-body">{p.name}</h3>
-                    <span dir="ltr" className="font-mono text-caption bg-gray-100 px-1.5 py-0.5 rounded text-muted">{p.slug}</span>
+                    <span dir="ltr" className="font-mono text-caption bg-muted-100 px-1.5 py-0.5 rounded text-muted">{p.slug}</span>
                     {p.keys_count > 0 && <Badge variant="info">{p.keys_count} مفتاح</Badge>}
                     {!p.is_active && <Badge variant="default">معطّل</Badge>}
                   </div>
                   <p dir="ltr" className="text-caption text-muted mt-1 truncate text-left">{p.base_url || "عنوان API الافتراضي (OpenRouter)"}</p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button onClick={() => openEditProv(p)} title="تعديل" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-muted" /></button>
+                  <button onClick={() => openEditProv(p)} title="تعديل" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-muted" /></button>
                   <button onClick={() => setProvDelete(p)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center"><TrashBinMinimalistic className="h-4 w-4 text-red-500" /></button>
                 </div>
               </div>
@@ -465,7 +465,7 @@ export default function AdminAIPage() {
             value={provForm.default_model} onChange={(v) => setPF("default_model", v)}
             models={models} loading={modelsLoading}
             onLoad={() => loadModels(provForm.slug || provEditing?.slug || "")} />
-          <div className="rounded-xl bg-gray-50 border border-gray-100 p-3 space-y-3">
+          <div className="rounded-xl bg-muted-50 border border-muted-100 p-3 space-y-3">
             <p className="text-caption text-muted">نماذج الاستراتيجية المختلطة لهذا المزوّد (معرّفات النماذج تختلف بين المزوّدين). اتركها فارغة لاستخدام النموذج الافتراضي أعلاه.</p>
             <ModelPicker label="🆓 نموذج المهام البسيطة (مجاني)"
               value={provForm.simple_model} onChange={(v) => setPF("simple_model", v)}
@@ -501,7 +501,7 @@ export default function AdminAIPage() {
               <Stat label="المتبقّي للمفتاح" value={statsData.key?.limit_remaining == null ? "—" : money(statsData.key?.limit_remaining)} tone="green" />
               <Stat label="رصيد الحساب المتبقّي" value={money(statsData.credits?.remaining)} />
             </div>
-            <div className="text-caption text-muted space-y-1 border-t border-gray-100 pt-3">
+            <div className="text-caption text-muted space-y-1 border-t border-muted-100 pt-3">
               <div className="flex justify-between"><span>إجمالي رصيد الحساب</span><span dir="ltr" className="tabular-nums">{money(statsData.credits?.total_credits)}</span></div>
               <div className="flex justify-between"><span>إجمالي الاستهلاك</span><span dir="ltr" className="tabular-nums">{money(statsData.credits?.total_usage)}</span></div>
               <div className="flex justify-between"><span>الطبقة المجانية</span><span>{statsData.key?.is_free_tier ? "نعم" : "لا"}</span></div>
@@ -513,8 +513,8 @@ export default function AdminAIPage() {
 
       {/* ── مزوّدون بحصص مجانية ── */}
       {catalog.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-card overflow-hidden">
-          <div className="px-5 py-3 border-b border-gray-100">
+        <div className="bg-white rounded-2xl shadow-e2 overflow-hidden">
+          <div className="px-5 py-3 border-b border-muted-100">
             <h2 className="font-bold text-ink flex items-center gap-2">
               <Gift className="h-5 w-5 text-primary" /> مزوّدون بحصّة مجانية
             </h2>
@@ -522,13 +522,13 @@ export default function AdminAIPage() {
               الحصص إرشادية وتتغيّر — راجع صفحة المزوّد قبل الاعتماد عليها. أضِف المفتاح من «مفتاح جديد» بنفس المعرّف.
             </p>
           </div>
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-muted-100">
             {catalog.map((c) => (
-              <div key={c.slug} className="flex items-start gap-4 p-4 hover:bg-gray-50/70 transition-colors">
+              <div key={c.slug} className="flex items-start gap-4 p-4 hover:bg-muted-50/70 transition-colors">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-bold text-ink text-body">{c.name}</h3>
-                    <span dir="ltr" className="font-mono text-caption bg-gray-100 px-1.5 py-0.5 rounded text-muted">{c.slug}</span>
+                    <span dir="ltr" className="font-mono text-caption bg-muted-100 px-1.5 py-0.5 rounded text-muted">{c.slug}</span>
                     {c.has_key ? <Badge variant="success">له مفتاح</Badge>
                       : c.registered ? <Badge variant="warning">مسجَّل بلا مفتاح</Badge>
                       : <Badge variant="default">غير مسجَّل</Badge>}
@@ -538,7 +538,7 @@ export default function AdminAIPage() {
                   <p dir="ltr" className="font-mono text-caption text-muted mt-1 text-left break-all">{c.default_model}</p>
                 </div>
                 <a href={c.keys_url} target="_blank" rel="noopener noreferrer"
-                  className="shrink-0 text-caption font-bold px-3 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 text-primary flex items-center">
+                  className="shrink-0 text-caption font-bold px-3 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 text-primary flex items-center">
                   احصل على مفتاح
                 </a>
               </div>
@@ -594,7 +594,7 @@ function ModelPicker({ label, value, onChange, models, loading, onLoad }: {
           value={known ? value : ""}
           onChange={(e) => onChange(e.target.value)}
           dir="ltr"
-          className="w-full h-11 rounded-xl border border-gray-200 px-3 text-body text-ink bg-white text-left"
+          className="w-full h-11 rounded-xl border border-muted-200 px-3 text-body text-ink bg-white text-left"
         >
           <option value="">— اختر نموذجاً ({fmt(list.length)} متاح) —</option>
           {list.map((m) => (
@@ -621,7 +621,7 @@ function ModelPicker({ label, value, onChange, models, loading, onLoad }: {
 function Stat({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "primary" | "green" | "red" }) {
   const color = tone === "primary" ? "text-primary" : tone === "green" ? "text-green-600" : tone === "red" ? "text-red-500" : "text-ink";
   return (
-    <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-3">
+    <div className="rounded-xl border border-muted-100 bg-muted-50/50 p-3">
       <p className="text-caption text-muted mb-1">{label}</p>
       <p className={`font-bold tabular-nums ${color}`}>{value}</p>
     </div>

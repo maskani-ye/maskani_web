@@ -36,7 +36,7 @@ export default async function SimilarProperties({ id }: { id: string }) {
 
   return (
     <section aria-labelledby="similar-heading" className="max-w-6xl mx-auto px-4 mt-10 mb-4">
-      <h2 id="similar-heading" className="text-lg font-bold text-ink mb-4">
+      <h2 id="similar-heading" className="text-h3 font-bold text-ink mb-4">
         عقارات ذات صلة
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -46,9 +46,9 @@ export default async function SimilarProperties({ id }: { id: string }) {
             <Link
               key={p.id}
               href={`/properties/${p.id}`}
-              className="bg-white rounded-2xl p-2.5 shadow-card hover:shadow-card-hover transition-all duration-200 group flex flex-col"
+              className="bg-white rounded-2xl p-2.5 shadow-e2 hover:shadow-e3 transition-all duration-200 group flex flex-col"
             >
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-muted-100">
                 {p.main_image ? (
                   <Image
                     src={p.main_image}
@@ -58,13 +58,13 @@ export default async function SimilarProperties({ id }: { id: string }) {
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-700 to-primary text-white/70 text-xs">
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-700 to-primary text-white/70 text-caption">
                     مسكني
                   </div>
                 )}
                 <span
                   className={`absolute top-2 right-2 text-[11px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur shadow-sm ${
-                    isSale ? "bg-primary/95 text-white" : "bg-gold/95 text-gray-900"
+                    isSale ? "bg-primary/95 text-white" : "bg-gold/95 text-ink"
                   }`}
                 >
                   {offerTypeLabels[p.offer_type] ?? p.offer_type}
@@ -74,11 +74,11 @@ export default async function SimilarProperties({ id }: { id: string }) {
                 <span className="text-[11px] font-bold text-primary mb-1">
                   {propertyTypeName(p.property_type)}
                 </span>
-                <h3 className="font-bold text-gray-900 text-sm mb-1 line-clamp-1">{p.title}</h3>
+                <h3 className="font-bold text-ink text-body mb-1 line-clamp-1">{p.title}</h3>
                 {p.city_name && (
-                  <span className="text-gray-400 text-xs line-clamp-1 mb-1.5">{p.city_name}</span>
+                  <span className="text-muted text-caption line-clamp-1 mb-1.5">{p.city_name}</span>
                 )}
-                <span className="mt-auto font-extrabold text-ink text-sm">
+                <span className="mt-auto font-extrabold text-ink text-body">
                   {formatPrice(p.price, p.currency)}
                 </span>
               </div>

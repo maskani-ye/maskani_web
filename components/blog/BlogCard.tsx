@@ -21,8 +21,8 @@ export interface BlogCardData {
  * البديل يرفع **التصنيف** إلى السطح — وهو يختلف بين المقالات فتتمايز البطاقات،
  * ويقول للزائر نوع ما سيقرأ قبل أن يقرأ العنوان.
  *
- * ⚠️ **والطباعة على السُلَّم**: كانت `text-base/sm/xs` ورماديّ Tailwind
- * (`gray-900/500/400`) — وهما بندان يعدّهما حارس نظام التصميم انحرافاً، لأنّ
+ * ⚠️ **والطباعة على السُلَّم**: كانت `text-body-lg/sm/xs` ورماديّ Tailwind
+ * (`ink/500/400`) — وهما بندان يعدّهما حارس نظام التصميم انحرافاً، لأنّ
  * المقاس يُختار بالذوق كل مرّة والنصّ يفقد كحليّ الهوية.
  */
 /** أسطح الغلاف البديلة — تدور بمعرّف المقال فلا يتشابه صفّ البطاقات. */
@@ -89,7 +89,7 @@ export function CategoryChips({ active, categories }: { active?: string; categor
         const on = (active ?? "") === c.slug;
         return (
           <Link key={c.slug || "all"} href={href}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${on ? "bg-primary text-white" : "bg-white text-gray-600 border border-gray-200 hover:border-primary"}`}>
+            className={`px-4 py-2 rounded-full text-body font-medium transition-colors ${on ? "bg-primary text-white" : "bg-white text-muted-600 border border-muted-200 hover:border-primary"}`}>
             {c.label}
           </Link>
         );

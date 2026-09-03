@@ -26,9 +26,9 @@ export default function RentalYieldCalc() {
         </div>
         <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
           <NumberField label="قيمة الإيجار" value={rent} onChange={setRent} suffix={cur} placeholder="0" />
-          <div className="flex rounded-xl border border-gray-200 overflow-hidden text-sm">
-            <button type="button" onClick={() => setPeriod("month")} className={`px-3 py-2.5 ${period === "month" ? "bg-primary text-white" : "text-gray-600"}`}>شهري</button>
-            <button type="button" onClick={() => setPeriod("year")} className={`px-3 py-2.5 ${period === "year" ? "bg-primary text-white" : "text-gray-600"}`}>سنوي</button>
+          <div className="flex rounded-xl border border-muted-200 overflow-hidden text-body">
+            <button type="button" onClick={() => setPeriod("month")} className={`px-3 py-2.5 ${period === "month" ? "bg-primary text-white" : "text-muted-600"}`}>شهري</button>
+            <button type="button" onClick={() => setPeriod("year")} className={`px-3 py-2.5 ${period === "year" ? "bg-primary text-white" : "text-muted-600"}`}>سنوي</button>
           </div>
         </div>
         <NumberField label="المصاريف السنوية (صيانة، شغور، إدارة…)" value={expenses} onChange={setExpenses} suffix={cur} placeholder="0" hint="لحساب العائد الصافي" />
@@ -38,7 +38,7 @@ export default function RentalYieldCalc() {
         <ResultCard label="العائد الإيجاري الإجمالي" value={`${gross.toFixed(1)}%`} sub={`الإيجار السنويّ: ${fmtMoney(annualRent, cur)}`} />
         <ResultRow label="العائد الصافي (بعد المصاريف)" value={`${net.toFixed(1)}%`} />
         <ResultRow label="صافي الدخل السنويّ" value={fmtMoney(annualRent - num(expenses), cur)} />
-        <p className="text-xs text-gray-400 leading-relaxed mt-1">
+        <p className="text-caption text-muted leading-relaxed mt-1">
           قارن بين عدّة عقارات على أساس العائد لا السعر وحده. اقرأ <Link href="/blog/rental-yield-calculate" className="text-primary hover:underline">كيف تحسب العائد الإيجاري</Link> و<Link href="/blog/buy-for-rental-income" className="text-primary hover:underline">الشراء بهدف الدخل الإيجاري</Link>.
         </p>
       </div>

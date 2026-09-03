@@ -117,16 +117,16 @@ export function ConfirmDialog({
         className="w-full max-w-md bg-cream rounded-t-3xl sm:rounded-3xl sm:mb-0 px-5 pb-8 pt-3 flex flex-col items-center outline-none animate-[maskaniSheetUp_0.24s_ease-out]"
       >
         {/* مقبض السحب */}
-        <span className="h-[5px] w-[75px] rounded-full bg-gray-300" />
+        <span className="h-[5px] w-[75px] rounded-full bg-muted-200" />
 
         {icon && <div className="mt-6 text-primary">{icon}</div>}
 
-        <h2 className="mt-9 text-lg font-semibold text-gray-900 text-center text-balance">
+        <h2 className="mt-9 text-h3 font-semibold text-ink text-center text-balance">
           {title}
         </h2>
 
         {message && (
-          <p className="mt-5 text-sm text-gray-500 leading-relaxed text-center">{message}</p>
+          <p className="mt-5 text-body text-muted-500 leading-relaxed text-center">{message}</p>
         )}
 
         <Button

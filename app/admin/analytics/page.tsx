@@ -188,13 +188,13 @@ export default function AnalyticsPage() {
         <PageHeader icon={<ChartSquare />} title="التحليلات والزيارات"
           subtitle={data ? `${data.range.from} → ${data.range.to}` : "قراءة واضحة لحركة المنصّة"} />
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex rounded-xl border border-gray-200 bg-white p-1 flex-wrap">
+          <div className="flex rounded-xl border border-muted-200 bg-white p-1 flex-wrap">
             {[{ d: 1, l: "اليوم" }, { d: 7, l: "7 أيام" }, { d: 30, l: "30 يوم" }, { d: 90, l: "90 يوم" }].map(({ d, l }) => (
               <button
                 key={d}
                 onClick={() => { setMode("preset"); setDays(d); }}
-                className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-                  mode === "preset" && days === d ? "bg-primary text-white" : "text-gray-500 hover:text-primary"
+                className={`rounded-lg px-3 py-1.5 text-body font-semibold transition-colors ${
+                  mode === "preset" && days === d ? "bg-primary text-white" : "text-muted-500 hover:text-primary"
                 }`}
               >
                 {l}
@@ -202,8 +202,8 @@ export default function AnalyticsPage() {
             ))}
             <button
               onClick={() => setMode("custom")}
-              className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-                mode === "custom" ? "bg-primary text-white" : "text-gray-500 hover:text-primary"
+              className={`rounded-lg px-3 py-1.5 text-body font-semibold transition-colors ${
+                mode === "custom" ? "bg-primary text-white" : "text-muted-500 hover:text-primary"
               }`}
             >
               مخصّص
@@ -216,22 +216,22 @@ export default function AnalyticsPage() {
                 value={customFrom}
                 max={customTo || undefined}
                 onChange={(e) => setCustomFrom(e.target.value)}
-                className="h-9 rounded-xl border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="h-9 rounded-xl border border-muted-200 bg-white px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
-              <span className="text-gray-400 text-sm">إلى</span>
+              <span className="text-muted text-body">إلى</span>
               <input
                 type="date"
                 value={customTo}
                 min={customFrom || undefined}
                 onChange={(e) => setCustomTo(e.target.value)}
-                className="h-9 rounded-xl border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="h-9 rounded-xl border border-muted-200 bg-white px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
           )}
           <select
             value={platform}
             onChange={(e) => setPlatform(e.target.value)}
-            className="h-9 rounded-xl border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="h-9 rounded-xl border border-muted-200 bg-white px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
             <option value="">كل المنصّات</option>
             <option value="web">ويب</option>
@@ -240,14 +240,14 @@ export default function AnalyticsPage() {
           </select>
           <button
             onClick={exportCsv}
-            className="h-9 rounded-xl border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-600 hover:text-primary"
+            className="h-9 rounded-xl border border-muted-200 bg-white px-3 text-body font-semibold text-muted-600 hover:text-primary"
             title="تصدير الزيارات CSV"
           >
             تصدير
           </button>
           <button
             onClick={fetchData}
-            className="h-9 w-9 rounded-xl border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-primary"
+            className="h-9 w-9 rounded-xl border border-muted-200 bg-white flex items-center justify-center text-muted-500 hover:text-primary"
             title="تحديث"
           >
             <Refresh className="h-4 w-4" />
@@ -263,13 +263,13 @@ export default function AnalyticsPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
             </span>
-            <span className="text-sm font-bold text-gray-800">مباشر الآن</span>
+            <span className="text-body font-bold text-ink">مباشر الآن</span>
           </div>
-          <div><span className="text-2xl font-bold text-primary tabular-nums">{realtime.active_5m}</span> <span className="text-xs text-gray-500">نشط (آخر 5د)</span></div>
-          <div><span className="text-lg font-bold text-gray-700 tabular-nums">{realtime.views_30m}</span> <span className="text-xs text-gray-500">مشاهدة/30د</span></div>
-          <div><span className="text-lg font-bold text-gray-700 tabular-nums">{realtime.events_30m}</span> <span className="text-xs text-gray-500">حدث/30د</span></div>
+          <div><span className="text-h2 font-bold text-primary tabular-nums">{realtime.active_5m}</span> <span className="text-caption text-muted-500">نشط (آخر 5د)</span></div>
+          <div><span className="text-h3 font-bold text-muted-700 tabular-nums">{realtime.views_30m}</span> <span className="text-caption text-muted-500">مشاهدة/30د</span></div>
+          <div><span className="text-h3 font-bold text-muted-700 tabular-nums">{realtime.events_30m}</span> <span className="text-caption text-muted-500">حدث/30د</span></div>
           {realtime.top_paths?.[0] && (
-            <div className="text-xs text-gray-500">أنشط صفحة: <span className="font-mono text-gray-700">{realtime.top_paths[0].key}</span></div>
+            <div className="text-caption text-muted-500">أنشط صفحة: <span className="font-mono text-muted-700">{realtime.top_paths[0].key}</span></div>
           )}
         </div>
       )}
@@ -281,15 +281,15 @@ export default function AnalyticsPage() {
             <div className="flex items-center justify-between mb-2">
               <k.icon className={`h-5 w-5 ${k.color}`} />
               {typeof k.delta === "number" && (
-                <span className={`text-xs font-bold tabular-nums ${k.delta >= 0 ? "text-green-600" : "text-red-500"}`}>
+                <span className={`text-caption font-bold tabular-nums ${k.delta >= 0 ? "text-green-600" : "text-red-500"}`}>
                   {k.delta >= 0 ? "▲" : "▼"} {Math.abs(k.delta)}%
                 </span>
               )}
             </div>
-            <p className="text-2xl font-bold text-gray-900 tabular-nums">
+            <p className="text-h2 font-bold text-ink tabular-nums">
               {loading ? "…" : k.value.toLocaleString(NUMERIC_LOCALE)}
             </p>
-            <p className="text-xs text-gray-500 mt-1">{k.label}</p>
+            <p className="text-caption text-muted-500 mt-1">{k.label}</p>
           </div>
         ))}
       </div>
@@ -307,8 +307,8 @@ export default function AnalyticsPage() {
           { l: "نشِط شهرياً", v: (data?.engagement?.mau ?? 0).toLocaleString(NUMERIC_LOCALE) },
         ].map((m) => (
           <div key={m.l} className="bg-white rounded-2xl card-shadow p-4">
-            <p className="text-xl font-bold text-gray-900 tabular-nums">{loading ? "…" : m.v}</p>
-            <p className="text-xs text-gray-500 mt-1">{m.l}</p>
+            <p className="text-h3 font-bold text-ink tabular-nums">{loading ? "…" : m.v}</p>
+            <p className="text-caption text-muted-500 mt-1">{m.l}</p>
           </div>
         ))}
       </div>
@@ -462,28 +462,28 @@ export default function AnalyticsPage() {
       {/* احتفاظ الأفواج (Cohorts): نسبة عودة الزوّار الجدد بعد يوم/أسبوع */}
       {cohorts.length > 0 && (
         <div className="bg-white rounded-2xl card-shadow p-5 mb-6">
-          <h3 className="text-sm font-bold text-gray-800 mb-3">احتفاظ الأفواج — عودة الزوّار الجدد</h3>
+          <h3 className="text-body font-bold text-ink mb-3">احتفاظ الأفواج — عودة الزوّار الجدد</h3>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-body">
               <thead>
-                <tr className="text-gray-400 text-xs">
+                <tr className="text-muted text-caption">
                   <th className="text-right py-2 px-2 font-semibold">اليوم</th>
                   <th className="text-right py-2 px-2 font-semibold">زوّار جدد</th>
                   <th className="text-right py-2 px-2 font-semibold">عودة D1</th>
                   <th className="text-right py-2 px-2 font-semibold">عودة D7</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-muted-50">
                 {cohorts.map((c) => (
                   <tr key={c.date}>
-                    <td className="py-2 px-2 text-gray-500 tabular-nums">{c.date.slice(5)}</td>
-                    <td className="py-2 px-2 font-semibold text-gray-800 tabular-nums">{c.size}</td>
+                    <td className="py-2 px-2 text-muted-500 tabular-nums">{c.date.slice(5)}</td>
+                    <td className="py-2 px-2 font-semibold text-ink tabular-nums">{c.size}</td>
                     {[c.d1, c.d7].map((v, i) => (
                       <td key={i} className="py-2 px-2">
                         {v === null ? (
-                          <span className="text-gray-300">—</span>
+                          <span className="text-muted-200">—</span>
                         ) : (
-                          <span className={`font-bold tabular-nums ${v >= 0.4 ? "text-green-600" : v >= 0.2 ? "text-gold" : "text-gray-500"}`}>
+                          <span className={`font-bold tabular-nums ${v >= 0.4 ? "text-green-600" : v >= 0.2 ? "text-gold" : "text-muted-500"}`}>
                             {Math.round(v * 100)}%
                           </span>
                         )}
@@ -526,24 +526,24 @@ function _ListCard({
   const max = Math.max(1, ...items.map((i) => i.count));
   return (
     <div className="bg-white rounded-2xl card-shadow p-5 flex flex-col">
-      <h3 className="font-bold text-gray-800 flex items-center gap-2 mb-4">
+      <h3 className="font-bold text-ink flex items-center gap-2 mb-4">
         <Icon className="h-4 w-4 text-primary" /> {title}
       </h3>
       {loading ? (
         <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-6 bg-gray-100 rounded animate-pulse" />
+          <div key={i} className="h-6 bg-muted-100 rounded animate-pulse" />
         ))}</div>
       ) : items.length === 0 ? (
-        <p className="text-sm text-gray-400 py-6 text-center">{emptyText}</p>
+        <p className="text-body text-muted py-6 text-center">{emptyText}</p>
       ) : (
         <ul className="space-y-2.5">
           {items.map((it) => (
             <li key={it.key}>
-              <div className="flex items-center justify-between text-sm mb-1">
-                <span className="text-gray-700 truncate max-w-[70%]" dir="ltr">{it.key || "—"}</span>
-                <span className="font-semibold text-gray-900 tabular-nums">{it.count.toLocaleString(NUMERIC_LOCALE)}</span>
+              <div className="flex items-center justify-between text-body mb-1">
+                <span className="text-muted-700 truncate max-w-[70%]" dir="ltr">{it.key || "—"}</span>
+                <span className="font-semibold text-ink tabular-nums">{it.count.toLocaleString(NUMERIC_LOCALE)}</span>
               </div>
-              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-muted-100 rounded-full overflow-hidden">
                 <div className="h-full bg-primary/70 rounded-full" style={{ width: `${(it.count / max) * 100}%` }} />
               </div>
             </li>

@@ -55,7 +55,7 @@ export function SuggestDescriptionButton({
       disabled={loading}
       className={
         className ??
-        "inline-flex items-center gap-1.5 rounded-lg bg-gold/10 text-gold-700 px-3 py-1.5 text-xs font-semibold hover:bg-gold/20 transition-colors disabled:opacity-60"
+        "inline-flex items-center gap-1.5 rounded-lg bg-gold/10 text-gold-700 px-3 py-1.5 text-caption font-semibold hover:bg-gold/20 transition-colors disabled:opacity-60"
       }
     >
       {loading ? (

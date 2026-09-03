@@ -26,7 +26,7 @@ export default function RentAffordabilityCalc() {
         <div className="flex gap-2">
           {[25, 30, 35].map((v) => (
             <button key={v} type="button" onClick={() => setRatio(String(v))}
-              className={`flex-1 rounded-xl border py-2 text-sm ${num(ratio) === v ? "border-primary bg-primary/5 text-primary font-bold" : "border-gray-200 text-gray-600"}`}>
+              className={`flex-1 rounded-xl border py-2 text-body ${num(ratio) === v ? "border-primary bg-primary/5 text-primary font-bold" : "border-muted-200 text-muted-600"}`}>
               {v}%
             </button>
           ))}
@@ -37,7 +37,7 @@ export default function RentAffordabilityCalc() {
         <ResultCard label="أقصى إيجار شهريّ مريح" value={fmtMoney(maxMonthly, cur)} sub={`سنوياً: ${fmtMoney(maxYearly, cur)}`} />
         <ResultRow label={`نسبة الإنفاق المختارة`} value={`${num(ratio)}%`} />
         <ResultRow label="المتبقّي من الدخل بعد الإيجار" value={fmtMoney(inc - maxMonthly, cur)} />
-        <p className="text-xs text-gray-400 leading-relaxed mt-1">
+        <p className="text-caption text-muted leading-relaxed mt-1">
           إرشاديّ لموازنة ميزانيتك السكنية. اقرأ <Link href="/blog/first-apartment-checklist" className="text-primary hover:underline">قائمة تجهيز أول شقّة إيجار</Link> و<Link href="/blog/yemen-renting-guide" className="text-primary hover:underline">دليل الاستئجار في اليمن</Link>.
         </p>
       </div>

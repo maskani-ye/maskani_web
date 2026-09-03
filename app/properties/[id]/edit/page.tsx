@@ -172,15 +172,15 @@ export default function EditPropertyPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <div className="flex items-center gap-2 text-body text-muted mb-6">
         <Link href="/properties" className="hover:text-primary">العقارات</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
         <Link href={`/properties/${id}`} className="hover:text-primary">التفاصيل</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
-        <span className="text-gray-700 font-medium">تعديل</span>
+        <span className="text-muted-700 font-medium">تعديل</span>
       </div>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">تعديل العقار</h1>
+      <h1 className="text-h2 font-bold text-ink mb-6">تعديل العقار</h1>
 
       <form onSubmit={handleSave} className="bg-white rounded-3xl card-shadow p-6 space-y-5">
         <PropertyFormFields form={form} setField={setField} cities={cities} propertyTypes={propertyTypes} />
@@ -190,19 +190,19 @@ export default function EditPropertyPage() {
       {/* إدارة الصور */}
       <div className="bg-white rounded-3xl card-shadow p-6 mt-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold text-gray-800">صور العقار</h2>
-          <label className="inline-flex items-center gap-2 text-sm text-primary font-semibold cursor-pointer hover:underline">
+          <h2 className="font-bold text-ink">صور العقار</h2>
+          <label className="inline-flex items-center gap-2 text-body text-primary font-semibold cursor-pointer hover:underline">
             <CloudUpload className="h-4 w-4" /> {uploading ? "جارٍ الرفع..." : "إضافة صور"}
             <input type="file" multiple accept="image/*" onChange={handleAddImages} className="hidden" disabled={uploading} />
           </label>
         </div>
 
         {propertyImages.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-6">لا توجد صور بعد</p>
+          <p className="text-body text-muted text-center py-6">لا توجد صور بعد</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {propertyImages.map((img) => (
-              <div key={img.id} className="relative rounded-xl overflow-hidden border border-gray-100 group">
+              <div key={img.id} className="relative rounded-xl overflow-hidden border border-muted-100 group">
                 <img src={img.image} alt="" className="w-full h-32 object-cover" />
                 {img.is_main && (
                   <span className="absolute top-1.5 right-1.5 flex items-center gap-1 text-[10px] bg-primary text-white px-1.5 py-0.5 rounded-md">

@@ -37,20 +37,20 @@ export function DataList<T>({
 }) {
   const wrap = (children: ReactNode) =>
     card ? (
-      <div className={cn("bg-white rounded-2xl shadow-card overflow-hidden", className)}>{children}</div>
+      <div className={cn("bg-white rounded-2xl shadow-e2 overflow-hidden", className)}>{children}</div>
     ) : (
       <div className={className}>{children}</div>
     );
 
   if (loading) {
     return wrap(
-      <div className={gridClassName ?? "divide-y divide-gray-100"}>
+      <div className={gridClassName ?? "divide-y divide-muted-100"}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <div key={i} className="flex items-center gap-4 p-4 animate-pulse">
-            <div className="w-11 h-11 rounded-xl bg-gray-100 shrink-0" />
+            <div className="w-11 h-11 rounded-xl bg-muted-100 shrink-0" />
             <div className="flex-1 space-y-2">
-              <div className="h-3.5 bg-gray-100 rounded w-1/3" />
-              <div className="h-3 bg-gray-50 rounded w-2/3" />
+              <div className="h-3.5 bg-muted-100 rounded w-1/3" />
+              <div className="h-3 bg-muted-50 rounded w-2/3" />
             </div>
           </div>
         ))}
@@ -68,7 +68,7 @@ export function DataList<T>({
   }
 
   return wrap(
-    <div className={gridClassName ?? "divide-y divide-gray-100"}>
+    <div className={gridClassName ?? "divide-y divide-muted-100"}>
       {items.map((item, i) => (
         <div key={keyOf(item, i)}>{renderItem(item, i)}</div>
       ))}

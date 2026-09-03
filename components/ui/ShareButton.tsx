@@ -34,10 +34,10 @@ export function ShareButton({ title, text, className }: ShareButtonProps) {
       aria-label="مشاركة"
       className={
         className ??
-        "w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors"
+        "w-10 h-10 bg-muted-50 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors"
       }
     >
-      <Share className="h-5 w-5 text-gray-400" />
+      <Share className="h-5 w-5 text-muted" />
     </button>
   );
 }

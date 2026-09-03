@@ -182,7 +182,7 @@ export default function AdminRequestsPage() {
             startIcon={<Magnifer className="h-4 w-4" />}
             endIcon={search ? (
               <button onClick={() => setSearch("")}>
-                <CloseCircle className="h-4 w-4 text-gray-400" />
+                <CloseCircle className="h-4 w-4 text-muted" />
               </button>
             ) : undefined}
           />
@@ -191,7 +191,7 @@ export default function AdminRequestsPage() {
         <select
           value={propFilter}
           onChange={(e) => setPropFilter(e.target.value)}
-          className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
         >
           {PROPERTY_FILTER.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
@@ -199,7 +199,7 @@ export default function AdminRequestsPage() {
         <select
           value={offerFilter}
           onChange={(e) => setOfferFilter(e.target.value)}
-          className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
         >
           {OFFER_FILTER.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
@@ -207,7 +207,7 @@ export default function AdminRequestsPage() {
         <select
           value={activeFilter}
           onChange={(e) => setActiveFilter(e.target.value)}
-          className="h-10 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
         >
           <option value="">كل الحالات</option>
           <option value="true">نشط</option>
@@ -223,47 +223,47 @@ export default function AdminRequestsPage() {
               <div className="divide-y">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="p-4 animate-pulse flex gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gray-100" />
+                    <div className="w-10 h-10 rounded-xl bg-muted-100" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3 bg-gray-100 rounded w-2/3" />
-                      <div className="h-3 bg-gray-100 rounded w-1/2" />
+                      <div className="h-3 bg-muted-100 rounded w-2/3" />
+                      <div className="h-3 bg-muted-100 rounded w-1/2" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : requests.length === 0 ? (
-              <div className="py-20 text-center text-gray-400">
+              <div className="py-20 text-center text-muted">
                 <ChatRound className="h-12 w-12 mx-auto mb-3 opacity-30" />
                 <p>لا توجد طلبات</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-50">
+              <div className="divide-y divide-muted-50">
                 {requests.map((req) => (
                   <div
                     key={req.id}
                     onClick={() => setSelected(req)}
-                    className={`p-4 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${
+                    className={`p-4 flex items-center gap-3 cursor-pointer hover:bg-muted-50 transition-colors ${
                       selected?.id === req.id ? "bg-primary/5 border-r-2 border-primary" : ""
                     }`}
                   >
                     {/* Icon */}
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                      req.is_active ? "bg-primary/10" : "bg-gray-100"
+                      req.is_active ? "bg-primary/10" : "bg-muted-100"
                     }`}>
-                      <Buildings2 className={`h-5 w-5 ${req.is_active ? "text-primary" : "text-gray-400"}`} />
+                      <Buildings2 className={`h-5 w-5 ${req.is_active ? "text-primary" : "text-muted"}`} />
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-sm text-gray-900">{req.client_name}</span>
+                        <span className="font-semibold text-body text-ink">{req.client_name}</span>
                         <Badge variant={req.is_active ? "green" : "gray"}>
                           {req.is_active ? "نشط" : "منتهي"}
                         </Badge>
                         <Badge variant="blue">{typeLabel(req)}</Badge>
                         <Badge variant="yellow">{OFFER_LABELS[req.offer_type]}</Badge>
                       </div>
-                      <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                      <div className="flex items-center gap-3 mt-1 text-caption text-muted-500">
                         <span className="flex items-center gap-1">
                           <MapPoint className="h-3 w-3" /> {req.city_name}
                         </span>
@@ -284,7 +284,7 @@ export default function AdminRequestsPage() {
                       <button
                         onClick={() => toggleActive(req)}
                         title={req.is_active ? "إيقاف" : "تفعيل"}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-muted-100 transition-colors"
                       >
                         {req.is_active
                           ? <ClockCircle className="h-4 w-4 text-yellow-500" />
@@ -306,7 +306,7 @@ export default function AdminRequestsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-4 px-1">
-              <p className="text-sm text-gray-500">
+              <p className="text-body text-muted-500">
                 صفحة {currentPage} من {totalPages}
               </p>
               <div className="flex gap-2">
@@ -334,12 +334,12 @@ export default function AdminRequestsPage() {
           <div className="w-80 shrink-0">
             <div className="bg-white rounded-2xl card-shadow p-5 sticky top-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-gray-900">تفاصيل الطلب</h3>
+                <h3 className="font-bold text-ink">تفاصيل الطلب</h3>
                 <button
                   onClick={() => setSelected(null)}
-                  className="p-1 rounded-lg hover:bg-gray-100"
+                  className="p-1 rounded-lg hover:bg-muted-100"
                 >
-                  <CloseCircle className="h-4 w-4 text-gray-400" />
+                  <CloseCircle className="h-4 w-4 text-muted" />
                 </button>
               </div>
 
@@ -353,12 +353,12 @@ export default function AdminRequestsPage() {
               </div>
 
               {/* Client */}
-              <div className="bg-gray-50 rounded-xl p-3 mb-4">
-                <p className="text-xs text-gray-500 mb-1">صاحب الطلب</p>
-                <p className="font-semibold text-gray-900">{selected.client_name}</p>
-                <p className="text-sm text-gray-500 mt-0.5 font-mono">{selected.client_phone}</p>
+              <div className="bg-muted-50 rounded-xl p-3 mb-4">
+                <p className="text-caption text-muted-500 mb-1">صاحب الطلب</p>
+                <p className="font-semibold text-ink">{selected.client_name}</p>
+                <p className="text-body text-muted-500 mt-0.5 font-mono">{selected.client_phone}</p>
                 {selected.contact_phone && selected.contact_phone !== selected.client_phone && (
-                  <p className="text-xs text-gray-400 mt-1">تواصل: {selected.contact_phone}</p>
+                  <p className="text-caption text-muted mt-1">تواصل: {selected.contact_phone}</p>
                 )}
               </div>
 
@@ -389,15 +389,15 @@ export default function AdminRequestsPage() {
               {/* Additional specs */}
               {selected.additional_specs && (
                 <div className="mb-4">
-                  <p className="text-xs text-gray-500 mb-1">مواصفات إضافية</p>
-                  <p className="text-sm text-gray-700 bg-gray-50 rounded-xl p-3 leading-relaxed">
+                  <p className="text-caption text-muted-500 mb-1">مواصفات إضافية</p>
+                  <p className="text-body text-muted-700 bg-muted-50 rounded-xl p-3 leading-relaxed">
                     {selected.additional_specs}
                   </p>
                 </div>
               )}
 
               {/* Actions */}
-              <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
+              <div className="flex flex-col gap-2 pt-2 border-t border-muted-100">
                 <Button
                   variant={selected.is_active ? "outline" : "primary"}
                  
@@ -446,10 +446,10 @@ export default function AdminRequestsPage() {
 
 function _Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 text-sm">
-      <span className="text-gray-400">{icon}</span>
-      <span className="text-gray-500 w-16 shrink-0">{label}</span>
-      <span className="font-medium text-gray-900 flex-1">{value}</span>
+    <div className="flex items-center gap-2 text-body">
+      <span className="text-muted">{icon}</span>
+      <span className="text-muted-500 w-16 shrink-0">{label}</span>
+      <span className="font-medium text-ink flex-1">{value}</span>
     </div>
   );
 }

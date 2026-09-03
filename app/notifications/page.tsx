@@ -154,21 +154,21 @@ export default function NotificationsPage() {
       {prefsOpen && (
         <div className="bg-white rounded-2xl card-shadow p-5 mb-4">
           <div className="flex items-center justify-between mb-1">
-            <h2 className="font-bold text-gray-800">تفضيلات الإشعارات</h2>
-            <button onClick={() => setPrefsOpen(false)} className="text-sm text-gray-400 hover:text-gray-600">إغلاق</button>
+            <h2 className="font-bold text-ink">تفضيلات الإشعارات</h2>
+            <button onClick={() => setPrefsOpen(false)} className="text-body text-muted hover:text-muted-600">إغلاق</button>
           </div>
-          <p className="text-xs text-gray-500 mb-3">تحكّم بأنواع الإشعارات التي تصلك (الكتم يوقف إشعار الدفع فقط، ويبقى الإشعار داخل التطبيق).</p>
+          <p className="text-caption text-muted-500 mb-3">تحكّم بأنواع الإشعارات التي تصلك (الكتم يوقف إشعار الدفع فقط، ويبقى الإشعار داخل التطبيق).</p>
           {prefs === null ? (
-            <div className="h-40 bg-gray-100 animate-pulse rounded-xl" />
+            <div className="h-40 bg-muted-100 animate-pulse rounded-xl" />
           ) : (
-            <div className="divide-y divide-gray-50">
+            <div className="divide-y divide-muted-50">
               {PREF_CATEGORIES.map((c) => (
                 <div key={c.key} className="flex items-center justify-between py-2.5">
-                  <span className="text-sm text-gray-700">{c.label}</span>
+                  <span className="text-body text-muted-700">{c.label}</span>
                   <button
                     type="button"
                     onClick={() => togglePref(c.key)}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${prefs[c.key] ? "bg-primary" : "bg-gray-300"}`}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${prefs[c.key] ? "bg-primary" : "bg-muted-200"}`}
                     aria-pressed={prefs[c.key]}
                   >
                     <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${prefs[c.key] ? "left-5" : "left-0.5"}`} />
@@ -184,16 +184,16 @@ export default function NotificationsPage() {
         {loading ? (
           <div className="space-y-px p-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-16 bg-gray-100 animate-pulse rounded-xl" />
+              <div key={i} className="h-16 bg-muted-100 animate-pulse rounded-xl" />
             ))}
           </div>
         ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+          <div className="flex flex-col items-center justify-center py-20 text-muted">
             <Bell className="h-10 w-10 mb-3 opacity-30" />
-            <p className="text-sm">لا توجد إشعارات</p>
+            <p className="text-body">لا توجد إشعارات</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-muted-50">
             {notifications.map((n) => (
               <div
                 key={n.id}
@@ -202,13 +202,13 @@ export default function NotificationsPage() {
                   const route = routeForNotification(n);
                   if (route) router.push(route);
                 }}
-                className={`flex items-start gap-3 p-4 cursor-pointer hover:bg-gray-50 transition-colors ${!n.is_read ? "bg-primary/5" : ""}`}
+                className={`flex items-start gap-3 p-4 cursor-pointer hover:bg-muted-50 transition-colors ${!n.is_read ? "bg-primary/5" : ""}`}
               >
-                <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${n.is_read ? "bg-gray-200" : "bg-primary"}`} />
+                <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${n.is_read ? "bg-muted-200" : "bg-primary"}`} />
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium text-gray-900 ${!n.is_read ? "font-semibold" : ""}`}>{n.title}</p>
-                  <p className="text-sm text-gray-600 mt-0.5">{n.body}</p>
-                  <p className="text-xs text-gray-400 mt-1">{formatRelativeTime(n.created_at)}</p>
+                  <p className={`text-body font-medium text-ink ${!n.is_read ? "font-semibold" : ""}`}>{n.title}</p>
+                  <p className="text-body text-muted-600 mt-0.5">{n.body}</p>
+                  <p className="text-caption text-muted mt-1">{formatRelativeTime(n.created_at)}</p>
                 </div>
               </div>
             ))}
@@ -216,8 +216,8 @@ export default function NotificationsPage() {
         )}
 
         {total > LIMIT && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-            <span className="text-xs text-gray-500">{offset + 1}–{Math.min(offset + LIMIT, total)} من {total}</span>
+          <div className="flex items-center justify-between px-4 py-3 border-t border-muted-100">
+            <span className="text-caption text-muted-500">{offset + 1}–{Math.min(offset + LIMIT, total)} من {total}</span>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" disabled={offset === 0} onClick={() => fetchNotifications(offset - LIMIT)}>السابق</Button>
               <Button size="sm" variant="outline" disabled={offset + LIMIT >= total} onClick={() => fetchNotifications(offset + LIMIT)}>التالي</Button>

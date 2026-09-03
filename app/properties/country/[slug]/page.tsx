@@ -222,11 +222,11 @@ export default async function CountryLandingPage(
       />
 
       <header className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-ink flex items-center gap-2">
+        <h1 className="text-h2 sm:text-h1 font-bold text-ink flex items-center gap-2">
           <span aria-hidden>{country.flag_emoji}</span>
           عقارات {country.name_ar}
         </h1>
-        <p className="text-gray-600 mt-3 leading-relaxed max-w-3xl">
+        <p className="text-muted-600 mt-3 leading-relaxed max-w-3xl">
           سوق العقارات في {country.name_ar} على منصّة مسكني: شقق وفلل وأراضٍ ومحلات تجارية
           للبيع والإيجار في {cities.slice(0, 4).map((c) => c.name_ar).join("، ")}
           {cities.length > 4 ? " وبقية المدن" : ""}، مع الأسعار والصور والموقع على الخريطة،
@@ -235,13 +235,13 @@ export default async function CountryLandingPage(
         <div className="flex flex-wrap gap-2 mt-5">
           <Link
             href="/properties"
-            className="rounded-xl bg-primary text-white px-5 py-2.5 text-sm font-semibold hover:bg-primary/90 transition-colors"
+            className="rounded-xl bg-primary text-white px-5 py-2.5 text-body font-semibold hover:bg-primary/90 transition-colors"
           >
             تصفّح كل العقارات
           </Link>
           <Link
             href="/services"
-            className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-ink hover:border-primary/40 transition-colors"
+            className="rounded-xl border border-muted-200 px-5 py-2.5 text-body font-semibold text-ink hover:border-primary/40 transition-colors"
           >
             خدمات عقارية في {country.name_ar}
           </Link>
@@ -251,15 +251,15 @@ export default async function CountryLandingPage(
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
         {stats.map((s) => (
           <div key={s.label} className="rounded-2xl bg-white card-shadow p-4 text-center">
-            <p className="text-2xl font-extrabold text-primary tabular-nums">{s.value}</p>
-            <p className="text-xs text-gray-500 mt-1">{s.label}</p>
+            <p className="text-h2 font-extrabold text-primary tabular-nums">{s.value}</p>
+            <p className="text-caption text-muted-500 mt-1">{s.label}</p>
           </div>
         ))}
       </section>
 
       {cities.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-lg font-bold text-ink mb-3">
+          <h2 className="text-h3 font-bold text-ink mb-3">
             العقارات حسب المدينة في {country.name_ar}
           </h2>
           {/* روابط داخلية لكل مدينة — هي طريق الزاحف إلى الطبقة الأعمق. */}
@@ -268,7 +268,7 @@ export default async function CountryLandingPage(
               <Link
                 key={c.id}
                 href={`/properties/city/${citySlug(c.name_en)}`}
-                className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 hover:border-primary/40 hover:text-primary transition-colors"
+                className="rounded-xl border border-muted-200 bg-white px-4 py-2 text-body text-muted-700 hover:border-primary/40 hover:text-primary transition-colors"
               >
                 عقارات {c.name_ar}
               </Link>
@@ -278,9 +278,9 @@ export default async function CountryLandingPage(
       )}
 
       <section>
-        <h2 className="text-lg font-bold text-ink mb-3">أحدث العقارات في {country.name_ar}</h2>
+        <h2 className="text-h3 font-bold text-ink mb-3">أحدث العقارات في {country.name_ar}</h2>
         {items.length === 0 ? (
-          <div className="rounded-2xl border border-gray-200 bg-white py-16 text-center text-gray-500">
+          <div className="rounded-2xl border border-muted-200 bg-white py-16 text-center text-muted-500">
             لا توجد عقارات في {country.name_ar} بعد — كن أوّل من ينشر عقاراً هنا.
           </div>
         ) : (

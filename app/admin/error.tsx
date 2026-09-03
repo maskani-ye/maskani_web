@@ -21,8 +21,8 @@ export default function AdminError({
       <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
         <DangerTriangle className="h-7 w-7 text-red-600" />
       </div>
-      <h2 className="text-lg font-bold text-gray-900 mb-1">حدث خطأ غير متوقّع</h2>
-      <p className="text-sm text-gray-500 mb-6 max-w-sm">
+      <h2 className="text-h3 font-bold text-ink mb-1">حدث خطأ غير متوقّع</h2>
+      <p className="text-body text-muted-500 mb-6 max-w-sm">
         تعذّر تحميل هذه الصفحة. يمكنك إعادة المحاولة، وإن استمرّت المشكلة تواصل مع فريق الدعم.
       </p>
       <Button variant="primary" onClick={() => reset()}>

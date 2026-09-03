@@ -187,10 +187,10 @@ export default async function CityPropertiesPage(
       />
 
       <header className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h1 className="text-h2 sm:text-h1 font-bold text-ink">
           عقارات في {city.name_ar}
         </h1>
-        <p className="text-gray-600 mt-2 leading-relaxed max-w-3xl">
+        <p className="text-muted-600 mt-2 leading-relaxed max-w-3xl">
           استكشف {count > 0 ? `${count} ` : ""}عقاراً في {city.name_ar} على منصّة مسكني —
           شقق وفلل وأراضٍ ومحلات تجارية للبيع والإيجار، مع الأسعار والصور والموقع على الخريطة،
           وتواصل مباشر مع أصحاب العقارات بلا عمولات.
@@ -200,7 +200,7 @@ export default async function CityPropertiesPage(
         </div>
         <Link
           href={`/properties?city=${city.id}`}
-          className="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary text-white px-5 py-2.5 text-sm font-semibold hover:bg-primary/90 transition-colors"
+          className="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary text-white px-5 py-2.5 text-body font-semibold hover:bg-primary/90 transition-colors"
         >
           تصفّح كل عقارات {city.name_ar} مع الفلاتر
         </Link>
@@ -208,17 +208,17 @@ export default async function CityPropertiesPage(
 
       {items.length === 0 ? (
         <div className="rounded-2xl border border-primary/20 bg-primary/5 p-8 text-center">
-          <p className="text-lg font-bold text-ink mb-2">
+          <p className="text-h3 font-bold text-ink mb-2">
             لا يوجد عقار معروض في {city.name_ar} بعد
           </p>
-          <p className="text-gray-600 text-sm leading-relaxed max-w-xl mx-auto mb-5">
+          <p className="text-muted-600 text-body leading-relaxed max-w-xl mx-auto mb-5">
             كن أوّل من ينشر هنا: إعلانك سيكون وحيداً في صفحة {city.name_ar} فيراه كل
             من يبحث عن عقار في المحافظة. النشر مجّاني بلا عمولة، ويصلك الباحث على
             رقمك مباشرة.
           </p>
           <Link
             href="/properties/create"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary text-white px-6 py-3 text-sm font-bold hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary text-white px-6 py-3 text-body font-bold hover:bg-primary/90 transition-colors"
           >
             أضِف عقارك في {city.name_ar} مجاناً
           </Link>

@@ -9,8 +9,8 @@ export default function SectionIntro({
 }) {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-2">
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-ink leading-tight">{title}</h1>
-      <p className="text-gray-600 mt-2 leading-relaxed max-w-3xl text-sm sm:text-base">
+      <h1 className="text-h2 sm:text-h1 font-extrabold text-ink leading-tight">{title}</h1>
+      <p className="text-muted-600 mt-2 leading-relaxed max-w-3xl text-body sm:text-body-lg">
         {children}
       </p>
     </section>

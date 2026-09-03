@@ -57,14 +57,14 @@ function FlowNodeBox({ data, selected }: { data: FlowData; selected: boolean }) 
       <Handle type="target" position={Position.Left} style={{ background: color, width: 10, height: 10 }} />
       <div className="px-3 py-2 rounded-t-[10px] text-white flex items-center gap-1.5" style={{ background: color }}>
         {n.is_start && <Star className="h-3.5 w-3.5" />}
-        <span className="text-xs font-bold flex-1 truncate">{n.title || n.key}</span>
+        <span className="text-caption font-bold flex-1 truncate">{n.title || n.key}</span>
         <span className="text-[10px] opacity-80">{NODE_TYPES.find((t) => t.value === n.node_type)?.label}</span>
       </div>
-      {n.body && <p className="px-3 py-1.5 text-[11px] text-gray-500 line-clamp-2">{n.body}</p>}
+      {n.body && <p className="px-3 py-1.5 text-[11px] text-muted-500 line-clamp-2">{n.body}</p>}
       <div className="px-2 pb-2 pt-1 space-y-1">
-        {n.buttons.length === 0 && <p className="text-[10px] text-gray-300 px-1">لا أزرار</p>}
+        {n.buttons.length === 0 && <p className="text-[10px] text-muted-200 px-1">لا أزرار</p>}
         {n.buttons.map((b) => (
-          <div key={b.id} className="relative rounded-lg bg-gray-50 border border-gray-200 px-2 py-1 text-[11px] text-gray-700 flex items-center gap-1">
+          <div key={b.id} className="relative rounded-lg bg-muted-50 border border-muted-200 px-2 py-1 text-[11px] text-muted-700 flex items-center gap-1">
             <span className="flex-1 truncate">{b.label || "—"}</span>
             {b.action && <span className="text-[9px] bg-gold/15 text-gold-700 px-1 rounded">⚡</span>}
             {b.is_item_action && <span className="text-[9px] bg-primary/10 text-primary px-1 rounded">عنصر</span>}
@@ -171,8 +171,8 @@ function FlowEditor() {
   return (
     <div className="h-[calc(100vh-64px)] flex flex-col">
       {/* شريط الأدوات */}
-      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100 bg-white flex-wrap">
-        <div className="flex items-center gap-1.5 font-bold text-gray-800"><Routing className="h-5 w-5 text-primary" /> محرّر الفلو</div>
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-muted-100 bg-white flex-wrap">
+        <div className="flex items-center gap-1.5 font-bold text-ink"><Routing className="h-5 w-5 text-primary" /> محرّر الفلو</div>
         <div className="flex-1" />
         <Button size="sm" variant="outline" onClick={addNode}><AddCircle className="h-4 w-4" /> عقدة</Button>
         <Button size="sm" variant="outline" onClick={() => setActionsOpen(true)}><Server className="h-4 w-4" /> الإجراءات ({actions.length})</Button>
@@ -184,7 +184,7 @@ function FlowEditor() {
         {/* اللوحة */}
         <div className="flex-1 relative">
           {loading ? (
-            <div className="absolute inset-0 flex items-center justify-center text-gray-400">جارٍ التحميل…</div>
+            <div className="absolute inset-0 flex items-center justify-center text-muted">جارٍ التحميل…</div>
           ) : (
             <ReactFlow
               nodes={nodes} edges={edges} nodeTypes={nodeTypes}
@@ -229,37 +229,37 @@ function NodeInspector({ node, nodeOptions, actionOptions, onChange, onDelete }:
     }],
   });
   const delBtn = (bid: string) => onChange({ buttons: node.buttons.filter((b) => b.id !== bid) });
-  const field = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30";
+  const field = "w-full border border-muted-200 rounded-lg px-3 py-2 text-body focus:outline-none focus:ring-2 focus:ring-primary/30";
 
   return (
-    <div className="w-80 border-r border-gray-100 bg-white overflow-y-auto p-4 space-y-3 shrink-0">
+    <div className="w-80 border-r border-muted-100 bg-white overflow-y-auto p-4 space-y-3 shrink-0">
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-gray-800 text-sm">خصائص العقدة</h3>
+        <h3 className="font-bold text-ink text-body">خصائص العقدة</h3>
         <button onClick={onDelete} title="حذف العقدة" className="text-red-500 hover:bg-red-50 rounded p-1"><TrashBinMinimalistic className="h-4 w-4" /></button>
       </div>
       <Input label="العنوان" value={node.title} onChange={(e) => onChange({ title: e.target.value })} />
       <Input label="المعرّف (key) — تلقائي إن فارغ" value={node.key} onChange={(e) => onChange({ key: e.target.value })} dir="ltr" />
       <div>
-        <label className="text-xs font-semibold text-gray-600 mb-1 block">النصّ (يدعم {"{username}"})</label>
+        <label className="text-caption font-semibold text-muted-600 mb-1 block">النصّ (يدعم {"{username}"})</label>
         <textarea className={`${field} resize-none`} rows={3} value={node.body} onChange={(e) => onChange({ body: e.target.value })} />
       </div>
       <Select label="النوع" options={NODE_TYPES} value={node.node_type} onChange={(e) => onChange({ node_type: e.target.value })} />
       {node.node_type === "list" && (
         <Select label="إجراء الجلب (قائمة)" options={actionOptions} value={node.list_action ?? ""} onChange={(e) => onChange({ list_action: e.target.value || null })} />
       )}
-      <label className="flex items-center gap-2 text-sm cursor-pointer">
+      <label className="flex items-center gap-2 text-body cursor-pointer">
         <input type="checkbox" checked={node.is_start} onChange={(e) => onChange({ is_start: e.target.checked })} className="rounded" />
         نقطة البداية (is_start)
       </label>
 
-      <div className="pt-2 border-t border-gray-100">
+      <div className="pt-2 border-t border-muted-100">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="font-bold text-gray-700 text-sm">الأزرار</h4>
-          <button onClick={addBtn} className="text-xs text-primary font-semibold flex items-center gap-1"><AddCircle className="h-4 w-4" /> زرّ</button>
+          <h4 className="font-bold text-muted-700 text-body">الأزرار</h4>
+          <button onClick={addBtn} className="text-caption text-primary font-semibold flex items-center gap-1"><AddCircle className="h-4 w-4" /> زرّ</button>
         </div>
         <div className="space-y-3">
           {node.buttons.map((b) => (
-            <div key={b.id} className="rounded-lg border border-gray-100 p-2.5 space-y-2 bg-gray-50/50">
+            <div key={b.id} className="rounded-lg border border-muted-100 p-2.5 space-y-2 bg-muted-50/50">
               <div className="flex items-center gap-1">
                 <input className={`${field} flex-1`} value={b.label} placeholder="نص الزرّ" onChange={(e) => setBtn(b.id, { label: e.target.value })} />
                 <button onClick={() => delBtn(b.id)} className="text-red-400 hover:text-red-600 p-1"><TrashBinMinimalistic className="h-3.5 w-3.5" /></button>
@@ -273,7 +273,7 @@ function NodeInspector({ node, nodeOptions, actionOptions, onChange, onDelete }:
                   {actionOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
               </div>
-              <div className="flex items-center gap-3 text-[11px] text-gray-500">
+              <div className="flex items-center gap-3 text-[11px] text-muted-500">
                 <label className="flex items-center gap-1 cursor-pointer">
                   <input type="checkbox" checked={b.style === "card"} onChange={(e) => setBtn(b.id, { style: e.target.checked ? "card" : "button" })} /> بطاقة
                 </label>
@@ -347,24 +347,24 @@ function ActionsDrawer({ open, onClose, actions, onReload }: {
       setTestResult(`${res.data.ok ? "✓ نجح" : "✗ فشل"} (HTTP ${res.data.status_code}) — ${res.data.message} · عناصر: ${res.data.items?.length ?? 0}`);
     } catch (err) { setTestResult("خطأ: " + getErrorMessage(err)); }
   };
-  const field = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30";
+  const field = "w-full border border-muted-200 rounded-lg px-3 py-2 text-body focus:outline-none focus:ring-2 focus:ring-primary/30";
 
   return (
     <Dialog open={open} onClose={onClose} title="إجراءات الفلو (endpoints)">
       <div className="space-y-3 max-h-[75vh] overflow-y-auto">
         {/* القائمة */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-500">{actions.length} إجراء</span>
+          <span className="text-body text-muted-500">{actions.length} إجراء</span>
           <Button size="sm" onClick={() => openEdit({ ...(EMPTY_ACTION as unknown as HdAction), id: "" })}><AddCircle className="h-4 w-4" /> إجراء جديد</Button>
         </div>
         <div className="space-y-1.5">
           {actions.map((a) => (
-            <div key={a.id} className="flex items-center gap-2 rounded-lg border border-gray-100 px-3 py-2">
+            <div key={a.id} className="flex items-center gap-2 rounded-lg border border-muted-100 px-3 py-2">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800">{a.name}</p>
-                <p className="text-[11px] text-gray-400 truncate" dir="ltr">{a.method} {a.url_template}</p>
+                <p className="text-body font-semibold text-ink">{a.name}</p>
+                <p className="text-[11px] text-muted truncate" dir="ltr">{a.method} {a.url_template}</p>
               </div>
-              <button onClick={() => openEdit(a)} className="text-xs text-primary font-medium">تعديل</button>
+              <button onClick={() => openEdit(a)} className="text-caption text-primary font-medium">تعديل</button>
               <button onClick={() => delAction(a)} className="text-red-400 p-1"><TrashBinMinimalistic className="h-3.5 w-3.5" /></button>
             </div>
           ))}
@@ -373,11 +373,11 @@ function ActionsDrawer({ open, onClose, actions, onReload }: {
         {/* المحرّر */}
         {(editing !== null) && (
           <div className="rounded-xl border-2 border-primary/20 p-3 space-y-2.5 bg-primary/5">
-            <h4 className="font-bold text-sm text-primary">{editing.id ? "تعديل إجراء" : "إجراء جديد"}</h4>
+            <h4 className="font-bold text-body text-primary">{editing.id ? "تعديل إجراء" : "إجراء جديد"}</h4>
             <Input label="الاسم" value={String(form.name)} onChange={(e) => setF("name", e.target.value)} />
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-1">
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">الطريقة</label>
+                <label className="text-caption font-semibold text-muted-600 mb-1 block">الطريقة</label>
                 <select className={field} value={String(form.method)} onChange={(e) => setF("method", e.target.value)}>
                   {["GET", "POST", "PUT", "PATCH", "DELETE"].map((m) => <option key={m}>{m}</option>)}
                 </select>
@@ -395,12 +395,12 @@ function ActionsDrawer({ open, onClose, actions, onReload }: {
               <Input label="رسالة النجاح" value={String(form.success_message)} onChange={(e) => setF("success_message", e.target.value)} />
               <Input label="رسالة الخطأ" value={String(form.error_message)} onChange={(e) => setF("error_message", e.target.value)} />
             </div>
-            <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-4 text-body">
               <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={!!form.auth_as_user} onChange={(e) => setF("auth_as_user", e.target.checked)} /> بهوية المستخدم</label>
               <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={!!form.confirm_required} onChange={(e) => setF("confirm_required", e.target.checked)} /> يتطلّب تأكيداً</label>
             </div>
             {!!form.confirm_required && <Input label="نصّ التأكيد" value={String(form.confirm_template)} onChange={(e) => setF("confirm_template", e.target.value)} />}
-            {testResult && <p className="text-xs rounded-lg bg-white border border-gray-200 p-2 text-gray-700" dir="ltr">{testResult}</p>}
+            {testResult && <p className="text-caption rounded-lg bg-white border border-muted-200 p-2 text-muted-700" dir="ltr">{testResult}</p>}
             <div className="flex gap-2 pt-1">
               <Button size="sm" variant="outline" onClick={() => openEdit(null)}>إلغاء</Button>
               {editing.id && <Button size="sm" variant="outline" onClick={testAction}><Play className="h-4 w-4" /> اختبار</Button>}
@@ -416,9 +416,9 @@ function ActionsDrawer({ open, onClose, actions, onReload }: {
 function JsonBox({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div>
-      <label className="text-xs font-semibold text-gray-600 mb-1 block">{label}</label>
+      <label className="text-caption font-semibold text-muted-600 mb-1 block">{label}</label>
       <textarea dir="ltr" rows={2} value={value} onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        className="w-full border border-muted-200 rounded-lg px-2 py-1.5 text-caption font-mono focus:outline-none focus:ring-2 focus:ring-primary/30" />
     </div>
   );
 }

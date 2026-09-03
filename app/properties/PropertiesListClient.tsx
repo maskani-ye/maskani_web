@@ -406,14 +406,14 @@ function PropertiesContent() {
       {showFilters && (
         <div className="bg-white rounded-2xl card-shadow p-5 mb-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-bold text-gray-900">
+            <h2 className="flex items-center gap-2 text-body font-bold text-ink">
               <SliderHorizontal className="h-4 w-4 text-primary" />
               تصفية النتائج
             </h2>
             {activeFilterCount > 0 && (
               <button
                 onClick={resetFilters}
-                className="text-xs font-semibold text-gray-500 transition-colors hover:text-red-600"
+                className="text-caption font-semibold text-muted-500 transition-colors hover:text-red-600"
               >
                 إعادة تعيين ({activeFilterCount})
               </button>
@@ -504,7 +504,7 @@ function PropertiesContent() {
                 onChange={(e) => handleFilterChange("has_parking", e.target.checked ? "true" : "")}
                 className="rounded text-primary"
               />
-              <span className="text-sm text-gray-700">موقف سيارة</span>
+              <span className="text-body text-muted-700">موقف سيارة</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -513,7 +513,7 @@ function PropertiesContent() {
                 onChange={(e) => handleFilterChange("has_elevator", e.target.checked ? "true" : "")}
                 className="rounded text-primary"
               />
-              <span className="text-sm text-gray-700">مصعد</span>
+              <span className="text-body text-muted-700">مصعد</span>
             </label>
           </div>
           </div>
@@ -541,9 +541,9 @@ function PropertiesContent() {
         </div>
       ) : properties.length === 0 ? (
         <div className="text-center py-20">
-          <Buildings2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 text-lg font-medium">لا توجد عقارات مطابقة</p>
-          <p className="text-gray-400 text-sm mt-1">جرّب تغيير معايير البحث</p>
+          <Buildings2 className="h-16 w-16 text-muted-200 mx-auto mb-4" />
+          <p className="text-muted-500 text-h3 font-medium">لا توجد عقارات مطابقة</p>
+          <p className="text-muted text-body mt-1">جرّب تغيير معايير البحث</p>
         </div>
       ) : (
         <div className="grid grid-cols-cards-sm gap-x-4 gap-y-6">
@@ -559,7 +559,7 @@ function PropertiesContent() {
           <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
             <AltArrowRight className="h-4 w-4" /> السابق
           </Button>
-          <span className="text-sm text-gray-600 font-medium">صفحة {page} من {totalPages}</span>
+          <span className="text-body text-muted-600 font-medium">صفحة {page} من {totalPages}</span>
           <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
             التالي <AltArrowLeft className="h-4 w-4" />
           </Button>
@@ -594,7 +594,7 @@ export default function PropertiesPage() {
           { name: sectionLabel("properties"), path: "/properties" },
         ])}
       />
-      <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-gray-400">جاري التحميل...</div>}>
+      <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-muted">جاري التحميل...</div>}>
         <PropertiesContent />
       </Suspense>
     </>

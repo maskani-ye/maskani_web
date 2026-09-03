@@ -124,23 +124,23 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
       ]} />
 
       <header className="mb-5">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-ink leading-tight">
+        <h1 className="text-h2 sm:text-h1 font-extrabold text-ink leading-tight">
           {u.name} كم متر مربّع؟
         </h1>
         {/* الجواب في أوّل سطر: من يبحث عن رقم لا ينتظر مقدّمة. */}
-        <p className="mt-3 text-lg">
-          <strong className="text-primary text-2xl font-extrabold tabular-nums">{fmt(u.m2)} م²</strong>
-          <span className="text-gray-600">
+        <p className="mt-3 text-h3">
+          <strong className="text-primary text-h2 font-extrabold tabular-nums">{fmt(u.m2)} م²</strong>
+          <span className="text-muted-600">
             {" "}— {u.name}
             {country && country.code !== "*" ? ` في ${country.name}` : ""}
             {u.region ? ` (${u.region})` : ""}.
           </span>
         </p>
-        <div className="flex flex-wrap gap-2 mt-3 text-xs [&>*]:min-w-0">
-          <span className="rounded-lg bg-gray-100 text-gray-600 px-2.5 py-1 font-semibold">
+        <div className="flex flex-wrap gap-2 mt-3 text-caption [&>*]:min-w-0">
+          <span className="rounded-lg bg-muted-100 text-muted-600 px-2.5 py-1 font-semibold">
             {BASIS_LABEL[u.basis]}
           </span>
-          {u.note && <span className="rounded-lg bg-gray-100 text-gray-600 px-2.5 py-1">{u.note}</span>}
+          {u.note && <span className="rounded-lg bg-muted-100 text-muted-600 px-2.5 py-1">{u.note}</span>}
         </div>
       </header>
 
@@ -152,7 +152,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
       </Card>
 
       <section className="mb-8">
-        <h2 className="text-lg font-bold text-ink mb-3">جدول تحويل جاهز</h2>
+        <h2 className="text-h3 font-bold text-ink mb-3">جدول تحويل جاهز</h2>
         {/* ⚠️ **هذه الصفحة وحدها كانت تنزلق أفقياً** (فائض 122px عند 320،
             و52 عند 390). السبب `min-w-[420px]` على الجدول: الحاوية
             `overflow-x-auto` تفترض أنّها تحتويه، لكنّ المحتوى في RTL يخرج
@@ -185,10 +185,10 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
 
       {siblings.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-lg font-bold text-ink mb-2">
+          <h2 className="text-h3 font-bold text-ink mb-2">
             {u.country === "*" ? "وحدات معياريّة أخرى" : `وحدات ${country?.name} الأخرى`}
           </h2>
-          <p className="text-sm text-gray-500 leading-relaxed mb-3">
+          <p className="text-body text-muted-500 leading-relaxed mb-3">
             {u.basis === "official"
               ? "قيم ثابتة لا تختلف بين منطقة وأخرى."
               : "اشتقاقات تحمل الاسم نفسه بقيم مختلفة — تأكّد أيّها المقصود في وثيقتك قبل الحساب."}
@@ -196,12 +196,12 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
           <div className="grid sm:grid-cols-2 gap-2 [&>*]:min-w-0">
             {siblings.map((s) => (
               <Link key={s.key} href={`/tools/area-converter/${s.slug}`}
-                className="rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 flex items-center justify-between gap-3 hover:border-primary transition-colors">
+                className="rounded-xl border border-muted-200 bg-white px-3.5 py-2.5 flex items-center justify-between gap-3 hover:border-primary transition-colors">
                 <span className="min-w-0">
-                  <span className="text-sm font-semibold text-gray-800 block truncate">{s.name}</span>
-                  {s.region && <span className="text-[11px] text-gray-400">{s.region}</span>}
+                  <span className="text-body font-semibold text-ink block truncate">{s.name}</span>
+                  {s.region && <span className="text-[11px] text-muted">{s.region}</span>}
                 </span>
-                <span className="text-sm font-bold text-primary tabular-nums shrink-0">{fmt(s.m2)} م²</span>
+                <span className="text-body font-bold text-primary tabular-nums shrink-0">{fmt(s.m2)} م²</span>
               </Link>
             ))}
           </div>
@@ -241,16 +241,16 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
       )}
 
       <section>
-        <h2 className="text-lg font-bold text-ink mb-3">وحدات دول أخرى</h2>
+        <h2 className="text-h3 font-bold text-ink mb-3">وحدات دول أخرى</h2>
         <div className="flex flex-wrap gap-2 [&>*]:min-w-0">
           {ALL_UNITS.filter((x) => x.country !== u.country).slice(0, 18).map((x) => (
             <Link key={x.key} href={`/tools/area-converter/${x.slug}`}
-              className="text-xs rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-gray-600 hover:border-primary hover:text-primary transition-colors">
+              className="text-caption rounded-xl border border-muted-200 bg-white px-3 py-1.5 text-muted-600 hover:border-primary hover:text-primary transition-colors">
               {x.name}
             </Link>
           ))}
         </div>
-        <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+        <p className="text-caption text-muted mt-4 leading-relaxed">
           هذه القيم هي المتعامَل بها فعلياً بين المسّاحين والسوق في كل إقليم، وقد يختلف
           العرف بين مديريّة وأخرى. وعند إبرام الصفقة يبقى المرجع محضر المسّاح والوثيقة.
         </p>

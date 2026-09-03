@@ -98,52 +98,52 @@ export default function AdminBlogCategoriesPage() {
     finally { setBusy(false); }
   };
 
-  const field = "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
+  const field = "w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center gap-1 text-sm text-gray-400">
+      <div className="flex items-center gap-1 text-body text-muted">
         <Link href="/admin/blog" className="hover:text-primary">المدونة</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
-        <span className="text-gray-600">التصنيفات</span>
+        <span className="text-muted-600">التصنيفات</span>
       </div>
 
       <PageHeader icon={<HashtagSquare />} title="تصنيفات المدونة" subtitle={`${items.length.toLocaleString(NUMERIC_LOCALE)} تصنيف`}
         actions={<Button onClick={openNew}><AddCircle className="h-4 w-4" /> تصنيف جديد</Button>} />
 
-      <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-e2 overflow-hidden">
         {loading ? (
-          <div className="divide-y divide-gray-100">
-            {[0, 1, 2, 3].map((i) => <div key={i} className="h-16 bg-gray-50 animate-pulse m-3 rounded-xl" />)}
+          <div className="divide-y divide-muted-100">
+            {[0, 1, 2, 3].map((i) => <div key={i} className="h-16 bg-muted-50 animate-pulse m-3 rounded-xl" />)}
           </div>
         ) : items.length === 0 ? (
-          <div className="py-16 text-center text-gray-400">
+          <div className="py-16 text-center text-muted">
             <HashtagSquare className="h-12 w-12 mx-auto mb-3 opacity-30" />
             <p>لا تصنيفات بعد — أنشئ أول تصنيف</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-muted-100">
             {items.map((c) => (
-              <div key={c.id} className="flex items-center gap-4 p-4 hover:bg-gray-50/70 transition-colors">
-                <span className="text-xs text-gray-300 tabular-nums w-6 text-center">{c.order}</span>
+              <div key={c.id} className="flex items-center gap-4 p-4 hover:bg-muted-50/70 transition-colors">
+                <span className="text-caption text-muted-200 tabular-nums w-6 text-center">{c.order}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-gray-900 text-sm">{c.name}</h3>
+                    <h3 className="font-bold text-ink text-body">{c.name}</h3>
                     <Badge variant={c.articles_count > 0 ? "info" : "default"}>{c.articles_count} مقال</Badge>
                     {!c.is_active && <Badge variant="default">معطّل</Badge>}
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-400 mt-1">
-                    <span dir="ltr" className="font-mono bg-gray-100 px-1.5 py-0.5 rounded">{c.slug}</span>
+                  <div className="flex items-center gap-3 text-caption text-muted mt-1">
+                    <span dir="ltr" className="font-mono bg-muted-100 px-1.5 py-0.5 rounded">{c.slug}</span>
                     {c.description && <span className="truncate hidden sm:inline">{c.description}</span>}
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button onClick={() => toggleActive(c)} title={c.is_active ? "تعطيل" : "تفعيل"}
-                    className={`text-xs font-medium px-2.5 h-9 rounded-lg ${c.is_active ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-500"}`}>
+                    className={`text-caption font-medium px-2.5 h-9 rounded-lg ${c.is_active ? "bg-primary/10 text-primary" : "bg-muted-100 text-muted-500"}`}>
                     {c.is_active ? "مفعّل" : "معطّل"}
                   </button>
-                  <button onClick={() => openEdit(c)} title="تعديل" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center">
-                    <Pen className="h-4 w-4 text-gray-500" />
+                  <button onClick={() => openEdit(c)} title="تعديل" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center">
+                    <Pen className="h-4 w-4 text-muted-500" />
                   </button>
                   <button onClick={() => setDeleteTarget(c)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center">
                     <TrashBinMinimalistic className="h-4 w-4 text-red-500" />
@@ -155,7 +155,7 @@ export default function AdminBlogCategoriesPage() {
         )}
       </div>
 
-      <p className="text-xs text-gray-400 leading-relaxed">
+      <p className="text-caption text-muted leading-relaxed">
         المعرّف (slug) يُستخدم في رابط صفحة التصنيف <span dir="ltr" className="font-mono">/blog/category/&lt;slug&gt;</span>.
         اتركه فارغاً للتوليد الآلي من الاسم. تغيير المعرّف يُعيد ربط مقالاته تلقائياً. لا يمكن حذف تصنيف يحوي مقالات.
       </p>
@@ -166,7 +166,7 @@ export default function AdminBlogCategoriesPage() {
           <Input label="اسم التصنيف" value={form.name} onChange={(e) => setF("name", e.target.value)} required />
           <Input label="المعرّف (slug) — اتركه فارغاً للتوليد الآلي" value={form.slug} onChange={(e) => setF("slug", e.target.value)} dir="ltr" />
           <div>
-            <label className="text-sm font-semibold text-gray-700 mb-1.5 block">الوصف (يظهر في صفحة التصنيف — SEO)</label>
+            <label className="text-body font-semibold text-muted-700 mb-1.5 block">الوصف (يظهر في صفحة التصنيف — SEO)</label>
             <textarea className={`${field} resize-none`} rows={3} value={form.description}
               onChange={(e) => setF("description", e.target.value)} maxLength={300} />
           </div>
@@ -174,7 +174,7 @@ export default function AdminBlogCategoriesPage() {
             <Input label="الترتيب" type="number" value={form.order} onChange={(e) => setF("order", Number(e.target.value))} />
             <label className="flex items-center gap-2 cursor-pointer h-11">
               <input type="checkbox" checked={form.is_active} onChange={(e) => setF("is_active", e.target.checked)} className="rounded" />
-              <span className="text-sm text-gray-700">مفعّل</span>
+              <span className="text-body text-muted-700">مفعّل</span>
             </label>
           </div>
           <div className="flex gap-3 pt-2">

@@ -96,7 +96,7 @@ function AttachmentItem({
 function AudioPlaceholder({ mine, failed }: { mine: boolean; failed: boolean }) {
   const base = mine ? "bg-white/15 text-white" : "bg-primary/10 text-primary";
   return (
-    <div className={`flex min-w-[190px] items-center gap-2 rounded-xl px-3 py-2 text-xs ${base}`} dir="rtl">
+    <div className={`flex min-w-[190px] items-center gap-2 rounded-xl px-3 py-2 text-caption ${base}`} dir="rtl">
       {failed ? (
         <span className={mine ? "text-white/80" : "text-red-600"}>تعذّر رفع المقطع</span>
       ) : (
@@ -124,15 +124,15 @@ function FileChip({
   const name = fileNameFromUrl(attachment.url) || "ملف";
   const size = formatBytes(attachment.size_bytes);
   const wrap = mine ? "bg-white/15" : "bg-primary/10";
-  const text = mine ? "text-white" : "text-gray-800";
-  const sub = mine ? "text-white/70" : "text-gray-500";
+  const text = mine ? "text-white" : "text-ink";
+  const sub = mine ? "text-white/70" : "text-muted-500";
   const icon = mine ? "text-white" : "text-primary";
 
   const content = (
     <div className={`flex min-w-[180px] max-w-[240px] items-center gap-2.5 rounded-xl p-2.5 ${wrap}`} dir="rtl">
       <DocumentText className={`h-6 w-6 shrink-0 ${icon}`} />
       <div className="min-w-0 flex-1">
-        <p className={`truncate text-xs font-medium ${text}`}>{name}</p>
+        <p className={`truncate text-caption font-medium ${text}`}>{name}</p>
         {(size || uploading || failed) && (
           <p className={`text-[10px] ${failed ? (mine ? "text-white/80" : "text-red-600") : sub}`}>
             {failed ? "تعذّر الرفع" : uploading ? "جارٍ الرفع…" : size}
@@ -171,7 +171,7 @@ function StatusOverlay({
       {children}
       <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/45">
         {failed ? (
-          <span className="text-xs text-white">تعذّر رفع المرفق</span>
+          <span className="text-caption text-white">تعذّر رفع المرفق</span>
         ) : (
           <Restart className="h-6 w-6 animate-spin text-white" />
         )}
@@ -217,7 +217,7 @@ function ImageLightbox({ url, onClose }: { url: string; onClose: () => void }) {
         target="_blank"
         rel="noopener noreferrer"
         download
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-white"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-body font-medium text-ink hover:bg-white"
       >
         <Gallery className="h-4 w-4" /> فتح / تنزيل
       </a>

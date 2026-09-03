@@ -159,39 +159,39 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
 
   if (!request) return (
     <div className="text-center py-20">
-      <p className="text-gray-500 text-lg">الطلب غير موجود</p>
+      <p className="text-muted-500 text-h3">الطلب غير موجود</p>
       <Link href="/jobs"><Button className="mt-4">العودة للطلبات</Button></Link>
     </div>
   );
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <div className="flex items-center gap-2 text-body text-muted mb-6">
         <Link href="/jobs" className="hover:text-primary">طلبات الخدمات</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
-        <span className="text-gray-700 font-medium">تفاصيل الطلب</span>
-        <ShareButton title={request.title} text={`طلب خدمة على مسكني: ${request.title}`} className="mr-auto w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center hover:bg-primary/10 transition-colors" />
+        <span className="text-muted-700 font-medium">تفاصيل الطلب</span>
+        <ShareButton title={request.title} text={`طلب خدمة على مسكني: ${request.title}`} className="mr-auto w-9 h-9 bg-muted-50 rounded-lg flex items-center justify-center hover:bg-primary/10 transition-colors" />
       </div>
 
       <div className="bg-white rounded-2xl card-shadow p-6">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           {request.category && (
-            <span className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">{request.category.name_ar}</span>
+            <span className="text-caption font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">{request.category.name_ar}</span>
           )}
-          {!request.is_active && <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">مغلق</span>}
+          {!request.is_active && <span className="text-caption bg-muted-100 text-muted-500 px-2.5 py-1 rounded-full">مغلق</span>}
         </div>
 
-        <h1 className="text-xl font-bold text-gray-900 mb-3">{request.title}</h1>
+        <h1 className="text-h3 font-bold text-ink mb-3">{request.title}</h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
           <div className="bg-cream rounded-xl p-3">
-            <div className="flex items-center gap-1 text-xs text-gray-400 mb-0.5"><MapPoint className="h-3.5 w-3.5" /> المدينة</div>
-            <p className="text-sm font-bold text-gray-800">{request.city_name}</p>
+            <div className="flex items-center gap-1 text-caption text-muted mb-0.5"><MapPoint className="h-3.5 w-3.5" /> المدينة</div>
+            <p className="text-body font-bold text-ink">{request.city_name}</p>
           </div>
           {(request.budget_min || request.budget_max) && (
             <div className="bg-cream rounded-xl p-3">
-              <div className="flex items-center gap-1 text-xs text-gray-400 mb-0.5"><Dollar className="h-3.5 w-3.5" /> الميزانية</div>
-              <p className="text-sm font-bold text-gray-800">
+              <div className="flex items-center gap-1 text-caption text-muted mb-0.5"><Dollar className="h-3.5 w-3.5" /> الميزانية</div>
+              <p className="text-body font-bold text-ink">
                 {request.budget_min ? formatPrice(request.budget_min, request.currency) : "—"}{" - "}
                 {request.budget_max ? formatPrice(request.budget_max, request.currency) : "—"}
               </p>
@@ -201,20 +201,20 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
 
         {request.description && (
           <div className="mb-4">
-            <h3 className="font-bold text-gray-800 text-sm mb-1">التفاصيل</h3>
-            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{request.description}</p>
+            <h3 className="font-bold text-ink text-body mb-1">التفاصيل</h3>
+            <p className="text-body text-muted-600 leading-relaxed whitespace-pre-line">{request.description}</p>
           </div>
         )}
 
         {/* فيديو الطلب — بعد التفاصيل حيث يبحث عنه المهتمّ. */}
         {request.video_url && (
           <div className="mb-4">
-            <h3 className="font-bold text-gray-800 text-sm mb-1">فيديو</h3>
+            <h3 className="font-bold text-ink text-body mb-1">فيديو</h3>
             <YouTubePlayer url={request.video_url} title={request.title} />
           </div>
         )}
 
-        <div className="flex items-center gap-3 pt-3 border-t border-gray-100 text-xs text-gray-400">
+        <div className="flex items-center gap-3 pt-3 border-t border-muted-100 text-caption text-muted">
           <span className="flex items-center gap-1"><ClockCircle className="h-3.5 w-3.5" /> {formatRelativeTime(request.created_at)}</span>
           <span className="mr-auto font-bold text-primary">{request.offers_count} عرض</span>
         </div>
@@ -233,7 +233,7 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
       {/* مزوّدو خدمة مطابقون بالذكاء الاصطناعي */}
       <div className="bg-white rounded-2xl card-shadow p-6 mt-6">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <h2 className="font-bold text-gray-800 flex items-center gap-1.5">
+          <h2 className="font-bold text-ink flex items-center gap-1.5">
             <Stars className="h-5 w-5 text-primary" /> مزوّدون مطابقون (ذكاء اصطناعي)
           </h2>
           {(!matchesLoaded || matches.length > 0) && (
@@ -243,20 +243,20 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
           )}
         </div>
         {!matchesLoaded ? (
-          <p className="text-sm text-gray-400 mt-3">
+          <p className="text-body text-muted mt-3">
             دع الذكاء الاصطناعي يرشّح لك أنسب مزوّدي الخدمة لهذا الطلب.
           </p>
         ) : matches.length === 0 ? (
-          <p className="text-sm text-gray-400 mt-3">لا يوجد مزوّدون مطابقون حالياً.</p>
+          <p className="text-body text-muted mt-3">لا يوجد مزوّدون مطابقون حالياً.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             {matches.map((p) => (
               <div key={p.id}>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                  <span className="text-caption font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                     مطابقة {p.match_score}%
                   </span>
-                  {p.match_reason && <span className="text-xs text-gray-500 line-clamp-1">{p.match_reason}</span>}
+                  {p.match_reason && <span className="text-caption text-muted-500 line-clamp-1">{p.match_reason}</span>}
                 </div>
                 <ServiceCard provider={p} />
               </div>
@@ -267,7 +267,7 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
 
       {isOwner ? (
         <div className="bg-white rounded-2xl card-shadow p-6 mt-6">
-          <h2 className="font-bold text-gray-800 mb-4 flex items-center gap-1.5">
+          <h2 className="font-bold text-ink mb-4 flex items-center gap-1.5">
             <ChatRound className="h-5 w-5 text-primary" /> العروض المستلمة ({offers.length})
           </h2>
           {offers.length === 0 ? (
@@ -275,24 +275,24 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
           ) : (
             <div className="space-y-4">
               {offers.map((offer) => (
-                <div key={offer.id} className="border border-gray-100 rounded-2xl p-4">
+                <div key={offer.id} className="border border-muted-100 rounded-2xl p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                       {offer.provider_avatar ? <img src={offer.provider_avatar} className="w-full h-full object-cover" alt="" /> : <User className="h-4 w-4 text-primary" />}
                     </div>
                     <div>
-                      <p className="font-semibold text-sm text-gray-800 flex items-center gap-1">
+                      <p className="font-semibold text-body text-ink flex items-center gap-1">
                         {offer.provider_name}
                         {offer.provider_verified && <CheckCircle className="h-3.5 w-3.5 text-primary" />}
                       </p>
-                      <p className="text-xs text-gray-400">{formatRelativeTime(offer.created_at)}</p>
+                      <p className="text-caption text-muted">{formatRelativeTime(offer.created_at)}</p>
                     </div>
-                    {offer.is_accepted && <span className="mr-auto text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">مقبول</span>}
+                    {offer.is_accepted && <span className="mr-auto text-caption bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">مقبول</span>}
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{offer.message}</p>
-                  {offer.price && <p className="text-sm font-bold text-gold mb-2">السعر المقترح: {formatPrice(offer.price, offer.currency)}</p>}
+                  <p className="text-body text-muted-600 mb-2">{offer.message}</p>
+                  {offer.price && <p className="text-body font-bold text-gold mb-2">السعر المقترح: {formatPrice(offer.price, offer.currency)}</p>}
                   {offer.offerer_phone && (
-                    <a href={`tel:${offer.offerer_phone}`} className="inline-flex items-center gap-1 text-sm text-primary font-semibold" dir="ltr">
+                    <a href={`tel:${offer.offerer_phone}`} className="inline-flex items-center gap-1 text-body text-primary font-semibold" dir="ltr">
                       <Phone className="h-3.5 w-3.5" /> {offer.offerer_phone}
                     </a>
                   )}
@@ -306,28 +306,28 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
         </div>
       ) : (
         <div className="bg-white rounded-2xl card-shadow p-6 mt-6">
-          <h2 className="font-bold text-gray-800 mb-4">قدّم عرضك</h2>
+          <h2 className="font-bold text-ink mb-4">قدّم عرضك</h2>
           {!user ? (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">سجّل الدخول لتقديم عرض</p>
+              <p className="text-body text-muted-500">سجّل الدخول لتقديم عرض</p>
               <Button size="sm" variant="outline" onClick={() => requireAuth()}>تسجيل الدخول</Button>
             </div>
           ) : !request.is_active ? (
-            <p className="text-sm text-gray-500">هذا الطلب مغلق ولا يقبل عروضاً جديدة.</p>
+            <p className="text-body text-muted-500">هذا الطلب مغلق ولا يقبل عروضاً جديدة.</p>
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-semibold text-gray-700 mb-1.5 block">رسالة العرض <span className="text-red-500">*</span></label>
-                <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={4} placeholder="اكتب ما تعرضه على صاحب الطلب..." className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none" />
+                <label className="text-body font-semibold text-muted-700 mb-1.5 block">رسالة العرض <span className="text-red-500">*</span></label>
+                <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={4} placeholder="اكتب ما تعرضه على صاحب الطلب..." className="w-full border border-muted-200 rounded-xl px-4 py-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">السعر المقترح (اختياري)</label>
+                  <label className="text-body font-semibold text-muted-700 mb-1.5 block">السعر المقترح (اختياري)</label>
                   <MoneyInput value={price} onChange={setPrice} placeholder="السعر عند التواصل" />
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">العملة</label>
-                  <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="w-full h-11 border border-gray-200 rounded-xl px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <label className="text-body font-semibold text-muted-700 mb-1.5 block">العملة</label>
+                  <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="w-full h-11 border border-muted-200 rounded-xl px-3 text-body bg-white focus:outline-none focus:ring-2 focus:ring-primary/30">
                     <option value="YER">ريال يمني</option>
                     <option value="SAR">ريال سعودي</option>
                     <option value="USD">دولار</option>

@@ -26,15 +26,15 @@ export function ShareBar({ url, title }: { url: string; title: string }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm font-semibold text-gray-500 ml-1">شارك:</span>
+      <span className="text-body font-semibold text-muted-500 ml-1">شارك:</span>
       {links.map((l) => (
         <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer"
-          className={`text-xs font-bold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90 ${l.cls}`}>
+          className={`text-caption font-bold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90 ${l.cls}`}>
           {l.label}
         </a>
       ))}
       <button onClick={copy}
-        className="text-xs font-bold px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors flex items-center gap-1">
+        className="text-caption font-bold px-3 py-1.5 rounded-full bg-muted-100 text-muted-700 hover:bg-muted-200 transition-colors flex items-center gap-1">
         {copied ? <><CheckCircle weight="Bold" className="h-3.5 w-3.5 text-green-600" /> تم النسخ</> : <><LinkIcon className="h-3.5 w-3.5" /> نسخ الرابط</>}
       </button>
     </div>

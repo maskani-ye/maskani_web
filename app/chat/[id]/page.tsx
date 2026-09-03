@@ -429,8 +429,8 @@ export default function ChatThreadPage() {
     <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col h-[calc(100vh-8rem)]">
       {/* Header */}
       <div className="bg-white rounded-2xl card-shadow p-4 mb-4 flex items-center gap-3 shrink-0">
-        <Link href="/chat" className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors" aria-label="رجوع">
-          <AltArrowRight className="h-5 w-5 text-gray-500" />
+        <Link href="/chat" className="p-1.5 rounded-lg hover:bg-muted-100 transition-colors" aria-label="رجوع">
+          <AltArrowRight className="h-5 w-5 text-muted-500" />
         </Link>
         {other ? (
           <Link href={`/users/${other.id}`} className="flex items-center gap-3 flex-1 min-w-0">
@@ -442,11 +442,11 @@ export default function ChatThreadPage() {
               )}
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-gray-900 truncate">{other.full_name}</p>
+              <p className="font-bold text-ink truncate">{other.full_name}</p>
               {otherTyping ? (
-                <span className="text-xs text-primary animate-pulse">يكتب الآن…</span>
+                <span className="text-caption text-primary animate-pulse">يكتب الآن…</span>
               ) : conversation?.property != null ? (
-                <span className="flex items-center gap-1 text-xs text-primary">
+                <span className="flex items-center gap-1 text-caption text-primary">
                   <Buildings2 className="h-3.5 w-3.5" /> بخصوص عقار
                 </span>
               ) : null}
@@ -483,11 +483,11 @@ export default function ChatThreadPage() {
               <div key={m.id} className={`flex ${mine ? "justify-start" : "justify-end"}`}>
                 <div
                   className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
-                    mine ? "bg-primary text-white" : "bg-gray-100 text-gray-800"
+                    mine ? "bg-primary text-white" : "bg-muted-100 text-ink"
                   }`}
                 >
                   {m.is_deleted ? (
-                    <p className={`text-sm italic ${mine ? "text-white/60" : "text-gray-400"}`}>
+                    <p className={`text-body italic ${mine ? "text-white/60" : "text-muted"}`}>
                       تم حذف هذه الرسالة
                     </p>
                   ) : (
@@ -497,10 +497,10 @@ export default function ChatThreadPage() {
                           <MessageAttachments attachments={m.attachments} mine={mine} />
                         </div>
                       )}
-                      {m.body && <p className="text-sm whitespace-pre-wrap break-words">{m.body}</p>}
+                      {m.body && <p className="text-body whitespace-pre-wrap break-words">{m.body}</p>}
                     </>
                   )}
-                  <div className={`flex items-center gap-1 mt-1 ${mine ? "text-white/70" : "text-gray-400"}`}>
+                  <div className={`flex items-center gap-1 mt-1 ${mine ? "text-white/70" : "text-muted"}`}>
                     <span className="text-[10px]">{formatRelativeTime(m.created_at)}</span>
                     {m.is_edited && !m.is_deleted && <span className="text-[10px]">· معدّلة</span>}
                     {mine && !m.is_deleted && m.id > 0 && (
@@ -514,7 +514,7 @@ export default function ChatThreadPage() {
         )}
         {otherTyping && (
           <div className="flex justify-end">
-            <div className="bg-gray-100 text-gray-500 rounded-2xl px-4 py-2.5 text-sm animate-pulse">يكتب الآن…</div>
+            <div className="bg-muted-100 text-muted-500 rounded-2xl px-4 py-2.5 text-body animate-pulse">يكتب الآن…</div>
           </div>
         )}
         <div ref={bottomRef} />
@@ -556,7 +556,7 @@ export default function ChatThreadPage() {
               onBlur={stopTyping}
               rows={1}
               placeholder="اكتب رسالة..."
-              className="flex-1 resize-none border border-gray-200 rounded-xl px-4 py-2.5 text-sm max-h-32 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="flex-1 resize-none border border-muted-200 rounded-xl px-4 py-2.5 text-body max-h-32 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
             />
           </>
         )}

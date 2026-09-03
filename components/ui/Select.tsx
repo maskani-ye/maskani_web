@@ -17,7 +17,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="flex flex-col gap-1.5 w-full">
         {label && (
-          <label htmlFor={selectId} className="text-sm font-semibold text-gray-700">
+          <label htmlFor={selectId} className="text-body font-semibold text-muted-700">
             {label}
             {props.required && <span className="text-red-500 mr-1">*</span>}
           </label>
@@ -27,10 +27,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ref={ref}
             id={selectId}
             className={cn(
-              "w-full h-11 border rounded-xl bg-white text-gray-900 text-sm px-4",
+              "w-full h-11 border rounded-xl bg-white text-ink text-body px-4",
               "appearance-none transition-all duration-200",
               "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary",
-              error ? "border-red-400" : "border-gray-200",
+              error ? "border-red-400" : "border-muted-200",
               className
             )}
             {...props}
@@ -42,9 +42,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             ))}
           </select>
-          <AltArrowDown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <AltArrowDown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted pointer-events-none" />
         </div>
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-caption text-red-500">{error}</p>}
       </div>
     );
   }

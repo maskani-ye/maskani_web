@@ -45,7 +45,7 @@ export default async function TermsPage() {
           </p>
         )}
 
-        <p className="mt-10 border-t border-black/10 pt-6 text-sm text-[#1A1A1A]/60">
+        <p className="mt-10 border-t border-black/10 pt-6 text-body text-[#1A1A1A]/60">
           © {new Date().getFullYear()} مسكني — جميع الحقوق محفوظة.
         </p>
     </LegalPage>

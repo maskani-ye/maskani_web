@@ -76,9 +76,9 @@ export default function FavoritesPage() {
           ))}
         </div>
       ) : favorites.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-20 text-muted">
           <Heart className="h-10 w-10 mb-3 opacity-30" />
-          <p className="text-sm mb-4">لا توجد عقارات في المفضّلة</p>
+          <p className="text-body mb-4">لا توجد عقارات في المفضّلة</p>
           <Button onClick={() => router.push("/properties")} variant="outline" size="sm">تصفّح العقارات</Button>
         </div>
       ) : (
@@ -96,7 +96,7 @@ export default function FavoritesPage() {
 
           {total > LIMIT && (
             <div className="flex items-center justify-between mt-6">
-              <span className="text-sm text-gray-500">{offset + 1}–{Math.min(offset + LIMIT, total)} من {total}</span>
+              <span className="text-body text-muted-500">{offset + 1}–{Math.min(offset + LIMIT, total)} من {total}</span>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" disabled={offset === 0} onClick={() => fetchFavorites(offset - LIMIT)}>السابق</Button>
                 <Button size="sm" variant="outline" disabled={offset + LIMIT >= total} onClick={() => fetchFavorites(offset + LIMIT)}>التالي</Button>

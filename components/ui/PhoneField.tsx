@@ -140,7 +140,7 @@ export function PhoneField({
   return (
     <div className="flex flex-col gap-1.5 w-full" ref={wrapRef}>
       {label && (
-        <label htmlFor={fieldId} className="text-sm font-semibold text-gray-700">
+        <label htmlFor={fieldId} className="text-body font-semibold text-muted-700">
           {label}
           {required && <span className="text-red-500 mr-1">*</span>}
         </label>
@@ -151,7 +151,7 @@ export function PhoneField({
           className={cn(
             "flex items-stretch h-11 border rounded-xl bg-white overflow-hidden",
             "transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary",
-            error ? "border-red-400" : "border-gray-200",
+            error ? "border-red-400" : "border-muted-200",
             disabled && "opacity-60"
           )}
         >
@@ -160,14 +160,14 @@ export function PhoneField({
             type="button"
             disabled={disabled}
             onClick={() => setOpen((o) => !o)}
-            className="flex items-center gap-1.5 px-3 border-l border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors shrink-0 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-3 border-l border-muted-200 bg-muted-50 hover:bg-muted-100 transition-colors shrink-0 disabled:cursor-not-allowed"
             aria-label="اختر الدولة"
           >
-            <AltArrowDown className="h-4 w-4 text-gray-400" />
-            <span className="text-sm text-gray-700 dir-ltr" dir="ltr">
+            <AltArrowDown className="h-4 w-4 text-muted" />
+            <span className="text-body text-muted-700 dir-ltr" dir="ltr">
               {country.code}
             </span>
-            <span className="text-base leading-none">{country.flag}</span>
+            <span className="text-body-lg leading-none">{country.flag}</span>
           </button>
 
           {/* رقم الهاتف المحلي */}
@@ -181,16 +181,16 @@ export function PhoneField({
             value={local}
             onChange={(e) => handleLocalChange(toEnglishDigits(e.target.value))}
             placeholder={placeholder}
-            className="flex-1 min-w-0 px-4 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none text-left"
+            className="flex-1 min-w-0 px-4 text-body text-ink placeholder-muted bg-white focus:outline-none text-left"
           />
         </div>
 
         {/* قائمة الدول */}
         {open && (
-          <div className="absolute z-50 mt-2 w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-            <div className="p-2 border-b border-gray-100">
+          <div className="absolute z-50 mt-2 w-full bg-white rounded-2xl shadow-xl border border-muted-100 overflow-hidden">
+            <div className="p-2 border-b border-muted-100">
               <div className="relative flex items-center">
-                <span className="absolute right-3 text-gray-400 pointer-events-none">
+                <span className="absolute right-3 text-muted pointer-events-none">
                   <Magnifer className="h-4 w-4" />
                 </span>
                 <input
@@ -198,13 +198,13 @@ export function PhoneField({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="ابحث عن دولة..."
-                  className="w-full h-9 border border-gray-200 rounded-lg bg-white text-sm pr-9 pl-3 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  className="w-full h-9 border border-muted-200 rounded-lg bg-white text-body pr-9 pl-3 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 />
               </div>
             </div>
             <ul className="max-h-60 overflow-y-auto py-1">
               {filtered.length === 0 ? (
-                <li className="px-4 py-3 text-sm text-gray-400 text-center">لا توجد نتائج</li>
+                <li className="px-4 py-3 text-body text-muted text-center">لا توجد نتائج</li>
               ) : (
                 filtered.map((c) => {
                   const selected = c.code === country.code && c.name === country.name;
@@ -214,17 +214,17 @@ export function PhoneField({
                         type="button"
                         onClick={() => pickCountry(c)}
                         className={cn(
-                          "flex w-full items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors",
+                          "flex w-full items-center gap-3 px-4 py-2.5 text-body hover:bg-muted-50 transition-colors",
                           selected && "bg-primary/5"
                         )}
                       >
-                        <span className="text-xl leading-none">{c.flag}</span>
-                        <span className="flex-1 text-right text-gray-700">{c.nameAr}</span>
+                        <span className="text-h3 leading-none">{c.flag}</span>
+                        <span className="flex-1 text-right text-muted-700">{c.nameAr}</span>
                         <span
                           dir="ltr"
                           className={cn(
-                            "text-sm font-semibold",
-                            selected ? "text-primary" : "text-gray-400"
+                            "text-body font-semibold",
+                            selected ? "text-primary" : "text-muted"
                           )}
                         >
                           {c.code}
@@ -239,8 +239,8 @@ export function PhoneField({
         )}
       </div>
 
-      {error && <p className="text-xs text-red-500">{error}</p>}
-      {hint && !error && <p className="text-xs text-gray-400">{hint}</p>}
+      {error && <p className="text-caption text-red-500">{error}</p>}
+      {hint && !error && <p className="text-caption text-muted">{hint}</p>}
     </div>
   );
 }

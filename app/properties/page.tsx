@@ -45,7 +45,7 @@ export default function PropertiesPage() {
         والإيجار في صنعاء وعدن وتعز وإب والحديدة وسائر المحافظات، مع الأسعار والصور والموقع
         على الخريطة، وتواصل مباشر مع أصحاب العقارات بلا عمولات.
       </SectionIntro>
-      <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-gray-400">جارِ التحميل…</div>}>
+      <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-muted">جارِ التحميل…</div>}>
         <PropertiesListClient />
       </Suspense>
       <LatestProperties />

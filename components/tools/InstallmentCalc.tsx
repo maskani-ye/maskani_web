@@ -35,7 +35,7 @@ export default function InstallmentCalc() {
         <ResultRow label="المبلغ المتبقّي بعد المقدّمة" value={fmtMoney(remaining, cur)} />
         <ResultRow label="إجمالي الربح المضاف" value={fmtMoney(profitAmt, cur)} />
         <ResultRow label="الإجمالي المستحقّ (أقساطًا)" value={fmtMoney(totalDue, cur)} />
-        <p className="text-xs text-gray-400 leading-relaxed mt-1">
+        <p className="text-caption text-muted leading-relaxed mt-1">
           وثّق كل بند في العقد. اقرأ <Link href="/blog/buy-in-installments-yemen" className="text-primary hover:underline">الشراء بالتقسيط في اليمن</Link> و<Link href="/blog/mortgage-alternatives-yemen" className="text-primary hover:underline">بدائل تمويل الشراء</Link>.
         </p>
       </div>

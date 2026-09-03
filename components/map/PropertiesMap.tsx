@@ -13,7 +13,7 @@ import type { PropertiesLeafletMapProps } from "./PropertiesLeafletMap";
 const PropertiesLeafletMap = dynamic(() => import("./PropertiesLeafletMap"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full w-full items-center justify-center rounded-2xl bg-primary-50 text-sm text-primary">
+    <div className="flex h-full w-full items-center justify-center rounded-2xl bg-primary-50 text-body text-primary">
       جاري تحميل الخريطة…
     </div>
   ),

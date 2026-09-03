@@ -52,7 +52,7 @@ export default async function RecentItemsLinks({
 
   return (
     <nav aria-label={heading} className="max-w-7xl mx-auto px-4 sm:px-6 mt-4 mb-12">
-      <h2 className="text-lg font-bold text-ink mb-4">{heading}</h2>
+      <h2 className="text-h3 font-bold text-ink mb-4">{heading}</h2>
       <ul className="flex flex-wrap gap-2">
         {items.map((it) => {
           const label = it.title || it.full_name || `#${it.id}`;
@@ -60,7 +60,7 @@ export default async function RecentItemsLinks({
             <li key={it.id}>
               <Link
                 href={`${hrefPrefix}/${it.id}`}
-                className="inline-block max-w-[16rem] truncate rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm text-ink hover:border-primary hover:text-primary transition-colors"
+                className="inline-block max-w-[16rem] truncate rounded-full border border-muted-200 bg-white px-4 py-1.5 text-body text-ink hover:border-primary hover:text-primary transition-colors"
               >
                 {label}
                 {it.city_name ? ` — ${it.city_name}` : ""}

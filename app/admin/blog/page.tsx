@@ -175,7 +175,7 @@ export default function AdminBlogPage() {
     finally { setBusy(false); }
   };
 
-  const field = "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
+  const field = "w-full border border-muted-200 rounded-xl px-4 py-2.5 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary";
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -195,35 +195,35 @@ export default function AdminBlogPage() {
           onChange={(e) => setStatusFilter(e.target.value)} className="w-full sm:w-44" />
       </Toolbar>
 
-      <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-e2 overflow-hidden">
         {loading ? (
-          <div className="divide-y divide-gray-100">
-            {[0, 1, 2, 3].map((i) => <div key={i} className="h-16 bg-gray-50 animate-pulse m-3 rounded-xl" />)}
+          <div className="divide-y divide-muted-100">
+            {[0, 1, 2, 3].map((i) => <div key={i} className="h-16 bg-muted-50 animate-pulse m-3 rounded-xl" />)}
           </div>
         ) : items.length === 0 ? (
-          <div className="py-16 text-center text-gray-400">
+          <div className="py-16 text-center text-muted">
             <NotebookBookmark className="h-12 w-12 mx-auto mb-3 opacity-30" />
             <p>لا مقالات بعد — أنشئ أول مقال</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-muted-100">
             {items.map((a) => (
-              <div key={a.id} className="flex items-center gap-4 p-4 hover:bg-gray-50/70 transition-colors">
+              <div key={a.id} className="flex items-center gap-4 p-4 hover:bg-muted-50/70 transition-colors">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-gray-900 text-sm line-clamp-1">{a.title}</h3>
+                    <h3 className="font-bold text-ink text-body line-clamp-1">{a.title}</h3>
                     <Badge variant={a.status === "published" ? "success" : "default"}>{a.status === "published" ? "منشور" : "مسودّة"}</Badge>
                     {a.is_featured && <Badge variant="warning">مميّز</Badge>}
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-400 mt-1 flex-wrap">
+                  <div className="flex items-center gap-3 text-caption text-muted mt-1 flex-wrap">
                     <span>{a.category_display}</span>
                     <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {a.views_count}</span>
                     <span dir="ltr" className="truncate">/blog/{a.slug}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button onClick={() => openEdit(a)} title="تعديل" className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-primary/10 flex items-center justify-center">
-                    <Pen className="h-4 w-4 text-gray-500" />
+                  <button onClick={() => openEdit(a)} title="تعديل" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center">
+                    <Pen className="h-4 w-4 text-muted-500" />
                   </button>
                   <button onClick={() => setDeleteTarget(a)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center">
                     <TrashBinMinimalistic className="h-4 w-4 text-red-500" />
@@ -236,8 +236,8 @@ export default function AdminBlogPage() {
 
         {/* ترقيم صفحي */}
         {total > PER_PAGE && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-            <span className="text-xs text-gray-500 tabular-nums">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-muted-100">
+            <span className="text-caption text-muted-500 tabular-nums">
               {offset + 1}–{Math.min(offset + PER_PAGE, total)} من {total.toLocaleString(NUMERIC_LOCALE)}
             </span>
             <div className="flex gap-2">
@@ -255,22 +255,22 @@ export default function AdminBlogPage() {
         <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
           {/* توليد بالذكاء الاصطناعي */}
           <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
-            <label className="text-xs font-semibold text-primary flex items-center gap-1.5 mb-2">
+            <label className="text-caption font-semibold text-primary flex items-center gap-1.5 mb-2">
               <HashtagSquare className="h-4 w-4" /> توليد مقال بالذكاء الاصطناعي (من فكرة)
             </label>
             <div className="flex items-stretch gap-2">
               <input value={genTopic} onChange={(e) => setGenTopic(e.target.value)}
                 placeholder="مثال: نصائح شراء شقة في تعز"
-                className="flex-1 border border-gray-200 rounded-xl px-3 text-sm h-10 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                className="flex-1 border border-muted-200 rounded-xl px-3 text-body h-10 focus:outline-none focus:ring-2 focus:ring-primary/30" />
               <Button size="sm" loading={generating} onClick={generate}>توليد</Button>
             </div>
-            <p className="text-[11px] text-gray-400 mt-1.5">يملأ العنوان والمحتوى وحقول SEO — راجعها قبل النشر.</p>
+            <p className="text-[11px] text-muted mt-1.5">يملأ العنوان والمحتوى وحقول SEO — راجعها قبل النشر.</p>
           </div>
 
           <Input label="العنوان" value={form.title} onChange={(e) => setF("title", e.target.value)} required />
           <Input label="المعرّف (slug) — اتركه فارغاً للتوليد الآلي" value={form.slug} onChange={(e) => setF("slug", e.target.value)} dir="ltr" />
           <div>
-            <label className="text-sm font-semibold text-gray-700 mb-1.5 block">المقتطف (يظهر في البطاقات ونتائج البحث)</label>
+            <label className="text-body font-semibold text-muted-700 mb-1.5 block">المقتطف (يظهر في البطاقات ونتائج البحث)</label>
             <textarea className={`${field} resize-none`} rows={2} value={form.excerpt} onChange={(e) => setF("excerpt", e.target.value)} maxLength={300} />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -278,17 +278,17 @@ export default function AdminBlogPage() {
             <Select label="الحالة" options={STATUSES} value={form.status} onChange={(e) => setF("status", e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-semibold text-gray-700 mb-1.5 block">المحتوى (HTML — استخدم &lt;h2&gt; و&lt;p&gt; و&lt;a&gt; للروابط الداخلية)</label>
-            <textarea className={`${field} font-mono text-xs leading-relaxed`} rows={12} value={form.body} onChange={(e) => setF("body", e.target.value)} dir="ltr" />
+            <label className="text-body font-semibold text-muted-700 mb-1.5 block">المحتوى (HTML — استخدم &lt;h2&gt; و&lt;p&gt; و&lt;a&gt; للروابط الداخلية)</label>
+            <textarea className={`${field} font-mono text-caption leading-relaxed`} rows={12} value={form.body} onChange={(e) => setF("body", e.target.value)} dir="ltr" />
           </div>
           <Input label="الوسوم (مفصولة بفاصلة)" value={form.tags} onChange={(e) => setF("tags", e.target.value)} />
           <div>
-            <label className="text-sm font-semibold text-gray-700 mb-1.5 block">صورة الغلاف (للمشاركة وOG)</label>
-            <input type="file" accept="image/*" onChange={(e) => setCover(e.target.files?.[0] ?? null)} className="text-sm" />
-            {editing?.cover_image && !cover && <p className="text-xs text-gray-400 mt-1">توجد صورة حالية — اختر جديدة لاستبدالها.</p>}
+            <label className="text-body font-semibold text-muted-700 mb-1.5 block">صورة الغلاف (للمشاركة وOG)</label>
+            <input type="file" accept="image/*" onChange={(e) => setCover(e.target.files?.[0] ?? null)} className="text-body" />
+            {editing?.cover_image && !cover && <p className="text-caption text-muted mt-1">توجد صورة حالية — اختر جديدة لاستبدالها.</p>}
           </div>
-          <details className="border border-gray-100 rounded-xl p-3">
-            <summary className="text-sm font-semibold text-gray-700 cursor-pointer">تحسين SEO (اختياري)</summary>
+          <details className="border border-muted-100 rounded-xl p-3">
+            <summary className="text-body font-semibold text-muted-700 cursor-pointer">تحسين SEO (اختياري)</summary>
             <div className="space-y-3 mt-3">
               <Input label="عنوان SEO" value={form.meta_title} onChange={(e) => setF("meta_title", e.target.value)} maxLength={70} />
               <Input label="وصف SEO" value={form.meta_description} onChange={(e) => setF("meta_description", e.target.value)} maxLength={180} />
@@ -297,7 +297,7 @@ export default function AdminBlogPage() {
           </details>
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.is_featured} onChange={(e) => setF("is_featured", e.target.checked)} className="rounded" />
-            <span className="text-sm text-gray-700">مقال مميّز (يظهر بارزاً)</span>
+            <span className="text-body text-muted-700">مقال مميّز (يظهر بارزاً)</span>
           </label>
           <div className="flex gap-3 pt-2">
             <Button variant="outline" fullWidth onClick={() => setOpen(false)}>إلغاء</Button>
