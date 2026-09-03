@@ -291,7 +291,7 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
                 rel="noopener noreferrer"
                 onClick={() => trackVisitEvent("whatsapp_click", { targetType: "service", targetId: id })}
               >
-                <Button fullWidth variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
+                <Button fullWidth variant="outline" className="border-success-500 text-success-600 hover:bg-success-50">
                   <ChatSquare className="h-4 w-4" /> واتساب
                 </Button>
               </a>

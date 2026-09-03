@@ -17,9 +17,9 @@ export function smart(n: number): string {
 }
 
 const BASIS_TONE: Record<string, string> = {
-  official: "text-emerald-700 bg-emerald-50",
-  documented: "text-sky-700 bg-sky-50",
-  local: "text-amber-700 bg-amber-50",
+  official: "text-success-700 bg-success-50",
+  documented: "text-info-700 bg-info-50",
+  local: "text-warning-700 bg-warning-50",
 };
 
 /**
@@ -113,7 +113,7 @@ export default function AreaConverter({
             </optgroup>
           </select>
         </div>
-        <p className={`inline-block text-[11px] font-bold rounded-lg px-2 py-1 mt-2 ${BASIS_TONE[from.basis]}`}>
+        <p className={`inline-block text-micro font-bold rounded-lg px-2 py-1 mt-2 ${BASIS_TONE[from.basis]}`}>
           {from.name}: {smart(m2Of(from))} م² · {BASIS_LABEL[from.basis]}
         </p>
       </div>
@@ -130,7 +130,7 @@ export default function AreaConverter({
             <div key={u.key} className="rounded-xl border border-muted-100 bg-white px-3.5 py-2.5 flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-body font-semibold text-ink truncate">{u.name}</p>
-                <p className="text-[11px] text-muted truncate">
+                <p className="text-micro text-muted truncate">
                   {u.region ? `${u.region} · ` : ""}{smart(m2Of(u))} م²{u.note ? ` · ${u.note}` : ""}
                 </p>
               </div>
@@ -142,8 +142,8 @@ export default function AreaConverter({
 
       {/* ④ ضبط الوحدات غير الرسمية */}
       {editable.length > 0 && (
-        <details className="rounded-2xl border border-dashed border-amber-200 bg-amber-50/40 p-4">
-          <summary className="text-body font-semibold text-amber-800 cursor-pointer">
+        <details className="rounded-2xl border border-dashed border-warning-200 bg-warning-50/40 p-4">
+          <summary className="text-body font-semibold text-warning-700 cursor-pointer">
             قيمة الوحدة تختلف في منطقتك؟ اضبطها ({editable.length})
           </summary>
           <p className="text-caption text-muted-500 leading-relaxed mt-2.5">

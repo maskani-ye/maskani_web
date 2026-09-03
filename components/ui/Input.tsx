@@ -32,7 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label htmlFor={inputId} className="text-body font-semibold text-muted-700">
             {label}
-            {props.required && <span className="text-red-500 mr-1">*</span>}
+            {props.required && <span className="text-danger-500 mr-1">*</span>}
           </label>
         )}
         <div className="relative flex items-center">
@@ -48,7 +48,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary",
               startIcon ? "pr-10 pl-4" : "px-4",
               endIcon ? "pl-10" : "",
-              error ? "border-red-400 focus:ring-red-200 focus:border-red-500" : "border-muted-200",
+              error ? "border-danger-500 focus:ring-danger-200 focus:border-danger-500" : "border-muted-200",
               className
             )}
             {...props}
@@ -58,7 +58,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <span className="absolute left-3 text-muted">{endIcon}</span>
           )}
         </div>
-        {error && <p className="text-caption text-red-500 flex items-center gap-1">{error}</p>}
+        {error && <p className="text-caption text-danger-500 flex items-center gap-1">{error}</p>}
         {hint && !error && <p className="text-caption text-muted">{hint}</p>}
       </div>
     );

@@ -331,7 +331,7 @@ function BehaviorTab({ id }: { id: string }) {
   return (
     <div className="space-y-5">
       {nothing && (
-        <div className="rounded-2xl bg-amber-50 ring-1 ring-amber-200 p-4 text-caption text-amber-800 leading-relaxed">
+        <div className="rounded-2xl bg-warning-50 ring-1 ring-warning-200 p-4 text-caption text-warning-700 leading-relaxed">
           لا سلوك مرصود لهذا المستخدم. الرصد يبدأ من أوّل استخدام بعد تسجيل الدخول —
           فالحساب الذي أُنشئ ولم يُستعمل يظهر فارغاً، وهذا وصفٌ صحيح لا خلل.
         </div>
@@ -545,7 +545,7 @@ function SessionsTab({ id, onRevoked }: { id: string; onRevoked: () => void }) {
 
       <ConfirmDialog
         open={confirm}
-        icon={<TrashBinMinimalistic className="h-6 w-6 text-red-500" />}
+        icon={<TrashBinMinimalistic className="h-6 w-6 text-danger-500" />}
         title="إنهاء كل جلسات المستخدم؟"
         message="سيُخرَج من كل أجهزته ويحتاج تسجيل دخول جديداً. يُستعمل عند الشكّ في اختراق الحساب."
         variant="danger" confirmLabel="إنهاء الجلسات" loading={busy}

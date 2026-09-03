@@ -58,16 +58,16 @@ function FlowNodeBox({ data, selected }: { data: FlowData; selected: boolean }) 
       <div className="px-3 py-2 rounded-t-[10px] text-white flex items-center gap-1.5" style={{ background: color }}>
         {n.is_start && <Star className="h-3.5 w-3.5" />}
         <span className="text-caption font-bold flex-1 truncate">{n.title || n.key}</span>
-        <span className="text-[10px] opacity-80">{NODE_TYPES.find((t) => t.value === n.node_type)?.label}</span>
+        <span className="text-micro opacity-80">{NODE_TYPES.find((t) => t.value === n.node_type)?.label}</span>
       </div>
-      {n.body && <p className="px-3 py-1.5 text-[11px] text-muted-500 line-clamp-2">{n.body}</p>}
+      {n.body && <p className="px-3 py-1.5 text-micro text-muted-500 line-clamp-2">{n.body}</p>}
       <div className="px-2 pb-2 pt-1 space-y-1">
-        {n.buttons.length === 0 && <p className="text-[10px] text-muted-200 px-1">لا أزرار</p>}
+        {n.buttons.length === 0 && <p className="text-micro text-muted-200 px-1">لا أزرار</p>}
         {n.buttons.map((b) => (
-          <div key={b.id} className="relative rounded-lg bg-muted-50 border border-muted-200 px-2 py-1 text-[11px] text-muted-700 flex items-center gap-1">
+          <div key={b.id} className="relative rounded-lg bg-muted-50 border border-muted-200 px-2 py-1 text-micro text-muted-700 flex items-center gap-1">
             <span className="flex-1 truncate">{b.label || "—"}</span>
-            {b.action && <span className="text-[9px] bg-gold/15 text-gold-700 px-1 rounded">⚡</span>}
-            {b.is_item_action && <span className="text-[9px] bg-primary/10 text-primary px-1 rounded">عنصر</span>}
+            {b.action && <span className="text-micro bg-gold/15 text-gold-700 px-1 rounded">⚡</span>}
+            {b.is_item_action && <span className="text-micro bg-primary/10 text-primary px-1 rounded">عنصر</span>}
             <Handle type="source" position={Position.Right} id={b.id}
               style={{ background: color, width: 9, height: 9, right: -13 }} />
           </div>
@@ -235,7 +235,7 @@ function NodeInspector({ node, nodeOptions, actionOptions, onChange, onDelete }:
     <div className="w-80 border-r border-muted-100 bg-white overflow-y-auto p-4 space-y-3 shrink-0">
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-ink text-body">خصائص العقدة</h3>
-        <button onClick={onDelete} title="حذف العقدة" className="text-red-500 hover:bg-red-50 rounded p-1"><TrashBinMinimalistic className="h-4 w-4" /></button>
+        <button onClick={onDelete} title="حذف العقدة" className="text-danger-500 hover:bg-danger-50 rounded p-1"><TrashBinMinimalistic className="h-4 w-4" /></button>
       </div>
       <Input label="العنوان" value={node.title} onChange={(e) => onChange({ title: e.target.value })} />
       <Input label="المعرّف (key) — تلقائي إن فارغ" value={node.key} onChange={(e) => onChange({ key: e.target.value })} dir="ltr" />
@@ -262,7 +262,7 @@ function NodeInspector({ node, nodeOptions, actionOptions, onChange, onDelete }:
             <div key={b.id} className="rounded-lg border border-muted-100 p-2.5 space-y-2 bg-muted-50/50">
               <div className="flex items-center gap-1">
                 <input className={`${field} flex-1`} value={b.label} placeholder="نص الزرّ" onChange={(e) => setBtn(b.id, { label: e.target.value })} />
-                <button onClick={() => delBtn(b.id)} className="text-red-400 hover:text-red-600 p-1"><TrashBinMinimalistic className="h-3.5 w-3.5" /></button>
+                <button onClick={() => delBtn(b.id)} className="text-danger-500 hover:text-danger-600 p-1"><TrashBinMinimalistic className="h-3.5 w-3.5" /></button>
               </div>
               <div className="grid grid-cols-2 gap-1.5">
                 <select className={field} value={b.target_node ?? ""} onChange={(e) => setBtn(b.id, { target_node: e.target.value || null })}>
@@ -273,7 +273,7 @@ function NodeInspector({ node, nodeOptions, actionOptions, onChange, onDelete }:
                   {actionOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
               </div>
-              <div className="flex items-center gap-3 text-[11px] text-muted-500">
+              <div className="flex items-center gap-3 text-micro text-muted-500">
                 <label className="flex items-center gap-1 cursor-pointer">
                   <input type="checkbox" checked={b.style === "card"} onChange={(e) => setBtn(b.id, { style: e.target.checked ? "card" : "button" })} /> بطاقة
                 </label>
@@ -362,10 +362,10 @@ function ActionsDrawer({ open, onClose, actions, onReload }: {
             <div key={a.id} className="flex items-center gap-2 rounded-lg border border-muted-100 px-3 py-2">
               <div className="flex-1 min-w-0">
                 <p className="text-body font-semibold text-ink">{a.name}</p>
-                <p className="text-[11px] text-muted truncate" dir="ltr">{a.method} {a.url_template}</p>
+                <p className="text-micro text-muted truncate" dir="ltr">{a.method} {a.url_template}</p>
               </div>
               <button onClick={() => openEdit(a)} className="text-caption text-primary font-medium">تعديل</button>
-              <button onClick={() => delAction(a)} className="text-red-400 p-1"><TrashBinMinimalistic className="h-3.5 w-3.5" /></button>
+              <button onClick={() => delAction(a)} className="text-danger-500 p-1"><TrashBinMinimalistic className="h-3.5 w-3.5" /></button>
             </div>
           ))}
         </div>

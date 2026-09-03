@@ -74,7 +74,7 @@ export function MatchingRequests({ propertyId }: { propertyId: number }) {
               </p>
               <p className="text-caption font-bold text-primary mt-0.5">{budget(m)}</p>
               {m.match_reason && (
-                <p className="text-[11px] text-muted mt-0.5 truncate">{m.match_reason}</p>
+                <p className="text-micro text-muted mt-0.5 truncate">{m.match_reason}</p>
               )}
             </div>
             <AltArrowLeft className="h-4 w-4 text-muted-200 shrink-0" />

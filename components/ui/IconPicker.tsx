@@ -124,7 +124,7 @@ export function IconPicker({ value, onChange, label = "الأيقونة" }: Icon
                         )}
                       >
                         <ServiceIcon icon={key} className="h-6 w-6" />
-                        <span className="text-[11px] font-mono truncate max-w-full leading-tight">{key}</span>
+                        <span className="text-micro font-mono truncate max-w-full leading-tight">{key}</span>
                       </button>
                     );
                   })}

@@ -61,9 +61,9 @@ export function formatDuration(seconds?: number | null): string {
 function levelColor(pct: number, warn: number, danger: number, invert: boolean) {
   const bad = invert ? pct <= danger : pct >= danger;
   const warning = invert ? pct <= warn : pct >= warn;
-  if (bad) return { bar: "bg-red-500", text: "text-red-600" };
-  if (warning) return { bar: "bg-gold", text: "text-amber-600" };
-  return { bar: "bg-emerald-500", text: "text-emerald-600" };
+  if (bad) return { bar: "bg-danger-500", text: "text-danger-600" };
+  if (warning) return { bar: "bg-gold", text: "text-warning-600" };
+  return { bar: "bg-success-500", text: "text-success-600" };
 }
 
 export function Gauge({
@@ -117,9 +117,9 @@ export function Metric({
 }) {
   const toneClass = {
     default: "text-ink",
-    good: "text-emerald-600",
-    warn: "text-amber-600",
-    bad: "text-red-600",
+    good: "text-success-600",
+    warn: "text-warning-600",
+    bad: "text-danger-600",
   }[tone];
   return (
     <Card className="p-4">

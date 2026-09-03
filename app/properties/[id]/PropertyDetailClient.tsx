@@ -176,8 +176,8 @@ export default function PropertyDetailClient(
   // خطأ شبكة/خادم (ليس 404) — اعرض رسالة واضحة + إعادة المحاولة، لا "غير موجود".
   if (!property && error && !error.notFound) return (
     <div className="max-w-md mx-auto text-center py-20 px-4">
-      <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
-        <DangerTriangle className="h-7 w-7 text-red-500" />
+      <div className="w-14 h-14 rounded-2xl bg-danger-50 flex items-center justify-center mx-auto mb-4">
+        <DangerTriangle className="h-7 w-7 text-danger-500" />
       </div>
       <p className="text-ink font-bold text-h3 mb-1">تعذّر تحميل العقار</p>
       <p className="text-muted-500 text-body mb-5">{error.message}</p>
@@ -276,8 +276,8 @@ export default function PropertyDetailClient(
                 </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={handleFavorite} className="w-10 h-10 bg-muted-50 rounded-xl flex items-center justify-center hover:bg-red-50 transition-colors">
-                  <Heart className={`h-5 w-5 ${favorited ? "fill-red-500 text-red-500" : "text-muted"}`} />
+                <button onClick={handleFavorite} className="w-10 h-10 bg-muted-50 rounded-xl flex items-center justify-center hover:bg-danger-50 transition-colors">
+                  <Heart className={`h-5 w-5 ${favorited ? "fill-danger-500 text-danger-500" : "text-muted"}`} />
 
                 </button>
                 <button onClick={handleShare} className="w-10 h-10 bg-muted-50 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors">
@@ -444,7 +444,7 @@ export default function PropertyDetailClient(
                   <span className="text-caption font-bold px-2.5 py-1 rounded-full bg-gold text-white">مميّز</span>
                 )}
                 {property.price_reduced && (
-                  <span className="text-caption font-bold px-2.5 py-1 rounded-full bg-green-600 text-white">انخفض السعر</span>
+                  <span className="text-caption font-bold px-2.5 py-1 rounded-full bg-success-600 text-white">انخفض السعر</span>
                 )}
               </div>
             )}
@@ -485,7 +485,7 @@ export default function PropertyDetailClient(
                   rel="noopener noreferrer"
                   onClick={() => trackVisitEvent("whatsapp_click", { targetType: "property", targetId: property.id })}
                 >
-                  <Button fullWidth variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
+                  <Button fullWidth variant="outline" className="border-success-500 text-success-600 hover:bg-success-50">
                     <ChatSquare className="h-4 w-4" />
                     واتساب
                   </Button>

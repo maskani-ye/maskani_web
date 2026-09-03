@@ -234,7 +234,7 @@ export default function AdminPropertiesPage() {
                             {(l.ai_risk === "high" || l.ai_risk === "medium") && (
                               <span
                                 title={(l.ai_flags ?? []).join(" · ")}
-                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${l.ai_risk === "high" ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-700"}`}>
+                                className={`text-micro font-bold px-1.5 py-0.5 rounded-full ${l.ai_risk === "high" ? "bg-danger-100 text-danger-600" : "bg-warning-100 text-warning-700"}`}>
                                 {l.ai_risk === "high" ? "⚠ خطورة عالية" : "⚠ مشتبه"}
                               </span>
                             )}
@@ -266,8 +266,8 @@ export default function AdminPropertiesPage() {
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       {l.is_active
-                        ? <span className="flex items-center gap-1 text-caption text-green-600 font-medium"><CheckCircle className="h-3.5 w-3.5" />نشط</span>
-                        : <span className="flex items-center gap-1 text-caption text-red-500 font-medium"><DangerCircle className="h-3.5 w-3.5" />موقوف</span>}
+                        ? <span className="flex items-center gap-1 text-caption text-success-600 font-medium"><CheckCircle className="h-3.5 w-3.5" />نشط</span>
+                        : <span className="flex items-center gap-1 text-caption text-danger-500 font-medium"><DangerCircle className="h-3.5 w-3.5" />موقوف</span>}
                     </td>
                     <td className="px-4 py-3">
                       <button

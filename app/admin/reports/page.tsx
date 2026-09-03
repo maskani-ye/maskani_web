@@ -173,17 +173,17 @@ export default function AdminReportsPage() {
                       </div>
                       <p className="font-semibold text-ink text-body line-clamp-1">{report.title}</p>
                       <p className="text-caption text-muted-500 mt-0.5">
-                        المتهم: <span className="text-red-600 font-medium">{report.accused_name}</span>
+                        المتهم: <span className="text-danger-600 font-medium">{report.accused_name}</span>
                         {report.accused_phone && <span className="mr-2 text-muted">{report.accused_phone}</span>}
                       </p>
                     </div>
                     <div className="text-left flex-shrink-0">
                       <p className="text-caption text-muted">{formatRelativeTime(report.created_at)}</p>
                       <div className="flex items-center gap-2 mt-1 justify-end">
-                        <span className="flex items-center gap-0.5 text-caption text-green-600">
+                        <span className="flex items-center gap-0.5 text-caption text-success-600">
                           <Like className="h-3 w-3" />{report.votes_credible}
                         </span>
-                        <span className="flex items-center gap-0.5 text-caption text-red-500">
+                        <span className="flex items-center gap-0.5 text-caption text-danger-500">
                           <Dislike className="h-3 w-3" />{report.votes_not_credible}
                         </span>
                         <span className="flex items-center gap-0.5 text-caption text-muted">
@@ -246,8 +246,8 @@ export default function AdminReportsPage() {
               </div>
 
               {/* Accused */}
-              <div className="bg-red-50 rounded-xl p-3 space-y-1">
-                <p className="text-caption font-bold text-red-700 mb-1">المتهم</p>
+              <div className="bg-danger-50 rounded-xl p-3 space-y-1">
+                <p className="text-caption font-bold text-danger-700 mb-1">المتهم</p>
                 <p className="text-body font-semibold text-ink">{selected.accused_name}</p>
                 {selected.accused_phone && (
                   <p className="text-caption text-muted-600 flex items-center gap-1">
@@ -297,15 +297,15 @@ export default function AdminReportsPage() {
 
               {/* Votes */}
               <div className="flex gap-3">
-                <div className="flex-1 bg-green-50 rounded-xl p-3 text-center">
-                  <Like className="h-5 w-5 text-green-600 mx-auto mb-1" />
-                  <p className="text-h3 font-bold text-green-700">{selected.votes_credible}</p>
-                  <p className="text-caption text-green-600">مصداقي</p>
+                <div className="flex-1 bg-success-50 rounded-xl p-3 text-center">
+                  <Like className="h-5 w-5 text-success-600 mx-auto mb-1" />
+                  <p className="text-h3 font-bold text-success-700">{selected.votes_credible}</p>
+                  <p className="text-caption text-success-600">مصداقي</p>
                 </div>
-                <div className="flex-1 bg-red-50 rounded-xl p-3 text-center">
-                  <Dislike className="h-5 w-5 text-red-500 mx-auto mb-1" />
-                  <p className="text-h3 font-bold text-red-600">{selected.votes_not_credible}</p>
-                  <p className="text-caption text-red-500">غير مصداقي</p>
+                <div className="flex-1 bg-danger-50 rounded-xl p-3 text-center">
+                  <Dislike className="h-5 w-5 text-danger-500 mx-auto mb-1" />
+                  <p className="text-h3 font-bold text-danger-600">{selected.votes_not_credible}</p>
+                  <p className="text-caption text-danger-500">غير مصداقي</p>
                 </div>
                 <div className="flex-1 bg-muted-50 rounded-xl p-3 text-center">
                   <p className="text-h3 font-bold text-muted-700">{selected.credibility_score > 0 ? "+" : ""}{selected.credibility_score}</p>
@@ -349,7 +349,7 @@ export default function AdminReportsPage() {
                     onClick={() => updateStatus("verified")}
                     loading={updatingStatus}
                     disabled={selected.status === "verified"}
-                    className="bg-green-600 hover:bg-green-700 text-white border-0"
+                    className="bg-success-600 hover:bg-success-700 text-white border-0"
                   >
                     <CheckCircle className="h-4 w-4" /> توثيق
                   </Button>

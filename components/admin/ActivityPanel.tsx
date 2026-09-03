@@ -132,7 +132,7 @@ export default function ActivityPanel() {
             key={f.key}
             type="button"
             onClick={() => pick(f.key)}
-            className={`text-[11px] rounded-lg px-2 py-1 font-semibold transition-colors ${
+            className={`text-micro rounded-lg px-2 py-1 font-semibold transition-colors ${
               types === f.key
                 ? "bg-primary text-white"
                 : "bg-muted-100 text-muted-600 hover:bg-muted-200"
@@ -159,9 +159,9 @@ export default function ActivityPanel() {
                   {it.label}
                   {it.actor && <span className="font-normal text-muted"> · {it.actor}</span>}
                 </p>
-                <p className="text-[11px] text-muted-500 truncate">{it.title}</p>
+                <p className="text-micro text-muted-500 truncate">{it.title}</p>
               </div>
-              <span className="text-[10px] text-muted shrink-0 mt-0.5 tabular-nums">{ago(it.at)}</span>
+              <span className="text-micro text-muted shrink-0 mt-0.5 tabular-nums">{ago(it.at)}</span>
             </div>
           );
           return href ? (

@@ -212,7 +212,7 @@ export function Navbar() {
                 <Link href="/chat" aria-label="المحادثات" className="relative p-2 rounded-lg hover:bg-muted-100 transition-colors">
                   <ChatRound className="h-5 w-5 text-muted-600" />
                   {chatUnread > 0 && (
-                    <span className="absolute top-0.5 left-0.5 min-w-[1.1rem] h-[1.1rem] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
+                    <span className="absolute top-0.5 left-0.5 min-w-[1.1rem] h-[1.1rem] px-1 flex items-center justify-center bg-danger-500 text-white text-micro font-bold rounded-full">
                       {chatUnread > 99 ? "99+" : chatUnread}
                     </span>
                   )}
@@ -254,7 +254,7 @@ export function Navbar() {
                         </Link>
                       )}
                       <hr className="my-1 border-muted-100" />
-                      <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2.5 hover:bg-red-50 text-body text-red-600 w-full text-right">
+                      <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2.5 hover:bg-danger-50 text-body text-danger-600 w-full text-right">
                         <Login className="h-4 w-4" /> تسجيل الخروج
                       </button>
                     </div>
@@ -407,13 +407,13 @@ export function Navbar() {
                 <Link href="/chat" className="flex items-center justify-between text-body text-muted-700 py-2" onClick={() => setMobileOpen(false)}>
                   <span className="flex items-center gap-2"><ChatRound className="h-4 w-4 text-primary" /> المحادثات</span>
                   {chatUnread > 0 && (
-                    <span className="min-w-[1.1rem] h-[1.1rem] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
+                    <span className="min-w-[1.1rem] h-[1.1rem] px-1 flex items-center justify-center bg-danger-500 text-white text-micro font-bold rounded-full">
                       {chatUnread > 99 ? "99+" : chatUnread}
                     </span>
                   )}
                 </Link>
                 <Link href="/profile" className="block text-body text-muted-700 py-2" onClick={() => setMobileOpen(false)}>ملفي الشخصي</Link>
-                <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="text-body text-red-600 py-2 text-right w-full">تسجيل الخروج</button>
+                <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="text-body text-danger-600 py-2 text-right w-full">تسجيل الخروج</button>
               </div>
             )}
           </div>

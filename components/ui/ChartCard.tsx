@@ -55,7 +55,7 @@ export function ChartCard({
             {Icon && <Icon className="h-4 w-4 text-primary shrink-0" />}
             <span className="truncate">{title}</span>
           </h3>
-          {subtitle && <p className="text-[11px] text-muted mt-1 leading-snug">{subtitle}</p>}
+          {subtitle && <p className="text-micro text-muted mt-1 leading-snug">{subtitle}</p>}
         </div>
         {action}
       </div>

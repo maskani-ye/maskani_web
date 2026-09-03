@@ -331,7 +331,7 @@ export default function AdminVerificationPage() {
             {selected.status === "rejected" && selected.review_note && (
               <div className="mb-4">
                 <p className="text-caption font-semibold text-muted-600 mb-1.5">سبب الرفض</p>
-                <p className="text-body text-red-600 bg-red-50 rounded-xl p-3 leading-relaxed whitespace-pre-wrap break-words">
+                <p className="text-body text-danger-600 bg-danger-50 rounded-xl p-3 leading-relaxed whitespace-pre-wrap break-words">
                   {selected.review_note}
                 </p>
               </div>

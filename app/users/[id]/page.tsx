@@ -171,7 +171,7 @@ export default function PublicProfilePage() {
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-h3 font-bold text-ink">{profile.full_name}</h1>
               {profile.is_verified && (
-                <span className="flex items-center gap-0.5 text-caption text-green-600 font-medium">
+                <span className="flex items-center gap-0.5 text-caption text-success-600 font-medium">
                   <CheckCircle className="h-4 w-4" /> موثّق
                 </span>
               )}

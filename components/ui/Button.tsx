@@ -20,7 +20,7 @@ const variants = {
   secondary: "bg-gold text-white hover:bg-gold-500 active:bg-gold-600 shadow-sm hover:shadow-md",
   outline: "border-2 border-primary text-primary hover:bg-primary-50 active:bg-primary-100",
   ghost: "text-primary hover:bg-primary-50 active:bg-primary-100",
-  danger: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm",
+  danger: "bg-danger-600 text-white hover:bg-danger-700 active:bg-danger-700 shadow-sm",
   success: "bg-success-600 text-white hover:bg-success-700 active:bg-success-700 shadow-sm hover:shadow-md",
 };
 

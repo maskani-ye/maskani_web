@@ -154,12 +154,12 @@ export default function AdminCurrenciesPage() {
           إلّا إن عُرض. */}
       <Card className={`p-5 border ${
         job === null ? "bg-muted-50 border-muted-200"
-          : job.ok ? "bg-emerald-50/60 border-emerald-200"
-          : "bg-red-50/60 border-red-200"
+          : job.ok ? "bg-success-50/60 border-success-200"
+          : "bg-danger-50/60 border-danger-200"
       }`}>
         <div className="flex items-start gap-3">
           <ClockCircle className={`h-5 w-5 shrink-0 mt-0.5 ${
-            job === null ? "text-muted" : job.ok ? "text-emerald-600" : "text-red-600"
+            job === null ? "text-muted" : job.ok ? "text-success-600" : "text-danger-600"
           }`} />
           <div className="min-w-0 flex-1">
             <p className="text-body font-bold text-ink">
@@ -186,7 +186,7 @@ export default function AdminCurrenciesPage() {
                   </p>
                 )}
                 {Object.keys(job.skipped ?? {}).length > 0 && (
-                  <div className="mt-2 text-caption text-amber-800 bg-amber-100/70 rounded-xl px-3 py-2">
+                  <div className="mt-2 text-caption text-warning-700 bg-warning-100/70 rounded-xl px-3 py-2">
                     <p className="font-semibold mb-1">
                       لم تُطبَّق (قفزة تتجاوز الحدّ — تحتاج قرارك):
                     </p>
@@ -198,7 +198,7 @@ export default function AdminCurrenciesPage() {
                   </div>
                 )}
                 {job.error && (
-                  <p className="text-caption text-red-700 mt-1">الخطأ: {job.error}</p>
+                  <p className="text-caption text-danger-700 mt-1">الخطأ: {job.error}</p>
                 )}
               </>
             )}
@@ -206,8 +206,8 @@ export default function AdminCurrenciesPage() {
         </div>
       </Card>
 
-      <Card className="p-4 bg-amber-50/60 border border-amber-200">
-        <p className="text-body text-amber-900 leading-relaxed">
+      <Card className="p-4 bg-warning-50/60 border border-warning-200">
+        <p className="text-body text-warning-700 leading-relaxed">
           يُدخَل السعر بصيغة <strong>كم وحدة مقابل دولار واحد</strong> — كما يُقال في
           السوق. تعديل أي سعر يُعيد فوراً حساب القيم المرجعية لكل العقارات والطلبات
           والعروض، فتبقى الفلترة والترتيب صحيحة.

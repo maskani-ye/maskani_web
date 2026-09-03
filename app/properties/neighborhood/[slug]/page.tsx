@@ -51,6 +51,24 @@ async function getNeighborhoods(): Promise<Neighborhood[]> {
  *  (decodeURIComponent) كي يعمل الرابط سواء وصل مُرمَّزاً أو خاماً. */
 async function resolveNeighborhood(slug: string): Promise<Neighborhood | null> {
   const wanted = decodeURIComponent(slug);
+  // ⚠️ **كانت تُنزّل القائمة كاملةً لتجد صفّاً واحداً.** الردّ 2.7 م.ب، وهو فوق
+  // سقف تخزين Next (2 م.ب) فلا يُخزَّن أصلاً — فكل صفحة حيٍّ في البناء تُنزّله
+  // وتُحلّله من جديد، فتتجاوز مهلة الستّين ثانية. سقط بها البناء البارد كلّه
+  // (`Export encountered an error on /properties/neighborhood/[slug]`) وكان
+  // البناء الدافئ ينجو بذاكرة الجلب وحدها. `?slug=` يردّ صفّاً واحداً.
+  try {
+    const res = await fetch(
+      `${API}/cities/neighborhoods/?slug=${encodeURIComponent(wanted)}`,
+      { next: { revalidate: 3600 } },
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const rows: Neighborhood[] = Array.isArray(data) ? data : data.results ?? [];
+      const hit = rows.find((n) => n.slug === wanted || n.name === wanted);
+      if (hit) return hit;
+    }
+  } catch { /* نسقط إلى القائمة الكاملة أدناه */ }
+  // احتياطٌ لخادمٍ لم يُنشر عليه المرشّح بعد — يبقى الموقع عاملاً لا 404.
   const list = await getNeighborhoods();
   return list.find((n) => n.slug === wanted || n.name === wanted) ?? null;
 }

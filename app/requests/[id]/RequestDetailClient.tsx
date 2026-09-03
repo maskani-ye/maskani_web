@@ -156,7 +156,7 @@ export default function RequestDetailClient({ id, initialRequest }: { id: string
             {offerTypeLabels[request.offer_type] || request.offer_type}
           </span>
           {!request.is_active && <span className="text-caption bg-muted-100 text-muted-500 px-2.5 py-1 rounded-full">مغلق</span>}
-          {request.is_expired && <span className="text-caption bg-red-50 text-red-500 px-2.5 py-1 rounded-full">منتهي</span>}
+          {request.is_expired && <span className="text-caption bg-danger-50 text-danger-500 px-2.5 py-1 rounded-full">منتهي</span>}
         </div>
 
         <h1 className="text-h3 font-bold text-ink mb-3">{request.title || `${request.client_name} يبحث عن عقار`}</h1>
@@ -269,7 +269,7 @@ export default function RequestDetailClient({ id, initialRequest }: { id: string
                       </p>
                       <p className="text-caption text-muted">{formatRelativeTime(offer.created_at)}</p>
                     </div>
-                    {offer.is_accepted && <span className="mr-auto text-caption bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">مقبول</span>}
+                    {offer.is_accepted && <span className="mr-auto text-caption bg-success-100 text-success-700 px-2 py-0.5 rounded-full font-semibold">مقبول</span>}
                   </div>
                   <p className="text-body text-muted-600 mb-2">{offer.message}</p>
                   {offer.property_details && (
@@ -307,7 +307,7 @@ export default function RequestDetailClient({ id, initialRequest }: { id: string
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="text-body font-semibold text-muted-700 mb-1.5 block">رسالة العرض <span className="text-red-500">*</span></label>
+                <label className="text-body font-semibold text-muted-700 mb-1.5 block">رسالة العرض <span className="text-danger-500">*</span></label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}

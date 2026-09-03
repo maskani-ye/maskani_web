@@ -97,7 +97,7 @@ export default function ChatListPage() {
                       )}
                     </div>
                     {other?.is_online && (
-                      <span className="absolute bottom-0 left-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white" title="متصل الآن" />
+                      <span className="absolute bottom-0 left-0 w-3 h-3 rounded-full bg-success-500 border-2 border-white" title="متصل الآن" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">

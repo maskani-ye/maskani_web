@@ -222,7 +222,7 @@ export default function AdminServiceCategoriesPage() {
                   <td className="py-3 px-4">
                     <div className="flex gap-2">
                       <button onClick={() => openEdit(cat)} className="text-caption text-primary hover:underline font-medium">تعديل</button>
-                      <button onClick={() => setDeleteTarget(cat)} className="text-caption text-red-500 hover:underline font-medium">حذف</button>
+                      <button onClick={() => setDeleteTarget(cat)} className="text-caption text-danger-500 hover:underline font-medium">حذف</button>
                     </div>
                   </td>
                 </tr>
@@ -309,7 +309,7 @@ export default function AdminServiceCategoriesPage() {
           <p className="text-muted-600 text-body mb-6">
             سيتم حذف الصنف <strong>{deleteTarget.name_ar}</strong> نهائياً.
             {typeof deleteTarget.providers_count === "number" && deleteTarget.providers_count > 0 && (
-              <span className="block mt-2 text-red-500">
+              <span className="block mt-2 text-danger-500">
                 يوجد {deleteTarget.providers_count} مزوّد مرتبط بهذا الصنف — قد يمنع النظام الحذف.
               </span>
             )}

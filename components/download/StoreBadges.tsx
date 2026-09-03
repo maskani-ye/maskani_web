@@ -53,11 +53,11 @@ function Badge({
     >
       <span className="shrink-0 h-6 w-6 grid place-items-center text-white">{logo}</span>
       <span className="flex flex-col leading-tight text-left" dir="ltr">
-        <span className="text-[10px] text-white/70">{small}</span>
+        <span className="text-micro text-white/70">{small}</span>
         <span className="text-body font-bold text-white -mt-0.5">{name}</span>
       </span>
       {disabled && (
-        <span className="absolute -top-1.5 -left-1.5 text-[9px] font-bold bg-gold text-ink rounded-full px-1.5 py-0.5">
+        <span className="absolute -top-1.5 -left-1.5 text-micro font-bold bg-gold text-ink rounded-full px-1.5 py-0.5">
           قريباً
         </span>
       )}
@@ -90,7 +90,7 @@ export function StoreBadges() {
       </div>
       {/* رقم النسخة كان ثابتاً معرّفاً بلا عرض — ومن ثبّت نسخة قديمة يحتاجه
           ليعرف أنّ لديه غيرها. */}
-      <p className="text-[11px] text-muted">النسخة {APK_VERSION}</p>
+      <p className="text-micro text-muted">النسخة {APK_VERSION}</p>
     </div>
   );
 }

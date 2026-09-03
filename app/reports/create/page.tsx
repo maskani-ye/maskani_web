@@ -87,7 +87,7 @@ export default function CreateFraudReportPage() {
           <Select label="المدينة" options={cities.map((c) => ({ value: c.id, label: c.name_ar }))} value={form.city} onChange={(e) => handleChange("city", e.target.value)} placeholder="اختر المدينة" />
         </div>
         <div>
-          <label className="text-body font-semibold text-muted-700 mb-1.5 block">تفاصيل البلاغ <span className="text-red-500">*</span></label>
+          <label className="text-body font-semibold text-muted-700 mb-1.5 block">تفاصيل البلاغ <span className="text-danger-500">*</span></label>
           <textarea
             value={form.details}
             onChange={(e) => handleChange("details", e.target.value)}
@@ -111,7 +111,7 @@ export default function CreateFraudReportPage() {
               {images.map((img, i) => (
                 <div key={i} className="relative w-16 h-14 rounded-xl overflow-hidden">
                   <img src={URL.createObjectURL(img)} alt="" className="w-full h-full object-cover" />
-                  <button type="button" onClick={() => setImages((p) => p.filter((_, j) => j !== i))} className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                  <button type="button" onClick={() => setImages((p) => p.filter((_, j) => j !== i))} className="absolute top-0.5 right-0.5 w-5 h-5 bg-danger-500 rounded-full flex items-center justify-center">
                     <CloseCircle className="h-3 w-3 text-white" />
                   </button>
                 </div>

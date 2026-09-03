@@ -142,7 +142,7 @@ export function PhoneField({
       {label && (
         <label htmlFor={fieldId} className="text-body font-semibold text-muted-700">
           {label}
-          {required && <span className="text-red-500 mr-1">*</span>}
+          {required && <span className="text-danger-500 mr-1">*</span>}
         </label>
       )}
 
@@ -151,7 +151,7 @@ export function PhoneField({
           className={cn(
             "flex items-stretch h-11 border rounded-xl bg-white overflow-hidden",
             "transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary",
-            error ? "border-red-400" : "border-muted-200",
+            error ? "border-danger-500" : "border-muted-200",
             disabled && "opacity-60"
           )}
         >
@@ -239,7 +239,7 @@ export function PhoneField({
         )}
       </div>
 
-      {error && <p className="text-caption text-red-500">{error}</p>}
+      {error && <p className="text-caption text-danger-500">{error}</p>}
       {hint && !error && <p className="text-caption text-muted">{hint}</p>}
     </div>
   );

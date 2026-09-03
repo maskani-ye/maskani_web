@@ -63,8 +63,8 @@ export default function FraudReportsPage() {
   };
 
   const statusIcon = (s: string) => {
-    if (s === "verified") return <CheckCircle className="h-4 w-4 text-red-600" />;
-    if (s === "pending") return <ClockCircle className="h-4 w-4 text-yellow-600" />;
+    if (s === "verified") return <CheckCircle className="h-4 w-4 text-danger-600" />;
+    if (s === "pending") return <ClockCircle className="h-4 w-4 text-warning-600" />;
     return <DangerTriangle className="h-4 w-4 text-muted" />;
   };
 
@@ -84,9 +84,9 @@ export default function FraudReportsPage() {
       </div>
 
       {/* Warning Banner */}
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-        <DangerTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-        <p className="text-body text-amber-800">
+      <div className="bg-warning-50 border border-warning-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
+        <DangerTriangle className="h-5 w-5 text-warning-600 flex-shrink-0 mt-0.5" />
+        <p className="text-body text-warning-700">
           البلاغات المنشورة هنا لأغراض تحذيرية وقائية. يُرجى الالتزام بالمصداقية والدقة عند رفع أي بلاغ.
         </p>
       </div>
@@ -167,7 +167,7 @@ export default function FraudReportsPage() {
 
                     <h3 className="font-bold text-ink mb-1 line-clamp-1">{report.title}</h3>
                     <p className="text-body text-muted-500 mb-1">
-                      <span className="text-red-600 font-semibold">المتهم:</span> {report.accused_name}
+                      <span className="text-danger-600 font-semibold">المتهم:</span> {report.accused_name}
                       {report.accused_phone && <span className="mr-2 text-muted">({report.accused_phone})</span>}
                     </p>
                     <p className="text-caption text-muted">
@@ -183,14 +183,14 @@ export default function FraudReportsPage() {
                 <div className="flex items-center gap-4 mt-4 pt-3 border-t border-muted-100">
                   <button
                     onClick={(e) => handleVote(report.id, true, e)}
-                    className="flex items-center gap-1.5 text-body text-green-600 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 text-body text-success-600 hover:bg-success-50 px-3 py-1.5 rounded-lg transition-colors"
                   >
                     <Like className="h-4 w-4" />
                     <span>مصداقي ({report.votes_credible})</span>
                   </button>
                   <button
                     onClick={(e) => handleVote(report.id, false, e)}
-                    className="flex items-center gap-1.5 text-body text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 text-body text-danger-500 hover:bg-danger-50 px-3 py-1.5 rounded-lg transition-colors"
                   >
                     <Dislike className="h-4 w-4" />
                     <span>غير مصداقي ({report.votes_not_credible})</span>

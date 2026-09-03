@@ -156,8 +156,8 @@ export default function AdminDashboardPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <Card className="flex flex-col items-center text-center py-16">
-          <span className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
-            <DangerTriangle className="h-7 w-7 text-red-600" />
+          <span className="w-14 h-14 rounded-2xl bg-danger-50 flex items-center justify-center mb-4">
+            <DangerTriangle className="h-7 w-7 text-danger-600" />
           </span>
           <h2 className="text-h3 font-bold text-ink mb-1">تعذّر تحميل الإحصائيات</h2>
           <p className="text-body text-muted-500 mb-6 max-w-sm">{error}</p>
@@ -220,7 +220,7 @@ export default function AdminDashboardPage() {
           >
             <Routing className="h-4 w-4" /> تدفّق محادثات البوت
           </Link>
-          <div className="text-caption bg-green-50 text-green-600 px-3 py-1.5 rounded-full flex items-center gap-1 font-medium">
+          <div className="text-caption bg-success-50 text-success-600 px-3 py-1.5 rounded-full flex items-center gap-1 font-medium">
             <CheckCircle className="h-3.5 w-3.5" /> البيانات مباشرة من الخادم
           </div>
         </div>
@@ -368,20 +368,20 @@ export default function AdminDashboardPage() {
         {/* Pending Reports */}
         <Card>
           <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
-            <ShieldWarning className="h-5 w-5 text-red-500" /> إدارة البلاغات
+            <ShieldWarning className="h-5 w-5 text-danger-500" /> إدارة البلاغات
           </h3>
           <div className="flex gap-2 mb-4">
-            <div className="flex-1 text-center bg-yellow-50 rounded-xl p-2">
-              <p className="text-h3 font-bold text-yellow-700">{stats.pending_fraud}</p>
-              <p className="text-caption text-yellow-600">قيد المراجعة</p>
+            <div className="flex-1 text-center bg-warning-50 rounded-xl p-2">
+              <p className="text-h3 font-bold text-warning-700">{stats.pending_fraud}</p>
+              <p className="text-caption text-warning-600">قيد المراجعة</p>
             </div>
-            <div className="flex-1 text-center bg-green-50 rounded-xl p-2">
-              <p className="text-h3 font-bold text-green-700">{stats.verified_fraud}</p>
-              <p className="text-caption text-green-600">موثّق</p>
+            <div className="flex-1 text-center bg-success-50 rounded-xl p-2">
+              <p className="text-h3 font-bold text-success-700">{stats.verified_fraud}</p>
+              <p className="text-caption text-success-600">موثّق</p>
             </div>
-            <div className="flex-1 text-center bg-red-50 rounded-xl p-2">
-              <p className="text-h3 font-bold text-red-700">{stats.rejected_fraud}</p>
-              <p className="text-caption text-red-600">مرفوض</p>
+            <div className="flex-1 text-center bg-danger-50 rounded-xl p-2">
+              <p className="text-h3 font-bold text-danger-700">{stats.rejected_fraud}</p>
+              <p className="text-caption text-danger-600">مرفوض</p>
             </div>
           </div>
           <Button onClick={() => router.push("/admin/reports")} variant="outline" fullWidth>

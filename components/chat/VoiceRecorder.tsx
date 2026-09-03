@@ -183,7 +183,7 @@ export function VoiceRecorder({ onSend, onRecordingChange, disabled }: VoiceReco
         type="button"
         onClick={cancel}
         aria-label="إلغاء التسجيل"
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-danger-600 hover:bg-danger-50"
       >
         <TrashBinMinimalistic className="h-5 w-5" />
       </button>

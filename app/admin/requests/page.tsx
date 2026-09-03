@@ -287,14 +287,14 @@ export default function AdminRequestsPage() {
                         className="p-1.5 rounded-lg hover:bg-muted-100 transition-colors"
                       >
                         {req.is_active
-                          ? <ClockCircle className="h-4 w-4 text-yellow-500" />
-                          : <CheckCircle className="h-4 w-4 text-green-500" />}
+                          ? <ClockCircle className="h-4 w-4 text-warning-500" />
+                          : <CheckCircle className="h-4 w-4 text-success-500" />}
                       </button>
                       <button
                         onClick={() => setDeleteTarget(req)}
-                        className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-danger-50 transition-colors"
                       >
-                        <TrashBinTrash className="h-4 w-4 text-red-400" />
+                        <TrashBinTrash className="h-4 w-4 text-danger-500" />
                       </button>
                     </div>
                   </div>

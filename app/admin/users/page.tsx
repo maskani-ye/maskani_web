@@ -243,7 +243,7 @@ export default function AdminUsersPage() {
                         )}
                         <div>
                           <p className="font-medium text-ink leading-tight">{u.full_name}</p>
-                          {u.is_verified && <span className="text-caption text-green-600">موثّق ✓</span>}
+                          {u.is_verified && <span className="text-caption text-success-600">موثّق ✓</span>}
                         </div>
                       </div>
                     </td>
@@ -260,8 +260,8 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       {u.is_active
-                        ? <span className="text-caption text-green-600 font-medium flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" />نشط</span>
-                        : <span className="text-caption text-red-500 font-medium flex items-center gap-1"><DangerCircle className="h-3.5 w-3.5" />موقوف</span>}
+                        ? <span className="text-caption text-success-600 font-medium flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" />نشط</span>
+                        : <span className="text-caption text-danger-500 font-medium flex items-center gap-1"><DangerCircle className="h-3.5 w-3.5" />موقوف</span>}
                     </td>
                     <td className="px-4 py-3">
                       <button
@@ -330,16 +330,16 @@ export default function AdminUsersPage() {
 
             {/* Badges */}
             <div className="flex flex-wrap gap-1.5 justify-center mb-4">
-              <span className={`text-caption font-semibold px-2.5 py-1 rounded-full ${selected.role === "admin" ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"}`}>
+              <span className={`text-caption font-semibold px-2.5 py-1 rounded-full ${selected.role === "admin" ? "bg-danger-100 text-danger-600" : "bg-info-100 text-info-600"}`}>
                 {ROLE_LABELS[selected.role] ?? selected.role}
               </span>
               {selected.is_service_provider && (
-                <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-purple-100 text-purple-600">
+                <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-primary-100 text-primary-600">
                   مزود خدمة
                 </span>
               )}
               {!selected.is_active && (
-                <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-red-100 text-red-600">
+                <span className="text-caption font-semibold px-2.5 py-1 rounded-full bg-danger-100 text-danger-600">
                   محظور / معطّل
                 </span>
               )}
@@ -357,7 +357,7 @@ export default function AdminUsersPage() {
                     className={`h-9 rounded-lg text-body font-semibold transition-colors disabled:opacity-100 ${
                       selected.role === r
                         ? r === "admin"
-                          ? "bg-red-100 text-red-600"
+                          ? "bg-danger-100 text-danger-600"
                           : "bg-primary/10 text-primary"
                         : "text-muted-500 hover:bg-white disabled:cursor-not-allowed"
                     }`}

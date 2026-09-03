@@ -66,7 +66,7 @@ export default async function LatestProperties() {
                   </div>
                 )}
                 <span
-                  className={`absolute top-2 right-2 text-[11px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur shadow-sm ${
+                  className={`absolute top-2 right-2 text-micro font-bold px-2.5 py-0.5 rounded-full backdrop-blur shadow-sm ${
                     isSale ? "bg-primary/95 text-white" : "bg-gold/95 text-ink"
                   }`}
                 >
@@ -74,7 +74,7 @@ export default async function LatestProperties() {
                 </span>
               </div>
               <div className="px-1 pt-2.5 pb-1 flex flex-col flex-1">
-                <span className="text-[11px] font-bold text-primary mb-1">
+                <span className="text-micro font-bold text-primary mb-1">
                   {propertyTypeName(p.property_type)}
                 </span>
                 <h3 className="font-bold text-ink text-body mb-1 line-clamp-1">{p.title}</h3>

@@ -130,7 +130,7 @@ export function NeighborhoodsAdmin({ cities }: { cities: City[] }) {
               </button>
               <button
                 onClick={() => remove(n)}
-                className="text-red-500 hover:text-red-600 p-1"
+                className="text-danger-500 hover:text-danger-600 p-1"
                 aria-label="حذف"
               >
                 <TrashBinTrash className="h-4 w-4" />

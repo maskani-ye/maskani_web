@@ -222,7 +222,7 @@ export default function AdminPropertyTypesPage() {
                   <td className="py-3 px-4">
                     <div className="flex gap-2">
                       <button onClick={() => openEdit(t)} className="text-caption text-primary hover:underline font-medium">تعديل</button>
-                      <button onClick={() => setDeleteTarget(t)} className="text-caption text-red-500 hover:underline font-medium">حذف</button>
+                      <button onClick={() => setDeleteTarget(t)} className="text-caption text-danger-500 hover:underline font-medium">حذف</button>
                     </div>
                   </td>
                 </tr>
@@ -309,7 +309,7 @@ export default function AdminPropertyTypesPage() {
           <p className="text-muted-600 text-body mb-6">
             سيتم حذف النوع <strong>{deleteTarget.name_ar}</strong> نهائياً.
             {typeof deleteTarget.properties_count === "number" && deleteTarget.properties_count > 0 && (
-              <span className="block mt-2 text-red-500">
+              <span className="block mt-2 text-danger-500">
                 يوجد {deleteTarget.properties_count} عقار مرتبط بهذا النوع — قد يمنع النظام الحذف.
               </span>
             )}

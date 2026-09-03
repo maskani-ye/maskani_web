@@ -56,7 +56,7 @@ export function BottomNav() {
               aria-current={active ? "page" : undefined}
             >
               <Icon weight={active ? "Bold" : "Linear"} className="h-6 w-6" />
-              <span className={cn("text-[10px]", active ? "font-bold" : "font-medium")}>{tab.label}</span>
+              <span className={cn("text-micro", active ? "font-bold" : "font-medium")}>{tab.label}</span>
             </Link>
           );
         })}

@@ -172,7 +172,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-h3 font-bold text-ink">{user.full_name}</h1>
               {user.is_verified && (
-                <span className="flex items-center gap-0.5 text-caption text-green-600 font-medium">
+                <span className="flex items-center gap-0.5 text-caption text-success-600 font-medium">
                   <CheckCircle className="h-3.5 w-3.5" /> موثّق
                 </span>
               )}
@@ -212,7 +212,7 @@ export default function ProfilePage() {
       {/* Quick links */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         <Link href="/favorites" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
-          <Heart className="h-6 w-6 text-red-500" />
+          <Heart className="h-6 w-6 text-danger-500" />
           <span className="text-caption font-medium text-muted-700">المفضّلة</span>
         </Link>
         <Link href="/notifications" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
@@ -220,7 +220,7 @@ export default function ProfilePage() {
           <span className="text-caption font-medium text-muted-700">الإشعارات</span>
         </Link>
         <Link href="/requests" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
-          <PenNewSquare className="h-6 w-6 text-blue-500" />
+          <PenNewSquare className="h-6 w-6 text-info-500" />
           <span className="text-caption font-medium text-muted-700">الطلبات</span>
         </Link>
         <Link href="/saved-searches" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
@@ -238,19 +238,19 @@ export default function ProfilePage() {
           </div>
 
           {verif?.status === "pending" ? (
-            <div className="flex items-start gap-2 bg-yellow-50 border border-yellow-100 rounded-xl p-3">
-              <ClockCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 bg-warning-50 border border-warning-100 rounded-xl p-3">
+              <ClockCircle className="h-5 w-5 text-warning-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-body font-semibold text-yellow-700">طلبك قيد المراجعة</p>
-                <p className="text-caption text-yellow-600 mt-0.5">سيتم إشعارك عند اتخاذ قرار من الإدارة.</p>
+                <p className="text-body font-semibold text-warning-700">طلبك قيد المراجعة</p>
+                <p className="text-caption text-warning-600 mt-0.5">سيتم إشعارك عند اتخاذ قرار من الإدارة.</p>
               </div>
             </div>
           ) : (
             <div className="space-y-3">
               {verif?.status === "rejected" && (
-                <div className="bg-red-50 border border-red-100 rounded-xl p-3">
-                  <p className="text-body font-semibold text-red-700">تم رفض طلبك السابق</p>
-                  {verif.review_note && <p className="text-caption text-red-600 mt-0.5">السبب: {verif.review_note}</p>}
+                <div className="bg-danger-50 border border-danger-100 rounded-xl p-3">
+                  <p className="text-body font-semibold text-danger-700">تم رفض طلبك السابق</p>
+                  {verif.review_note && <p className="text-caption text-danger-600 mt-0.5">السبب: {verif.review_note}</p>}
                   <p className="text-caption text-muted-500 mt-1">يمكنك تقديم طلب جديد.</p>
                 </div>
               )}
@@ -268,7 +268,7 @@ export default function ProfilePage() {
                 <input type="file" accept="image/*,application/pdf" onChange={(e) => setVerifDoc(e.target.files?.[0] ?? null)} className="hidden" />
               </label>
               {verifDoc && (
-                <button onClick={() => setVerifDoc(null)} className="flex items-center gap-1 text-caption text-red-500">
+                <button onClick={() => setVerifDoc(null)} className="flex items-center gap-1 text-caption text-danger-500">
                   <CloseCircle className="h-3.5 w-3.5" /> إزالة المستند
                 </button>
               )}

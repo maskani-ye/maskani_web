@@ -98,9 +98,9 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
       </div>
 
       {/* Warning banner */}
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-        <DangerTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-        <p className="text-body text-amber-800">
+      <div className="bg-warning-50 border border-warning-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
+        <DangerTriangle className="h-5 w-5 text-warning-600 flex-shrink-0 mt-0.5" />
+        <p className="text-body text-warning-700">
           هذا بلاغ تحذيري من المجتمع. تحقّق دائماً بنفسك قبل اتخاذ أي قرار.
         </p>
       </div>
@@ -122,8 +122,8 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
         <h1 className="text-h2 font-bold text-ink mb-3">{report.title}</h1>
 
         {/* Accused */}
-        <div className="bg-red-50 border border-red-100 rounded-2xl p-4 mb-4">
-          <p className="text-body font-semibold text-red-700 mb-1">المُبلَّغ عنه</p>
+        <div className="bg-danger-50 border border-danger-100 rounded-2xl p-4 mb-4">
+          <p className="text-body font-semibold text-danger-700 mb-1">المُبلَّغ عنه</p>
           <p className="text-ink font-bold">{report.accused_name}</p>
           {report.accused_phone && (
             <a href={`tel:${report.accused_phone}`} className="flex items-center gap-1 text-body text-muted-600 mt-1" dir="ltr">
@@ -170,7 +170,7 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
           <button
             onClick={() => handleVote(myVote === true ? null : true)}
             className={`flex items-center gap-1.5 text-body px-4 py-2 rounded-xl border transition-colors ${
-              myVote === true ? "bg-green-600 text-white border-green-600" : "text-green-600 border-green-200 hover:bg-green-50"
+              myVote === true ? "bg-success-600 text-white border-success-600" : "text-success-600 border-success-200 hover:bg-success-50"
             }`}
           >
             <Like className="h-4 w-4" /> مصداقي ({report.votes_credible})
@@ -178,7 +178,7 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
           <button
             onClick={() => handleVote(myVote === false ? null : false)}
             className={`flex items-center gap-1.5 text-body px-4 py-2 rounded-xl border transition-colors ${
-              myVote === false ? "bg-red-500 text-white border-red-500" : "text-red-500 border-red-200 hover:bg-red-50"
+              myVote === false ? "bg-danger-500 text-white border-danger-500" : "text-danger-500 border-danger-200 hover:bg-danger-50"
             }`}
           >
             <Dislike className="h-4 w-4" /> غير مصداقي ({report.votes_not_credible})

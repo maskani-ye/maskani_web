@@ -51,7 +51,7 @@ export function TrustSignals({ property }: { property: Property }) {
       </ul>
 
       {property.trust_note && (
-        <p className="flex items-start gap-2 text-caption text-amber-700 bg-amber-50 rounded-xl p-2.5 mt-3">
+        <p className="flex items-start gap-2 text-caption text-warning-700 bg-warning-50 rounded-xl p-2.5 mt-3">
           <DangerTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
           {property.trust_note}
         </p>

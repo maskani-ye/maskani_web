@@ -225,7 +225,7 @@ export default function MyServicesPage() {
               <button onClick={() => openEdit(s)} className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center text-muted-500 hover:text-primary" title="تعديل">
                 <PenNewSquare className="h-4 w-4" />
               </button>
-              <button onClick={() => remove(s)} disabled={deletingId === s.id} className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-red-50 flex items-center justify-center text-muted-500 hover:text-red-600 disabled:opacity-50" title="حذف">
+              <button onClick={() => remove(s)} disabled={deletingId === s.id} className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-danger-50 flex items-center justify-center text-muted-500 hover:text-danger-600 disabled:opacity-50" title="حذف">
                 <TrashBinTrash className="h-4 w-4" />
               </button>
             </div>

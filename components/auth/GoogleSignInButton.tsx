@@ -95,7 +95,7 @@ export function GoogleSignInButton({ onCredential, disabled }: GoogleSignInButto
   }, []);
 
   if (error) {
-    return <p className="text-caption text-red-500 text-center">{error}</p>;
+    return <p className="text-caption text-danger-500 text-center">{error}</p>;
   }
 
   return (

@@ -59,8 +59,8 @@ export function HelpdeskMessageRow({ m, ...h }: { m: HdMessage } & Handlers) {
 function Bubble({ children, tone = "bot" }: { children: React.ReactNode; tone?: "bot" | "success" | "error" | "confirm" }) {
   const cls = {
     bot: "bg-white border-muted-100",
-    success: "bg-green-50 border-green-200",
-    error: "bg-red-50 border-red-200",
+    success: "bg-success-50 border-success-200",
+    error: "bg-danger-50 border-danger-200",
     confirm: "bg-white border-primary/60",
   }[tone];
   return <div className={`rounded-2xl rounded-tl-md border px-3.5 py-2.5 text-body shadow-sm ${cls}`}>{children}</div>;
@@ -77,9 +77,9 @@ function BotEnvelope({ e, onButton, onConfirm, busy, isAgent, isLatest, readOnly
     return (
       <Bubble tone={e.ok ? "success" : "error"}>
         <div className="flex items-start gap-2.5">
-          {e.ok ? <CheckCircle weight="Bold" className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
-            : <DangerTriangle weight="Bold" className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />}
-          <p className={`font-semibold leading-relaxed ${e.ok ? "text-green-800" : "text-red-700"}`}>{e.body}</p>
+          {e.ok ? <CheckCircle weight="Bold" className="h-5 w-5 text-success-600 shrink-0 mt-0.5" />
+            : <DangerTriangle weight="Bold" className="h-5 w-5 text-danger-500 shrink-0 mt-0.5" />}
+          <p className={`font-semibold leading-relaxed ${e.ok ? "text-success-700" : "text-danger-700"}`}>{e.body}</p>
         </div>
       </Bubble>
     );

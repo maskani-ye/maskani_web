@@ -225,8 +225,8 @@ export default function AdminBlogPage() {
                   <button onClick={() => openEdit(a)} title="تعديل" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center">
                     <Pen className="h-4 w-4 text-muted-500" />
                   </button>
-                  <button onClick={() => setDeleteTarget(a)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center">
-                    <TrashBinMinimalistic className="h-4 w-4 text-red-500" />
+                  <button onClick={() => setDeleteTarget(a)} title="حذف" className="w-9 h-9 rounded-lg bg-danger-50 hover:bg-danger-100 flex items-center justify-center">
+                    <TrashBinMinimalistic className="h-4 w-4 text-danger-500" />
                   </button>
                 </div>
               </div>
@@ -264,7 +264,7 @@ export default function AdminBlogPage() {
                 className="flex-1 border border-muted-200 rounded-xl px-3 text-body h-10 focus:outline-none focus:ring-2 focus:ring-primary/30" />
               <Button size="sm" loading={generating} onClick={generate}>توليد</Button>
             </div>
-            <p className="text-[11px] text-muted mt-1.5">يملأ العنوان والمحتوى وحقول SEO — راجعها قبل النشر.</p>
+            <p className="text-micro text-muted mt-1.5">يملأ العنوان والمحتوى وحقول SEO — راجعها قبل النشر.</p>
           </div>
 
           <Input label="العنوان" value={form.title} onChange={(e) => setF("title", e.target.value)} required />
@@ -306,7 +306,7 @@ export default function AdminBlogPage() {
         </div>
       </Dialog>
 
-      <ConfirmDialog open={!!deleteTarget} icon={<TrashBinMinimalistic className="h-6 w-6 text-red-500" />}
+      <ConfirmDialog open={!!deleteTarget} icon={<TrashBinMinimalistic className="h-6 w-6 text-danger-500" />}
         title="حذف المقال؟" message={deleteTarget ? `«${deleteTarget.title}» — لا يمكن التراجع.` : ""}
         variant="danger" confirmLabel="حذف" loading={busy}
         onConfirm={confirmDelete} onCancel={() => setDeleteTarget(null)} />

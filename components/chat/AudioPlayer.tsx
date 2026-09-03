@@ -97,7 +97,7 @@ export function AudioPlayer({ src, durationMs, mine }: AudioPlayerProps) {
             className="absolute inset-0 w-full cursor-pointer opacity-0"
           />
         </div>
-        <div className={`mt-1 text-[10px] tabular-nums ${accent} opacity-80`}>
+        <div className={`mt-1 text-micro tabular-nums ${accent} opacity-80`}>
           {formatClock(current)} / {formatClock(max)}
         </div>
       </div>

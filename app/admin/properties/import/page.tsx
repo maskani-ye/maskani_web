@@ -191,7 +191,7 @@ export default function BulkImportPage() {
         </div>
 
         {error && (
-          <div className="mt-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-body text-red-700">
+          <div className="mt-4 rounded-xl bg-danger-50 border border-danger-200 px-4 py-3 text-body text-danger-700">
             {error}
           </div>
         )}
@@ -201,7 +201,7 @@ export default function BulkImportPage() {
         <p className="text-body font-bold text-ink mb-1">رسالة الدعوة للمكاتب العقارية</p>
         <p className="text-caption text-muted-500 mb-3 leading-relaxed">
           انسخها وأرسلها كما هي. الآلة جاهزة — ما ينقصها هو الجدول، وهذه الرسالة تجلبه.
-          {copied && <span className="text-emerald-600 font-semibold"> · نُسخت ✓</span>}
+          {copied && <span className="text-success-600 font-semibold"> · نُسخت ✓</span>}
         </p>
         <pre className="whitespace-pre-wrap rounded-xl bg-muted-50 p-4 text-caption leading-relaxed text-muted-700 max-h-60 overflow-y-auto">
 {WHATSAPP_MSG}
@@ -229,7 +229,7 @@ export default function BulkImportPage() {
             {result.results.map((r) => (
               <div key={r.row} className="flex items-start gap-3 py-2.5">
                 <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                  r.ok ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}>
+                  r.ok ? "bg-success-50 text-success-600" : "bg-danger-50 text-danger-600"}`}>
                   {r.ok ? <CheckCircle weight="Bold" className="h-4 w-4" />
                         : <CloseCircle weight="Bold" className="h-4 w-4" />}
                 </span>
@@ -238,7 +238,7 @@ export default function BulkImportPage() {
                     صفّ {r.row}: {r.title || "—"}
                   </p>
                   {r.errors?.length ? (
-                    <p className="text-caption text-red-600 mt-0.5">{r.errors.join(" · ")}</p>
+                    <p className="text-caption text-danger-600 mt-0.5">{r.errors.join(" · ")}</p>
                   ) : r.id ? (
                     <a href={`/properties/${r.id}`} target="_blank" rel="noopener noreferrer"
                        className="text-caption text-primary hover:underline">عرض العقار #{r.id}</a>

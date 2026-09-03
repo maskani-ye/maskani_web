@@ -22,7 +22,7 @@ export function StarRating({ rating, max = 5, size = "md", interactive, onChange
           className={cn(
             sizes[size],
             star <= Math.round(rating)
-              ? "fill-amber-400 text-amber-400"
+              ? "fill-warning-500 text-warning-500"
               : "fill-muted-200 text-muted-200",
             interactive && "cursor-pointer hover:scale-110 transition-transform"
           )}

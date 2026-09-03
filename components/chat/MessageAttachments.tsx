@@ -98,7 +98,7 @@ function AudioPlaceholder({ mine, failed }: { mine: boolean; failed: boolean }) 
   return (
     <div className={`flex min-w-[190px] items-center gap-2 rounded-xl px-3 py-2 text-caption ${base}`} dir="rtl">
       {failed ? (
-        <span className={mine ? "text-white/80" : "text-red-600"}>تعذّر رفع المقطع</span>
+        <span className={mine ? "text-white/80" : "text-danger-600"}>تعذّر رفع المقطع</span>
       ) : (
         <>
           <Restart className="h-4 w-4 animate-spin" />
@@ -134,7 +134,7 @@ function FileChip({
       <div className="min-w-0 flex-1">
         <p className={`truncate text-caption font-medium ${text}`}>{name}</p>
         {(size || uploading || failed) && (
-          <p className={`text-[10px] ${failed ? (mine ? "text-white/80" : "text-red-600") : sub}`}>
+          <p className={`text-micro ${failed ? (mine ? "text-white/80" : "text-danger-600") : sub}`}>
             {failed ? "تعذّر الرفع" : uploading ? "جارٍ الرفع…" : size}
           </p>
         )}

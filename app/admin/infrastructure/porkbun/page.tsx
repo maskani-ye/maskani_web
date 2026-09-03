@@ -53,7 +53,7 @@ export default function PorkbunPage() {
                   key: "days_left",
                   header: "المتبقّي",
                   render: (r) => (
-                    <span className={r.days_left != null && r.days_left < 30 ? "text-red-600 font-bold" : ""}>
+                    <span className={r.days_left != null && r.days_left < 30 ? "text-danger-600 font-bold" : ""}>
                       {r.days_left != null ? `${r.days_left} يوم` : "—"}
                     </span>
                   ),

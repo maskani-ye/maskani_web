@@ -145,8 +145,8 @@ export default function AdminBlogCategoriesPage() {
                   <button onClick={() => openEdit(c)} title="تعديل" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center">
                     <Pen className="h-4 w-4 text-muted-500" />
                   </button>
-                  <button onClick={() => setDeleteTarget(c)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center">
-                    <TrashBinMinimalistic className="h-4 w-4 text-red-500" />
+                  <button onClick={() => setDeleteTarget(c)} title="حذف" className="w-9 h-9 rounded-lg bg-danger-50 hover:bg-danger-100 flex items-center justify-center">
+                    <TrashBinMinimalistic className="h-4 w-4 text-danger-500" />
                   </button>
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function AdminBlogCategoriesPage() {
         </div>
       </Dialog>
 
-      <ConfirmDialog open={!!deleteTarget} icon={<TrashBinMinimalistic className="h-6 w-6 text-red-500" />}
+      <ConfirmDialog open={!!deleteTarget} icon={<TrashBinMinimalistic className="h-6 w-6 text-danger-500" />}
         title="حذف التصنيف؟"
         message={deleteTarget ? `«${deleteTarget.name}»${deleteTarget.articles_count > 0 ? ` — يحتوي ${deleteTarget.articles_count} مقالاً، لن يُحذف حتى تنقلها.` : " — لا يمكن التراجع."}` : ""}
         variant="danger" confirmLabel="حذف" loading={busy}

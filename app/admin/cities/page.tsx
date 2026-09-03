@@ -470,7 +470,7 @@ function CitiesTable({ cities, onEdit, onToggle, onDelete }: {
               <td className="py-3 px-4">
                 <button onClick={() => onToggle(city)} className="flex items-center gap-1">
                   {city.is_active !== false ? (
-                    <span className="flex items-center gap-1 text-caption text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                    <span className="flex items-center gap-1 text-caption text-success-600 bg-success-50 px-2 py-1 rounded-full">
                       <CheckCircle className="h-3.5 w-3.5" /> مفعّلة
                     </span>
                   ) : (
@@ -483,7 +483,7 @@ function CitiesTable({ cities, onEdit, onToggle, onDelete }: {
               <td className="py-3 px-4">
                 <div className="flex gap-2">
                   <button onClick={() => onEdit(city)} className="text-caption text-primary hover:underline font-medium">تعديل</button>
-                  <button onClick={() => onDelete(city.id)} className="text-caption text-red-500 hover:underline font-medium">حذف</button>
+                  <button onClick={() => onDelete(city.id)} className="text-caption text-danger-500 hover:underline font-medium">حذف</button>
                 </div>
               </td>
             </tr>
@@ -528,14 +528,14 @@ function CountriesTable({ countries, onEdit, onDelete }: {
                 <span className="font-mono text-caption bg-muted-100 px-2 py-1 rounded">{country.code}</span>
               </td>
               <td className="py-3 px-4">
-                <span className="text-caption bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-medium">
+                <span className="text-caption bg-info-50 text-info-600 px-2 py-1 rounded-full font-medium">
                   <Buildings2 className="h-3 w-3 inline ml-1" />
                   {country.cities?.length ?? 0} مدينة
                 </span>
               </td>
               <td className="py-3 px-4">
                 {country.is_active ? (
-                  <span className="flex items-center gap-1 text-caption text-green-600 bg-green-50 px-2 py-1 rounded-full w-fit">
+                  <span className="flex items-center gap-1 text-caption text-success-600 bg-success-50 px-2 py-1 rounded-full w-fit">
                     <CheckCircle className="h-3.5 w-3.5" /> مفعّلة
                   </span>
                 ) : (
@@ -547,7 +547,7 @@ function CountriesTable({ countries, onEdit, onDelete }: {
               <td className="py-3 px-4">
                 <div className="flex gap-2">
                   <button onClick={() => onEdit(country)} className="text-caption text-primary hover:underline font-medium">تعديل</button>
-                  <button onClick={() => onDelete(country.id)} className="text-caption text-red-500 hover:underline font-medium">حذف</button>
+                  <button onClick={() => onDelete(country.id)} className="text-caption text-danger-500 hover:underline font-medium">حذف</button>
                 </div>
               </td>
             </tr>

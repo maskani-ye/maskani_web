@@ -272,7 +272,7 @@ export default function AdminConversationsPage() {
                 <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => setDeleteConvTarget(selected)}
-                    className="p-1 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors"
+                    className="p-1 rounded-lg hover:bg-danger-50 text-muted hover:text-danger-600 transition-colors"
                     title="حذف المحادثة"
                   >
                     <TrashBinTrash className="h-4 w-4" />
@@ -342,7 +342,7 @@ export default function AdminConversationsPage() {
                           >
                             {m.is_deleted ? "تم حذف الرسالة" : m.body}
                           </div>
-                          <div className="flex items-center gap-1.5 mt-1 text-[10px] text-muted">
+                          <div className="flex items-center gap-1.5 mt-1 text-micro text-muted">
                             <span>{m.sender.full_name}</span>
                             <span>·</span>
                             <span>{formatRelativeTime(m.created_at)}</span>
@@ -350,7 +350,7 @@ export default function AdminConversationsPage() {
                             {m.is_read && <span>· مقروءة</span>}
                             <button
                               onClick={() => setDeleteMsgTarget(m)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-muted hover:text-red-600"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-muted hover:text-danger-600"
                               title="حذف الرسالة"
                             >
                               <TrashBinTrash className="h-3 w-3" />

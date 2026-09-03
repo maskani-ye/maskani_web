@@ -28,7 +28,7 @@ const STATUSES = [
 ];
 const STATUS_BADGE: Record<string, string> = {
   awaiting_agent: "bg-gold/15 text-gold-700",
-  active: "bg-blue-100 text-blue-700",
+  active: "bg-info-100 text-info-700",
   closed: "bg-muted-100 text-muted-500",
 };
 
@@ -114,7 +114,7 @@ export default function AdminHelpdeskPage() {
                   className={`w-full text-right p-4 hover:bg-muted-50 transition-colors ${selected?.id === s.id ? "bg-primary/5" : ""}`}>
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-ink text-body flex-1 truncate">{s.user_name || `مستخدم #${s.user}`}</span>
-                    <span className={`text-[11px] px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] ?? ""}`}>
+                    <span className={`text-micro px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] ?? ""}`}>
                       {STATUSES.find((x) => x.key === s.status)?.label ?? s.status}
                     </span>
                   </div>

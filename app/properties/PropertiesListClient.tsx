@@ -413,7 +413,7 @@ function PropertiesContent() {
             {activeFilterCount > 0 && (
               <button
                 onClick={resetFilters}
-                className="text-caption font-semibold text-muted-500 transition-colors hover:text-red-600"
+                className="text-caption font-semibold text-muted-500 transition-colors hover:text-danger-600"
               >
                 إعادة تعيين ({activeFilterCount})
               </button>

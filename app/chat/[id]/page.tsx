@@ -501,8 +501,8 @@ export default function ChatThreadPage() {
                     </>
                   )}
                   <div className={`flex items-center gap-1 mt-1 ${mine ? "text-white/70" : "text-muted"}`}>
-                    <span className="text-[10px]">{formatRelativeTime(m.created_at)}</span>
-                    {m.is_edited && !m.is_deleted && <span className="text-[10px]">· معدّلة</span>}
+                    <span className="text-micro">{formatRelativeTime(m.created_at)}</span>
+                    {m.is_edited && !m.is_deleted && <span className="text-micro">· معدّلة</span>}
                     {mine && !m.is_deleted && m.id > 0 && (
                       <CheckRead className={`h-3.5 w-3.5 ${m.is_read ? "text-white" : "text-white/50"}`} />
                     )}

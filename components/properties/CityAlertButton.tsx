@@ -39,7 +39,7 @@ export default function CityAlertButton({
 
   if (state === "done") {
     return (
-      <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-body font-semibold text-emerald-700">
+      <span className="inline-flex items-center gap-2 rounded-xl bg-success-50 px-4 py-2.5 text-body font-semibold text-success-700">
         <CheckCircle weight="Bold" className="h-4 w-4" />
         التنبيه مُفعَّل لـ{cityName}
       </span>

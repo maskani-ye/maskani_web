@@ -104,9 +104,9 @@ export function ServiceShell<T extends ServiceData>({
           <Skeleton className="h-64 rounded-2xl" />
         </div>
       ) : !data ? null : !data.ok ? (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-5">
-          <p className="font-bold text-red-700">تعذّرت القراءة من هذه الخدمة</p>
-          <p className="text-body text-red-600 mt-1 leading-relaxed">{data.error}</p>
+        <div className="bg-danger-50 border border-danger-200 rounded-2xl p-5">
+          <p className="font-bold text-danger-700">تعذّرت القراءة من هذه الخدمة</p>
+          <p className="text-body text-danger-600 mt-1 leading-relaxed">{data.error}</p>
         </div>
       ) : (
         <div className="space-y-4">{children(data)}</div>

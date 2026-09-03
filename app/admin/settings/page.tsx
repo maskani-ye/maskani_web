@@ -107,9 +107,9 @@ export default function AdminSettingsPage() {
       </section>
 
       {/* ── الصيانة ── */}
-      <section className={`rounded-2xl p-5 space-y-4 ring-1 ${cfg.maintenance_mode ? "bg-amber-50 ring-amber-300" : "bg-white ring-ink/[0.06]"}`}>
+      <section className={`rounded-2xl p-5 space-y-4 ring-1 ${cfg.maintenance_mode ? "bg-warning-50 ring-warning-200" : "bg-white ring-ink/[0.06]"}`}>
         <h2 className="text-h3 text-ink flex items-center gap-2">
-          <DangerTriangle className="h-5 w-5 text-amber-600" /> وضع الصيانة
+          <DangerTriangle className="h-5 w-5 text-warning-600" /> وضع الصيانة
         </h2>
         <p className="text-caption text-muted leading-relaxed">
           تفعيله يُغلق المنصّة أمام **كل** المستخدمين ويعرض رسالة انتظار. لا
@@ -128,7 +128,7 @@ export default function AdminSettingsPage() {
 
       <ConfirmDialog
         open={confirmMaintenance}
-        icon={<DangerTriangle className="h-6 w-6 text-red-500" />}
+        icon={<DangerTriangle className="h-6 w-6 text-danger-500" />}
         title="إغلاق المنصّة للصيانة؟"
         message="سيُمنع كل المستخدمين من الدخول حتى تُنهي الوضع بنفسك."
         variant="danger" confirmLabel="أغلق المنصّة" loading={saving}

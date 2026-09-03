@@ -74,7 +74,7 @@ export default function SentryPage() {
                   key: "errors_24h",
                   header: "أخطاء 24 ساعة",
                   render: (r) => (
-                    <span className={r.errors_24h ? "text-red-600 font-bold" : "text-emerald-600"}>
+                    <span className={r.errors_24h ? "text-danger-600 font-bold" : "text-success-600"}>
                       {formatNumber(r.errors_24h)}
                     </span>
                   ),

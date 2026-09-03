@@ -148,7 +148,7 @@ export default function AdminJobsPage() {
                     <h3 className="font-bold text-ink text-body line-clamp-1">{r.title}</h3>
                     <Badge variant={r.is_active ? "success" : "default"}>{r.is_active ? "نشط" : "متوقّف"}</Badge>
                     {r.category_name && (
-                      <span className="text-[11px] font-medium bg-muted-100 text-muted-500 px-2 py-0.5 rounded-full">{r.category_name}</span>
+                      <span className="text-micro font-medium bg-muted-100 text-muted-500 px-2 py-0.5 rounded-full">{r.category_name}</span>
                     )}
                   </div>
                   <div className="flex items-center gap-3.5 text-caption text-muted-500 mt-1.5 flex-wrap">
@@ -164,8 +164,8 @@ export default function AdminJobsPage() {
                     {r.is_active ? <CloseCircle className="h-4 w-4 text-muted-500" /> : <CheckCircle className="h-4 w-4 text-primary" />}
                   </button>
                   <button onClick={() => setDeleteTarget(r)} title="حذف"
-                    className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors">
-                    <TrashBinMinimalistic className="h-4 w-4 text-red-500" />
+                    className="w-9 h-9 rounded-lg bg-danger-50 hover:bg-danger-100 flex items-center justify-center transition-colors">
+                    <TrashBinMinimalistic className="h-4 w-4 text-danger-500" />
                   </button>
                 </div>
               </div>
@@ -185,7 +185,7 @@ export default function AdminJobsPage() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        icon={<TrashBinMinimalistic className="h-6 w-6 text-red-500" />}
+        icon={<TrashBinMinimalistic className="h-6 w-6 text-danger-500" />}
         title="حذف طلب الخدمة؟"
         message={deleteTarget ? `«${deleteTarget.title}» — لا يمكن التراجع عن هذا الإجراء.` : ""}
         variant="danger"

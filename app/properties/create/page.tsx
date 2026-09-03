@@ -251,7 +251,7 @@ function Stepper({ step }: { step: number }) {
               >
                 {done ? <CheckCircle weight="Bold" className="h-4 w-4" /> : i + 1}
               </div>
-              <span className={`text-[11px] mt-1.5 ${active ? "text-primary font-semibold" : "text-muted-500"}`}>
+              <span className={`text-micro mt-1.5 ${active ? "text-primary font-semibold" : "text-muted-500"}`}>
                 {title}
               </span>
             </div>
@@ -270,7 +270,7 @@ function SectionLabel({ text, required }: { text: string; required?: boolean }) 
   return (
     <label className="text-body font-semibold text-muted-700 mb-2 block">
       {text}
-      {required && <span className="text-red-500"> *</span>}
+      {required && <span className="text-danger-500"> *</span>}
     </label>
   );
 }
@@ -523,7 +523,7 @@ function StepLocation({
           <span className="text-muted-500">
             تم تحديد الموقع ({loc.lat.toFixed(5)}, {loc.lng.toFixed(5)})
           </span>
-          <button type="button" onClick={() => setLoc(null)} className="mr-auto text-red-500 font-semibold">
+          <button type="button" onClick={() => setLoc(null)} className="mr-auto text-danger-500 font-semibold">
             إزالة
           </button>
         </div>
@@ -584,12 +584,12 @@ function StepMedia({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={URL.createObjectURL(img)} alt="" className="w-full h-full object-cover" />
             {i === 0 && (
-              <span className="absolute bottom-1 right-1 text-[9px] bg-primary text-white px-1.5 py-0.5 rounded-md">رئيسية</span>
+              <span className="absolute bottom-1 right-1 text-micro bg-primary text-white px-1.5 py-0.5 rounded-md">رئيسية</span>
             )}
             <button
               type="button"
               onClick={() => setImages((p) => p.filter((_, j) => j !== i))}
-              className="absolute top-1 left-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
+              className="absolute top-1 left-1 w-5 h-5 bg-danger-500 rounded-full flex items-center justify-center"
             >
               <CloseCircle className="h-3.5 w-3.5 text-white" />
             </button>
@@ -598,7 +598,7 @@ function StepMedia({
         {images.length < 10 && (
           <label className="w-20 h-20 border-2 border-muted-200 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/40 bg-muted-50">
             <GalleryAdd className="h-5 w-5 text-muted" />
-            <span className="text-[10px] text-muted">إضافة</span>
+            <span className="text-micro text-muted">إضافة</span>
             <input type="file" multiple accept="image/*" onChange={onImages} className="hidden" />
           </label>
         )}

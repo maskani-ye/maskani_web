@@ -54,7 +54,7 @@ export function HelpAssistant() {
           {answer}
         </div>
       )}
-      <p className="text-[11px] text-muted mt-2">
+      <p className="text-micro text-muted mt-2">
         إجابة تلقائية. إن لم تجد ما تريد، أكمل عبر مركز المساعدة أدناه.
       </p>
     </div>

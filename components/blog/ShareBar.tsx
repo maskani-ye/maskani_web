@@ -35,7 +35,7 @@ export function ShareBar({ url, title }: { url: string; title: string }) {
       ))}
       <button onClick={copy}
         className="text-caption font-bold px-3 py-1.5 rounded-full bg-muted-100 text-muted-700 hover:bg-muted-200 transition-colors flex items-center gap-1">
-        {copied ? <><CheckCircle weight="Bold" className="h-3.5 w-3.5 text-green-600" /> تم النسخ</> : <><LinkIcon className="h-3.5 w-3.5" /> نسخ الرابط</>}
+        {copied ? <><CheckCircle weight="Bold" className="h-3.5 w-3.5 text-success-600" /> تم النسخ</> : <><LinkIcon className="h-3.5 w-3.5" /> نسخ الرابط</>}
       </button>
     </div>
   );

@@ -199,7 +199,7 @@ export default async function UnitPage({ params }: { params: Promise<{ unit: str
                 className="rounded-xl border border-muted-200 bg-white px-3.5 py-2.5 flex items-center justify-between gap-3 hover:border-primary transition-colors">
                 <span className="min-w-0">
                   <span className="text-body font-semibold text-ink block truncate">{s.name}</span>
-                  {s.region && <span className="text-[11px] text-muted">{s.region}</span>}
+                  {s.region && <span className="text-micro text-muted">{s.region}</span>}
                 </span>
                 <span className="text-body font-bold text-primary tabular-nums shrink-0">{fmt(s.m2)} م²</span>
               </Link>

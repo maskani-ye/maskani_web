@@ -118,7 +118,7 @@ function ServiceCard({ s }: { s: ServiceStatus }) {
     >
       <span
         className={`shrink-0 grid place-items-center h-10 w-10 rounded-xl ${
-          s.ok ? "bg-primary/10 text-primary" : "bg-red-50 text-red-500"
+          s.ok ? "bg-primary/10 text-primary" : "bg-danger-50 text-danger-500"
         }`}
       >
         <Icon className="h-5 w-5" />
@@ -127,14 +127,14 @@ function ServiceCard({ s }: { s: ServiceStatus }) {
         <p className="font-bold text-ink flex items-center gap-2">
           {s.name}
           {s.ok ? (
-            <CheckCircle className="h-4 w-4 text-emerald-600" />
+            <CheckCircle className="h-4 w-4 text-success-600" />
           ) : (
-            <CloseCircle className="h-4 w-4 text-red-500" />
+            <CloseCircle className="h-4 w-4 text-danger-500" />
           )}
           {s.cached && <Badge variant="default">مخزَّن</Badge>}
         </p>
         <p className="text-caption text-muted">{s.role}</p>
-        <p className={`text-body mt-1 truncate ${s.ok ? "text-muted-600" : "text-red-600"}`}>{summarize(s)}</p>
+        <p className={`text-body mt-1 truncate ${s.ok ? "text-muted-600" : "text-danger-600"}`}>{summarize(s)}</p>
       </div>
       <AltArrowLeft className="h-4 w-4 text-muted-200 shrink-0 mt-1" />
     </Link>
@@ -194,8 +194,8 @@ export default function InfrastructurePage() {
       </div>
 
       {!loading && down.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4">
-          <p className="font-bold text-red-700 text-body">
+        <div className="bg-danger-50 border border-danger-200 rounded-2xl p-4 mb-4">
+          <p className="font-bold text-danger-700 text-body">
             {down.length} خدمة متعطّلة: {down.map((s) => s.name).join("، ")}
           </p>
         </div>

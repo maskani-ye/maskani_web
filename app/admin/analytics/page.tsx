@@ -161,10 +161,10 @@ export default function AnalyticsPage() {
 
   const kpis = [
     { label: "إجمالي الزيارات", value: data?.totals.visits ?? 0, icon: Eye, color: "text-primary", delta: data?.comparison?.visits_delta ?? null },
-    { label: "زوّار مختلفون", value: data?.totals.visitors ?? 0, icon: UsersGroupRounded, color: "text-blue-600", delta: data?.comparison?.visitors_delta ?? null },
-    { label: "زيارات بشرية", value: data?.totals.humans ?? 0, icon: Global, color: "text-green-600", delta: null as Delta },
+    { label: "زوّار مختلفون", value: data?.totals.visitors ?? 0, icon: UsersGroupRounded, color: "text-info-600", delta: data?.comparison?.visitors_delta ?? null },
+    { label: "زيارات بشرية", value: data?.totals.humans ?? 0, icon: Global, color: "text-success-600", delta: null as Delta },
     { label: "زواحف (بوتات)", value: data?.totals.bots ?? 0, icon: DangerTriangle, color: "text-gold", delta: null as Delta },
-    { label: "مستخدمون مسجّلون", value: data?.totals.registered ?? 0, icon: ChartSquare, color: "text-purple-600", delta: data?.comparison?.events_delta ?? null },
+    { label: "مستخدمون مسجّلون", value: data?.totals.registered ?? 0, icon: ChartSquare, color: "text-primary-600", delta: data?.comparison?.events_delta ?? null },
   ];
 
   const exportCsv = async () => {
@@ -260,8 +260,8 @@ export default function AnalyticsPage() {
         <div className="bg-gradient-to-l from-primary/5 to-transparent border border-primary/15 rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-x-8 gap-y-2">
           <div className="flex items-center gap-2">
             <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-success-500" />
             </span>
             <span className="text-body font-bold text-ink">مباشر الآن</span>
           </div>
@@ -281,7 +281,7 @@ export default function AnalyticsPage() {
             <div className="flex items-center justify-between mb-2">
               <k.icon className={`h-5 w-5 ${k.color}`} />
               {typeof k.delta === "number" && (
-                <span className={`text-caption font-bold tabular-nums ${k.delta >= 0 ? "text-green-600" : "text-red-500"}`}>
+                <span className={`text-caption font-bold tabular-nums ${k.delta >= 0 ? "text-success-600" : "text-danger-500"}`}>
                   {k.delta >= 0 ? "▲" : "▼"} {Math.abs(k.delta)}%
                 </span>
               )}
@@ -483,7 +483,7 @@ export default function AnalyticsPage() {
                         {v === null ? (
                           <span className="text-muted-200">—</span>
                         ) : (
-                          <span className={`font-bold tabular-nums ${v >= 0.4 ? "text-green-600" : v >= 0.2 ? "text-gold" : "text-muted-500"}`}>
+                          <span className={`font-bold tabular-nums ${v >= 0.4 ? "text-success-600" : v >= 0.2 ? "text-gold" : "text-muted-500"}`}>
                             {Math.round(v * 100)}%
                           </span>
                         )}

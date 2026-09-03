@@ -287,7 +287,7 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
                       </p>
                       <p className="text-caption text-muted">{formatRelativeTime(offer.created_at)}</p>
                     </div>
-                    {offer.is_accepted && <span className="mr-auto text-caption bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">مقبول</span>}
+                    {offer.is_accepted && <span className="mr-auto text-caption bg-success-100 text-success-700 px-2 py-0.5 rounded-full font-semibold">مقبول</span>}
                   </div>
                   <p className="text-body text-muted-600 mb-2">{offer.message}</p>
                   {offer.price && <p className="text-body font-bold text-gold mb-2">السعر المقترح: {formatPrice(offer.price, offer.currency)}</p>}
@@ -317,7 +317,7 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="text-body font-semibold text-muted-700 mb-1.5 block">رسالة العرض <span className="text-red-500">*</span></label>
+                <label className="text-body font-semibold text-muted-700 mb-1.5 block">رسالة العرض <span className="text-danger-500">*</span></label>
                 <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={4} placeholder="اكتب ما تعرضه على صاحب الطلب..." className="w-full border border-muted-200 rounded-xl px-4 py-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none" />
               </div>
               <div className="grid grid-cols-2 gap-3">

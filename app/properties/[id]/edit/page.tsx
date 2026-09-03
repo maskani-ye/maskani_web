@@ -205,17 +205,17 @@ export default function EditPropertyPage() {
               <div key={img.id} className="relative rounded-xl overflow-hidden border border-muted-100 group">
                 <img src={img.image} alt="" className="w-full h-32 object-cover" />
                 {img.is_main && (
-                  <span className="absolute top-1.5 right-1.5 flex items-center gap-1 text-[10px] bg-primary text-white px-1.5 py-0.5 rounded-md">
+                  <span className="absolute top-1.5 right-1.5 flex items-center gap-1 text-micro bg-primary text-white px-1.5 py-0.5 rounded-md">
                     <CheckCircle className="h-3 w-3" /> رئيسية
                   </span>
                 )}
                 <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 p-1.5 bg-gradient-to-t from-black/60 to-transparent">
                   {!img.is_main && (
-                    <button type="button" onClick={() => handleSetMain(img.id)} className="flex items-center gap-1 text-[11px] text-white bg-white/20 hover:bg-white/30 px-2 py-1 rounded-md">
+                    <button type="button" onClick={() => handleSetMain(img.id)} className="flex items-center gap-1 text-micro text-white bg-white/20 hover:bg-white/30 px-2 py-1 rounded-md">
                       <Star className="h-3 w-3" /> رئيسية
                     </button>
                   )}
-                  <button type="button" onClick={() => handleDeleteImage(img.id)} className="mr-auto flex items-center gap-1 text-[11px] text-white bg-red-500/80 hover:bg-red-600 px-2 py-1 rounded-md">
+                  <button type="button" onClick={() => handleDeleteImage(img.id)} className="mr-auto flex items-center gap-1 text-micro text-white bg-danger-500/80 hover:bg-danger-600 px-2 py-1 rounded-md">
                     <TrashBinTrash className="h-3 w-3" /> حذف
                   </button>
                 </div>

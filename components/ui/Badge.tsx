@@ -26,12 +26,12 @@ interface BadgeProps {
 
 const variants: Record<NonNullable<BadgeProps["variant"]>, string> = {
   // ── color-named ──
-  green: "bg-green-100 text-green-700 border border-green-200",
+  green: "bg-success-100 text-success-700 border border-success-200",
   gold: "bg-gold-100 text-gold-700 border border-gold-200", // reconciled: brand gold, not amber
-  red: "bg-red-100 text-red-700 border border-red-200",
+  red: "bg-danger-100 text-danger-700 border border-danger-200",
   gray: "bg-muted-100 text-muted-600 border border-muted-200",
-  blue: "bg-blue-100 text-blue-700 border border-blue-200",
-  yellow: "bg-yellow-100 text-yellow-700 border border-yellow-200",
+  blue: "bg-info-100 text-info-700 border border-info-200",
+  yellow: "bg-warning-100 text-warning-700 border border-warning-200",
   // ── semantic aliases ──
   success: "bg-success-50 text-success-700 border border-success-100",
   warning: "bg-warning-50 text-warning-700 border border-warning-100",

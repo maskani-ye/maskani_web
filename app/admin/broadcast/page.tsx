@@ -71,7 +71,7 @@ export default function AdminBroadcastPage() {
 
         <div className="flex flex-col gap-1.5 w-full">
           <label className="text-body font-semibold text-muted-700">
-            محتوى الإشعار <span className="text-red-500 mr-1">*</span>
+            محتوى الإشعار <span className="text-danger-500 mr-1">*</span>
           </label>
           <textarea
             value={body}

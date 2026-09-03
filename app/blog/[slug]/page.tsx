@@ -137,7 +137,7 @@ export default async function ArticlePage(
           <AdSlot slot={AD_SLOTS.articleTop} />
 
           <div
-            className="article-body text-[15px] leading-loose text-ink"
+            className="article-body text-body leading-loose text-ink"
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: a.body }}
           />

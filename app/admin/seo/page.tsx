@@ -65,11 +65,11 @@ const DEVICE_AR: Record<string, string> = { MOBILE: "جوّال", DESKTOP: "حا
 
 // ─── لون كل سبب في مخطّط التغطية ─────────────────────────────────────────────
 const REASON_TONE: Record<string, string> = {
-  indexed: "bg-emerald-500", crawled_not_indexed: "bg-amber-500",
-  discovered_not_indexed: "bg-amber-400", alternate_canonical: "bg-slate-400",
-  duplicate: "bg-slate-500", noindex: "bg-slate-300", redirect: "bg-sky-400",
-  not_found: "bg-red-500", blocked: "bg-slate-600", unknown: "bg-slate-300",
-  other: "bg-slate-300", error: "bg-red-300",
+  indexed: "bg-success-500", crawled_not_indexed: "bg-warning-500",
+  discovered_not_indexed: "bg-warning-500", alternate_canonical: "bg-muted-500",
+  duplicate: "bg-muted-500", noindex: "bg-muted-200", redirect: "bg-info-500",
+  not_found: "bg-danger-500", blocked: "bg-muted-600", unknown: "bg-muted-200",
+  other: "bg-muted-200", error: "bg-danger-200",
 };
 
 //: ماذا يعني كل سبب، وما العمل — لوحةٌ تعرض مصطلحات جوجل بلا ترجمتها إلى
@@ -154,13 +154,13 @@ export default function AdminSeoPage() {
 
       {notice && (
         <div className={`rounded-2xl px-4 py-3.5 text-body flex items-start gap-2.5 ${
-          notice.ok ? "bg-primary/5 text-primary border border-primary/15" : "bg-red-50 text-red-700 border border-red-200"}`}>
+          notice.ok ? "bg-primary/5 text-primary border border-primary/15" : "bg-danger-50 text-danger-700 border border-danger-200"}`}>
           {notice.ok ? <CheckCircle weight="Bold" className="h-5 w-5 shrink-0" /> : <CloseCircle weight="Bold" className="h-5 w-5 shrink-0" />}
           <span className="leading-relaxed">{notice.text}</span>
         </div>
       )}
       {error && (
-        <div className="rounded-2xl px-4 py-3.5 text-body flex items-center gap-2.5 bg-red-50 text-red-700 border border-red-200">
+        <div className="rounded-2xl px-4 py-3.5 text-body flex items-center gap-2.5 bg-danger-50 text-danger-700 border border-danger-200">
           <CloseCircle weight="Bold" className="h-5 w-5 shrink-0" /> {error}
         </div>
       )}
@@ -219,16 +219,16 @@ export default function AdminSeoPage() {
                     <div key={b.key}>
                       <div className="flex items-center justify-between text-body mb-1">
                         <span className="text-muted-700 flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${REASON_TONE[b.key] ?? "bg-slate-300"}`} />
+                          <span className={`w-2.5 h-2.5 rounded-full ${REASON_TONE[b.key] ?? "bg-muted-200"}`} />
                           {b.reason}
                         </span>
                         <span className="text-muted tabular-nums">{nf(b.count)} · {pct}%</span>
                       </div>
                       <div className="h-2 rounded-full bg-muted-100 overflow-hidden">
-                        <div className={`h-full rounded-full ${REASON_TONE[b.key] ?? "bg-slate-300"}`} style={{ width: `${pct}%` }} />
+                        <div className={`h-full rounded-full ${REASON_TONE[b.key] ?? "bg-muted-200"}`} style={{ width: `${pct}%` }} />
                       </div>
                       {REASON_MEANING[b.key] && (
-                        <p className="text-[11px] text-muted mt-1 leading-relaxed">{REASON_MEANING[b.key]}</p>
+                        <p className="text-micro text-muted mt-1 leading-relaxed">{REASON_MEANING[b.key]}</p>
                       )}
                     </div>
                   );
@@ -304,7 +304,7 @@ export default function AdminSeoPage() {
                         </td>
                         <td className="py-2.5 text-center">
                           <span className={`text-caption font-bold rounded-lg px-2 py-1 ${
-                            o.position <= 10 ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
+                            o.position <= 10 ? "bg-success-50 text-success-600" : "bg-warning-50 text-warning-600"}`}>
                             {o.position}
                           </span>
                         </td>
@@ -329,7 +329,7 @@ export default function AdminSeoPage() {
                      target="_blank" rel="noopener noreferrer"
                      className="rounded-xl border border-muted-200 bg-white px-3 py-2 text-body text-muted-700 hover:border-primary hover:text-primary transition-colors">
                     {z.query}
-                    <span className="text-[11px] text-muted ms-2 tabular-nums">{nf(z.impressions)} ظهور · #{z.position}</span>
+                    <span className="text-micro text-muted ms-2 tabular-nums">{nf(z.impressions)} ظهور · #{z.position}</span>
                   </a>
                 ))}
               </div>
@@ -349,7 +349,7 @@ export default function AdminSeoPage() {
                          className="text-body font-semibold text-ink hover:text-primary truncate" dir="ltr">
                         {shortPath(b.page)}
                       </a>
-                      <span className="text-caption font-bold text-red-600 bg-red-50 rounded-lg px-2 py-1 shrink-0">
+                      <span className="text-caption font-bold text-danger-600 bg-danger-50 rounded-lg px-2 py-1 shrink-0">
                         ~{nf(b.lost_clicks)} نقرة ضائعة
                       </span>
                     </div>
@@ -357,7 +357,7 @@ export default function AdminSeoPage() {
                       <span>الترتيب <strong className="text-muted-700">{b.position}</strong></span>
                       <span>الظهور <strong className="text-muted-700">{nf(b.impressions)}</strong></span>
                       <span>
-                        النقر الفعليّ <strong className="text-red-600">{(b.ctr * 100).toFixed(2)}%</strong>
+                        النقر الفعليّ <strong className="text-danger-600">{(b.ctr * 100).toFixed(2)}%</strong>
                         {" "}مقابل متوقّع <strong className="text-muted-700">{(b.expected_ctr * 100).toFixed(1)}%</strong>
                       </span>
                     </div>
@@ -451,13 +451,13 @@ export default function AdminSeoPage() {
                 .map((p) => (
                 <div key={p.url} className="flex items-center gap-3 py-3 first:pt-0">
                   <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                    p.indexed ? "bg-emerald-50 text-emerald-600" : "bg-muted-100 text-muted"}`}>
+                    p.indexed ? "bg-success-50 text-success-600" : "bg-muted-100 text-muted"}`}>
                     {p.indexed ? <CheckCircle weight="Bold" className="h-5 w-5" /> : <CloseCircle weight="Bold" className="h-5 w-5" />}
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-body font-semibold text-ink truncate" dir="ltr">{shortPath(p.url)}</p>
                     <p className="text-caption text-muted mt-0.5 flex items-center gap-1.5">
-                      <span className={`w-2 h-2 rounded-full ${REASON_TONE[p.reason_key] ?? "bg-slate-300"}`} />
+                      <span className={`w-2 h-2 rounded-full ${REASON_TONE[p.reason_key] ?? "bg-muted-200"}`} />
                       {p.reason} · {fmtDate(p.last_crawl)}
                     </p>
                   </div>
@@ -503,7 +503,7 @@ export default function AdminSeoPage() {
                     })()}
                     <span className="text-caption text-muted ms-auto">آخر قراءة: {fmtDate(m.last_downloaded)}</span>
                   </div>
-                  <p className="text-[11px] text-muted mt-2.5 leading-relaxed">
+                  <p className="text-micro text-muted mt-2.5 leading-relaxed">
                     عدّاد «مُفهرَسة» في هذا الجدول يُبقيه جوجل صفراً غالباً ولا يعني أن صفحاتك
                     غير مفهرسة — المرجع الصحيح هو بطاقة «تغطية الفهرسة» أعلاه المبنيّة على فحص
                     كل رابط على حدة.
@@ -546,21 +546,21 @@ function Sparkline({ trend }: { trend: TrendPoint[] }) {
         <polyline points={line("impressions")} fill="none" stroke="var(--primary,#171539)" strokeWidth="2" strokeLinejoin="round" />
         <polyline points={line("clicks")} fill="none" stroke="#FFC107" strokeWidth="2" strokeLinejoin="round" />
       </svg>
-      <div className="flex items-center justify-between text-[10px] text-muted-200 mt-1 tabular-nums">
+      <div className="flex items-center justify-between text-micro text-muted-200 mt-1 tabular-nums">
         <span>{dayFmt(trend[0].date)}</span>
         <span>{dayFmt(trend[trend.length - 1].date)}</span>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2 text-caption">
         <div className="rounded-xl bg-muted-50 px-3 py-2">
-          <p className="text-muted text-[11px]">أفضل يوم</p>
-          <p className="font-bold text-ink tabular-nums">{nf(best.impressions)} <span className="font-normal text-muted text-[11px]">{dayFmt(best.date)}</span></p>
+          <p className="text-muted text-micro">أفضل يوم</p>
+          <p className="font-bold text-ink tabular-nums">{nf(best.impressions)} <span className="font-normal text-muted text-micro">{dayFmt(best.date)}</span></p>
         </div>
         <div className="rounded-xl bg-muted-50 px-3 py-2">
-          <p className="text-muted text-[11px]">متوسّط آخر 7 أيام</p>
+          <p className="text-muted text-micro">متوسّط آخر 7 أيام</p>
           <p className="font-bold text-ink tabular-nums">
             {nf(last7)}/يوم
             {trendPct != null && trendPct !== 0 && (
-              <span className={`ms-1.5 text-[11px] font-bold ${trendPct > 0 ? "text-emerald-600" : "text-red-500"}`}>
+              <span className={`ms-1.5 text-micro font-bold ${trendPct > 0 ? "text-success-600" : "text-danger-500"}`}>
                 {trendPct > 0 ? "▲" : "▼"}{Math.abs(trendPct)}%
               </span>
             )}
@@ -588,25 +588,25 @@ function RankedList({ rows, hrefOf }: {
           <div key={i}>
             <div className="flex items-center justify-between gap-3 text-body mb-1">
               <span className="font-medium text-ink truncate flex items-center gap-2" dir="auto">
-                <span className="text-[10px] text-muted-200 tabular-nums w-4 shrink-0">{i + 1}</span>
+                <span className="text-micro text-muted-200 tabular-nums w-4 shrink-0">{i + 1}</span>
                 {hrefOf ? (
                   <a href={hrefOf(r.label)} target="_blank" rel="noopener noreferrer" className="hover:text-primary truncate">
                     {r.label}
                   </a>
                 ) : r.label}
               </span>
-              <span className={`text-[11px] font-bold rounded-lg px-1.5 py-0.5 shrink-0 ${
-                r.position <= 3 ? "bg-emerald-50 text-emerald-600"
-                : r.position <= 10 ? "bg-amber-50 text-amber-600"
+              <span className={`text-micro font-bold rounded-lg px-1.5 py-0.5 shrink-0 ${
+                r.position <= 3 ? "bg-success-50 text-success-600"
+                : r.position <= 10 ? "bg-warning-50 text-warning-600"
                 : "bg-muted-100 text-muted-500"}`}>#{r.position}</span>
             </div>
             <div className="h-1.5 rounded-full bg-muted-100 overflow-hidden">
               <div className="h-full rounded-full bg-primary/70" style={{ width: `${Math.round((r.impressions / max) * 100)}%` }} />
             </div>
-            <div className="flex items-center gap-x-3 gap-y-0.5 flex-wrap text-[11px] text-muted mt-1 tabular-nums">
+            <div className="flex items-center gap-x-3 gap-y-0.5 flex-wrap text-micro text-muted mt-1 tabular-nums">
               <span>ظهور {nf(r.impressions)}</span>
               <span>نقر {nf(r.clicks)}</span>
-              <span className={ctr === 0 ? "text-red-500 font-semibold" : ""}>
+              <span className={ctr === 0 ? "text-danger-500 font-semibold" : ""}>
                 CTR {(ctr * 100).toFixed(1)}%
               </span>
               <span className="text-muted-200">{share}% من ظهور القائمة</span>
@@ -620,10 +620,10 @@ function RankedList({ rows, hrefOf }: {
 
 function RecCard({ rec }: { rec: Rec }) {
   const tone = {
-    error: { box: "bg-red-50 border-red-200", icon: "text-red-600", Icon: DangerTriangle },
-    warn: { box: "bg-amber-50 border-amber-200", icon: "text-amber-600", Icon: DangerTriangle },
-    info: { box: "bg-sky-50 border-sky-200", icon: "text-sky-600", Icon: InfoCircle },
-    ok: { box: "bg-emerald-50 border-emerald-200", icon: "text-emerald-600", Icon: CheckCircle },
+    error: { box: "bg-danger-50 border-danger-200", icon: "text-danger-600", Icon: DangerTriangle },
+    warn: { box: "bg-warning-50 border-warning-200", icon: "text-warning-600", Icon: DangerTriangle },
+    info: { box: "bg-info-50 border-info-200", icon: "text-info-600", Icon: InfoCircle },
+    ok: { box: "bg-success-50 border-success-200", icon: "text-success-600", Icon: CheckCircle },
   }[rec.level];
   const Icon = tone.Icon;
   return (
@@ -649,15 +649,15 @@ function Kpi({ icon, label, value, hint, tone, delta }: {
       <div className="flex items-center justify-between mb-2.5">
         <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${toneCls}`}>{icon}</span>
         {delta != null && delta !== 0 && (
-          <span className={`text-[11px] font-bold rounded-lg px-2 py-1 ${
-            delta > 0 ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}>
+          <span className={`text-micro font-bold rounded-lg px-2 py-1 ${
+            delta > 0 ? "bg-success-50 text-success-600" : "bg-danger-50 text-danger-600"}`}>
             {delta > 0 ? "▲" : "▼"} {Math.abs(delta)}%
           </span>
         )}
       </div>
       <p className="text-h2 font-extrabold text-ink tabular-nums leading-none">{value}</p>
       <p className="text-caption text-muted-500 mt-1.5">{label}</p>
-      {hint && <p className="text-[11px] text-muted mt-0.5">{hint}</p>}
+      {hint && <p className="text-micro text-muted mt-0.5">{hint}</p>}
     </Card>
   );
 }
@@ -668,7 +668,7 @@ function MiniStat({ label, value, hint }: { label: string; value: string; hint?:
     <Card className="p-4">
       <p className="text-h3 font-extrabold text-ink tabular-nums leading-none">{value}</p>
       <p className="text-caption text-muted-500 mt-1.5">{label}</p>
-      {hint && <p className="text-[11px] text-muted mt-0.5 leading-relaxed">{hint}</p>}
+      {hint && <p className="text-micro text-muted mt-0.5 leading-relaxed">{hint}</p>}
     </Card>
   );
 }

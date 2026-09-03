@@ -113,9 +113,9 @@ export default function ServiceDetailPage() {
       </div>
 
       {!data.ok && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4">
-          <p className="font-bold text-red-700 text-body">تعذّرت القراءة من هذه الخدمة</p>
-          <p className="text-body text-red-600 mt-1">{data.error}</p>
+        <div className="bg-danger-50 border border-danger-200 rounded-2xl p-4 mb-4">
+          <p className="font-bold text-danger-700 text-body">تعذّرت القراءة من هذه الخدمة</p>
+          <p className="text-body text-danger-600 mt-1">{data.error}</p>
         </div>
       )}
 

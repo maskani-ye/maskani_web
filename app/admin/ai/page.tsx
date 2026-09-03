@@ -266,7 +266,7 @@ export default function AdminAIPage() {
           <p className="text-caption text-muted mt-2">هذا هو المفتاح الذي تعمل به المنصّة فعلياً. لتبديله، اضغط «تفعيل» على مفتاح آخر في القائمة أدناه.</p>
         </div>
       ) : (
-        <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 text-amber-800 text-body">
+        <div className="rounded-2xl border-2 border-warning-200 bg-warning-50 p-5 text-warning-700 text-body">
           ⚠️ لا يوجد مفتاح نشط — أضِف مفتاحاً وفعّله لبدء استخدام الذكاء الاصطناعي.
         </div>
       )}
@@ -290,11 +290,11 @@ export default function AdminAIPage() {
         </div>
 
         {testResult && (
-          <div className={`mt-4 rounded-xl border p-4 ${testResult.ok ? "border-green-200 bg-green-50/60" : "border-red-200 bg-red-50/60"}`}>
+          <div className={`mt-4 rounded-xl border p-4 ${testResult.ok ? "border-success-200 bg-success-50/60" : "border-danger-200 bg-danger-50/60"}`}>
             <div className="flex items-center gap-2 flex-wrap text-body font-bold mb-2">
               {testResult.ok
-                ? <><CheckCircle className="h-4 w-4 text-green-600" /><span className="text-green-700">النموذج يعمل</span></>
-                : <><DangerTriangle className="h-4 w-4 text-red-500" /><span className="text-red-600">فشل الاختبار</span></>}
+                ? <><CheckCircle className="h-4 w-4 text-success-600" /><span className="text-success-700">النموذج يعمل</span></>
+                : <><DangerTriangle className="h-4 w-4 text-danger-500" /><span className="text-danger-600">فشل الاختبار</span></>}
               {testResult.model && <span dir="ltr" className="font-mono text-caption bg-white px-1.5 py-0.5 rounded border">{testResult.model}</span>}
               {typeof testResult.elapsed_ms === "number" &&
                 <span className="text-caption font-normal text-muted">{fmt(Math.round(testResult.elapsed_ms))} م.ث</span>}
@@ -333,12 +333,12 @@ export default function AdminAIPage() {
           <h2 className="font-bold text-ink mb-1">توزيع النماذج (مختلط)</h2>
           <p className="text-caption text-muted mb-4">المهام البسيطة تعمل بنموذج مجاني، والحسّاسة بنموذج مدفوع — توفيراً للتكلفة. النماذج التالية مأخوذة من <b>المزوّد النشط</b> (تُضبط لكل مزوّد في قسم «المزوّدون» أدناه، لأن المعرّفات تختلف بينها).</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-            <div className="rounded-xl border border-green-100 bg-green-50/50 p-3">
-              <p className="text-caption text-green-700 font-semibold mb-1">🆓 المهام البسيطة → مجاني</p>
+            <div className="rounded-xl border border-success-100 bg-success-50/50 p-3">
+              <p className="text-caption text-success-700 font-semibold mb-1">🆓 المهام البسيطة → مجاني</p>
               <p dir="ltr" className="font-mono text-caption text-muted text-left break-all">{tiers.simple_model}</p>
             </div>
-            <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3">
-              <p className="text-caption text-amber-700 font-semibold mb-1">💳 المهام الحسّاسة → مدفوع</p>
+            <div className="rounded-xl border border-warning-100 bg-warning-50/50 p-3">
+              <p className="text-caption text-warning-700 font-semibold mb-1">💳 المهام الحسّاسة → مدفوع</p>
               <p dir="ltr" className="font-mono text-caption text-muted text-left break-all">{tiers.sensitive_model}</p>
             </div>
           </div>
@@ -377,7 +377,7 @@ export default function AdminAIPage() {
                     <span dir="ltr" className="font-mono bg-muted-100 px-1.5 py-0.5 rounded">{key.masked_key || "—"}</span>
                     {key.last_used_at && <span>آخر استخدام: {new Date(key.last_used_at).toLocaleDateString("ar")}</span>}
                   </div>
-                  {!key.is_active && key.last_error && <p className="text-caption text-red-500 mt-1 line-clamp-1" title={key.last_error}>توقّف: {key.last_error}</p>}
+                  {!key.is_active && key.last_error && <p className="text-caption text-danger-500 mt-1 line-clamp-1" title={key.last_error}>توقّف: {key.last_error}</p>}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   {!key.is_active && (
@@ -387,7 +387,7 @@ export default function AdminAIPage() {
                   )}
                   <button onClick={() => openStats(key)} title="الإحصائيات" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center"><ChartSquare className="h-4 w-4 text-muted" /></button>
                   <button onClick={() => openEdit(key)} title="تعديل" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-muted" /></button>
-                  <button onClick={() => setDeleteTarget(key)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center"><TrashBinMinimalistic className="h-4 w-4 text-red-500" /></button>
+                  <button onClick={() => setDeleteTarget(key)} title="حذف" className="w-9 h-9 rounded-lg bg-danger-50 hover:bg-danger-100 flex items-center justify-center"><TrashBinMinimalistic className="h-4 w-4 text-danger-500" /></button>
                 </div>
               </div>
             ))}
@@ -418,7 +418,7 @@ export default function AdminAIPage() {
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button onClick={() => openEditProv(p)} title="تعديل" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center"><Pen className="h-4 w-4 text-muted" /></button>
-                  <button onClick={() => setProvDelete(p)} title="حذف" className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center"><TrashBinMinimalistic className="h-4 w-4 text-red-500" /></button>
+                  <button onClick={() => setProvDelete(p)} title="حذف" className="w-9 h-9 rounded-lg bg-danger-50 hover:bg-danger-100 flex items-center justify-center"><TrashBinMinimalistic className="h-4 w-4 text-danger-500" /></button>
                 </div>
               </div>
             ))}
@@ -492,7 +492,7 @@ export default function AdminAIPage() {
         {statsLoading ? (
           <div className="py-8 text-center text-muted"><Refresh className="h-6 w-6 mx-auto animate-spin" /><p className="mt-2 text-body">جارٍ الجلب…</p></div>
         ) : !statsData ? null : !statsData.ok ? (
-          <p className="text-body text-red-500 py-4 text-center">تعذّر الجلب: {statsData.error}</p>
+          <p className="text-body text-danger-500 py-4 text-center">تعذّر الجلب: {statsData.error}</p>
         ) : (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
@@ -547,12 +547,12 @@ export default function AdminAIPage() {
         </div>
       )}
 
-      <ConfirmDialog open={!!deleteTarget} icon={<TrashBinMinimalistic className="h-6 w-6 text-red-500" />}
+      <ConfirmDialog open={!!deleteTarget} icon={<TrashBinMinimalistic className="h-6 w-6 text-danger-500" />}
         title="حذف المفتاح؟"
         message={deleteTarget ? `«${deleteTarget.name}»${deleteTarget.is_active ? " — هذا المفتاح النشط! ستحتاج تفعيل مفتاح آخر." : " — لا يمكن التراجع."}` : ""}
         variant="danger" confirmLabel="حذف" loading={busy} onConfirm={confirmDelete} onCancel={() => setDeleteTarget(null)} />
 
-      <ConfirmDialog open={!!provDelete} icon={<TrashBinMinimalistic className="h-6 w-6 text-red-500" />}
+      <ConfirmDialog open={!!provDelete} icon={<TrashBinMinimalistic className="h-6 w-6 text-danger-500" />}
         title="حذف المزوّد؟"
         message={provDelete ? `«${provDelete.name}»${provDelete.keys_count > 0 ? ` — يملك ${provDelete.keys_count} مفتاحاً، لن يُحذف حتى تنقلها.` : " — لا يمكن التراجع."}` : ""}
         variant="danger" confirmLabel="حذف" loading={busy} onConfirm={confirmDeleteProv} onCancel={() => setProvDelete(null)} />
@@ -607,10 +607,10 @@ function ModelPicker({ label, value, onChange, models, loading, onLoad }: {
         placeholder={list.length ? "أو اكتب المعرّف يدوياً" : "معرّف النموذج"} />
 
       {models && !models.ok && models.error && (
-        <p className="text-caption text-amber-700 leading-relaxed">{models.error}</p>
+        <p className="text-caption text-warning-700 leading-relaxed">{models.error}</p>
       )}
       {list.length > 0 && value && !known && (
-        <p className="text-caption text-amber-700">
+        <p className="text-caption text-warning-700">
           هذا المعرّف ليس في قائمة المزوّد — قد يردّ 404 عند الاستخدام.
         </p>
       )}
@@ -619,7 +619,7 @@ function ModelPicker({ label, value, onChange, models, loading, onLoad }: {
 }
 
 function Stat({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "primary" | "green" | "red" }) {
-  const color = tone === "primary" ? "text-primary" : tone === "green" ? "text-green-600" : tone === "red" ? "text-red-500" : "text-ink";
+  const color = tone === "primary" ? "text-primary" : tone === "green" ? "text-success-600" : tone === "red" ? "text-danger-500" : "text-ink";
   return (
     <div className="rounded-xl border border-muted-100 bg-muted-50/50 p-3">
       <p className="text-caption text-muted mb-1">{label}</p>

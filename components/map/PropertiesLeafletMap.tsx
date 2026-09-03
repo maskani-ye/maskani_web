@@ -206,7 +206,7 @@ export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filt
                     <p className="text-body font-extrabold text-primary">
                       {formatPrice(m.price, m.currency)}
                     </p>
-                    <div className="mt-1 flex items-center gap-1.5 text-[11px]">
+                    <div className="mt-1 flex items-center gap-1.5 text-micro">
                       <span className="rounded-full bg-muted-100 px-2 py-0.5 text-muted-600">
                         {propertyTypeName(m.property_type)}
                       </span>
@@ -218,7 +218,7 @@ export default function PropertiesLeafletMap({ center, zoom = DEFAULT_ZOOM, filt
                         {offerTypeLabels[m.offer_type]}
                       </span>
                     </div>
-                    <span className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-primary">
+                    <span className="mt-2 flex items-center gap-1 text-micro font-semibold text-primary">
                       <MapPoint className="h-3.5 w-3.5" /> عرض التفاصيل
                     </span>
                   </div>

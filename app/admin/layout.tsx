@@ -154,7 +154,7 @@ function SidebarInner({
     <nav ref={navRef} className="flex-1 py-4 px-3 overflow-y-auto">
       {NAV_GROUPS.map((group, gi) => (
         <div key={group.title} className={gi === 0 ? "" : "mt-5"}>
-          <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted">
+          <p className="px-3 pb-1.5 text-micro font-bold uppercase tracking-wide text-muted">
             {group.title}
           </p>
           <div className="space-y-1">
@@ -196,7 +196,7 @@ function SidebarInner({
       </div>
       <button
         onClick={onLogout}
-        className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-body font-medium text-red-600 hover:bg-red-50 transition-colors"
+        className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-body font-medium text-danger-600 hover:bg-danger-50 transition-colors"
       >
         <Logout2 className="h-4 w-4 shrink-0" />
         تسجيل الخروج

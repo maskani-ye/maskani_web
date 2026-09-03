@@ -194,7 +194,7 @@ export default function AdminServicesPage() {
                         {s.user_avatar ? (
                           <img src={s.user_avatar} className="w-9 h-9 rounded-full object-cover" alt="" />
                         ) : (
-                          <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-body">
+                          <div className="w-9 h-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-body">
                             {(s.user_name ?? "؟").charAt(0)}
                           </div>
                         )}
@@ -229,8 +229,8 @@ export default function AdminServicesPage() {
                     </td>
                     <td className="px-4 py-3">
                       {s.is_active
-                        ? <span className="flex items-center gap-1 text-caption text-green-600 font-medium"><CheckCircle className="h-3.5 w-3.5" />نشط</span>
-                        : <span className="flex items-center gap-1 text-caption text-red-500 font-medium"><DangerCircle className="h-3.5 w-3.5" />موقوف</span>}
+                        ? <span className="flex items-center gap-1 text-caption text-success-600 font-medium"><CheckCircle className="h-3.5 w-3.5" />نشط</span>
+                        : <span className="flex items-center gap-1 text-caption text-danger-500 font-medium"><DangerCircle className="h-3.5 w-3.5" />موقوف</span>}
                     </td>
                     <td className="px-4 py-3">
                       <button
@@ -268,7 +268,7 @@ export default function AdminServicesPage() {
               {selected.user_avatar ? (
                 <img src={selected.user_avatar} className="w-16 h-16 rounded-full object-cover mb-3" alt="" />
               ) : (
-                <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-h2 mb-3">
+                <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-h2 mb-3">
                   {(selected.user_name ?? "؟").charAt(0)}
                 </div>
               )}
