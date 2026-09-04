@@ -8,10 +8,11 @@
  * المفهرسة «اختر موقعك» في نتائج البحث. الخسارة صامتة ولا تظهر إلا بعد
  * أسابيع حين تسقط الفهرسة.
  *
- * ثلاثة حرّاس متتالية قبل أي تحويل:
+ * أربعة حرّاس متتالية قبل أي تحويل:
  *   ① وكيلٌ زاحف؟ لا تحويل أبداً (نفس نمط `middleware.ts`).
  *   ② ما زال السياق يحمّل؟ انتظر — التحويل بحالةٍ ناقصة يطرد زائراً له مدينة.
  *   ③ المسار مشمول؟ الشاشات التي لا تعتمد على السوق (مقال، بلاغ، ملفّ) تُترك.
+ *   ④ الرابط يحمل موضعه (`city` أو `neighborhood_ref` أو `country`)؟ لا تسأله.
  */
 
 import { useEffect } from "react";
@@ -24,6 +25,23 @@ const GATED = ["/properties", "/services", "/jobs", "/requests"];
 /** نفس أنماط `middleware.ts` — مصدرٌ واحد للتعريف يمنع تباعد السلوكين. */
 const BOT_RE =
   /googlebot|bingbot|yandex|duckduckbot|baiduspider|applebot|facebookexternalhit|twitterbot|whatsapp|telegrambot|linkedinbot|ahrefsbot|semrushbot|petalbot|gptbot|claudebot|slurp|\bbot\b|crawl|spider/i;
+
+/** معاملات الاستعلام التي تُحدّد الموضع بنفسها — وجود أيّها يُغني عن السؤال. */
+const PINS = ["city", "neighborhood_ref", "country"];
+
+/**
+ * هل يحمل الرابط موضعه معه؟
+ *
+ * ⚠️ **كان الحارس يسأل عن الموقع مَن جاء يحمله.** القادم من بحث جوجل إلى
+ * «حي الطوابق» يضغط «تصفّح كل عقارات الحيّ» فيصل إلى
+ * `/properties?neighborhood_ref=4540` — والحيّ يُعيّن مدينته ودولته — ومع ذلك
+ * يُقذف إلى `/location` ليختار سوقه. وهذا ما رصدناه في زوّار مصر: يصلون من
+ * البحث إلى أحياء بأعيانها ثمّ تعترضهم البوّابة، فنشاطهم صفر.
+ */
+function pinned(search: string): boolean {
+  const q = new URLSearchParams(search);
+  return PINS.some((k) => (q.get(k) || "").trim() !== "");
+}
 
 function isGated(path: string): boolean {
   if (path === "/") return true;
@@ -47,6 +65,7 @@ export function LocationGate() {
     // صفحة في الموقع** (يفشل البناء بـ missing-suspense-with-csr-bailout).
     // الحارس يعمل بعد الترطيب أصلاً، فـ`window` متاحة ومكافئة.
     const qs = window.location.search;
+    if (pinned(qs)) return;              // ④ الرابط يحمل موضعه — لا تسأله
     const next = encodeURIComponent(pathname + qs);
     // `replace` لا `push`: التحويل خطوة إعداد لا وجهة، فلا يجوز أن يعيد زرّ
     // الرجوع المستخدمَ إليها بعد أن اختار.

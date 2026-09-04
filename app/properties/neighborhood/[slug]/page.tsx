@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { breadcrumbList, itemList, citySlug, SITE_URL } from "@/lib/seo";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import type { Property } from "@/types";
+import { DEFAULT_MARKET, MARKETS, marketPath } from "@/lib/markets";
 
 /**
  * ساعة كاملة بين التجديدات، لا خمس دقائق.
@@ -29,6 +30,7 @@ interface Neighborhood {
   city: number;
   city_name: string;
   country_name?: string | null;
+  country_code?: string | null;
   properties_count?: number;
 }
 
@@ -143,6 +145,10 @@ export default async function NeighborhoodPropertiesPage(
 
   const { items, count } = await getProperties(hood.id);
   const cityHref = `/properties/city/${citySlug(hood.city_name)}`;
+  // سوق الحيّ من دولته — لا من كعكة الزائر. صفحةٌ مفهرسة تُقرأ من أيّ سوق،
+  // فوجهتها يجب أن تُشتقّ من محتواها لا من حالة قارئها.
+  const code = (hood.country_code || "").toLowerCase();
+  const market = (MARKETS as readonly string[]).includes(code) ? code : DEFAULT_MARKET;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -182,7 +188,11 @@ export default async function NeighborhoodPropertiesPage(
           وتواصل مباشر مع أصحاب العقارات بلا عمولات.
         </p>
         <Link
-          href={`/properties?neighborhood_ref=${hood.id}`}
+          // ⚠️ **الرابط يحمل سوقه ومدينته وحيّه — وكان يحمل الحيّ وحده.**
+          // `/properties?…` مسارٌ قديم يحوّله الوسيط 308 إلى **سوق الكعكة**،
+          // فالقادم من بحث جوجل إلى حيٍّ مصريّ كان يهبط في `/ye/properties`
+          // ومعه معرّف مدينةٍ مصرية — قائمةٌ فارغة وسوقٌ ليس سوقه.
+          href={`${marketPath(market, "properties")}?city=${hood.city}&neighborhood_ref=${hood.id}`}
           className="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary text-white px-5 py-2.5 text-body font-semibold hover:bg-primary/90 transition-colors"
         >
           تصفّح كل عقارات {hood.name} مع الفلاتر

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -123,7 +123,20 @@ function PropertiesContent() {
   }, [cityId]);
 
   // تبديل المدينة يُسقط حيّها المختار — وإلا فلترنا بحيٍّ لا ينتمي إليها.
+  //
+  // ⚠️ **لكنّه كان يُسقط أيضاً حيّاً جاء في الرابط.** الأثر يعمل عند التركيب
+  // كذلك، ثمّ مرّةً ثانية حين تُتبنّى `?city=` من العنوان — فمن فتح
+  // `/properties?city=59&neighborhood_ref=4540` قادماً من صفحة حيّه يرى
+  // **المحافظة كلّها** لا حيّه. وهو القادم من بحث جوجل بالضبط: يبحث عن «حي
+  // الطوابق» فيصل إلى محافظةٍ كاملة لا يعرف فيها موضعه.
+  //
+  // فالإسقاط لتبديلٍ حقيقيّ: من مدينةٍ سابقة **غير فارغة** إلى غيرها. التركيب
+  // وأوّل تبنٍّ للعنوان ليسا تبديلاً.
+  const prevCity = useRef<string | null>(null);
   useEffect(() => {
+    const before = prevCity.current;
+    prevCity.current = cityId;
+    if (before === null || before === "" || before === cityId) return;
     setFilters((f) => (f.neighborhood_ref ? { ...f, neighborhood_ref: "" } : f));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityId]);
@@ -227,6 +240,10 @@ function PropertiesContent() {
       area_max: (v) => `مساحة إلى ${formatNumber(Number(v))}`,
       furnishing: (v) => v,
       status: (v) => v,
+      // ⚠️ **الحيّ كان يظهر رقماً خاماً**: «٦١١٠» بدل «ارض اللواء». والقادم من
+      // بحث جوجل يصل بالحيّ في رابطه، فأوّل ما يراه رقمُ قاعدة بيانات لا اسم
+      // مكانه. وقائمة الأحياء تصل بعد الفلتر، فحتى تصل يُعرَض «حيّ» لا الرقم.
+      neighborhood_ref: (v) => hoods.find((h) => String(h.id) === v)?.name ?? "حيّ",
     };
     Object.entries(filters).forEach(([k, v]) => {
       if (!v || k === "search" || k === "ordering" || k === "price_currency") return;
@@ -235,7 +252,7 @@ function PropertiesContent() {
     });
     return chips;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, cityId, cities, propertyTypeOpts]);
+  }, [filters, cityId, cities, propertyTypeOpts, hoods]);
 
   const toggleFavorite = async (id: number, e: React.MouseEvent) => {
     e.preventDefault();
