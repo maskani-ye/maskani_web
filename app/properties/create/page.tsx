@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { SuggestDescriptionButton } from "@/components/ai/SuggestDescriptionButton";
 import { ImproveTextButton } from "@/components/ai/ImproveTextButton";
 import { compressImages } from "@/lib/imageCompression";
+import { NeighborhoodInput } from "@/components/properties/NeighborhoodInput";
 import { CURRENCIES } from "@/lib/utils";
 import { toEnglishDigits } from "@/lib/digits";
 
@@ -488,9 +489,20 @@ function StepLocation({
         <AltArrowDown className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted pointer-events-none" />
       </div>
 
+      {/* ⚠️ **كان حقلاً نصّياً حرّاً لا يربط الحيّ بسجلّه.** فالناشر يكتب
+          «الفيصلية» ويُرسَل نصّاً بلا `neighborhood_ref` — فلا يظهر عقاره في
+          صفحة حيّه ولا في فلتر الحيّ، وصفحات الأحياء هي أقوى ما نملك في بحث
+          جوجل (منها يصلنا زوّار مصر). الآن قائمةٌ تُختار منها، والكتابة الحرّة
+          باقية لمن لا يجد حيّه. */}
       <div className="h-4" />
-      <SectionLabel text="الحي (اختياري)" />
-      <input className={inputCls} placeholder="اسم الحي" value={form.neighborhood} onChange={(e) => setField("neighborhood", e.target.value)} />
+      <NeighborhoodInput
+        cityId={form.city}
+        value={form.neighborhood}
+        onChange={(name, refId) => {
+          setField("neighborhood", name);
+          setField("neighborhood_ref", refId);
+        }}
+      />
 
       <div className="h-4" />
       <SectionLabel text="العنوان التفصيلي (اختياري)" />
