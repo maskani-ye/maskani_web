@@ -69,7 +69,7 @@ export function PlaceholderSurface({
 }) {
   const surface = tone === "gold" ? "bg-gold-50" : "bg-primary-50";
   const ink = tone === "gold" ? "text-gold-700/45" : "text-primary/30";
-  const stripe = tone === "gold" ? "rgba(255,160,0,.10)" : "rgba(79,35,150,.08)";
+  const stripe = tone === "gold" ? "rgba(255,160,0,.10)" : "rgba(23,21,57,.08)";
   return (
     <div className={`relative w-full h-full ${surface} flex items-center justify-center`}>
       <div

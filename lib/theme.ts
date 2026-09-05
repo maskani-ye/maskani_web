@@ -38,8 +38,8 @@ export const chartPalette = [
 export const radii = { md: "0.75rem", lg: "1rem", xl: "1.5rem" } as const;
 
 export const shadow = {
-  card: "0 2px 16px rgba(79, 35, 150, 0.08)",
-  cardHover: "0 8px 32px rgba(79, 35, 150, 0.16)",
+  card: "0 2px 16px rgba(23, 21, 57, 0.08)",
+  cardHover: "0 8px 32px rgba(23, 21, 57, 0.16)",
 } as const;
 
 // ─── سلّم الطباعة المرجعي — أصناف Tailwind الموصى بها لكل دور ───────────────
