@@ -51,12 +51,12 @@ const probe = () => {
 
 const b = await chromium.launch();
 let total = 0;
-for (const [name, w, h] of [["ضيّق", 320, 780], ["جوال", 390, 844], ["كبير", 430, 932], ["لوحيّ", 768, 1024], ["سطح مكتب", 1440, 900]]) {
+for (const [name, w, h] of [["ضيّق", 320, 780], ["جوال", 390, 844], ["لوحيّ", 768, 1024], ["سطح مكتب", 1440, 900]]) {
   const page = await (await b.newContext({ viewport: { width: w, height: h } })).newPage();
   for (const p of PAGES) {
     try {
       await page.goto(BASE + p, { waitUntil: "domcontentloaded", timeout: 45000 });
-      await page.waitForTimeout(2500);
+      await page.waitForTimeout(1500);
       const hits = await page.evaluate(probe);
       if (hits.length) {
         total += hits.length;

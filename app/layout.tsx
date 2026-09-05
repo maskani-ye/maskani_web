@@ -84,13 +84,12 @@ export const metadata: Metadata = {
     siteName: "مسكني",
     locale: "ar_AR",
     type: "website",
-    images: [{ url: "/og.webp", width: 1200, height: 630, alt: "مسكني — المنصة العقارية الاجتماعية" }],
+    // الصورة تُولَّد من `app/opengraph-image.tsx` — لا تُذكر هنا كي لا تُغلب المولَّدة.
   },
   twitter: {
     card: "summary_large_image",
     title: "مسكني | عقارات ستّة أسواق عربية — بيع وإيجار شقق وأراضٍ وخدمات",
     description: "شقق وأراضٍ وفلل في السعودية والأردن ومصر والعراق وعُمان واليمن، وخدمات عقارية موثوقة.",
-    images: ["/og.webp"],
   },
 };
 

@@ -350,8 +350,8 @@ export default function PropertyDetailClient(
           {hasCoords && (
             <div className="bg-white rounded-2xl card-shadow p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-ink flex items-center gap-1.5">
-                  <MapPoint className="h-5 w-5 text-primary" /> الموقع
+                <h3 className="flex min-w-0 items-center gap-1.5 truncate font-bold text-ink">
+                  <MapPoint className="h-5 w-5 shrink-0 text-primary" /> الموقع
                 </h3>
                 <Link href={`/properties?view=map&lat=${lat}&lng=${lng}`}>
                   <Button variant="outline" size="sm">

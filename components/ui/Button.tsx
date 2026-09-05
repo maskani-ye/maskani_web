@@ -38,7 +38,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          "inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
+          // ⚠️ **`shrink-0 whitespace-nowrap`: زرٌّ لا ينكسر نصّه أبداً.**
+          // الأزرار تقع كثيراً في صفوف `justify-between` مع تسميةٍ نصّية،
+          // فتأخذ التسمية عرضها الطبيعيّ ويُضغط الزرّ حتى ينكسر سطره — زرٌّ
+          // مشوّه بين عناصر سليمة، ويظهر عند العروض الضيّقة وحدها فيمرّ في
+          // المراجعة. المنع في المكوّن لا في كل موضع استعمال.
+          "inline-flex shrink-0 whitespace-nowrap items-center justify-center gap-2 font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
           variants[variant],
           sizes[size],
           fullWidth && "w-full",

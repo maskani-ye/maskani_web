@@ -235,7 +235,7 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
                 </>
               ) : (
                 <div className="flex items-center justify-between">
-                  <p className="text-body text-muted-500">سجّل الدخول لإضافة تقييم</p>
+                  <p className="min-w-0 truncate text-body text-muted-500">سجّل الدخول لإضافة تقييم</p>
                   <Button size="sm" variant="outline" onClick={() => requireAuth()}>تسجيل الدخول</Button>
                 </div>
               )}
