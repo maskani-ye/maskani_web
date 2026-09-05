@@ -1,6 +1,12 @@
 "use client";
 
 // زر «اقتراح وصف» بالذكاء الاصطناعي — يملأ حقل الوصف من العنوان والحقول.
+//
+// ⚠️ **`shrink-0 whitespace-nowrap` ليسا زينة.** الزرّ يقع في صفٍّ
+// `justify-between` مع تسمية الحقل؛ وعند 320px تأخذ التسمية عرضها كاملاً
+// فينضغط الزرّ وينكسر نصّه إلى سطرين — زرٌّ مشوّه بين عناصر سليمة. المنع هنا،
+// والتسمية هي التي تتقلّص (`min-w-0 truncate`) لأنّها تُقرأ مقصوصةً ولا يُقرأ
+// زرٌّ مكسور.
 // يُستخدم في نماذج إنشاء العقار/الخدمة/الطلب. آمن: يتطلّب العنوان فقط.
 import { useState } from "react";
 import { api, getErrorMessage } from "@/lib/api";
@@ -55,7 +61,7 @@ export function SuggestDescriptionButton({
       disabled={loading}
       className={
         className ??
-        "inline-flex items-center gap-1.5 rounded-lg bg-gold/10 text-gold-700 px-3 py-1.5 text-caption font-semibold hover:bg-gold/20 transition-colors disabled:opacity-60"
+        "inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-lg bg-gold/10 text-gold-700 px-3 py-1.5 text-caption font-semibold hover:bg-gold/20 transition-colors disabled:opacity-60"
       }
     >
       {loading ? (

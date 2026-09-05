@@ -269,7 +269,9 @@ function Stepper({ step }: { step: number }) {
 // ─── عناصر مشتركة ────────────────────────────────────────────────────────────
 function SectionLabel({ text, required }: { text: string; required?: boolean }) {
   return (
-    <label className="text-body font-semibold text-muted-700 mb-2 block">
+    // ⚠️ `min-w-0 truncate`: التسمية تقع أحياناً في صفٍّ مع أزرار الذكاء
+    // الاصطناعي، وبلا تقلّصٍ تدفعها فينكسر نصّها. المقصوص يُقرأ، والمكسور لا.
+    <label className="min-w-0 truncate text-body font-semibold text-muted-700 mb-2 block">
       {text}
       {required && <span className="text-danger-500"> *</span>}
     </label>

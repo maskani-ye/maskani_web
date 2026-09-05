@@ -111,7 +111,7 @@ export default function CreateJobPage() {
         />
         <div>
           <div className="flex items-center justify-between gap-2 mb-1.5">
-            <label className="block text-body font-medium text-muted-700">الوصف *</label>
+            <label className="block min-w-0 truncate text-body font-medium text-muted-700">الوصف *</label>
             <SuggestDescriptionButton kind="job" title={form.title} fields={{ "المدينة": form.city }} onSuggest={(d) => setForm((f) => ({ ...f, description: d }))} />
             {form.description?.trim().length >= 10 && (
               <ImproveTextButton kind="job" text={form.description} onImprove={(d) => setForm((f) => ({ ...f, description: d }))} />

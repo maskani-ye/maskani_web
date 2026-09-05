@@ -173,7 +173,7 @@ export default function CreateRequestPage() {
 
         <div>
           <div className="flex items-center justify-between gap-2 mb-1.5">
-            <label className="text-body font-semibold text-muted-700 block">مواصفات إضافية</label>
+            <label className="block min-w-0 truncate text-body font-semibold text-muted-700">مواصفات إضافية</label>
             <SuggestDescriptionButton kind="request" title={"طلب عقاري"} fields={{ "النوع": form.property_type, "العرض": form.offer_type, "الحي": form.neighborhood }} onSuggest={(d) => setField("additional_specs", d)} />
             {form.additional_specs?.trim().length >= 10 && (
               <ImproveTextButton kind="request" text={form.additional_specs} onImprove={(d) => setField("additional_specs", d)} />
