@@ -1,10 +1,39 @@
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
 import { formatDistanceToNow, format } from "date-fns";
 import { ar } from "date-fns/locale";
 
+/**
+ * ⚠️ **`twMerge` كان يبتلع لون النصّ.**
+ *
+ * سُلَّمنا الطباعيّ يسمّي المقاسات بأدوارها (`text-body` · `text-caption` ·
+ * `text-h1`) لا بأحجامها. و`tailwind-merge` لا يعرف هذه الأسماء، فيصنّفها
+ * **لون نصّ** — ويُسقط ما قبلها من ألوان. فزرّ `Button` المعرَّف
+ * `"bg-primary text-white … text-body"` كان يصل إلى المتصفّح بلا `text-white`
+ * إطلاقاً: نصٌّ بلون `ink` على خلفية `primary`، تباينه **١٫١١:١** — أي زرٌّ
+ * أسود على أسود.
+ *
+ * ولم يُكشف بقراءة الشيفرة: `text-white` مكتوبٌ في الملفّ ومفقودٌ في الصفحة.
+ * كشفه قياس اللون المحسوب على الزرّ المرسوم.
+ *
+ * فالمقاسات تُعرَّف هنا صراحةً لتُصنَّف `font-size` لا `text-color`.
+ */
+const twMergeWithScale = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      "font-size": [{
+        text: [
+          "hero", "display", "h1", "h2", "h3",
+          "body-lg", "body", "caption", "micro",
+          "price", "price-sm",
+        ],
+      }],
+    },
+  },
+});
+
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMergeWithScale(clsx(inputs));
 }
 
 export const CURRENCY_LABELS: Record<string, string> = {
