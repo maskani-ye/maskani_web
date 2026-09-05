@@ -19,7 +19,10 @@
     "audit:digits": "tsx scripts/audit-digits.ts",
     "audit:broker": "tsx scripts/audit-broker-claim.ts",
     "audit:markets": "tsx scripts/audit-market-pages.ts",
-    "audit:links": "tsx scripts/audit-market-links.ts"
+    "audit:links": "tsx scripts/audit-market-links.ts",
+    "audit:wrap": "node scripts/audit-wrap.mjs",
+    "audit:contrast": "node scripts/audit-contrast.mjs",
+    "audit:visual": "npm run audit:wrap && npm run audit:contrast"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.70.0",
