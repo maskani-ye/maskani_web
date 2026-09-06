@@ -75,11 +75,12 @@ const V = ({ children }: { children: React.ReactNode }) => (
 );
 
 const compact = (n: number): string => {
-  // ⚠️ **«م» و«ألف» لا «مليون»**: قِيس على البطاقة المرسومة فاحتاجت «١٫٢٨
-  // مليون» ١١٠ بكسلاً في مربّعٍ عرضه ١٠٨ — تُقصّ بفارق بكسلين. والرقم الكامل
-  // يبقى في السطر الثاني، فلا تضيع دقّة.
+  // ⚠️ **حرفٌ واحد للوحدة: «ك» و«م».** قِيس على البطاقة المرسومة مرّتين:
+  // «١٫٢٨ مليون» احتاجت ١١٠ بكسلاً في مربّعٍ عرضه ١٠٨، ثمّ «٤٥٨٫٣ ألف» قُصّت
+  // كذلك عند مدىً مخصّص. والرقم الكامل يبقى في السطر الثاني فلا تضيع دقّة —
+  // ومربّع البطاقة لا يتّسع لكلمةٍ كاملة مهما قصرت.
   if (n >= 1e6) return `${formatNumber(Number((n / 1e6).toFixed(2)))} م`;
-  if (n >= 1e4) return `${formatNumber(Number((n / 1e3).toFixed(1)))} ألف`;
+  if (n >= 1e4) return `${formatNumber(Number((n / 1e3).toFixed(1)))} ك`;
   return formatNumber(n);
 };
 
@@ -101,20 +102,41 @@ export default function TrafficPage() {
   const [data, setData] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(30);
+  const [mode, setMode] = useState<"preset" | "custom">("preset");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
 
-  const load = useCallback(async (d: number) => {
+  /**
+   * ⚠️ **«أمس» ليس «يوماً واحداً من اليوم».** المدى المحسوب من اليوم يشمل
+   * اليوم الجاري (ناقصاً بطبيعته)، و«أمس» يومٌ مغلقٌ ينتهي أمس. فيُرسَل مدىً
+   * صريحاً `since=until=أمس` لا عدد أيام — وإلّا خلط اليومين في رقمٍ واحد.
+   */
+  const load = useCallback(async () => {
     setLoading(true);
+    const params: Record<string, string | number> = {};
+    if (mode === "custom") {
+      if (!customFrom || !customTo) { setLoading(false); return; }
+      params.since = customFrom;
+      params.until = customTo;
+    } else if (days <= 1) {
+      // «اليوم» و«أمس» يومٌ مغلقٌ واحد — يُرسَل مدىً صريحاً لا عدد أيام.
+      const d = new Date(Date.now() - (days === 0 ? 864e5 : 0)).toISOString().slice(0, 10);
+      params.since = d;
+      params.until = d;
+    } else {
+      params.days = days;
+    }
     try {
-      const res = await api.get<Report>(endpoints.admin.trafficReport, { params: { days: d } });
+      const res = await api.get<Report>(endpoints.admin.trafficReport, { params });
       setData(res.data);
     } catch {
       setData({ available: false, reason: "تعذّر الوصول إلى الخادم." });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [days, mode, customFrom, customTo]);
 
-  useEffect(() => { load(days); }, [load, days]);
+  useEffect(() => { load(); }, [load]);
 
   const t = data?.totals;
   const series = data?.series ?? [];
@@ -140,20 +162,49 @@ export default function TrafficPage() {
             Cloudflare تحفظ نافذةً أقصر. */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex flex-wrap rounded-xl border border-muted-200 bg-white p-1">
-            {[{ d: 7, l: "7 أيام" }, { d: 30, l: "30 يوم" }, { d: 60, l: "60 يوم" }].map(({ d, l }) => (
+            {[{ d: 1, l: "اليوم" }, { d: 0, l: "أمس" }, { d: 7, l: "7 أيام" },
+              { d: 30, l: "30 يوم" }, { d: 60, l: "60 يوم" }].map(({ d, l }) => (
               <button
-                key={d}
+                key={l}
                 type="button"
-                onClick={() => setDays(d)}
+                onClick={() => { setMode("preset"); setDays(d); }}
                 className={`rounded-lg px-3 py-1.5 text-body font-semibold transition-colors ${
-                  days === d ? "bg-primary text-white" : "text-muted-500 hover:text-primary"
+                  mode === "preset" && days === d ? "bg-primary text-white" : "text-muted-500 hover:text-primary"
                 }`}
               >
                 {l}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={() => setMode("custom")}
+              className={`rounded-lg px-3 py-1.5 text-body font-semibold transition-colors ${
+                mode === "custom" ? "bg-primary text-white" : "text-muted-500 hover:text-primary"
+              }`}
+            >
+              مخصّص
+            </button>
           </div>
-          <Button variant="outline" size="sm" onClick={() => load(days)} loading={loading}>
+          {mode === "custom" && (
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={customFrom}
+                max={customTo || undefined}
+                onChange={(e) => setCustomFrom(e.target.value)}
+                className="h-9 rounded-xl border border-muted-200 bg-white px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <span className="text-body text-muted">إلى</span>
+              <input
+                type="date"
+                value={customTo}
+                min={customFrom || undefined}
+                onChange={(e) => setCustomTo(e.target.value)}
+                className="h-9 rounded-xl border border-muted-200 bg-white px-3 text-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+          )}
+          <Button variant="outline" size="sm" onClick={() => load()} loading={loading}>
             <Refresh className="h-4 w-4" /> تحديث
           </Button>
         </div>
