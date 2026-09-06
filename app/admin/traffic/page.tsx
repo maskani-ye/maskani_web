@@ -50,7 +50,38 @@ interface Report {
 
 const axisTick = { fontSize: 11, fill: "#9ca3af" };
 
-const GB = (b: number) => `${(b / 1e9).toFixed(1)} ج.ب`;
+// ⚠️ **الوحدة في السطر الثاني لا مع الرقم.** `StatCard` يقصّ قيمته
+// (`truncate`)، و«13.8 ج.ب» في بطاقةٍ من أربع أعمدة تُقصّ إلى «13.8 ج…» —
+// رقمٌ بلا وحدة أسوأ من لا شيء. فالرقم قيمةً والوحدة `sub`.
+const GB = (b: number) => (b / 1e9).toFixed(1);
+
+/**
+ * رقمٌ مختصر للبطاقات — «١١٧٫٨ ألف» لا «١١٧٬٧٧٩».
+ *
+ * ⚠️ **`StatCard` يقصّ قيمته (`truncate`)، والجوّال عمودان.** فمليونٌ كامل في
+ * بطاقةٍ عرضها نصف الشاشة يخرج «…١٣٤» — رقمٌ مقصوص من يساره يقرأ كأنّه رقمٌ
+ * آخر تماماً، وهو أسوأ من تقريبٍ صريح. والدقّة الكاملة تبقى في السطر الثاني.
+ */
+/**
+ * قيمةٌ تصغُر على الجوّال.
+ *
+ * ⚠️ **`StatCard` يرسم قيمته بمقاس `h2` ثابتاً مع `truncate`.** وعمودان على
+ * شاشة 390px يتركان للنصّ نحو مئة بكسل — فحتى «١١٧٫٨ ألف» تُقصّ. و`value`
+ * يقبل `ReactNode`، فنغلّفها بمقاسٍ أصغر يكبر عند `sm` بدل تعديل المكوّن
+ * المشترك الذي تستعمله اللوحة كلّها.
+ */
+const V = ({ children }: { children: React.ReactNode }) => (
+  <span className="text-h3 sm:text-h2">{children}</span>
+);
+
+const compact = (n: number): string => {
+  // ⚠️ **«م» و«ألف» لا «مليون»**: قِيس على البطاقة المرسومة فاحتاجت «١٫٢٨
+  // مليون» ١١٠ بكسلاً في مربّعٍ عرضه ١٠٨ — تُقصّ بفارق بكسلين. والرقم الكامل
+  // يبقى في السطر الثاني، فلا تضيع دقّة.
+  if (n >= 1e6) return `${formatNumber(Number((n / 1e6).toFixed(2)))} م`;
+  if (n >= 1e4) return `${formatNumber(Number((n / 1e3).toFixed(1)))} ألف`;
+  return formatNumber(n);
+};
 
 // أيقونات Solar تُعرّف `weight` نوعاً اتحادياً، والمكوّنات المشتركة تتوقّع
 // `ComponentType` أوسع. نتبع نفس التوسيع المعتمد في `app/admin/page.tsx` بدل
@@ -89,37 +120,44 @@ export default function TrafficPage() {
   const series = data?.series ?? [];
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="حركة النطاق"
-        subtitle={
-          data?.available
-            ? `${data.zone} · خطّة ${data.plan} · ${data.since} → ${data.until}`
-            : "قياس Cloudflare عند الحافّة"
-        }
-        icon={<Global className="h-6 w-6" />}
-        actions={
-          <div className="flex items-center gap-2">
-            <div className="flex overflow-hidden rounded-xl ring-1 ring-muted-200">
-              {[7, 30, 60].map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setDays(d)}
-                  className={`px-3 py-2 text-caption font-semibold transition-colors ${
-                    days === d ? "bg-primary text-white" : "bg-white text-muted-600 hover:bg-muted-50"
-                  }`}
-                >
-                  {formatNumber(d)} يوم
-                </button>
-              ))}
-            </div>
-            <Button variant="outline" size="sm" onClick={() => load(days)} loading={loading}>
-              <Refresh className="h-4 w-4" /> تحديث
-            </Button>
+    // ⚠️ **الغلاف نفسه المستعمل في بقيّة اللوحة.** كانت الصفحة بلا هوامش ولا
+    // حدٍّ للعرض، فتلتصق بحافّة الشاشة وتتمدّد بلا نهاية على الشاشات العريضة —
+    // بينما جاراتها (التحليلات · الفهرسة) محصورة ومتنفّسة.
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-2">
+        <PageHeader
+          icon={<Global />}
+          title="حركة النطاق"
+          subtitle={
+            data?.available
+              ? `${data.zone} · ${data.since} → ${data.until}`
+              : "قياس Cloudflare عند الحافّة"
+          }
+        />
+        {/* ⚠️ **نفس فلتر «التحليلات» حرفياً** — لا شكلٌ ثانٍ لنفس الوظيفة:
+            المستخدم يتعلّم الضابط مرّة، والاختلاف بين صفحتين متجاورتين يقرأ
+            كأنّهما تطبيقان. والمدد هنا 7/30/60 لا 90، لأنّ الحزمة المجانية في
+            Cloudflare تحفظ نافذةً أقصر. */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap rounded-xl border border-muted-200 bg-white p-1">
+            {[{ d: 7, l: "7 أيام" }, { d: 30, l: "30 يوم" }, { d: 60, l: "60 يوم" }].map(({ d, l }) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => setDays(d)}
+                className={`rounded-lg px-3 py-1.5 text-body font-semibold transition-colors ${
+                  days === d ? "bg-primary text-white" : "text-muted-500 hover:text-primary"
+                }`}
+              >
+                {l}
+              </button>
+            ))}
           </div>
-        }
-      />
+          <Button variant="outline" size="sm" onClick={() => load(days)} loading={loading}>
+            <Refresh className="h-4 w-4" /> تحديث
+          </Button>
+        </div>
+      </div>
 
       {/* ⚠️ الغياب يُشرح ولا يُترك فراغاً صامتاً. */}
       {data && !data.available && (
@@ -147,23 +185,30 @@ export default function TrafficPage() {
             </Card>
           )}
 
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="مشاهدات الصفحات" value={formatNumber(t.page_views)} icon={asIcon(ChartSquare)} />
-            <StatCard label="الطلبات" value={formatNumber(t.requests)} icon={asIcon(ServerSquare)} />
-            <StatCard label="زوّار فريدون" value={formatNumber(t.uniques)} icon={asIcon(UsersGroupTwoRounded)}
-                      sub="مجموع العدّ اليوميّ" />
-            <StatCard label="تهديدات محجوبة" value={formatNumber(t.threats)} icon={asIcon(Shield)} />
+          {/* ⚠️ **عمودٌ واحد على الجوّال — قياسٌ لا ذوق.** بعمودين على شاشة
+              390px يبقى للنصّ داخل `StatCard` **٧١ بكسل** (بعد حشو البطاقة
+              والأيقونة والفجوة)، فيُقصّ حتى «١١٧٫٨ ألف». قِسته بـ`scrollWidth`
+              مقابل `clientWidth` بدل تخمين الحجم. */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard label="المشاهدات" value={<V>{compact(t.page_views)}</V>} icon={asIcon(ChartSquare)}
+                      sub={formatNumber(t.page_views)} />
+            <StatCard label="الطلبات" value={<V>{compact(t.requests)}</V>} icon={asIcon(ServerSquare)}
+                      sub={formatNumber(t.requests)} />
+            <StatCard label="زوّار فريدون" value={<V>{compact(t.uniques)}</V>} icon={asIcon(UsersGroupTwoRounded)}
+                      sub={`${formatNumber(t.uniques)} · مجموع العدّ اليوميّ`} />
+            <StatCard label="تهديدات محجوبة" value={<V>{compact(t.threats)}</V>} icon={asIcon(Shield)} />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="الحركة" value={GB(t.bytes)} icon={asIcon(Bill)} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard label="الحركة" value={<V>{GB(t.bytes)}</V>} icon={asIcon(Bill)} sub="جيجابايت" />
             <StatCard label="من الكاش"
-                      value={t.cache_hit_pct === null ? "—" : `${formatNumber(t.cache_hit_pct)}٪`}
-                      icon={asIcon(ServerSquare)} sub="ما خدمته الحافّة بلا خادمنا" />
-            <StatCard label="أيام مقيسة" value={formatNumber(data.actual_days ?? 0)} icon={asIcon(Global)} />
+                      value={<V>{t.cache_hit_pct === null ? "—" : `${formatNumber(t.cache_hit_pct)}٪`}</V>}
+                      icon={asIcon(ServerSquare)} sub="خدمته الحافّة بلا خادمنا" />
+            <StatCard label="أيام مقيسة" value={<V>{formatNumber(data.actual_days ?? 0)}</V>} icon={asIcon(Global)}
+                      sub={`طُلب ${formatNumber(data.requested_days ?? 0)}`} />
             <StatCard
               label="متوسّط يوميّ"
-              value={formatNumber(Math.round(t.page_views / Math.max(1, data.actual_days ?? 1)))}
+              value={<V>{compact(Math.round(t.page_views / Math.max(1, data.actual_days ?? 1)))}</V>}
               icon={asIcon(ChartSquare)} sub="مشاهدة/يوم"
             />
           </div>
