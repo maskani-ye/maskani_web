@@ -76,6 +76,7 @@ export const endpoints = {
     auditLog: `${ADMIN}/dashboard/audit-log/`,
     legal: (slug: string) => `${ADMIN}/dashboard/legal/${slug}/`,
     seoReport: `${ADMIN}/dashboard/seo-report/`,
+    trafficReport: `${ADMIN}/dashboard/traffic-report/`,
     // مركز التحكّم بالخدمات الخارجية (البنية) — لا يُخلط مع مزوّدي الخدمات
     infraServices: `${ADMIN}/dashboard/services/`,
     infraService: (key: string) => `${ADMIN}/dashboard/services/${key}/`,

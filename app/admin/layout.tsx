@@ -12,7 +12,7 @@ import {
   Buildings2, Settings, Home2, ChatRound, ChatRoundDots, Widget,
   City, Logout2, HamburgerMenu, CloseCircle,
   ShieldCheck, DangerTriangle, Bell,
-  Case, ChartSquare, HeadphonesRound, MagniferBug, NotebookBookmark, HashtagSquare, Stars,
+  Case, ChartSquare, Global, HeadphonesRound, MagniferBug, NotebookBookmark, HashtagSquare, Stars,
   ServerSquare,
   DocumentAdd,
   Dollar,
@@ -26,6 +26,7 @@ const NAV_GROUPS = [
       { href: "/admin",           label: "لوحة التحكم", icon: GraphNewUp },
       { href: "/admin/analytics", label: "التحليلات",   icon: ChartSquare },
       { href: "/admin/seo",       label: "الفهرسة وSEO", icon: MagniferBug },
+      { href: "/admin/traffic",   label: "حركة النطاق",  icon: Global },
     ],
   },
   {
