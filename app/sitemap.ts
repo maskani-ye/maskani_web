@@ -120,7 +120,12 @@ async function cities(): Promise<{ slug: string }[]> {
 // يجلب الأحياء المسجّلة — أعمق طبقة فهرسة بعد المحافظة («عقارات في حي السبل»).
 async function neighborhoods(): Promise<{ slug: string }[]> {
   try {
-    const res = await fetch(`${API}/cities/neighborhoods/`, { next: { revalidate: 3600 } });
+    // ⚠️ **`has_properties=1` لا القائمة كاملة.** الردّ الكامل ٣ م.ب — فوق سقف
+    // تخزين Next (٢ م.ب) — فلا يُخزَّن، ويُنزَّل في كل محاولة حتى تنتهي المهلة
+    // ويسقط البناء كلّه. والخريطة لا تُدرج إلا ما له مخزون أصلاً، فالمرشّح يعيد
+    // ٢٨٧ ك.ب بدل ٣ م.ب: أخفّ وأدقّ معاً.
+    const res = await fetch(`${API}/cities/neighborhoods/?has_properties=1`,
+                            { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     const data = await res.json();
     const list = Array.isArray(data) ? data : data.results ?? [];

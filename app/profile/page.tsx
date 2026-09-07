@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { useRouter } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
@@ -219,10 +220,10 @@ export default function ProfilePage() {
           <Bell className="h-6 w-6 text-primary" />
           <span className="text-caption font-medium text-muted-700">الإشعارات</span>
         </Link>
-        <Link href="/requests" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
+        <MarketLink href="/requests" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
           <PenNewSquare className="h-6 w-6 text-info-500" />
           <span className="text-caption font-medium text-muted-700">الطلبات</span>
-        </Link>
+        </MarketLink>
         <Link href="/saved-searches" className="bg-white rounded-2xl card-shadow p-4 flex flex-col items-center gap-2 hover:bg-primary/5 transition-colors">
           <Magnifer className="h-6 w-6 text-primary" />
           <span className="text-caption font-medium text-muted-700">عمليات البحث</span>

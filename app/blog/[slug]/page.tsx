@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { notFound } from "next/navigation";
 import { isMarket, MARKET_NAMES, type MarketCode } from "@/lib/markets";
 import Link from "@/components/nav/MarketLink";

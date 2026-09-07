@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { useRouter } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
@@ -133,7 +134,7 @@ export default function CreateRequestPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-2 text-body text-muted mb-6">
-        <Link href="/requests" className="hover:text-primary">طلبات العملاء</Link>
+        <MarketLink href="/requests" className="hover:text-primary">طلبات العملاء</MarketLink>
         <AltArrowRight className="h-3.5 w-3.5" />
         <span className="text-muted-700 font-medium">طلب جديد</span>
       </div>

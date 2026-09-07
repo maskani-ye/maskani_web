@@ -29,6 +29,7 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { MarketLink } from "@/components/nav/MarketLink";
 import Link from "@/components/nav/MarketLink";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -606,11 +607,11 @@ function CitiesTiles({ cities }: { cities: City[] }) {
 
       {ordered.length > shown.length && (
         <div className="mt-6 text-center">
-          <Link href="/properties">
+          <MarketLink href="/properties">
             <Button variant="outline">
               كل المدن ({ordered.length.toLocaleString(NUMERIC_LOCALE)})
             </Button>
-          </Link>
+          </MarketLink>
         </div>
       )}
     </>

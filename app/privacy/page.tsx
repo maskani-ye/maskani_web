@@ -3,6 +3,8 @@ import { NUMERIC_LOCALE } from "@/lib/utils";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  // قانونيّةٌ صريحة: الغلاف الجذر لم يعد يفرض واحدة على الجميع.
+  alternates: { canonical: "/privacy" },
   title: "سياسة الخصوصية — مسكني",
   description:
     "سياسة خصوصية تطبيق ومنصّة مسكني: البيانات التي نجمعها، وكيف نستخدمها، وحقوقك.",

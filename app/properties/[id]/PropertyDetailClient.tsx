@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { useRouter } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage, getErrorStatus } from "@/lib/api";
@@ -185,7 +186,7 @@ export default function PropertyDetailClient(
         <Button onClick={loadProperty}>
           <Refresh className="h-4 w-4" /> إعادة المحاولة
         </Button>
-        <Link href="/properties"><Button variant="outline">العودة للعقارات</Button></Link>
+        <MarketLink href="/properties"><Button variant="outline">العودة للعقارات</Button></MarketLink>
       </div>
     </div>
   );
@@ -194,7 +195,7 @@ export default function PropertyDetailClient(
   if (!property) return (
     <div className="text-center py-20">
       <p className="text-muted-500 text-h3">العقار غير موجود</p>
-      <Link href="/properties"><Button className="mt-4">العودة للعقارات</Button></Link>
+      <MarketLink href="/properties"><Button className="mt-4">العودة للعقارات</Button></MarketLink>
     </div>
   );
 
@@ -210,7 +211,7 @@ export default function PropertyDetailClient(
       <div className="flex items-center gap-2 text-body text-muted mb-6">
         <Link href="/" className="hover:text-primary">الرئيسية</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
-        <Link href="/properties" className="hover:text-primary">العقارات</Link>
+        <MarketLink href="/properties" className="hover:text-primary">العقارات</MarketLink>
         <AltArrowRight className="h-3.5 w-3.5" />
         <span className="text-muted-700 font-medium line-clamp-1">{property.title}</span>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, type ComponentType } from "react";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { useRouter } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
@@ -160,14 +161,14 @@ export default function JobDetailClient({ id, initialRequest }: { id: string; in
   if (!request) return (
     <div className="text-center py-20">
       <p className="text-muted-500 text-h3">الطلب غير موجود</p>
-      <Link href="/jobs"><Button className="mt-4">العودة للطلبات</Button></Link>
+      <MarketLink href="/jobs"><Button className="mt-4">العودة للطلبات</Button></MarketLink>
     </div>
   );
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-2 text-body text-muted mb-6">
-        <Link href="/jobs" className="hover:text-primary">طلبات الخدمات</Link>
+        <MarketLink href="/jobs" className="hover:text-primary">طلبات الخدمات</MarketLink>
         <AltArrowRight className="h-3.5 w-3.5" />
         <span className="text-muted-700 font-medium">تفاصيل الطلب</span>
         <ShareButton title={request.title} text={`طلب خدمة على مسكني: ${request.title}`} className="mr-auto w-9 h-9 bg-muted-50 rounded-lg flex items-center justify-center hover:bg-primary/10 transition-colors" />

@@ -21,6 +21,7 @@
  */
 
 import Link from "@/components/nav/MarketLink";
+import { MarketLink } from "@/components/nav/MarketLink";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
 import {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { useRouter } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
@@ -95,7 +96,7 @@ export default function CreateJobPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="flex items-center gap-2 text-body text-muted mb-6">
-        <Link href="/jobs" className="hover:text-primary">طلبات الخدمات</Link>
+        <MarketLink href="/jobs" className="hover:text-primary">طلبات الخدمات</MarketLink>
         <span>/</span><span className="text-muted-700 font-medium">طلب جديد</span>
       </div>
 

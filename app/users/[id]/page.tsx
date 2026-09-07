@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, type ComponentType } from "react";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { useParams, useRouter } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
@@ -151,7 +152,7 @@ export default function PublicProfilePage() {
   if (!profile) return (
     <div className="text-center py-20">
       <p className="text-muted-500 text-h3">المستخدم غير موجود</p>
-      <Link href="/properties"><Button className="mt-4">العودة للعقارات</Button></Link>
+      <MarketLink href="/properties"><Button className="mt-4">العودة للعقارات</Button></MarketLink>
     </div>
   );
 

@@ -3,6 +3,7 @@
 // شريط تنقّل سفلي app-like — يظهر على الجوّال فقط (lg:hidden). مطابق لتطبيق Flutter:
 // الرئيسية / العقارات / الخدمات / الطلبات / حسابي.
 import Link from "@/components/nav/MarketLink";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { splitMarket } from "@/lib/markets";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";

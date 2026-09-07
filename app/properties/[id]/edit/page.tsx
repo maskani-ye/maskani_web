@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { useParams, useRouter } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { api, getErrorMessage } from "@/lib/api";
@@ -173,7 +174,7 @@ export default function EditPropertyPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-2 text-body text-muted mb-6">
-        <Link href="/properties" className="hover:text-primary">العقارات</Link>
+        <MarketLink href="/properties" className="hover:text-primary">العقارات</MarketLink>
         <AltArrowRight className="h-3.5 w-3.5" />
         <Link href={`/properties/${id}`} className="hover:text-primary">التفاصيل</Link>
         <AltArrowRight className="h-3.5 w-3.5" />

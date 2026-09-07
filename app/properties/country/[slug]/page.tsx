@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MarketLink } from "@/components/nav/MarketLink";
 import { notFound } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
 import { JsonLd } from "@/components/JsonLd";
@@ -233,18 +234,16 @@ export default async function CountryLandingPage(
           وخدمات عقارية موثوقة، وتواصل مباشر مع أصحاب العقارات.
         </p>
         <div className="flex flex-wrap gap-2 mt-5">
-          <Link
-            href="/properties"
+          <MarketLink             href="/properties"
             className="rounded-xl bg-primary text-white px-5 py-2.5 text-body font-semibold hover:bg-primary/90 transition-colors"
           >
             تصفّح كل العقارات
-          </Link>
-          <Link
-            href="/services"
+          </MarketLink>
+          <MarketLink             href="/services"
             className="rounded-xl border border-muted-200 px-5 py-2.5 text-body font-semibold text-ink hover:border-primary/40 transition-colors"
           >
             خدمات عقارية في {country.name_ar}
-          </Link>
+          </MarketLink>
         </div>
       </header>
 
