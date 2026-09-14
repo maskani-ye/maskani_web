@@ -52,6 +52,14 @@ export async function getMarketStats(
   }
 }
 
+/** تمييز العدد بالعربية: ٣–١٠ جمعٌ مجرور، و١١ فأكثر مفردٌ منصوب.
+ *  الأقسام لا تُعرض دون ثلاثة (`MIN_SAMPLE` في الخادم)، فلا حاجة لمفردٍ ومثنّى —
+ *  وكان النصّ «من 2 عقاراً» لعيّنةٍ دون الحدّ، وهي نفسها ما أُغلق في الخادم. */
+function count(n: number, plural: string, accusative: string): string {
+  const k = n % 100;
+  return `${formatNumber(n)} ${k >= 3 && k <= 10 ? plural : accusative}`;
+}
+
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-xl border border-muted-200 bg-white p-4">
@@ -84,7 +92,7 @@ export function MarketStats({
         مؤشّرات أسعار {placeName}
       </h2>
       <p className="text-muted-600 mt-2 leading-relaxed max-w-3xl">
-        محسوبةٌ من {data.count} عقاراً معروضاً في {placeName} على مسكني. نعرض{" "}
+        محسوبةٌ من {count(data.count, "عقارات معروضة", "عقاراً معروضاً")} في {placeName} على مسكني. نعرض{" "}
         <strong>الوسيط</strong> لا المتوسّط — عقارٌ واحد بسعرٍ استثنائيّ يرفع
         المتوسّط ويضلّل، والوسيط لا يتأثّر به. القيم بـ{CURRENCY_LABELS[cur] ?? cur}.
       </p>
@@ -94,7 +102,7 @@ export function MarketStats({
           <Stat
             label="وسيط سعر المتر (بيع)"
             value={money(sale.median_per_sqm_usd)}
-            hint={`من ${sale.sample_per_sqm} عقاراً`}
+            hint={`من ${count(sale.sample_per_sqm, "عقارات", "عقاراً")}`}
           />
         )}
         {sale && (
@@ -105,7 +113,7 @@ export function MarketStats({
           />
         )}
         {rent?.median_usd != null && (
-          <Stat label="وسيط الإيجار" value={money(rent.median_usd)} hint={`من ${rent.count} عرضاً`} />
+          <Stat label="وسيط الإيجار" value={money(rent.median_usd)} hint={`من ${count(rent.count, "عروض", "عرضاً")}`} />
         )}
         {data.vs_city && cityName && (
           <Stat
