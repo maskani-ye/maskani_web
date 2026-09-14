@@ -140,7 +140,7 @@ export function MarketStats({
                   />
                 </span>
                 <span className="text-caption text-muted-600 w-12 text-left shrink-0">
-                  {b.count}
+                  {formatNumber(b.count)}
                 </span>
               </li>
             ))}
@@ -154,7 +154,7 @@ export function MarketStats({
           {data.types.map((t, i) => (
             <span key={t.name}>
               {i > 0 && " · "}
-              <strong className="text-ink">{t.name}</strong> {t.count}
+              <strong className="text-ink">{t.name}</strong> {formatNumber(t.count)}
             </span>
           ))}
           .
