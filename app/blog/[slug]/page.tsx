@@ -10,6 +10,7 @@ import { AdSlot } from "@/components/ads/AdSlot";
 import { AD_SLOTS } from "@/lib/ads";
 import { ShareBar } from "@/components/blog/ShareBar";
 import { breadcrumbList, blogPosting, SITE_URL } from "@/lib/seo";
+import { fetchRetry } from "@/lib/fetchRetry";
 
 /**
  * ⚠️ درسٌ من عطل حيّ (2026-08-23): بُني الويب بينما كانت القاعدة ساقطة، فثُبِّتت
@@ -37,13 +38,17 @@ interface Article extends ArticleCard {
 }
 
 async function getArticle(slug: string): Promise<Article | null> {
-  try {
-    const res = await fetch(`${API}/blog/${encodeURIComponent(slug)}/`, { next: { revalidate: 3600 } });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
+  // ⚠️ **٤٠٤ وحده يعني «لا مقال» — أيّ فشلٍ آخر يُرفَع.**
+  // بناء ٢٠٢٦-٠٩-١٤ خبز ٦٥ مقالاً من ١٠٠ كـ404 دائمة: خنقت الواجهةُ طلباتِ
+  // البناء (٤٢٩)، فأعادت هذه الدالّة `null` فاستدعت الصفحة `notFound()`.
+  // مقالاتٌ حقيقية كانت ستختفي من الموقع ومن فهرس جوجل — وأدسنس يراجع
+  // المحتوى نفسه. الإعادة تمتصّ الخنق، والرفع يُسقط البناء إن لم تكفِ.
+  const res = await fetchRetry(`${API}/blog/${encodeURIComponent(slug)}/`, { next: { revalidate: 3600 } });
+  if (res?.status === 404) return null;
+  if (!res || !res.ok) {
+    throw new Error(`تعذّر جلب المقال «${slug}»: ${res?.status ?? "شبكة"} — لا نبني 404 على ردٍّ فاشل.`);
   }
+  return await res.json();
 }
 
 export async function generateStaticParams() {

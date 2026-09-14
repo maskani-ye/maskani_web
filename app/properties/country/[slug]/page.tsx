@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { fetchRetry } from "@/lib/fetchRetry";
 import { MarketLink } from "@/components/nav/MarketLink";
 import { notFound } from "next/navigation";
 import Link from "@/components/nav/MarketLink";
@@ -51,16 +52,18 @@ interface PropertyRow {
  * من نسخةٍ قد تكون قديمة.
  */
 async function getCountries(): Promise<CountryRow[]> {
-  try {
-    const res = await fetch(
-      `${API}/cities/countries/?limit=100`,
-      { next: { revalidate: 3600 } },
-    );
-    if (!res.ok) return [];
-    return (await res.json()).results ?? [];
-  } catch {
-    return [];
+  // ⚠️ فشلُ القائمة ليس «لا دولة»: ابتلاعُه كان يُنتج `notFound()` فتُخبَز
+  // صفحة السوق 404 دائمة إن خُنق البناء — كما خُبز ٥١٩ حيّاً و٦٥ مقالاً.
+  // **وبلا `try/catch` عمداً**: غلافٌ يُعيد `[]` كان سيبتلع الخطأ المرفوع
+  // نفسه فيعود العطل كما كان.
+  const res = await fetchRetry(
+    `${API}/cities/countries/?limit=100`,
+    { next: { revalidate: 3600 } },
+  );
+  if (!res || !res.ok) {
+    throw new Error(`تعذّر جلب الدول: ${res?.status ?? "شبكة"} — لا نبني 404 على ردٍّ فاشل.`);
   }
+  return (await res.json()).results ?? [];
 }
 
 async function resolveCountry(slug: string): Promise<CountryRow | null> {

@@ -5,7 +5,9 @@ import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { breadcrumbList, itemList, citySlug, SITE_URL } from "@/lib/seo";
 import { PropertyCard } from "@/components/properties/PropertyCard";
+import { MarketStats, getMarketStats } from "@/components/properties/MarketStats";
 import type { Property } from "@/types";
+import { fetchRetry } from "@/lib/fetchRetry";
 import { DEFAULT_MARKET, MARKETS, marketPath } from "@/lib/markets";
 
 /**
@@ -36,12 +38,14 @@ interface Neighborhood {
 
 async function getNeighborhoods(): Promise<Neighborhood[]> {
   try {
-    // مدّة قصيرة عمداً: الأحياء تُحرَّر من اللوحة (حذف/تعطيل)، وكاش طويل يُبقي
-    // صفحةَ حيٍّ محذوف حيّةً ساعةً كاملة. خمس دقائق تكفي لالتئام ذاتي سريع.
-    const res = await fetch(`${API}/cities/neighborhoods/`, {
+    // ⚠️ **`has_properties=1` لا القائمة كاملة — والسبب ليس الحجم وحده.**
+    // القائمة الكاملة ٣ م.ب أي فوق سقف تخزين Next (٢ م.ب) فلا تُخزَّن، بينما
+    // هذه ٢٨٧ ك.ب فتُخزَّن مرّةً وتخدم **كل** صفحات الأحياء في البناء الواحد.
+    // وهذه القائمة نفسها هي ما نولّده مسبقاً، فما ينقصها لا يُبنى أصلاً.
+    const res = await fetchRetry(`${API}/cities/neighborhoods/?has_properties=1`, {
       next: { revalidate: 3600 },
     });
-    if (!res.ok) return [];
+    if (!res || !res.ok) return [];
     const data = await res.json();
     return Array.isArray(data) ? data : data.results ?? [];
   } catch {
@@ -53,35 +57,43 @@ async function getNeighborhoods(): Promise<Neighborhood[]> {
  *  (decodeURIComponent) كي يعمل الرابط سواء وصل مُرمَّزاً أو خاماً. */
 async function resolveNeighborhood(slug: string): Promise<Neighborhood | null> {
   const wanted = decodeURIComponent(slug);
-  // ⚠️ **كانت تُنزّل القائمة كاملةً لتجد صفّاً واحداً.** الردّ 2.7 م.ب، وهو فوق
-  // سقف تخزين Next (2 م.ب) فلا يُخزَّن أصلاً — فكل صفحة حيٍّ في البناء تُنزّله
-  // وتُحلّله من جديد، فتتجاوز مهلة الستّين ثانية. سقط بها البناء البارد كلّه
-  // (`Export encountered an error on /properties/neighborhood/[slug]`) وكان
-  // البناء الدافئ ينجو بذاكرة الجلب وحدها. `?slug=` يردّ صفّاً واحداً.
-  try {
-    const res = await fetch(
-      `${API}/cities/neighborhoods/?slug=${encodeURIComponent(wanted)}`,
-      { next: { revalidate: 3600 } },
-    );
-    if (res.ok) {
-      const data = await res.json();
-      const rows: Neighborhood[] = Array.isArray(data) ? data : data.results ?? [];
-      const hit = rows.find((n) => n.slug === wanted || n.name === wanted);
-      if (hit) return hit;
-    }
-  } catch { /* نسقط إلى القائمة الكاملة أدناه */ }
-  // احتياطٌ لخادمٍ لم يُنشر عليه المرشّح بعد — يبقى الموقع عاملاً لا 404.
+
+  // ⚠️ **القائمة المخزَّنة أوّلاً — وهذا ما يمنع كارثة ٤٠٤ الصامتة.**
+  //
+  // كان كل صفحة حيٍّ تسأل `?slug=` سؤالاً خاصاً بها. البناء يولّد ٨٥٩ صفحة،
+  // فصارت ٢٬٦٠٠ نداءٍ في دقائق أمام سقفٍ قدره ٣٠٠/دقيقة — فردّ الخادم ٤٢٩،
+  // وفسّرته الصفحة «حيٌّ غير موجود» فاستدعت `notFound()`، **فخُبزت ٥١٩ صفحة
+  // من ٨٥٩ في الإخراج كـ404 دائمة**: أحياءٌ حقيقية فيها عقارات، مفقودةٌ من
+  // الموقع بلا أيّ خطأ في السجلّ. القائمة المخزَّنة تخدمها كلّها بنداءٍ واحد.
   const list = await getNeighborhoods();
-  return list.find((n) => n.slug === wanted || n.name === wanted) ?? null;
+  const hit = list.find((n) => n.slug === wanted || n.name === wanted);
+  if (hit) return hit;
+
+  // حيٌّ خارج القائمة (بلا عقارات، أو أُضيف بعد آخر تخزين) — نسأل عنه وحده.
+  const res = await fetchRetry(
+    `${API}/cities/neighborhoods/?slug=${encodeURIComponent(wanted)}`,
+    { next: { revalidate: 3600 } },
+  );
+  // ⚠️ **خطأ الشبكة يُرفَع ولا يُبتلَع.** ردٌّ غير سليم (٤٢٩/٥٠٢) ليس دليلاً
+  // على أنّ الحيّ غير موجود، وابتلاعُه هو ما حوّل الخنق إلى ٤٠٤ دائمة.
+  // رفعُه يُسقط البناء بصوتٍ مسموع بدل أن ينشر موقعاً ناقصاً بصمت.
+  if (!res || !res.ok) {
+    throw new Error(
+      `تعذّر التحقّق من الحيّ «${wanted}»: ${res?.status ?? "شبكة"} — لا نبني 404 على ردٍّ فاشل.`,
+    );
+  }
+  const data = await res.json();
+  const rows: Neighborhood[] = Array.isArray(data) ? data : data.results ?? [];
+  return rows.find((n) => n.slug === wanted || n.name === wanted) ?? null;
 }
 
 async function getProperties(refId: number): Promise<{ items: Property[]; count: number }> {
   try {
-    const res = await fetch(
+    const res = await fetchRetry(
       `${API}/properties/?neighborhood_ref=${refId}&limit=12&offset=0`,
       { next: { revalidate: 3600 } },
     );
-    if (!res.ok) return { items: [], count: 0 };
+    if (!res || !res.ok) return { items: [], count: 0 };
     const data = await res.json();
     return { items: data.results ?? [], count: data.count ?? 0 };
   } catch {
@@ -114,9 +126,17 @@ export async function generateMetadata(
   if (!hood) return {};
   const title = `عقارات في ${hood.name} — ${hood.city_name} | شقق وفلل وأراضٍ`;
   const description = `أحدث العقارات في حي ${hood.name} — ${hood.city_name}: شقق وفلل وأراضٍ للبيع والإيجار على مسكني، مع الأسعار والصور والتواصل المباشر بلا عمولات.`;
+  // ⚠️ **حيٌّ بأقلّ من ثلاثة عقارات لا يُفهرَس.**
+  // ٨٬١٠١ حيّاً عندنا بلا عقارٍ واحد و٥٤٧ بعقارٍ واحد. صفحاتها لا تحمل معلومةً
+  // تُذكر، وجوجل يصنّفها «اكتُشفت ولم تُفهرَس» ويحسبها على الموقع كلّه —
+  // وبها رُفض الموقع في أدسنس بوصف «محتوى غير ذي قيمة» (٢٠٢٦-٠٩-١٠).
+  // تبقى الصفحة حيّةً لمن يصله رابطها، لكنّها لا تُقدَّم للفهرسة.
+  const thin = (hood.properties_count ?? 0) < 3;
+
   return {
     title,
     description,
+    robots: thin ? { index: false, follow: true } : undefined,
     keywords: [
       `عقارات ${hood.name}`, `شقق ${hood.name}`, `أراضي ${hood.name}`,
       // ⚠️ نفس عطل صفحة المدينة: «عقارات اليمن» على حيٍّ في الرياض.
@@ -144,6 +164,7 @@ export default async function NeighborhoodPropertiesPage(
   if (!hood) notFound();
 
   const { items, count } = await getProperties(hood.id);
+  const stats = await getMarketStats("neighborhood", hood.id);
   const cityHref = `/properties/city/${citySlug(hood.city_name)}`;
   // سوق الحيّ من دولته — لا من كعكة الزائر. صفحةٌ مفهرسة تُقرأ من أيّ سوق،
   // فوجهتها يجب أن تُشتقّ من محتواها لا من حالة قارئها.
@@ -199,6 +220,13 @@ export default async function NeighborhoodPropertiesPage(
         </Link>
       </header>
 
+      {stats && (
+        <MarketStats data={stats} placeName={`حي ${hood.name}`} cityName={hood.city_name} />
+      )}
+
+      <h2 className="text-h3 sm:text-h2 font-bold text-ink mt-10 mb-4">
+        العقارات المعروضة في {hood.name}
+      </h2>
       {items.length === 0 ? (
         <div className="rounded-2xl border border-muted-200 bg-white py-16 text-center text-muted-500">
           لا توجد عقارات في حي {hood.name} بعد — كن أول من يضيف عقاراً هنا.

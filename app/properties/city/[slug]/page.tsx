@@ -6,6 +6,8 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { breadcrumbList, itemList, citySlug, SITE_URL } from "@/lib/seo";
 import { formatPrice, propertyTypeName, offerTypeLabels } from "@/lib/utils";
 import { PropertyCard } from "@/components/properties/PropertyCard";
+import { MarketStats, getMarketStats } from "@/components/properties/MarketStats";
+import { fetchRetry } from "@/lib/fetchRetry";
 import CityGuideLinks from "@/components/properties/CityGuideLinks";
 import CityAlertButton from "@/components/properties/CityAlertButton";
 import CityNeighborhoods from "@/components/properties/CityNeighborhoods";
@@ -79,10 +81,12 @@ async function resolveCity(slug: string): Promise<City | null> {
 
 async function getCityProperties(cityId: number): Promise<{ items: PropertyRow[]; count: number }> {
   try {
-    const res = await fetch(`${API}/properties/?city=${cityId}&limit=12&offset=0`, {
+    // ⚠️ بإعادة المحاولة: ٤٢٩ أثناء البناء كان يُعيد «صفر عقارات» فتُخبَز
+    // المدينة فارغةً وتُمنَع من الفهرسة (`stock < 3`) وهي عامرة.
+    const res = await fetchRetry(`${API}/properties/?city=${cityId}&limit=12&offset=0`, {
       next: { revalidate: 600 },
     });
-    if (!res.ok) return { items: [], count: 0 };
+    if (!res || !res.ok) return { items: [], count: 0 };
     const data = await res.json();
     return { items: data.results ?? [], count: data.count ?? 0 };
   } catch {
@@ -130,7 +134,9 @@ export async function generateMetadata(
   return {
     title,
     description,
-    ...(stock === 0 ? { robots: { index: false, follow: true } } : {}),
+    // العتبة ثلاثة لا صفر: مدينةٌ بعقارٍ واحد صفحةٌ هزيلة أيضاً، وهي ما
+    // وصفه أدسنس بـ«محتوى غير ذي قيمة» (٢٠٢٦-٠٩-١٠).
+    ...(stock < 3 ? { robots: { index: false, follow: true } } : {}),
     keywords: [
       `عقارات ${city.name_ar}`, `شقق للإيجار ${city.name_ar}`, `شقق للبيع ${city.name_ar}`,
       `أراضي ${city.name_ar}`, `فلل ${city.name_ar}`,
@@ -160,6 +166,7 @@ export default async function CityPropertiesPage(
   if (!city) notFound();
 
   const { items, count } = await getCityProperties(city.id);
+  const stats = await getMarketStats("city", city.id);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -230,6 +237,8 @@ export default async function CityPropertiesPage(
           ))}
         </div>
       )}
+
+      {stats && <MarketStats data={stats} placeName={city.name_ar} />}
 
       <CityNeighborhoods cityId={city.id} cityName={city.name_ar} />
 
