@@ -150,7 +150,7 @@ export default function PropertyDetailClient(
   // وإلا ننسخ. وزرّ واتساب ظاهرٌ مستقلاً: هو قناة التداول الفعلية في أسواقنا.
   const shareText = property ? `${property.title} — مسكني` : "مسكني";
   const handleShare = async () => {
-    const url = window.location.href;
+    const url = canonicalUrl;
     trackVisitEvent("share_click", { targetType: "property", targetId: Number(id) });
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try { await navigator.share({ title: shareText, url }); return; } catch { /* أُلغيت */ }
@@ -158,8 +158,13 @@ export default function PropertyDetailClient(
     navigator.clipboard.writeText(url);
     toast.success("تم نسخ الرابط");
   };
+  // ⚠️ **الرابط القانونيّ لا `window.location`.** كان يُحسب من النافذة أثناء
+  // الرسم الأوّل على الخادم حيث لا نافذة، فخرج النصّ بلا رابط، ولا يُعاد الرسم
+  // بعد التحميل ليُصلحه — فشورك العقار في واتساب بلا طريقٍ إليه (رُصد في الإنتاج).
+  // الرابط القانونيّ معروفٌ في الخادم والمتصفّح معاً، وخالٍ من معاملات البحث.
+  const canonicalUrl = `https://maskani.homes/properties/${id}`;
   const whatsappShareHref = () =>
-    `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${typeof window !== "undefined" ? window.location.href : ""}`)}`;
+    `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${canonicalUrl}`)}`;
 
   const handleComment = async () => {
     if (!requireAuth()) return;
