@@ -26,16 +26,21 @@ async function fetchAll<T>(
   revalidate: number,
 ): Promise<T[]> {
   const PAGE = 100;
-  const out: T[] = [];
-  for (let offset = 0; offset < 10000; offset += PAGE) {
-    const sep = path.includes("?") ? "&" : "?";
-    const url = `${API}${path}${sep}limit=${PAGE}&offset=${offset}`;
+  // ⚠️ **صفحاتٌ متوازية لا متتابعة — خريطة الموقع تجاوزت ٦٠ ثانية.**
+  // كانت تجلب ١٠٠ صفّ ثم الذي بعده حتى النهاية: ٦ آلاف عقار = ٦١ طلباً على
+  // التوالي، كلٌّ منها يعبر إلى قاعدةٍ في الرياض. نجحت الخريطة في المحاولة الثالثة
+  // بعد مهلتين (2026-09-14)، والعقارات تزيد مئاتٍ كل أسبوع — فكان سقوط البناء
+  // مسألة وقت. الصفحة الأولى تحمل `count`، فتُطلب البقية معاً بسقف تزامنٍ
+  // (لا ٦٠ طلباً دفعةً على عاملٍ واحد) وتُرتَّب كما هي.
+  const CONCURRENCY = 6;
+  const sep = path.includes("?") ? "&" : "?";
 
+  async function page(offset: number): Promise<{ rows: T[] | null; count: number | null }> {
+    const url = `${API}${path}${sep}limit=${PAGE}&offset=${offset}`;
     // ⚠️ بناء الخريطة يُصدر عشرات الطلبات دفعةً واحدة فيصطدم بخنق الخادم
     // (رصدنا 1,731 استجابة 429 أثناء بناءٍ واحد). التوقّف عند أوّل رفض يعني
     // خريطةً ناقصة بصمت — فنُعيد المحاولة بتباطؤ متزايد بدل الاستسلام.
-    let rows: T[] | null = null;
-    for (let attempt = 0; attempt < 4 && rows === null; attempt += 1) {
+    for (let attempt = 0; attempt < 4; attempt += 1) {
       if (attempt > 0) {
         await new Promise((r) => setTimeout(r, 1500 * attempt));
       }
@@ -48,12 +53,44 @@ async function fetchAll<T>(
       });
       if (res.ok) {
         const data = await res.json();
-        rows = Array.isArray(data) ? data : data.results ?? [];
+        if (Array.isArray(data)) return { rows: data, count: null };
+        return { rows: data.results ?? [], count: typeof data.count === "number" ? data.count : null };
       }
     }
-    if (rows === null) break;   // فشلٌ مستمرّ — نكتفي بما جمعناه
+    return { rows: null, count: null };
+  }
+
+  const first = await page(0);
+  if (first.rows === null) return [];   // فشلٌ مستمرّ — نكتفي بما جمعناه
+  // مصفوفة خام أو بلا `count`: لا نعرف عدد الصفحات — نبقى على التتابع القديم.
+  if (first.count === null) {
+    const out = [...first.rows];
+    for (let offset = PAGE; offset < 10000 && out.length === offset; offset += PAGE) {
+      const r = await page(offset);
+      if (r.rows === null) break;
+      out.push(...r.rows);
+      if (r.rows.length < PAGE) break;
+    }
+    return out;
+  }
+
+  const total = Math.min(first.count, 10000);
+  const offsets: number[] = [];
+  for (let o = PAGE; o < total; o += PAGE) offsets.push(o);
+  const pages: (T[] | null)[] = new Array(offsets.length).fill(null);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(CONCURRENCY, offsets.length) }, async () => {
+      while (next < offsets.length) {
+        const k = next++;
+        pages[k] = (await page(offsets[k])).rows;
+      }
+    }),
+  );
+  const out = [...first.rows];
+  for (const rows of pages) {
+    if (rows === null) break;   // فشلٌ مستمرّ — نكتفي بما جمعناه (كالسابق)
     out.push(...rows);
-    if (rows.length < PAGE) break;
   }
   return out;
 }
@@ -103,9 +140,12 @@ async function countries(): Promise<{ slug: string; code: string; count: number 
 // من جوجل فهرسة ما منعناه، فيردّ بتقرير «مستثناة بعلامة noindex» — وهو ما وقع
 // فعلاً في 2026-08-23 مع **292 مدينة**. القاعدة نفسها المطبَّقة على الأحياء.
 // تعود المدينة إلى الخريطة تلقائياً بأوّل عقار يُنشر فيها.
+// ⚠️ ساعة لا يوم: الحارس `audit-notfound-cache` يقيس `revalidate:` المكتوبة حرفياً
+// ولا يرى العمر المُمرَّر وسيطاً لـ`fetchAll` — فبقي جلب المدن ٨٦٤٠٠ ثانية بلا
+// إنذار، وهو بالضبط ما خرجت به الخريطة يوماً بصفر صفحة دولة (فشلٌ محفوظٌ يوماً).
 async function cities(): Promise<{ slug: string }[]> {
   try {
-    const data = { results: await fetchAll<{ name_en?: string; properties_count?: number }>("/cities/", 86400) };
+    const data = { results: await fetchAll<{ name_en?: string; properties_count?: number }>("/cities/", 3600) };
     return (data.results ?? [])
       .map((c: { name_en?: string; properties_count?: number }) => ({
         slug: citySlug(c.name_en || ""),
@@ -163,7 +203,13 @@ async function blogArticles(): Promise<{ slug: string; updated: string | null }[
 
 // تُعاد الخريطة كل ساعة: بناءٌ واحد فاشل (خنق أو عطل عابر) لا يجوز أن يُجمّد
 // خريطة الموقع ناقصةً إلى الأبد.
-export const revalidate = 3600;
+// ⚠️ **تُولَّد عند الطلب لا وقت البناء.** تجاوزت الخريطة مهلة الستّين ثانية في
+// البناء مرّتين ثمّ مرّةً بعد الجلب المتوازي (2026-09-14): ٦٬٠٢٥ عقاراً على
+// ٦١ صفحة، تتزاحم مع ٨٤٤ صفحة تُولَّد في الوقت نفسه على عاملٍ واحد في الخادم.
+// زيادة التوازي تزيد الزحام، ورفع المهلة يخفيه حتى يسقط البناء مع نموّ العقارات.
+// عند الطلب لا زحام: أوّل طلبٍ بعد النشر بطيء (ضمن مهلة Vercel ٣٠٠ث)، والجلبات
+// نفسها مخزّنة ساعةً (`next: { revalidate }`) فما بعده سريع.
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();

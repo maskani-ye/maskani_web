@@ -29,11 +29,19 @@ const bad: string[] = [];
 for (const f of files) {
   const src = readFileSync(f, 'utf8');
   const pageM = src.match(/^export const revalidate = (\d+)/m);
-  if (!pageM) {
+  /**
+   * ⚠️ `force-dynamic` لا يحفظ نتيجة المسار أصلاً — فغياب `revalidate` ليس
+   * «نتيجة محفوظة إلى الأبد». لكنّ الجلبات **داخله** ما زالت مخزّنة، والعلّة
+   * التي يمنعها الحارس (فشلٌ محفوظٌ يوماً) تبقى ممكنة فيها. فلا نُعفيها:
+   * نقيس أعمارها على سقف ساعة كأنّ الصفحة عمرها ساعة. (خريطة الموقع صارت
+   * تُولَّد عند الطلب 2026-09-14 لأنّ توليدها وقت البناء تجاوز ٦٠ ثانية.)
+   */
+  const forceDynamic = /^export const dynamic = ["']force-dynamic["']/m.test(src);
+  if (!pageM && !forceDynamic) {
     bad.push(`${f}: بلا \`export const revalidate\` — نتيجة محفوظة إلى الأبد`);
     continue;
   }
-  const page = Number(pageM[1]);
+  const page = pageM ? Number(pageM[1]) : 3600;
   for (const m of src.matchAll(/revalidate:\s*(\d+)/g)) {
     if (Number(m[1]) > page) {
       bad.push(`${f}: جلبٌ بعمر ${m[1]} يفوق عمر الصفحة ${page}`);
