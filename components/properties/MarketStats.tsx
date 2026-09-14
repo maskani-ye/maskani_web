@@ -20,7 +20,8 @@ export interface MarketStatsData {
   sale: Block | null;
   rent: Block | null;
   types: { name: string; count: number }[];
-  price_buckets: { from_usd: number; to_usd: number; count: number }[];
+  /** `from`/`to` بعملة العرض ومستديرة — `*_usd` احتياطٌ لخادمٍ أقدم. */
+  price_buckets: { from?: number; to?: number; from_usd: number; to_usd: number; count: number }[];
   vs_city?: { city_median_per_sqm_usd: number; diff_pct: number; city_sample: number };
 }
 
@@ -131,7 +132,9 @@ export function MarketStats({
             {data.price_buckets.map((b, i) => (
               <li key={i} className="flex items-center gap-3">
                 <span className="text-caption text-muted-600 w-40 shrink-0">
-                  {money(b.from_usd)} – {money(b.to_usd)}
+                  {b.from != null && b.to != null
+                    ? `${formatPrice(b.from, cur)} – ${formatPrice(b.to, cur)}`
+                    : `${money(b.from_usd)} – ${money(b.to_usd)}`}
                 </span>
                 <span className="flex-1 h-2.5 rounded-full bg-muted-100 overflow-hidden">
                   <span
