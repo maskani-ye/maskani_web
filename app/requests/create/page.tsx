@@ -56,6 +56,25 @@ export default function CreateRequestPage() {
     duration_days: "30",
   });
 
+  // تعبئة المدينة والحيّ من الرابط — تأتي من صفحة حيٍّ لا عقار فيه
+  // («اطلب عقاراً في حي …»). `window.location` لا `useSearchParams`: الأخير
+  // يستلزم حدّ Suspense وإلّا سقط البناء المسبق للصفحة. التأثير يُعلَن قبل
+  // تعبئة المدينة العامّة ويكتب فوقها دون شرط، فيفوز ما جاء في الرابط.
+  useEffect(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const city = sp.get("city");
+      const neighborhood = sp.get("neighborhood");
+      if (city || neighborhood) {
+        setForm((p) => ({
+          ...p,
+          ...(city ? { city } : {}),
+          ...(neighborhood ? { neighborhood } : {}),
+        }));
+      }
+    } catch { /* رابط مشوّه — نبقى على القيم الافتراضية */ }
+  }, []);
+
   useEffect(() => {
     api
       .get<{ results: PropertyTypeItem[] }>(endpoints.propertyTypes, { params: { limit: 100 } })
@@ -72,9 +91,10 @@ export default function CreateRequestPage() {
     [propertyTypes]
   );
 
-  useEffect(() => {
-    if (!authLoading && !user) requireAuth(undefined, () => router.push("/"));
-  }, [user, authLoading, router]);
+  // ⚠️ **لا بوّابة دخول عند الفتح** — الدرس نفسه في صفحة نشر العقار. كانت
+  // الصفحة لا تُرسم للزائر المجهول وتطرده للرئيسية إن أغلق نافذة الدخول، فزرّ
+  // «اطلب عقاراً في حي …» على صفحات الأحياء كان يفتح نافذة دخولٍ لا نموذجاً.
+  // يملأ أوّلاً، ولا نطلب الدخول إلا عند الإرسال، ويُستأنف الإرسال بما كتب.
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
@@ -95,12 +115,20 @@ export default function CreateRequestPage() {
 
   const setField = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.property_type || !form.offer_type || !form.city) {
       toast.error("يرجى تعبئة الحقول المطلوبة");
       return;
     }
+    if (!user) {
+      requireAuth(() => { void submitRequest(); });
+      return;
+    }
+    void submitRequest();
+  };
+
+  const submitRequest = async () => {
     setSaving(true);
     try {
       const payload: Record<string, unknown> = {
@@ -129,7 +157,7 @@ export default function CreateRequestPage() {
     }
   };
 
-  if (!user) return null;
+  if (authLoading) return null;
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">

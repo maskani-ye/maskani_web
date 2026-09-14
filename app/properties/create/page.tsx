@@ -27,6 +27,7 @@ import { compressImages } from "@/lib/imageCompression";
 import { NeighborhoodInput } from "@/components/properties/NeighborhoodInput";
 import { CURRENCIES } from "@/lib/utils";
 import { toEnglishDigits } from "@/lib/digits";
+import { endpoints as ep } from "@/lib/endpoints";
 
 // خريطة الاختيار تُحمَّل ديناميكياً (Leaflet يحتاج window).
 const LocationPickerMap = dynamic(() => import("@/components/map/LocationPickerMap"), {
@@ -76,6 +77,7 @@ export default function CreatePropertyPage() {
   const [step, setStep] = useState(0);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [supportPhone, setSupportPhone] = useState("");
 
   // قُمع النشر: نقيس كل خطوة على حدة. معرفة أن أحداً لم ينشر بلا معرفة أين
   // توقّف تركتنا نُخمّن أسابيع — الآن نعرف: عند الفتح؟ الصور؟ طلب الدخول؟
@@ -86,6 +88,31 @@ export default function CreatePropertyPage() {
   // القيمة هو ما جعل التحويل 0.8% (118 زائراً لصفحة العقارات مقابل زيارة
   // واحدة لصفحة النشر). الآن يملأ ما يشاء، ولا نطلب الدخول إلا لحظة الإرسال
   // وقد صار مستثمِراً في ما كتب.
+
+  // ⚠️ **مسودّة محفوظة**: فُتحت صفحة النشر ٧٠ مرّة في ٣٠ يوماً وتجاوز الخطوة
+  // الأولى ٧ فقط، واكتمل نشرٌ واحد. من يغادر ليجلب صورة أو سعراً يعود فيجد ما
+  // كتب. الصور لا تُحفظ (ملفّات)، والنصوص وحدها. التخزين قد يُمنع — نصمت.
+  const DRAFT_KEY = "maskani_publish_draft_v1";
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) setForm((p) => ({ ...p, ...JSON.parse(raw) }));
+    } catch { /* لا مسودّة */ }
+  }, []);
+  useEffect(() => {
+    try {
+      if (JSON.stringify(form) !== JSON.stringify(emptyPropertyForm)) {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
+      }
+    } catch { /* التخزين ممنوع */ }
+  }, [form]);
+
+  // رقم الدعم من إعدادات اللوحة — لطريق النشر عبر واتساب لمن لا يريد النموذج.
+  useEffect(() => {
+    api.get<{ general_phone?: string }>(ep.appConfig)
+      .then((r) => setSupportPhone((r.data.general_phone || "").trim()))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     api.get("/cities/").then((r) => setCities(r.data.results ?? [])).catch(() => {});
@@ -133,7 +160,7 @@ export default function CreatePropertyPage() {
   // ── التحقق لكل خطوة (مطابق للتطبيق) ──
   function validateStep(): boolean {
     if (step === 0) {
-      if (!form.title.trim()) return fail("يرجى إدخال عنوان العقار");
+      // العنوان صار اختيارياً — يُكتب تلقائياً من النوع والعرض والمكان عند الإرسال.
       if (!form.property_type) return fail("يرجى اختيار نوع العقار");
       // السعر اختياري — يُتحقَّق فقط إن أُدخل.
       if (form.price.trim() && (isNaN(priceNum) || priceNum < 0)) return fail("السعر المُدخل غير صحيح");
@@ -160,6 +187,14 @@ export default function CreatePropertyPage() {
     }
   }
 
+  // عنوانٌ من الحقائق حين يُترك فارغاً: «شقة للإيجار الشهري في حدة، صنعاء».
+  function autoTitle(): string {
+    const offer = { sale: "للبيع", rent_monthly: "للإيجار الشهري", rent_yearly: "للإيجار السنوي" }[form.offer_type] ?? "";
+    const cityName = cities.find((c) => String(c.id) === form.city)?.name_ar ?? "";
+    const place = [form.neighborhood?.trim(), cityName].filter(Boolean).join("، ");
+    return [selectedPt?.name_ar ?? "عقار", offer, place ? `في ${place}` : ""].filter(Boolean).join(" ");
+  }
+
   async function submit() {
     // الدخول عند الإرسال لا عند الفتح — وبعده يُستأنف الإرسال بنفس المدخلات
     // (الحالة محفوظة في المكوّن، فلا يفقد المستخدم شيئاً).
@@ -171,7 +206,8 @@ export default function CreatePropertyPage() {
     }
     setSaving(true);
     try {
-      const fd = buildPropertyFormData(form, await compressImages(images));
+      const finalForm = form.title.trim() ? form : { ...form, title: autoTitle() };
+      const fd = buildPropertyFormData(finalForm, await compressImages(images));
       if (loc) {
         fd.set("latitude", loc.lat.toFixed(6));
         fd.set("longitude", loc.lng.toFixed(6));
@@ -180,6 +216,7 @@ export default function CreatePropertyPage() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       trackVisitEvent("publish_submitted", { targetType: "property", targetId: data.id });
+      try { localStorage.removeItem(DRAFT_KEY); } catch { /* */ }
       toast.success("تم نشر العقار بنجاح");
       router.push(`/properties/${data.id}`);
     } catch (err) {
@@ -193,6 +230,21 @@ export default function CreatePropertyPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
       <h1 className="text-h3 font-bold text-ink mb-5">إضافة عقار جديد</h1>
+
+      {supportPhone && (
+        <a
+          href={`https://wa.me/${supportPhone.replace(/\D/g, "")}?text=${encodeURIComponent("مرحباً، أريد نشر عقار على مسكني")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackVisitEvent("publish_whatsapp_click")}
+          className="flex items-center gap-3 rounded-2xl border border-success-200 bg-success-50 px-4 py-3 mb-4 text-body text-ink hover:bg-success-100 transition-colors"
+        >
+          <Phone className="h-5 w-5 text-success-600 shrink-0" />
+          <span className="flex-1">
+            <strong>لا وقت للنموذج؟</strong> أرسل تفاصيل عقارك وصوره على واتساب وننشره لك.
+          </span>
+        </a>
+      )}
 
       {/* مؤشّر التقدّم */}
       <Stepper step={step} />
@@ -339,10 +391,10 @@ function StepBasics({
       </div>
 
       <div className="h-4" />
-      <SectionLabel text="عنوان العقار" required />
+      <SectionLabel text="عنوان العقار (اختياري)" />
       <input
         className={inputCls}
-        placeholder="مثال: شقة فاخرة للإيجار في حي راقٍ"
+        placeholder="اتركه فارغاً — نكتبه من النوع والمكان"
         value={form.title}
         onChange={(e) => setField("title", e.target.value)}
       />

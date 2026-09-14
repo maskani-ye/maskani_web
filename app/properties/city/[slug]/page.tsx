@@ -8,6 +8,7 @@ import { formatPrice, propertyTypeName, offerTypeLabels } from "@/lib/utils";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import { MarketStats, getMarketStats } from "@/components/properties/MarketStats";
 import { fetchRetry } from "@/lib/fetchRetry";
+import { ShareBar } from "@/components/blog/ShareBar";
 import CityGuideLinks from "@/components/properties/CityGuideLinks";
 import CityAlertButton from "@/components/properties/CityAlertButton";
 import CityNeighborhoods from "@/components/properties/CityNeighborhoods";
@@ -239,6 +240,15 @@ export default async function CityPropertiesPage(
       )}
 
       {stats && <MarketStats data={stats} placeName={city.name_ar} />}
+
+      {/* ⚠️ الانتشار الاجتماعي كان صفراً (جلستان في ٢٨ يوماً). مؤشّرات سوق مدينةٍ
+          معلومةٌ تُتداول في مجموعات واتساب — والمشاركة هنا تحمل الرابط إلينا. */}
+      <div className="mt-6">
+        <ShareBar
+          url={`${SITE_URL}/properties/city/${slug}`}
+          title={`أسعار العقارات في ${city.name_ar} — مسكني`}
+        />
+      </div>
 
       <CityNeighborhoods cityId={city.id} cityName={city.name_ar} />
 

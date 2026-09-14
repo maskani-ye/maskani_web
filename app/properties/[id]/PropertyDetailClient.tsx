@@ -145,10 +145,21 @@ export default function PropertyDetailClient(
     }
   };
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
+  // ⚠️ **المشاركة كانت نسخاً للرابط فقط** — وجاءت من الشبكات الاجتماعية جلستان
+  // في ٢٨ يوماً. على الجوّال (٩١٪ من نقرات البحث) نفتح قائمة المشاركة الأصلية،
+  // وإلا ننسخ. وزرّ واتساب ظاهرٌ مستقلاً: هو قناة التداول الفعلية في أسواقنا.
+  const shareText = property ? `${property.title} — مسكني` : "مسكني";
+  const handleShare = async () => {
+    const url = window.location.href;
+    trackVisitEvent("share_click", { targetType: "property", targetId: Number(id) });
+    if (typeof navigator !== "undefined" && "share" in navigator) {
+      try { await navigator.share({ title: shareText, url }); return; } catch { /* أُلغيت */ }
+    }
+    navigator.clipboard.writeText(url);
     toast.success("تم نسخ الرابط");
   };
+  const whatsappShareHref = () =>
+    `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${typeof window !== "undefined" ? window.location.href : ""}`)}`;
 
   const handleComment = async () => {
     if (!requireAuth()) return;
@@ -281,7 +292,17 @@ export default function PropertyDetailClient(
                   <Heart className={`h-5 w-5 ${favorited ? "fill-danger-500 text-danger-500" : "text-muted"}`} />
 
                 </button>
-                <button onClick={handleShare} className="w-10 h-10 bg-muted-50 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors">
+                <a
+                  href={whatsappShareHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackVisitEvent("share_whatsapp", { targetType: "property", targetId: Number(id) })}
+                  aria-label="مشاركة عبر واتساب"
+                  className="h-10 px-3 bg-[#25D366] text-white rounded-xl flex items-center justify-center text-caption font-bold hover:opacity-90 transition-opacity"
+                >
+                  واتساب
+                </a>
+                <button onClick={handleShare} aria-label="مشاركة" className="w-10 h-10 bg-muted-50 rounded-xl flex items-center justify-center hover:bg-primary/10 transition-colors">
                   <Share className="h-5 w-5 text-muted" />
                 </button>
               </div>

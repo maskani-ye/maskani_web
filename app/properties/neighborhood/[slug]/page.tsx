@@ -8,6 +8,7 @@ import { PropertyCard } from "@/components/properties/PropertyCard";
 import { MarketStats, getMarketStats } from "@/components/properties/MarketStats";
 import type { Property } from "@/types";
 import { fetchRetry } from "@/lib/fetchRetry";
+import { ShareBar } from "@/components/blog/ShareBar";
 import { DEFAULT_MARKET, MARKETS, marketPath } from "@/lib/markets";
 
 /**
@@ -34,6 +35,14 @@ interface Neighborhood {
   country_name?: string | null;
   country_code?: string | null;
   properties_count?: number;
+  latitude?: string | null;
+  longitude?: string | null;
+}
+
+/** اسم الحيّ مع «حي» مرّةً واحدة — كثيرٌ من الأسماء تبدأ بها أصلاً
+ *  («حي الاسراء»)، فكان العنوان «حي حي الاسراء». */
+function hoodLabel(name: string): string {
+  return /^حي\s/.test(name.trim()) ? name.trim() : `حي ${name.trim()}`;
 }
 
 async function getNeighborhoods(): Promise<Neighborhood[]> {
@@ -87,6 +96,29 @@ async function resolveNeighborhood(slug: string): Promise<Neighborhood | null> {
   return rows.find((n) => n.slug === wanted || n.name === wanted) ?? null;
 }
 
+/**
+ * أقرب العقارات إلى حيٍّ قليل المعروض — بالإحداثيات حين توجد، وإلا مدينته.
+ *
+ * ⚠️ **لماذا لا نُخفي الحيّ الفارغ عن جوجل؟** جرّبنا ذلك (2026-09-14) ثمّ قسنا:
+ * صفحات الأحياء التي فيها أقلّ من ثلاثة عقارات جلبت **١٢١ من ١٢٧ نقرة** على
+ * صفحات الأحياء في ٢٨ يوماً — ربع نقرات الموقع — بعمليات بحث نيّتها الشراء
+ * («شقق للبيع بمطروح الكيلو 7»). المشكلة لم تكن وجود الصفحة بل فراغها. فتُملأ
+ * بما هو فريدٌ لكل حيّ: العقارات حوله بالمسافة، وأسعار مدينته، وطلبٌ باسمه.
+ */
+async function getNearby(hood: Neighborhood): Promise<Property[]> {
+  const lat = hood.latitude ? parseFloat(hood.latitude) : NaN;
+  const lng = hood.longitude ? parseFloat(hood.longitude) : NaN;
+  const where = Number.isFinite(lat) && Number.isFinite(lng)
+    ? `near=${lat},${lng}&radius_km=15`
+    : `city=${hood.city}`;
+  const res = await fetchRetry(`${API}/properties/?${where}&limit=6&offset=0`, {
+    next: { revalidate: 3600 },
+  });
+  if (!res || !res.ok) return [];
+  const data = await res.json();
+  return data.results ?? [];
+}
+
 async function getProperties(refId: number): Promise<{ items: Property[]; count: number }> {
   try {
     const res = await fetchRetry(
@@ -113,8 +145,14 @@ async function getProperties(refId: number): Promise<{ items: Property[]; count:
  */
 export async function generateStaticParams() {
   const list = await getNeighborhoods();
+  // ⚠️ **العتبة ثلاثة لا واحد — والسبب حِمل البناء لا المحتوى.**
+  // صفحة الحيّ القليل المعروض صارت تجلب أسعار مدينته وأقرب العقارات حوله
+  // (2026-09-14). توليد مئاتٍ منها في البناء أضاف مئات النداءات فوق حِمل البناء
+  // على عاملٍ واحد، فتجاوزت خريطة الموقع ٦٠ ثانية ثلاث مرّات وسقط البناء كلّه.
+  // الأحياء القليلة تُرسم عند أوّل زيارة (`dynamicParams`) وتُخزَّن ساعة، فتبقى
+  // مفهرسةً ومملوءةً كما هي — الفرق وحده متى تُبنى. العتبة نفسها في الخريطة.
   return list
-    .filter((n) => (n.properties_count ?? 0) > 0 && n.slug)
+    .filter((n) => (n.properties_count ?? 0) >= 3 && n.slug)
     .map((n) => ({ slug: n.slug }));
 }
 
@@ -124,14 +162,28 @@ export async function generateMetadata(
   const { slug } = await params;
   const hood = await resolveNeighborhood(slug);
   if (!hood) return {};
-  const title = `عقارات في ${hood.name} — ${hood.city_name} | شقق وفلل وأراضٍ`;
-  const description = `أحدث العقارات في حي ${hood.name} — ${hood.city_name}: شقق وفلل وأراضٍ للبيع والإيجار على مسكني، مع الأسعار والصور والتواصل المباشر بلا عمولات.`;
+  const stock = hood.properties_count ?? 0;
+  // عنوانٌ صادق لحيٍّ بلا معروض: لا نَعِد بـ«أحدث العقارات في الحي» وهي صفر.
+  const title = stock >= 3
+    ? `عقارات في ${hood.name} — ${hood.city_name} | شقق وفلل وأراضٍ`
+    : `${hoodLabel(hood.name)} — ${hood.city_name}: أسعار العقارات والعروض القريبة`;
+  const description = stock >= 3
+    ? `أحدث العقارات في ${hoodLabel(hood.name)} — ${hood.city_name}: شقق وفلل وأراضٍ للبيع والإيجار على مسكني، مع الأسعار والصور والتواصل المباشر بلا عمولات.`
+    : `دليل ${hoodLabel(hood.name)} في ${hood.city_name}: مؤشّرات أسعار العقارات في المدينة، وأقرب الشقق والأراضي المعروضة حول الحي، واطلب عقاراً فيه ليصلك ما يطابقه.`;
   // ⚠️ **حيٌّ بأقلّ من ثلاثة عقارات لا يُفهرَس.**
   // ٨٬١٠١ حيّاً عندنا بلا عقارٍ واحد و٥٤٧ بعقارٍ واحد. صفحاتها لا تحمل معلومةً
   // تُذكر، وجوجل يصنّفها «اكتُشفت ولم تُفهرَس» ويحسبها على الموقع كلّه —
   // وبها رُفض الموقع في أدسنس بوصف «محتوى غير ذي قيمة» (٢٠٢٦-٠٩-١٠).
   // تبقى الصفحة حيّةً لمن يصله رابطها، لكنّها لا تُقدَّم للفهرسة.
-  const thin = (hood.properties_count ?? 0) < 3;
+  // noindex فقط حين لا يبقى في الصفحة ما يُقرأ: لا معروض كافٍ، ولا أسعار مدينة،
+  // ولا عقارات قريبة. هذه الجلبات نفسها تُعاد في الصفحة فتُخدَم من ذاكرة Next.
+  let thin = false;
+  if (stock < 3) {
+    const [cityStats, nearby] = await Promise.all([
+      getMarketStats("city", hood.city), getNearby(hood),
+    ]);
+    thin = !cityStats && nearby.length === 0;
+  }
 
   return {
     title,
@@ -165,6 +217,13 @@ export default async function NeighborhoodPropertiesPage(
 
   const { items, count } = await getProperties(hood.id);
   const stats = await getMarketStats("neighborhood", hood.id);
+  const sparse = count < 3;
+  const [cityStats, nearbyAll] = sparse
+    ? await Promise.all([stats ? Promise.resolve(null) : getMarketStats("city", hood.city), getNearby(hood)])
+    : [null, [] as Property[]];
+  const ownIds = new Set(items.map((p) => p.id));
+  const nearby = nearbyAll.filter((p) => !ownIds.has(p.id));
+  const requestHref = `/requests/create?city=${hood.city}&neighborhood=${encodeURIComponent(hood.name)}`;
   const cityHref = `/properties/city/${citySlug(hood.city_name)}`;
   // سوق الحيّ من دولته — لا من كعكة الزائر. صفحةٌ مفهرسة تُقرأ من أيّ سوق،
   // فوجهتها يجب أن تُشتقّ من محتواها لا من حالة قارئها.
@@ -178,13 +237,13 @@ export default async function NeighborhoodPropertiesPage(
           { name: "الرئيسية", path: "/" },
           { name: "العقارات", path: "/properties" },
           { name: `عقارات ${hood.city_name}`, path: cityHref },
-          { name: `حي ${hood.name}`, path: `/properties/neighborhood/${hood.slug}` },
+          { name: `${hoodLabel(hood.name)}`, path: `/properties/neighborhood/${hood.slug}` },
         ])}
       />
       {items.length > 0 && (
         <JsonLd
           data={itemList(
-            `عقارات في حي ${hood.name}`,
+            `عقارات في ${hoodLabel(hood.name)}`,
             items.map((l) => `/properties/${l.id}`),
           )}
         />
@@ -194,19 +253,23 @@ export default async function NeighborhoodPropertiesPage(
           { name: "الرئيسية", href: "/" },
           { name: "العقارات", href: "/properties" },
           { name: `عقارات ${hood.city_name}`, href: cityHref },
-          { name: `حي ${hood.name}` },
+          { name: `${hoodLabel(hood.name)}` },
         ]}
       />
 
       <header className="mb-6">
         <h1 className="text-h2 sm:text-h1 font-bold text-ink">
-          عقارات في حي {hood.name}
+          عقارات في {hoodLabel(hood.name)}
           <span className="text-muted font-normal"> — {hood.city_name}</span>
         </h1>
         <p className="text-muted-600 mt-2 leading-relaxed max-w-3xl">
-          استكشف {count > 0 ? `${count} ` : ""}عقاراً في حي {hood.name} بمحافظة {hood.city_name} —
-          شقق وفلل وأراضٍ ومحلات تجارية للبيع والإيجار، مع الأسعار والصور،
-          وتواصل مباشر مع أصحاب العقارات بلا عمولات.
+          {sparse
+            ? <>المعروض في {hoodLabel(hood.name)} قليلٌ الآن، فجمعنا لك ما يفيد قرارك: أسعار
+              العقار في {hood.city_name}، وأقرب العروض المتاحة حول الحي، وطريقةً
+              ليصلك أوّل عقارٍ يُعرض فيه.</>
+            : <>استكشف {count} عقاراً في {hoodLabel(hood.name)} بمحافظة {hood.city_name} —
+              شقق وفلل وأراضٍ ومحلات تجارية للبيع والإيجار، مع الأسعار والصور،
+              وتواصل مباشر مع أصحاب العقارات بلا عمولات.</>}
         </p>
         <Link
           // ⚠️ **الرابط يحمل سوقه ومدينته وحيّه — وكان يحمل الحيّ وحده.**
@@ -221,23 +284,61 @@ export default async function NeighborhoodPropertiesPage(
       </header>
 
       {stats && (
-        <MarketStats data={stats} placeName={`حي ${hood.name}`} cityName={hood.city_name} />
+        <MarketStats data={stats} placeName={`${hoodLabel(hood.name)}`} cityName={hood.city_name} />
+      )}
+      {!stats && cityStats && (
+        <MarketStats data={cityStats} placeName={hood.city_name} />
       )}
 
-      <h2 className="text-h3 sm:text-h2 font-bold text-ink mt-10 mb-4">
-        العقارات المعروضة في {hood.name}
-      </h2>
-      {items.length === 0 ? (
-        <div className="rounded-2xl border border-muted-200 bg-white py-16 text-center text-muted-500">
-          لا توجد عقارات في حي {hood.name} بعد — كن أول من يضيف عقاراً هنا.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((l) => (
-            <PropertyCard key={l.id} property={l} />
-          ))}
+      {items.length > 0 && (
+        <>
+          <h2 className="text-h3 sm:text-h2 font-bold text-ink mt-10 mb-4">
+            العقارات المعروضة في {hood.name}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {items.map((l) => (
+              <PropertyCard key={l.id} property={l} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {sparse && nearby.length > 0 && (
+        <>
+          <h2 className="text-h3 sm:text-h2 font-bold text-ink mt-10 mb-4">
+            عقارات قريبة من {hoodLabel(hood.name)}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {nearby.map((l) => (
+              <PropertyCard key={l.id} property={l} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {sparse && (
+        <div className="mt-10 rounded-2xl border border-muted-200 bg-white p-5 sm:p-6">
+          <h2 className="text-body-lg font-bold text-ink">
+            تبحث عن عقار في {hoodLabel(hood.name)} تحديداً؟
+          </h2>
+          <p className="text-muted-600 mt-2 leading-relaxed">
+            انشر طلبك بمواصفاتك وميزانيتك، ويصلك إشعار حين يُعرض عقارٌ يطابقه في الحي.
+          </p>
+          <Link
+            href={requestHref}
+            className="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary text-white px-5 py-2.5 text-body font-semibold hover:bg-primary/90 transition-colors"
+          >
+            اطلب عقاراً في {hood.name}
+          </Link>
         </div>
       )}
+
+      <div className="mt-8">
+        <ShareBar
+          url={`${SITE_URL}/properties/neighborhood/${hood.slug}`}
+          title={`العقارات والأسعار في ${hoodLabel(hood.name)} — ${hood.city_name}`}
+        />
+      </div>
     </div>
   );
 }
