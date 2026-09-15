@@ -74,8 +74,12 @@ async function resolveNeighborhood(slug: string): Promise<Neighborhood | null> {
   // وفسّرته الصفحة «حيٌّ غير موجود» فاستدعت `notFound()`، **فخُبزت ٥١٩ صفحة
   // من ٨٥٩ في الإخراج كـ404 دائمة**: أحياءٌ حقيقية فيها عقارات، مفقودةٌ من
   // الموقع بلا أيّ خطأ في السجلّ. القائمة المخزَّنة تخدمها كلّها بنداءٍ واحد.
+  // ⚠️ **المعرّف أوّلاً ثمّ الاسم — لا «أوّل ما يطابق أيّهما».** كان ٦٤٣ معرّفاً
+  // يحمله أكثر من حيّ في مدنٍ مختلفة («حي الروضة» في ٥٨ مدينة)، فتفتح الصفحة
+  // حيّاً غير المقصود. صارت المعرّفات فريدة (2026-09-15)، لكنّ الاسم ما زال
+  // مكرّراً عبر المدن: مطابقة الاسم احتياطٌ لرابطٍ قديم، لا ندّاً للمعرّف.
   const list = await getNeighborhoods();
-  const hit = list.find((n) => n.slug === wanted || n.name === wanted);
+  const hit = list.find((n) => n.slug === wanted) ?? list.find((n) => n.name === wanted);
   if (hit) return hit;
 
   // حيٌّ خارج القائمة (بلا عقارات، أو أُضيف بعد آخر تخزين) — نسأل عنه وحده.
@@ -93,7 +97,7 @@ async function resolveNeighborhood(slug: string): Promise<Neighborhood | null> {
   }
   const data = await res.json();
   const rows: Neighborhood[] = Array.isArray(data) ? data : data.results ?? [];
-  return rows.find((n) => n.slug === wanted || n.name === wanted) ?? null;
+  return rows.find((n) => n.slug === wanted) ?? rows.find((n) => n.name === wanted) ?? null;
 }
 
 /**
