@@ -73,16 +73,36 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [prefsOpen, setPrefsOpen] = useState(false);
-  const [prefs, setPrefs] = useState<Record<string, boolean> | null>(null);
+  const [prefs, setPrefs] = useState<Record<string, boolean | string> | null>(null);
   const LIMIT = 20;
 
   const openPrefs = async () => {
     setPrefsOpen(true);
     if (prefs) return;
     try {
-      const { data } = await api.get<Record<string, boolean>>("/notifications/preferences/");
+      const { data } = await api.get<Record<string, boolean | string>>("/notifications/preferences/");
       setPrefs(data);
     } catch (err) { toast.error(getErrorMessage(err)); }
+  };
+
+  // عقارات مدينتي: ثلاثة أوضاع لا مفتاح — الاستيراد ينشر مئة عقار في الدفعة،
+  // فإشعارٌ لكل عقار يُطفئ الإشعارات كلّها. الافتراضي ملخّصٌ واحد يومياً.
+  const CITY_MODES = [
+    { value: "daily", label: "ملخّص يوميّ" },
+    { value: "instant", label: "كل عقار" },
+    { value: "off", label: "إيقاف" },
+  ];
+
+  const setCityMode = async (value: string) => {
+    if (!prefs) return;
+    const previous = prefs.city_new_properties;
+    setPrefs((p) => (p ? { ...p, city_new_properties: value } : p));
+    try {
+      await api.put("/notifications/preferences/", { city_new_properties: value });
+    } catch (err) {
+      setPrefs((p) => (p ? { ...p, city_new_properties: previous } : p));
+      toast.error(getErrorMessage(err));
+    }
   };
 
   const togglePref = async (key: string) => {
@@ -162,6 +182,32 @@ export default function NotificationsPage() {
             <div className="h-40 bg-muted-100 animate-pulse rounded-xl" />
           ) : (
             <div className="divide-y divide-muted-50">
+              <div className="py-3">
+                <p className="text-body text-muted-700">عقارات جديدة في مدينتي</p>
+                <p className="text-caption text-muted-500 mt-0.5 mb-2">
+                  يصلك ما يُنشر في مدينة حسابك — اختر إشعاراً بكل عقار أو ملخّصاً واحداً يومياً.
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  {CITY_MODES.map((m) => {
+                    const active = (prefs.city_new_properties ?? "daily") === m.value;
+                    return (
+                      <button
+                        key={m.value}
+                        type="button"
+                        onClick={() => setCityMode(m.value)}
+                        aria-pressed={active}
+                        className={`rounded-xl px-3.5 py-2 text-caption font-bold transition-colors ${
+                          active
+                            ? "bg-primary text-white"
+                            : "bg-muted-100 text-muted-700 hover:bg-muted-200"
+                        }`}
+                      >
+                        {m.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               {PREF_CATEGORIES.map((c) => (
                 <div key={c.key} className="flex items-center justify-between py-2.5">
                   <span className="text-body text-muted-700">{c.label}</span>
@@ -169,7 +215,7 @@ export default function NotificationsPage() {
                     type="button"
                     onClick={() => togglePref(c.key)}
                     className={`relative w-11 h-6 rounded-full transition-colors ${prefs[c.key] ? "bg-primary" : "bg-muted-200"}`}
-                    aria-pressed={prefs[c.key]}
+                    aria-pressed={Boolean(prefs[c.key])}
                   >
                     <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${prefs[c.key] ? "left-5" : "left-0.5"}`} />
                   </button>
