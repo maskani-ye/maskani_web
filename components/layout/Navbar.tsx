@@ -250,7 +250,7 @@ export function Navbar() {
                         <Magnifer className="h-4 w-4 text-primary" /> المفضّلة
                       </Link>
                       {user.role === "admin" && (
-                        <Link href="/admin" className="flex items-center gap-2 px-4 py-2.5 hover:bg-muted-50 text-body text-gold" onClick={() => setProfileOpen(false)}>
+                        <Link href="/admin" /* robots-ok: لا يُعرَض إلا لمن دوره admin فلا يصل زاحفٌ إليه */ className="flex items-center gap-2 px-4 py-2.5 hover:bg-muted-50 text-body text-gold" onClick={() => setProfileOpen(false)}>
                           <Settings className="h-4 w-4 text-gold" /> لوحة الإدارة
                         </Link>
                       )}
