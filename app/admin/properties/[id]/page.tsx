@@ -101,6 +101,7 @@ interface Perf {
   platforms: { platform: string; n: number }[];
   devices: { device_type: string; n: number }[];
   cities: { city: string; n: number }[];
+  bot_views?: number;
 }
 
 interface CityRef { id: number; name_ar: string }
@@ -606,7 +607,8 @@ export default function AdminPropertyDetailPage() {
             <>
               <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 <StatCard label="مشاهدات (الكل)" value={perf.views_total.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(Eye)} />
-                <StatCard label="مشاهدات المدّة" value={perf.views.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(Eye)} />
+                <StatCard label="مشاهدات المدّة" value={perf.views.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(Eye)}
+                  sub={perf.bot_views ? `+${perf.bot_views.toLocaleString(NUMERIC_LOCALE)} زحف محرّكات بحث (غير محسوبة)` : undefined} />
                 <StatCard label="نقرات تواصل" value={perf.contacts.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(Phone)} />
                 <StatCard label="إضافة للمفضّلة" value={perf.favorites.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(Heart)} />
                 <StatCard label="مشاركات" value={perf.shares.toLocaleString(NUMERIC_LOCALE)} icon={asIcon(Share)} />

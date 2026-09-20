@@ -75,9 +75,42 @@ export function utmFromSearch(
   return out;
 }
 
+/** الكيان الذي تخصّه الصفحة — مستنبطاً من مسارها.
+ *
+ * ⚠️ **المشاهدات كانت تُرسَل بلا نسبةٍ إلى كيانها.** الأحداث وحدها تحمل
+ * `target_*`، فبقي في القاعدة ٣٤٩٬٨٣٦ مشاهدة و**ثلاثون صفّاً** مربوطاً بكيان.
+ * ونتيجته في «أداء الإعلان»: نقرات اتّصال ومشاركة بلا مشاهدةٍ واحدة تُنسَب
+ * إليها — فلا معدّل تحويل ولا مصدر زيارة لأيّ عقار.
+ *
+ * الاستنباط مركزيّ هنا لا في كل صفحة: صفحةٌ جديدة لكيانٍ قائم تُتتبَّع بلا
+ * توصيل، والشرط `\d+` يستثني المسارات الوصفية (`/properties/city/riyadh`).
+ */
+const TARGET_ROUTES: Record<string, TrackTarget["targetType"]> = {
+  properties: "property",
+  services: "service",
+  requests: "request",
+  jobs: "job",
+  users: "user",
+  reports: "report",
+};
+
+export function targetFromPath(path: string): {
+  target_type?: string;
+  target_id?: number;
+} {
+  const seg = path.split("?")[0].split("/").filter(Boolean);
+  // قد يسبق المسارَ رمزُ سوق (`/sa/...`) — نتخطّاه إن وُجد.
+  const at = seg.findIndex((s) => s in TARGET_ROUTES);
+  if (at === -1) return {};
+  const id = seg[at + 1];
+  if (!id || !/^\d+$/.test(id)) return {};
+  return { target_type: TARGET_ROUTES[seg[at]], target_id: Number(id) };
+}
+
 /** مشاهدة صفحة. */
 export function trackPageview(path: string, extra?: Record<string, unknown>) {
   send({
+    ...targetFromPath(path),
     path,
     referrer: (typeof document !== "undefined" ? document.referrer : "") || "",
     ...extra,
