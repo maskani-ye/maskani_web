@@ -96,10 +96,11 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
-              <Home2 className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-h3 font-extrabold text-primary">مسكني</span>
+            {/* الشعار كما صُمّم — صورةٌ واحدة بالرمز والاسم والعبارة.
+                لا يُفكّك إلى رمزٍ ونصّ: العبارة جزءٌ من الرسم لا نصٌّ نملكه. */}
+            <img src="/brand/logo.png" alt="مسكني — منصّتك العقارية الموثوقة"
+                 width={140} height={141}
+                 className="h-12 w-auto sm:h-14" />
           </Link>
 
           {/* Desktop Nav */}

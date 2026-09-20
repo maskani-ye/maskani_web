@@ -82,10 +82,8 @@ export function Footer() {
           {/* العلامة */}
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10">
-                <Home2 weight="Bold" className="h-5 w-5" />
-              </span>
-              <span className="text-h2 font-extrabold">مسكني</span>
+              <img src="/brand/logo-white.png" alt="مسكني — منصّتك العقارية الموثوقة"
+                   width={180} height={182} className="h-20 w-auto" />
             </div>
             <p className="mt-4 max-w-sm text-caption leading-relaxed text-white/60">
               منصّة عقارية تصلك بصاحب العقار مباشرةً: عقارات وخدمات وطلبات، بلا

@@ -42,9 +42,10 @@ function Rtl({ text, style }: { text: string; style: React.CSSProperties }) {
 
 export default async function Image() {
   const dir = join(process.cwd(), "app", "og-fonts");
-  const [bold, regular] = await Promise.all([
+  const [bold, regular, logo] = await Promise.all([
     readFile(join(dir, "Plex-Bold.ttf")),
     readFile(join(dir, "Plex-Regular.ttf")),
+    readFile(join(process.cwd(), "public", "brand", "logo-white.png")),
   ]);
 
   return new ImageResponse(
@@ -58,20 +59,13 @@ export default async function Image() {
         }}
       >
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 10, background: GOLD }} />
-        {/* رمز المنزل — نفس رسم أيقونة التطبيق، مسارٌ لا صورة فلا ينفصل */}
-        <div style={{
-          width: 132, height: 132, borderRadius: 999, background: "#fff",
-          display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 34,
-        }}>
-          <svg width="74" height="74" viewBox="0 0 24 24" fill="none"
-               stroke={PRIMARY} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3.5 9.5 12 3l8.5 6.5V19a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V9.5Z" />
-            <path d="M9.5 17h5" />
-          </svg>
-        </div>
-        <div style={{ fontSize: 92, fontWeight: 700, color: "#fff", letterSpacing: "-2px" }}>مسكني</div>
-        <Rtl text="منصّة عقارية في ستّة أسواق عربية"
-             style={{ fontSize: 38, color: "rgba(255,255,255,0.88)", marginTop: 10 }} />
+        {/* الشعار كما صُمّم — صورةٌ واحدة بالرمز والاسم والعبارة.
+            ⚠️ كان هنا مسار SVG مرسوم يدوياً يحاكي الشعار القديم؛ محاكاةٌ
+            تنفصل عن الأصل عند أوّل تغيير. صار يُقرأ من ملفّ العلامة نفسه
+            فيتبعه أيّ تحديثٍ لاحق بلا لمس هذا الملفّ. */}
+        <img src={`data:image/png;base64,${logo.toString("base64")}`}
+             width={560} height={560}
+             style={{ width: 560, height: 560, objectFit: "contain", marginBottom: 8 }} />
         <Rtl text="بيع · إيجار · خدمات · طلبات"
              style={{ fontSize: 30, color: GOLD, marginTop: 26 }} />
       </div>

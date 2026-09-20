@@ -623,7 +623,7 @@ export default function AdminPropertyDetailPage() {
                     <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                     <Tooltip />
                     <Line type="monotone" dataKey="views" name="مشاهدات"
-                      stroke="#4F2396" strokeWidth={2} dot={false} />
+                      stroke="#171539" strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </ChartCard>

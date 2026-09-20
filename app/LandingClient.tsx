@@ -225,8 +225,13 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
     // (٢٢٠ ك.ب تُدفع بلا مقابل). اللون انتقل إلى طبقة الخلفية نفسها ليبقى
     // احتياطاً حين تتعذّر الصورة، والطبقات صارت موجبة ومرتّبة: صورة (0) ←
     // كرة (1) ← محتوى (10).
+    // ⚠️ **«شاشة واحدة» قرارٌ لسطح المكتب لا للهاتف.** كان `h-[100svh]` +
+    // `overflow-hidden` مفروضاً على كل المقاسات: على هاتف 360×640 يمتدّ
+    // المحتوى إلى 766 بكسل فيُبتر 126 منها **بلا إمكان تمرير** — يُرى سوقان
+    // ونصف من ستّة، ويُقصّ العنوان من أعلى. القيد صار من `lg` فصاعداً،
+    // ودونها تدفّقٌ طبيعيّ بارتفاعٍ أدنى يملأ الشاشة ولا يحبس ما تجاوزها.
     <div dir={t.dir} lang={lang}
-      className="relative h-[100svh] overflow-hidden text-white grid grid-rows-[auto_1fr_auto]">
+      className="relative min-h-[100svh] lg:h-[100svh] lg:overflow-hidden text-white grid grid-rows-[auto_1fr_auto]">
       {/* ─── الخلفية السينمائية ─────────────────────────────────────────── */}
       <div className="absolute inset-0 z-0 bg-ink">
         {withImage.map((m) => (
@@ -259,14 +264,19 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
         // ⚠️ **مُنزَلة عن العنوان عمداً**: حين كانت `inset-y-0` وقع عنقود
         // نقاطها الذهبية فوق «مكانك يبدأ هنا» فزاحمت أهمّ سطر في الصفحة.
         // إرساؤها إلى الأسفل يُبقيها حاضرةً في المشهد بلا أن تنازع النصّ.
-        <div className="pointer-events-none absolute bottom-0 start-0 h-[70svh] w-[46vw] max-w-globe z-[1] opacity-60">
+        // ⚠️ **تُخفى دون `lg`**: عرضها `46vw` وارتفاعها `70svh` مقاسان لشاشةٍ
+        // عريضة؛ على هاتف 360 تقع خلف بطاقات الأسواق فتظهر قوساً مبتوراً
+        // يُقرأ خللاً لا زينة. المشهد على الهاتف رأسيٌّ لا مسرحٌ عريض.
+        <div className="pointer-events-none absolute bottom-0 start-0 h-[70svh] w-[46vw] max-w-globe z-[1] opacity-60 hidden lg:block">
           <MarketGlobe points={globePoints} />
         </div>
       )}
 
       {/* ─── الترويسة ───────────────────────────────────────────────────── */}
       <header className="relative z-20 max-w-shell mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
-        <span className="text-h3 font-extrabold tracking-tight">{t.brand}</span>
+        {/* الشعار كما صُمّم — النسخة البيضاء لأنّ المشهد داكن. */}
+        <img src="/brand/logo-white.png" alt={t.brand}
+             width={140} height={141} className="h-11 w-auto sm:h-14" />
         <nav className="hidden md:flex items-center gap-7">
           {t.nav.map(([label, href]) => (
             <Link key={href} href={href}
@@ -290,7 +300,7 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
       </header>
 
       {/* ─── المشهد ─────────────────────────────────────────────────────── */}
-      <main className="relative z-10 w-full max-w-shell mx-auto px-5 sm:px-8 min-h-0 flex items-center">
+      <main className="relative z-10 w-full max-w-shell mx-auto px-5 sm:px-8 min-h-0 flex items-center py-8 lg:py-0">
         <div className="w-full">
           <div className="grid lg:grid-cols-[minmax(0,1fr)_400px] gap-6 lg:gap-14 items-center">
             {/* العنوان */}

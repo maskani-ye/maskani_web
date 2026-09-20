@@ -143,7 +143,7 @@ function SidebarInner({
     {/* الشعار */}
     <div className="flex items-center gap-2 px-5 py-5 border-b border-muted-100">
       <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-        <Home2 className="h-4 w-4 text-white" />
+        <img src="/brand/mark.png" alt="" className="h-5 w-5 object-contain" />
       </div>
       <div>
         <p className="font-bold text-ink text-body leading-tight">مسكني</p>
