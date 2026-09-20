@@ -123,7 +123,10 @@ export default function CreatePropertyPage() {
   useEffect(() => {
     setForm((p) => {
       const next = { ...p };
-      if (!next.contact_phone && user?.phone) next.contact_phone = user.phone;
+      // ⚠️ **لا ملء تلقائيّ لرقم التواصل.** كان يُملأ من ملفّ المستخدم فور
+      // فتح النموذج، فيُنشر رقمه للعلن دون أن يقرّر ذلك — وهو حقلٌ اختياريّ
+      // الآن والمحادثة داخل المنصّة تُغني عنه. زرّ «استخدم رقمي» يبقى لمن
+      // يريده بفعلٍ صريح.
       if (!next.city) {
         if (globalCityId) next.city = globalCityId;
         else if (user?.city) next.city = String(user.city);
@@ -167,7 +170,10 @@ export default function CreatePropertyPage() {
     } else if (step === 1) {
       if (!form.city) return fail("يرجى اختيار المدينة");
     } else if (step === 2) {
-      if (form.contact_phone.replace(/\D/g, "").length < 7) return fail("يرجى إدخال رقم التواصل");
+      // رقم التواصل اختياريّ — لكن ما يُكتب يجب أن يكون صالحاً؛ رقمٌ ناقص
+      // أسوأ من غيابه لأنّه يَعِد بقناةٍ لا تعمل.
+      const digits = form.contact_phone.replace(/\D/g, "");
+      if (digits.length > 0 && digits.length < 7) return fail("رقم التواصل غير مكتمل — أكمِله أو اتركه فارغاً");
     }
     return true;
   }
@@ -614,7 +620,10 @@ function StepMedia({
 }) {
   return (
     <div>
-      <SectionLabel text="رقم التواصل" required />
+      <SectionLabel text="رقم التواصل" />
+      <p className="text-caption text-muted -mt-1 mb-2">
+        اختياريّ — إن تركتَه فارغاً يتواصل معك المهتمّون عبر المحادثة داخل المنصّة.
+      </p>
       <PhoneField label="" value={form.contact_phone} onChange={(v) => setField("contact_phone", v)} />
       {/* يظهر للمسجَّل فقط — الزائر لا رقم لديه بعد. */}
       {user?.phone && (
