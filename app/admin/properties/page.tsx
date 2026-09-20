@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
 import { formatPrice, NUMERIC_LOCALE } from "@/lib/utils";
@@ -40,6 +41,10 @@ interface AdminProperty {
   ai_flags?: string[];
 }
 
+interface AdminCity { id: number; name_ar: string; country?: number }
+interface AdminCountry { id: number; code: string; name_ar: string; cities?: AdminCity[] }
+interface AdminHood { id: number; name: string; city: number }
+
 const OFFER_LABELS: Record<string, string> = {
   sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
 };
@@ -61,6 +66,13 @@ export default function AdminPropertiesPage() {
   const [typeFilter, setType]         = useState("");
   const [activeFilter, setActive]     = useState("");
   const [riskFilter, setRisk]         = useState("");
+  const [countryFilter, setCountry]   = useState("");
+  const [cityFilter, setCity]         = useState("");
+  const [hoodFilter, setHood]         = useState("");
+
+  const [countries, setCountries]     = useState<AdminCountry[]>([]);
+  const [cities, setCities]           = useState<AdminCity[]>([]);
+  const [hoods, setHoods]             = useState<AdminHood[]>([]);
 
   const [selected, setSelected]       = useState<AdminProperty | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminProperty | null>(null);
@@ -81,13 +93,17 @@ export default function AdminPropertiesPage() {
       if (typeFilter)   params.property_type = typeFilter;
       if (activeFilter) params.is_active     = activeFilter;
       if (riskFilter)   params.ai_risk       = riskFilter;
+      if (countryFilter) params.country      = countryFilter;
+      if (cityFilter)    params.city         = cityFilter;
+      if (hoodFilter)    params.neighborhood = hoodFilter;
       const res = await api.get<PaginatedResponse<AdminProperty>>(ep.admin.properties, { params });
       setProperties(res.data.results);
       setTotal(res.data.count);
       setOffset(off);
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
-  }, [search, offerFilter, typeFilter, activeFilter, riskFilter]);
+  }, [search, offerFilter, typeFilter, activeFilter, riskFilter,
+      countryFilter, cityFilter, hoodFilter]);
 
   // ── fetch property types (plain array, not paginated) ────────────────────────
   useEffect(() => {
@@ -95,6 +111,26 @@ export default function AdminPropertiesPage() {
       .then((res) => setPropertyTypes(res.data))
       .catch(() => setPropertyTypes([]));
   }, []);
+
+  // ── الدول ومدنها: نداءٌ واحد يكفي لبناء السلسلة كلّها ─────────────────────
+  useEffect(() => {
+    api.get(ep.admin.countries)
+      .then((res) => {
+        const list: AdminCountry[] = Array.isArray(res.data) ? res.data : (res.data?.results ?? []);
+        setCountries(list);
+        setCities(list.flatMap((c) => (c.cities ?? []).map((x) => ({ ...x, country: c.id }))));
+      })
+      .catch(() => { setCountries([]); setCities([]); });
+  }, []);
+
+  // الأحياء تُجلب لمدينةٍ بعينها — الجدول فيه 8,985 حياً، وجلبها كلّها لملء
+  // قائمةٍ منسدلة حملٌ بلا فائدة.
+  useEffect(() => {
+    if (!cityFilter) { setHoods([]); return; }
+    api.get(ep.admin.neighborhoods, { params: { city: cityFilter } })
+      .then((res) => setHoods(Array.isArray(res.data) ? res.data : (res.data?.results ?? [])))
+      .catch(() => setHoods([]));
+  }, [cityFilter]);
 
   // ── single fetch driver: immediate on mount, debounced on filter changes ──────
   useEffect(() => {
@@ -106,7 +142,11 @@ export default function AdminPropertiesPage() {
     if (searchTimer.current) clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => fetchProperties(0), 400);
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
-  }, [search, offerFilter, typeFilter, activeFilter, fetchProperties]);
+    // ⚠️ `riskFilter` كان غائباً عن هذه المصفوفة، فتغيير فلتر فحص الذكاء
+    // الاصطناعي لا يُعيد الجلب حتى يتحرّك فلترٌ آخر — عطلٌ قائم أُصلح هنا
+    // لأنّ الفلاتر الجديدة تمرّ بالمسار نفسه.
+  }, [search, offerFilter, typeFilter, activeFilter, riskFilter,
+      countryFilter, cityFilter, hoodFilter, fetchProperties]);
 
   // ── actions ────────────────────────────────────────────────────────────────
   const toggleActive = async (l: AdminProperty) => {
@@ -175,6 +215,32 @@ export default function AdminPropertiesPage() {
           <option value="">كل الحالات</option>
           <option value="true">نشط</option>
           <option value="false">موقوف</option>
+        </select>
+        <select
+          value={countryFilter}
+          onChange={(e) => { setCountry(e.target.value); setCity(""); setHood(""); }}
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none">
+          <option value="">كل الدول</option>
+          {countries.map((c) => <option key={c.id} value={c.code}>{c.name_ar}</option>)}
+        </select>
+        <select
+          value={cityFilter}
+          onChange={(e) => { setCity(e.target.value); setHood(""); }}
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none">
+          <option value="">كل المدن</option>
+          {cities
+            .filter((c) => !countryFilter ||
+              countries.find((k) => k.code === countryFilter)?.id === c.country)
+            .map((c) => <option key={c.id} value={String(c.id)}>{c.name_ar}</option>)}
+        </select>
+        <select
+          value={hoodFilter}
+          onChange={(e) => setHood(e.target.value)}
+          disabled={!cityFilter}
+          title={cityFilter ? "" : "اختر مدينةً أولاً"}
+          className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+          <option value="">{cityFilter ? "كل الأحياء" : "الأحياء (اختر مدينة)"}</option>
+          {hoods.map((h) => <option key={h.id} value={String(h.id)}>{h.name}</option>)}
         </select>
         <select value={riskFilter} onChange={(e) => setRisk(e.target.value)}
           className="h-10 border border-muted-200 rounded-xl px-3 text-body focus:outline-none">
@@ -270,12 +336,16 @@ export default function AdminPropertiesPage() {
                         : <span className="flex items-center gap-1 text-caption text-danger-500 font-medium"><DangerCircle className="h-3.5 w-3.5" />موقوف</span>}
                     </td>
                     <td className="px-4 py-3">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setSelected(l); }}
-                        className="p-1.5 rounded-lg hover:bg-muted-100 text-muted hover:text-primary transition-colors"
+                      {/* النقر على الصفّ يفتح المعاينة الجانبية السريعة،
+                          وزرّ العين يفتح صفحة العقار الكاملة (تعديل · صور · تحليلات). */}
+                      <Link
+                        href={`/admin/properties/${l.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        title="فتح صفحة العقار"
+                        className="inline-flex p-1.5 rounded-lg hover:bg-muted-100 text-muted hover:text-primary transition-colors"
                       >
                         <Eye className="h-4 w-4" />
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))}

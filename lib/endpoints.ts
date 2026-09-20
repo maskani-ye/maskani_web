@@ -127,6 +127,9 @@ export const endpoints = {
     property: (id: Id) => `${ADMIN}/properties/${id}/`,
     propertyTypes: `${ADMIN}/properties/property-types/`,
     propertyType: (id: Id) => `${ADMIN}/properties/property-types/${id}/`,
+    propertyImages: (id: Id) => `${ADMIN}/properties/${id}/images/`,
+    propertyImage: (id: Id, imageId: Id) => `${ADMIN}/properties/${id}/images/${imageId}/`,
+    propertyPerformance: (id: Id) => `${ADMIN}/properties/${id}/performance/`,
 
     // services
     services: `${ADMIN}/services/`,
