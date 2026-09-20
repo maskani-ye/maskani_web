@@ -15,6 +15,16 @@ const nextConfig = {
       { protocol: "https", hostname: "maskani.homes" },
     ],
     formats: ["image/avif", "image/webp"],
+    // ⚠️ **مُحسِّن Vercel استُنفدت حصّته فصار يردّ `402 Payment Required`**
+    // (`OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED`) لكل طلب `/_next/image`.
+    // والنتيجة أنّ **كل** بطاقة عقار في الموقع تعرض نصّها البديل ومربّعاً
+    // فارغاً — والصور نفسها سليمة على R2 وتستجيب 200 عند طلبها مباشرةً.
+    //
+    // التعطيل هنا ليس تنازلاً: صور العقارات تصل **WebP ومحجَّمة 750px** من
+    // خطّ الاستيراد نفسه، وتُخدَم من R2 خلف شبكة Cloudflare — فطبقة التحسين
+    // كانت تُعيد تشفير ما هو مشفَّر سلفاً وتُضيف عنق زجاجةٍ مدفوعاً بلا مقابل
+    // مرئيّ. و`fill`/`sizes` في المكوّنات تبقى عاملةً كما هي.
+    unoptimized: true,
   },
   async headers() {
     return [
