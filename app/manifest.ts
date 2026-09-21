@@ -16,8 +16,11 @@ export default function manifest(): MetadataRoute.Manifest {
     dir: "rtl",
     categories: ["business", "shopping", "lifestyle"],
     icons: [
+      // ⚠️ **مصدران لا مصدرٌ واحد.** `any` تقبل الشفّافة وتُعرض كما هي، أمّا
+      // `maskable` فيقصّها أندرويد دائرياً ويفرض عليها خلفية — فالشفّافة تخرج
+      // مشوّهة. لكلٍّ ملفُّها: المُفرَّغة للمتصفّح، والمصمتة بهامش أمان للتثبيت.
       { src: "/icon.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: "/icon.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: "/icon-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }
