@@ -150,22 +150,25 @@ export default async function GlobalLanding() {
 
   return (
     <>
+      {/* ⚠️ **كيان `WebSite` يُعرَّف مرّةً واحدة في `app/layout.tsx`.** كان
+          مُعرَّفاً هنا أيضاً، فرأى جوجل **كيانين متنافسين** لنفس الموقع باسمٍ
+          واحد وناشرَين منفصلين — تشتيتٌ في أهمّ صفحةٍ للعلامة. تبقى هنا صفحة
+          الهبوط بوصفها `CollectionPage` تُشير إلى ذلك الكيان لا تُنشئ ثانياً. */}
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "مسكني",
-          alternateName: "Maskani",
+          "@type": "CollectionPage",
+          name: "مسكني — منصّة عقارية في ستّة أسواق عربية",
           url: SITE_URL,
-          inLanguage: ["ar", "en"],
           description: DESCRIPTION,
-          publisher: {
-            "@type": "Organization",
-            name: "مسكني",
-            url: SITE_URL,
-            logo: `${SITE_URL}/icon.png`,
-            areaServed: markets.map((m) => m.nameEn),
-          },
+          inLanguage: ["ar", "en"],
+          isPartOf: { "@id": "https://maskani.homes/#website" },
+          about: { "@id": "https://maskani.homes/#organization" },
+          hasPart: markets.map((m) => ({
+            "@type": "WebPage",
+            name: m.nameAr,
+            url: `${SITE_URL}/${m.code.toLowerCase()}`,
+          })),
         }}
       />
       <LandingClient markets={markets} pillars={PILLARS} />

@@ -143,17 +143,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {
                 "@context": "https://schema.org",
                 "@type": "Organization",
+                "@id": "https://maskani.homes/#organization",
                 name: "مسكني",
+                // اسمٌ بديل باللاتينية — يُلتقط استعلام «maskani» كما يُلتقط العربيّ.
+                alternateName: ["Maskani", "منصة مسكني", "مسكني العقارية"],
                 url: "https://maskani.homes",
                 logo: "https://maskani.homes/icon.png",
+                image: "https://maskani.homes/og.webp",
                 description: "منصة عقارية اجتماعية في ستّة أسواق عربية — بيع، إيجار، خدمات، ومكافحة الاحتيال العقاري",
+                // ⚠️ **`sameAs` أقوى إشارةٍ تربط اسم العلامة بكيانها عند جوجل**،
+                // وغيابها يجعل «مسكني» كلمةً عامّة تنافس عليها جهاتٌ أكبر.
+                // ولا يُدرَج إلّا رابطٌ **يستجيب فعلاً**: صفحة بلاي العامّة تردّ
+                // 404 لأنّ التطبيق في اختبارٍ مغلق، وإدراج رابطٍ ميت يُضعف
+                // الثقة بالبيانات كلّها بدل أن يقوّيها.
+                sameAs: ["https://appgallery.huawei.com/app/C118696899"],
+                areaServed: ["YE", "SA", "JO", "EG", "IQ", "OM"],
               },
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
+                "@id": "https://maskani.homes/#website",
                 name: "مسكني",
+                alternateName: "Maskani",
                 url: "https://maskani.homes",
                 inLanguage: "ar",
+                // ربطٌ صريح بالمنظّمة بدل تكرار تعريفها — كيانٌ واحد لا اثنان.
+                publisher: { "@id": "https://maskani.homes/#organization" },
                 potentialAction: {
                   "@type": "SearchAction",
                   target: { "@type": "EntryPoint", urlTemplate: "https://maskani.homes/properties?search={query}" },

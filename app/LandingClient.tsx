@@ -305,7 +305,16 @@ export default function LandingClient({ markets: initial, pillars }: { markets: 
           <div className="grid lg:grid-cols-[minmax(0,1fr)_400px] gap-6 lg:gap-14 items-center">
             {/* العنوان */}
             <div className="max-w-headline">
+              {/* ⚠️ **اسم العلامة كان غائباً عن `h1` في صفحة العلامة نفسها.**
+                  كان العنوان «مكانك يبدأ هنا.» وحده — جملةٌ لا تذكر «مسكني»،
+                  وهي أهمّ ترويسةٍ في أهمّ صفحة. والموقع يُنافَس على الكلمة من
+                  جهاتٍ أكبر، فترتيبه ٧٫١ لاستعلام اسمه. الاسم يتقدّم الجملة
+                  سطراً أصغر: إشارةٌ صريحة لمحرّك البحث، وتسلسلٌ بصريّ طبيعيّ
+                  للقارئ — لا حشوٌ مخفيّ. */}
               <h1 className="text-h1 md:text-display lg:text-hero font-extrabold text-balance">
+                <span className="block text-h3 md:text-h2 font-bold text-gold/90 mb-2">
+                  {t.brand}
+                </span>
                 {t.headline}
               </h1>
               <p className="text-body-lg text-white/70 mt-5 leading-relaxed max-w-[46ch]">
