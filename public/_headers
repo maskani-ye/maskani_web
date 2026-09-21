@@ -1,0 +1,3 @@
+# ملفّات Next الثابتة تحمل بصمةً في اسمها، فتُخزَّن أبداً بلا خطر تقادم.
+/_next/static/*
+  Cache-Control: public,max-age=31536000,immutable

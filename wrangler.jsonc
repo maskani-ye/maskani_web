@@ -1,0 +1,39 @@
+/**
+ * إعداد Cloudflare Workers — بديل Vercel بعد حظر الحساب (2026-09-21).
+ *
+ * ⚠️ **لماذا هُجرت Vercel نهائياً.** حظرت الفريق كلّه بنصّ: «Your Team exceeded
+ * our fair use limits and has been blocked» — وشرطها أنّ خطّة Hobby «للاستخدام
+ * الشخصيّ غير التجاريّ» وتعدّ **الإعلان عن بيع منتجٍ أو خدمة** و**وجود AdSense**
+ * استخداماً تجارياً صراحةً. ومسكني منصّة عقارات بإعلانات، فهي مخالِفة بتعريفهم
+ * ولا يصلحها انتظار. وخطّة Cloudflare المجانية **لا تشترط عدم التجارية**.
+ *
+ * ⚠️ **الحدّ الذي يعنينا هنا ليس النطاق التردّدي** (بلا حدّ، والملفّات الثابتة
+ * لا تُحسب أصلاً) بل **مئة ألف طلبٍ ديناميكيّ يومياً** — ونحن عند ٧٬٦٠٠،
+ * أي أقلّ من ٨٪. والسقف الحقيقيّ هو **١٠ م.ث معالجة لكل طلب**، ولهذا يهمّ
+ * أن تبقى الصفحات مولّدةً مسبقاً ما أمكن لا مُصيَّرةً عند كل طلب.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "maskani-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-09-01",
+  // `nodejs_compat` تُشغّل واجهات Node (نقرأ ملفّات الخطوط لبطاقة المشاركة)،
+  // و`global_fetch_strictly_public` تجعل `fetch` يمرّ بالشبكة العامّة فيصل
+  // الـAPI على نطاقنا بدل أن يُعاد توجيهه داخلياً.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // ذاكرة الصفحات المولّدة عند الطلب (ISR). R2 عندنا أصلاً لصور العقارات،
+  // فلا خدمة جديدة ولا كلفة: الخطّة المجانية تكفي هذا الحجم.
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "maskani-media"
+    }
+  ]
+}

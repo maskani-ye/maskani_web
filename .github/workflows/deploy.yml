@@ -1,12 +1,18 @@
 name: Deploy
 
-# مشروع Vercel **غير مربوط** بمستودع GitHub (ربط Git يتطلّب تفويضاً بشرياً من
-# المتصفّح)، فلا يوجد نشر تلقائي أصلاً — كان كل دفع يبقى بلا أثر على الإنتاج
-# حتى يُنشر أحدهم يدوياً. هذا الـworkflow يسدّ الفجوة: كل دفع إلى فرع النشر
-# يبني وينشر إلى الإنتاج بتوكن Vercel.
+# نشر الويب إلى **Cloudflare Workers**.
 #
-# الأسرار المطلوبة (مضبوطة على المستودع): VERCEL_TOKEN · VERCEL_ORG_ID ·
-# VERCEL_PROJECT_ID.
+# ⚠️ **هُجرت Vercel نهائياً (2026-09-21).** حظرت الفريق كلّه بنصّ «Your Team
+# exceeded our fair use limits and has been blocked»، وشرطها أنّ خطّة Hobby
+# «للاستخدام الشخصيّ غير التجاريّ» وتعدّ **الإعلان عن بيع منتجٍ أو خدمة**
+# و**وجود AdSense** استخداماً تجارياً صراحةً — ومسكني كلاهما. فبقي الموقع
+# متوقّفاً بـ402 ساعاتٍ حتى نُقل. وخطّة Cloudflare المجانية لا تشترط ذلك.
+#
+# ⚠️ **ولا يُعاد سطرٌ واحد يشير إلى Vercel هنا.** إعادته تعني نشراً إلى حسابٍ
+# محظور عند أوّل دفعة، وصمتاً يوهم أنّ الإنتاج تحدّث وهو لم يتحدّث.
+#
+# الأسرار المطلوبة: CLOUDFLARE_API_TOKEN · CLOUDFLARE_ACCOUNT_ID ·
+# INTERNAL_API_TOKEN (يُعفي طلبات البناء من حدّ المعدّل).
 
 on:
   push:
@@ -15,31 +21,42 @@ on:
 
 concurrency:
   # نشرة واحدة في كل لحظة — دفعتان متتاليتان لا تتسابقان على الإنتاج.
-  group: vercel-production
+  group: cloudflare-production
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # ⚠️ بلا هذا التوكن يُخنق البناء بـ429 فتُخبز صفحاتٌ ناقصة — وقع فعلاً.
+      INTERNAL_API_TOKEN: ${{ secrets.INTERNAL_API_TOKEN }}
+      NEXT_PUBLIC_API_URL: https://api.maskani.homes/api/v1
+      NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+      NEXT_PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_VAPID_KEY }}
+      NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_TOP: ${{ secrets.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_TOP }}
+      NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID: ${{ secrets.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID }}
+      NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM: ${{ secrets.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM }}
+      NEXT_PUBLIC_ADSENSE_SLOT_BLOG_LIST: ${{ secrets.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_LIST }}
+      NEXT_PUBLIC_ADSENSE_SLOT_LIST: ${{ secrets.NEXT_PUBLIC_ADSENSE_SLOT_LIST }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
+          cache: npm
 
-      - name: Install Vercel CLI
-        run: npm i -g vercel@latest
+      - name: Install dependencies
+        run: npm ci
 
-      # البناء يجري على **Vercel** لا هنا: توليد الصفحات الثابتة يجلب من
-      # api.maskani.homes، وخوادم GitHub لا تصله ضمن مهلة 60 ثانية فتفشل
-      # الصفحات المولّدة (blog/category · sitemap · terms). خوادم Vercel تصله،
-      # وهي المسار الذي أثبت نجاحه.
-      - name: Deploy to production
-        run: vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+      # البناء يجري هنا ويجلب من api.maskani.homes — وهو ما كان يفشل سابقاً
+      # لولا توقيع الطلبات بالتوكن الداخليّ وسقف التزامن في `lib/fetchRetry.ts`.
+      - name: Build and deploy to Cloudflare Workers
+        run: npx opennextjs-cloudflare build && npx opennextjs-cloudflare deploy
 
       # إخطار محرّكات البحث بالصفحات فور النشر (IndexNow — Bing/Yandex).
       # فشلُه لا يُسقط النشر: الموقع منشور أصلاً وهذه خطوة تسويقية لا حرجة.

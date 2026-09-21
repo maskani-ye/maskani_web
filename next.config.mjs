@@ -1,7 +1,25 @@
 import { withSentryConfig } from "@sentry/nextjs";
+// يُشغّل محاكي Cloudflare في `next dev` فتعمل الارتباطات (R2 وغيرها) محلياً
+// كما تعمل في الإنتاج — بلا هذا السطر يفشل ما يعتمد عليها عند التطوير.
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
+// ⚠️ **للتطوير وحده.** استدعاؤها بلا شرط يُشغّل محاكي Workers أثناء بناء
+// الإنتاج أيضاً (ظهر في السجلّ: «Using secrets defined in .dev.vars»)،
+// فعلِق البناء عند «جمع بيانات الصفحات» أربعاً وثلاثين دقيقة بوقت معالجٍ
+// مجمَّد عند خمسين ثانية — أي جمودٌ لا بطء.
+if (process.env.NODE_ENV === "development") {
+  initOpenNextCloudflareForDev();
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // ⚠️ **توازي البناء يخنق خادمنا.** التسعة عمّال الافتراضيون فتحوا نحو ٦٧٥
+  // اتصالاً متزامناً على t3.micro، فارتفع زمن ردّ الـAPI من ١٫٣ إلى ٥٫٤ ثانية
+  // ووقف البناء ستّاً وعشرين دقيقة بلا توليد صفحةٍ واحدة — اختناقٌ لا تعطّل.
+  // ثلاثة عمّال أبطأ نظرياً وأسرع فعلياً، لأنّ الخادم يلحق بها.
+  experimental: {
+    cpus: 3,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

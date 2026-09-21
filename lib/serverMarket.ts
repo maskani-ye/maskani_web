@@ -117,11 +117,10 @@ export async function detectMarket(): Promise<Market> {
   let code = "";
   try {
     const h = await headers();
-    code = (
-      h.get("cf-ipcountry") ||
-      h.get("x-vercel-ip-country") ||
-      ""
-    ).toUpperCase();
+    // ⚠️ **`cf-ipcountry` وحدها بعد هجر Vercel (2026-09-21).** إبقاء ترويسة
+    // مزوّدٍ لم نعد عليه يوهم القارئ بمسارٍ حيّ لا وجود له — والترويسة تأتي
+    // الآن من شبكة Cloudflare التي يمرّ بها كل طلب.
+    code = (h.get("cf-ipcountry") || "").toUpperCase();
   } catch {
     /* خارج سياق طلب — نقع على الافتراضي */
   }
