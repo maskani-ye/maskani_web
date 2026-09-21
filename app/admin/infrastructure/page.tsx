@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { formatBytes, formatNumber, timeAgo } from "@/components/admin/service-metrics";
 import {
   ServerSquare, Refresh, AltArrowLeft, CheckCircle, CloseCircle, Database, Folder,
-  Rocket, Shield, Global, CodeSquare, Bell, Smartphone, MagniferBug, DangerTriangle, Wallet,
+  Shield, Global, CodeSquare, Bell, Smartphone, MagniferBug, DangerTriangle, Wallet,
 } from "@solar-icons/react";
 import { toast } from "sonner";
 import type { ComponentType } from "react";
@@ -32,7 +32,7 @@ export interface ServiceStatus {
 }
 
 const ICONS: Record<string, ComponentType<{ className?: string }>> = {
-  oracle: Database, aws: ServerSquare, r2: Folder, neon: Database, vercel: Rocket,
+  oracle: Database, aws: ServerSquare, r2: Folder, neon: Database,
   cloudflare: Shield, porkbun: Global, github: CodeSquare, firebase: Bell,
   play: Smartphone, gsc: MagniferBug, sentry: DangerTriangle, adsense: Wallet,
 };
@@ -40,7 +40,10 @@ const ICONS: Record<string, ComponentType<{ className?: string }>> = {
 /** الأقسام تعكس دور الخدمة في المنصّة لا اسم مزوّدها. */
 const GROUPS: { title: string; keys: string[] }[] = [
   { title: "البنية التحتية", keys: ["oracle", "aws", "r2", "neon"] },
-  { title: "النشر والنطاق", keys: ["vercel", "cloudflare", "porkbun", "github"] },
+  // ⚠️ أُزيلت Vercel (2026-09-21): حُظر الحساب وهُجرت نهائياً، والويب على
+  // Cloudflare. إبقاء بطاقتها يعرض مقاييس خدمةٍ لا نستعملها — وتقريرٌ عن
+  // لا شيء أسوأ من غيابه.
+  { title: "النشر والنطاق", keys: ["cloudflare", "porkbun", "github"] },
   { title: "الرصد والدخل", keys: ["sentry", "adsense"] },
   { title: "التطبيقات والنمو", keys: ["firebase", "play", "gsc"] },
 ];
@@ -66,10 +69,6 @@ function summarize(s: ServiceStatus): string {
       }`;
     case "neon":
       return `${formatNumber(s.projects_count as number)} مشروع · ${formatNumber(s.storage_mb as number)} م.ب`;
-    case "vercel": {
-      const last = s.last_production as { state?: string; created?: number } | null;
-      return `آخر نشر ${last?.state ?? "—"} ${timeAgo(last?.created)} · نجاح ${s.success_rate_pct ?? "—"}%`;
-    }
     case "cloudflare":
       return `${formatNumber(s.requests_7d as number)} طلب · ${formatBytes(s.bandwidth_7d as number)} · ${formatNumber(
         s.threats_7d as number,
