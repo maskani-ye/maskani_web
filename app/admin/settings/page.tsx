@@ -20,10 +20,20 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { Settings, Phone, DangerTriangle, Smartphone } from "@solar-icons/react";
+import { Settings, Phone, DangerTriangle, Smartphone, Bell, BellOff } from "@solar-icons/react";
 import { toast } from "sonner";
 
+interface AlertType {
+  key: string;
+  label: string;
+  group: string;
+  high_volume: boolean;
+  enabled: boolean;
+}
+
 interface Config {
+  muted_admin_alerts: string[];
+  admin_alert_types?: AlertType[];
   general_phone: string;
   latest_version: string;
   mandatory_update_after_opens: number;
@@ -68,6 +78,16 @@ export default function AdminSettingsPage() {
     <div className="max-w-3xl mx-auto space-y-5">
       <PageHeader icon={<Settings />} title="إعدادات المنصّة"
         subtitle="حقول عامّة يقرأها الموقع والتطبيقات" />
+
+      {/* ── إشعارات الإدارة ──
+          ⚠️ **الأنواع تأتي من الخادم لا من قائمةٍ هنا.** لو كُتبت في هذا
+          الملفّ لانفصلت عن الخادم عند أوّل نوعٍ جديد: يصل الإشعار ولا يظهر
+          له مفتاحٌ يُسكته. المصدر الواحد `notifications/admin_catalog.py`. */}
+      <AdminAlertsSection cfg={cfg} saving={saving} onToggle={(key, on) => {
+        const muted = new Set(cfg.muted_admin_alerts || []);
+        if (on) muted.delete(key); else muted.add(key);
+        patch({ muted_admin_alerts: [...muted] });
+      }} />
 
       {/* ── التواصل ── */}
       <section className="bg-white rounded-2xl ring-1 ring-ink/[0.06] p-5 space-y-4">
@@ -139,5 +159,77 @@ export default function AdminSettingsPage() {
         onCancel={() => setConfirmMaintenance(false)}
       />
     </div>
+  );
+}
+
+
+/** قسم إشعارات الإدارة — مفتاحٌ لكل نوع، مجموعةً مجموعة. */
+function AdminAlertsSection({
+  cfg, saving, onToggle,
+}: {
+  cfg: Config;
+  saving: boolean;
+  onToggle: (key: string, enabled: boolean) => void;
+}) {
+  const types = cfg.admin_alert_types ?? [];
+  if (!types.length) return null;
+
+  const groups = types.reduce<Record<string, AlertType[]>>((acc, t) => {
+    (acc[t.group] ||= []).push(t);
+    return acc;
+  }, {});
+  const onCount = types.filter((t) => t.enabled).length;
+
+  return (
+    <section className="bg-white rounded-2xl ring-1 ring-ink/[0.06] p-5 space-y-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h2 className="flex items-center gap-2 text-body font-bold text-ink">
+            <Bell className="h-4 w-4 text-primary" />
+            إشعارات الإدارة
+          </h2>
+          <p className="text-caption text-muted mt-1">
+            تصل كل حساب مشرف على أجهزته، ولها سجلّ دائم في الإشعارات.
+          </p>
+        </div>
+        <span className="text-caption text-muted-500">
+          {onCount} مفعّل من {types.length}
+        </span>
+      </div>
+
+      {Object.entries(groups).map(([group, items]) => (
+        <div key={group} className="space-y-2">
+          <p className="text-caption font-bold text-muted-600">{group}</p>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {items.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                disabled={saving}
+                onClick={() => onToggle(t.key, !t.enabled)}
+                className={`flex items-start gap-2.5 text-right p-3 rounded-xl ring-1 transition-colors disabled:opacity-60 ${
+                  t.enabled
+                    ? "ring-primary/30 bg-primary/[0.04] hover:bg-primary/[0.08]"
+                    : "ring-muted-200 bg-muted-50 hover:bg-muted-100"
+                }`}
+              >
+                <span className={`mt-0.5 shrink-0 ${t.enabled ? "text-primary" : "text-muted"}`}>
+                  {t.enabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-body font-medium text-ink">{t.label}</span>
+                  {/* ⚠️ الوسم تحذيرٌ لا منع: المالك يقرّر، لكن لا يُفاجأ. */}
+                  {t.high_volume && (
+                    <span className="block text-micro text-warning-700 mt-0.5">
+                      عالي التواتر — قد يصل بالمئات يومياً
+                    </span>
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }
