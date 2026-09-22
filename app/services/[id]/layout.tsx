@@ -6,7 +6,12 @@ const BASE = "https://maskani.homes";
 
 async function getService(id: string) {
   try {
-    const res = await fetch(`${API}/services/${id}/`, { cache: "no-store" });
+    // ⚠️ **`cache: "no-store"` يجعل الفرع كلّه ديناميكياً** — كل زيارةٍ
+    // تُصيَّر من الصفر، والقياس الحيّ (2026-09-22) أنّ ٨٠٩ طلباً يومياً تُقتل
+    // لتجاوزها سقف المعالجة. والتخزين لساعة يُبقي ٤٠٤ حقيقياً ويُعيد فحصه،
+    // فالمحذوف يبقى محذوفاً والعطل العابر يتعافى.
+    const res = await fetch(`${API}/services/${id}/`,
+                            { next: { revalidate: 3600 } });
     if (res.status === 404) return "NOT_FOUND";
     if (!res.ok) return null;
     return await res.json();

@@ -16,7 +16,12 @@ const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1
 // خادمي — يجلب البلاغ ويُصيّره فورًا (محتوى في HTML الخام) ثم يُسلّمه للجزيرة.
 async function getReport(id: string): Promise<FraudReport | "NOT_FOUND" | null> {
   try {
-    const res = await fetch(`${API}/reports/${id}/`, { cache: "no-store" });
+    // ⚠️ **`cache: "no-store"` يجعل الفرع كلّه ديناميكياً** — كل زيارةٍ
+    // تُصيَّر من الصفر، والقياس الحيّ (2026-09-22) أنّ ٨٠٩ طلباً يومياً تُقتل
+    // لتجاوزها سقف المعالجة. والتخزين لساعة يُبقي ٤٠٤ حقيقياً ويُعيد فحصه،
+    // فالمحذوف يبقى محذوفاً والعطل العابر يتعافى.
+    const res = await fetch(`${API}/reports/${id}/`,
+                            { next: { revalidate: 3600 } });
     if (res.status === 404) return "NOT_FOUND";
     if (!res.ok) return null;
     return (await res.json()) as FraudReport;

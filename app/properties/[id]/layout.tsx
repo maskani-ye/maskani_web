@@ -57,9 +57,16 @@ const OFFER_LABELS: Record<string, string> = {
 async function getProperty(id: string) {
   try {
     // no_count=1 كي لا نُضاعف عدّ الزيارات عند التصيير الخادمي.
-    // no-store: يجعل التصيير ديناميكياً كي يعمل notFound() ويُرجع 404 حقيقي (بدل
-    // 200 مع ISR)؛ ضروري لتفادي soft-404 على العقارات المحذوفة/غير الموجودة.
-    const res = await fetch(`${API}/properties/${id}/?no_count=1`, { cache: "no-store" });
+    //
+    // ⚠️ **نسخةٌ ثانية من الجلب نفسه — وهي التي كانت تفرض الديناميكية.**
+    // أُصلحت الصفحة (`page.tsx`) فبقيت الاستجابة `no-store`: التخطيط يغلّف
+    // الصفحة، فجلبه بلا تخزين يجعل الفرع كلّه ديناميكياً مهما أُصلح ما تحته.
+    // درسٌ عمليّ: **الديناميكية تُورَّث من الأعلى**، فلا يكفي فحص الصفحة.
+    //
+    // و٤٠٤ يبقى حقيقياً مع التخزين: `notFound()` يُصيَّر ٤٠٤ ويُخزَّن ساعةً ثمّ
+    // يُعاد فحصه — فالعقار المحذوف يبقى ٤٠٤، والعطل العابر يتعافى تلقائياً.
+    const res = await fetch(`${API}/properties/${id}/?no_count=1`,
+                            { next: { revalidate: 3600 } });
     if (res.status === 404) return "NOT_FOUND";
     if (!res.ok) return null;
     return await res.json();
