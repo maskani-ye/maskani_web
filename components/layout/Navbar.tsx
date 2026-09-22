@@ -102,7 +102,7 @@ export function Navbar() {
                 عبارة) يصير نصّه غير مقروء في شريطٍ ارتفاعه ٦٤ بكسل — سلّم
                 المصمّم نسخةً أفقية لهذا الموضع بالذات، فتُستعمل هنا وحدها. */}
             <img src="/brand/logo-horizontal.png" alt="مسكني — منصّتك العقارية الموثوقة"
-                 width={168} height={112}
+                 width={132} height={50}
                  className="h-10 w-auto sm:h-12" />
           </Link>
 

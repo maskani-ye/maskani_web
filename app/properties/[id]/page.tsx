@@ -10,6 +10,17 @@ import PropertyDetailClient from "./PropertyDetailClient";
  */
 export const revalidate = 3600;
 
+// ⚠️ **وجودها شرطٌ للتخزين، لا لتوليد الصفحات.** مسارٌ ديناميكيّ بلا
+// `generateStaticParams` يُصيَّره Next عند كل طلب (`no-store`) ولا يدخل ISR
+// إطلاقاً — كان هذا سبب استهلاك المعالج: كل زيارةٍ تصيير كامل من الصفر.
+// والقائمة فارغة عمداً: آلاف الصفحات وقت البناء تُطيله بلا فائدة (١٦٤ صفحة
+// فقط زارها بشرٌ في ثلاثين يوماً)، و`dynamicParams` الافتراضيّ يولّدها عند
+// أوّل طلبٍ ثم يخزّنها ساعةً.
+export async function generateStaticParams() {
+  return [];
+}
+
+
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
 
