@@ -40,8 +40,7 @@ const ICONS: Record<string, ComponentType<{ className?: string }>> = {
 /** الأقسام تعكس دور الخدمة في المنصّة لا اسم مزوّدها. */
 const GROUPS: { title: string; keys: string[] }[] = [
   { title: "البنية التحتية", keys: ["oracle", "aws", "r2", "neon"] },
-  // ⚠️ أُزيلت Vercel (2026-09-21): حُظر الحساب وهُجرت نهائياً، والويب على
-  // Cloudflare. إبقاء بطاقتها يعرض مقاييس خدمةٍ لا نستعملها — وتقريرٌ عن
+  // ⚠️ الويب على Cloudflare. لا تُضَف بطاقةُ مزوّدٍ لا نستعمله — تقريرٌ عن
   // لا شيء أسوأ من غيابه.
   { title: "النشر والنطاق", keys: ["cloudflare", "porkbun", "github"] },
   { title: "الرصد والدخل", keys: ["sentry", "adsense"] },
