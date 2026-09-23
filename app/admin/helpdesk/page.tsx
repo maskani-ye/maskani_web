@@ -2,6 +2,7 @@
 
 // لوحة مركز المساعدة (الإدارة) — الجلسات + المحادثة + ردّ الموظّف/إغلاق.
 // محرّك الفلو الشبكي: الرسائل envelopes موحّدة (bot/user/agent).
+// الهيكل مشترك مع «المحادثات» عبر `components/admin/chat/ChatWorkspace`.
 import { useCallback, useEffect, useState } from "react";
 import { NUMERIC_LOCALE } from "@/lib/utils";
 import Link from "next/link";
@@ -10,8 +11,12 @@ import { endpoints as ep } from "@/lib/endpoints";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { HelpdeskMessageRow, type HdMessage as HdMsg } from "@/components/helpdesk/HelpdeskChat";
+import {
+  ChatWorkspace, ChatListCard, ChatListRow, ChatPanel, ChatPanelEmpty,
+  ChatPanelHeader, ChatScroll, ChatScrollEmpty, ChatScrollSkeleton, ChatComposer,
+} from "@/components/admin/chat/ChatWorkspace";
 import { toast } from "sonner";
-import { Routing, HeadphonesRound, CheckCircle, Plain } from "@solar-icons/react";
+import { Routing, HeadphonesRound, CheckCircle } from "@solar-icons/react";
 
 interface HdSession {
   id: string; status: string; user: number; user_name: string;
@@ -55,6 +60,7 @@ export default function AdminHelpdeskPage() {
 
   const openSession = async (s: HdSession) => {
     setSelected(s);
+    setReply("");
     setLoadingMsgs(true);
     try {
       const { data } = await api.get<HdMessage[]>(ep.admin.helpdeskSessionMessages(s.id));
@@ -84,6 +90,8 @@ export default function AdminHelpdeskPage() {
     } catch (err) { toast.error(getErrorMessage(err)); }
   };
 
+  const statusLabel = (key: string) => STATUSES.find((x) => x.key === key)?.label ?? key;
+
   return (
     <div className="max-w-6xl mx-auto space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -100,62 +108,81 @@ export default function AdminHelpdeskPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-5">
+      <ChatWorkspace>
         {/* القائمة */}
-        <div className="bg-white rounded-2xl shadow-e2 overflow-hidden">
-          {loading ? (
-            <div className="p-4 space-y-2">{[0, 1, 2].map((i) => <div key={i} className="h-14 bg-muted-50 animate-pulse rounded-xl" />)}</div>
-          ) : sessions.length === 0 ? (
-            <div className="py-16 text-center text-muted"><HeadphonesRound className="h-10 w-10 mx-auto mb-2 opacity-30" /><p>لا جلسات</p></div>
-          ) : (
-            <div className="divide-y divide-muted-50">
-              {sessions.map((s) => (
-                <button key={s.id} onClick={() => openSession(s)}
-                  className={`w-full text-right p-4 hover:bg-muted-50 transition-colors ${selected?.id === s.id ? "bg-primary/5" : ""}`}>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-ink text-body flex-1 truncate">{s.user_name || `مستخدم #${s.user}`}</span>
-                    <span className={`text-micro px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] ?? ""}`}>
-                      {STATUSES.find((x) => x.key === s.status)?.label ?? s.status}
-                    </span>
-                  </div>
-                  <p className="text-caption text-muted mt-1">{new Date(s.updated_at).toLocaleString(NUMERIC_LOCALE)}</p>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <ChatListCard
+          loading={loading}
+          isEmpty={sessions.length === 0}
+          emptyIcon={<HeadphonesRound />}
+          emptyText="لا جلسات"
+          skeletonRows={3}
+        >
+          {sessions.map((s) => (
+            <ChatListRow key={s.id} active={selected?.id === s.id} onClick={() => openSession(s)}>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-ink text-body flex-1 truncate">
+                  {s.user_name || `مستخدم #${s.user}`}
+                </span>
+                <span className={`text-micro px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] ?? ""}`}>
+                  {statusLabel(s.status)}
+                </span>
+              </div>
+              <p className="text-caption text-muted mt-1">
+                {new Date(s.updated_at).toLocaleString(NUMERIC_LOCALE)}
+              </p>
+            </ChatListRow>
+          ))}
+        </ChatListCard>
 
         {/* المحادثة */}
-        <div className="bg-white rounded-2xl shadow-e2 flex flex-col min-h-[400px]">
+        <ChatPanel>
           {!selected ? (
-            <div className="flex-1 flex items-center justify-center text-muted text-body">اختر جلسة لعرض المحادثة</div>
+            <ChatPanelEmpty icon={<HeadphonesRound />} text="اختر جلسة لعرض المحادثة" />
           ) : (
             <>
-              <div className="flex items-center justify-between p-4 border-b border-muted-100">
-                <span className="font-bold text-ink">{selected.user_name || `مستخدم #${selected.user}`}</span>
-                {selected.status !== "closed" && (
-                  <Button size="sm" variant="outline" onClick={closeSession}><CheckCircle className="h-4 w-4" /> إغلاق</Button>
-                )}
-              </div>
+              <ChatPanelHeader
+                title={selected.user_name || `مستخدم #${selected.user}`}
+                meta={
+                  <span className={`text-micro px-2 py-0.5 rounded-full ${STATUS_BADGE[selected.status] ?? ""}`}>
+                    {statusLabel(selected.status)}
+                  </span>
+                }
+                actions={selected.status !== "closed" ? (
+                  <Button size="sm" variant="outline" onClick={closeSession}>
+                    <CheckCircle className="h-4 w-4" /> إغلاق
+                  </Button>
+                ) : undefined}
+              />
+
               {/* نفس عناصر عرض محادثة التطبيق تمامًا (HelpdeskMessageRow) — عرض فقط */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-1.5 max-h-[55vh] bg-cream">
-                {loadingMsgs ? <p className="text-center text-muted text-body">جارٍ التحميل…</p> :
-                  messages.map((m, i) => (
-                    <HelpdeskMessageRow key={m.id} m={m as unknown as HdMsg}
-                      isLatest={i === messages.length - 1} readOnly />
-                  ))}
-              </div>
+              <ChatScroll scrollKey={`${selected.id}:${messages.length}`}>
+                {loadingMsgs ? (
+                  <ChatScrollSkeleton />
+                ) : messages.length === 0 ? (
+                  <ChatScrollEmpty icon={<HeadphonesRound />} text="لا رسائل" />
+                ) : (
+                  <div className="space-y-1.5">
+                    {messages.map((m, i) => (
+                      <HelpdeskMessageRow key={m.id} m={m as unknown as HdMsg}
+                        isLatest={i === messages.length - 1} readOnly />
+                    ))}
+                  </div>
+                )}
+              </ChatScroll>
+
               {selected.status !== "closed" && (
-                <div className="p-3 border-t border-muted-100 flex items-end gap-2">
-                  <textarea value={reply} onChange={(e) => setReply(e.target.value)} rows={1} placeholder="ردّ الموظّف…"
-                    className="flex-1 border border-muted-200 rounded-xl px-3 py-2 text-body resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  <Button size="icon" loading={sending} onClick={sendReply} disabled={!reply.trim()}><Plain className="h-5 w-5" /></Button>
-                </div>
+                <ChatComposer
+                  value={reply}
+                  onChange={setReply}
+                  onSend={sendReply}
+                  sending={sending}
+                  placeholder="ردّ الموظّف… (Enter للإرسال، Shift+Enter لسطر جديد)"
+                />
               )}
             </>
           )}
-        </div>
-      </div>
+        </ChatPanel>
+      </ChatWorkspace>
     </div>
   );
 }

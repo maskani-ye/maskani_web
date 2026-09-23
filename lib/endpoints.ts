@@ -149,6 +149,7 @@ export const endpoints = {
     conversations: `${ADMIN}/chat/conversations/`,
     conversation: (id: Id) => `${ADMIN}/chat/conversations/${id}/`,
     conversationMessages: (id: Id) => `${ADMIN}/chat/conversations/${id}/messages/`,
+    conversationReply: (id: Id) => `${ADMIN}/chat/conversations/${id}/reply/`,
     conversationMessage: (id: Id, msgId: Id) =>
       `${ADMIN}/chat/conversations/${id}/messages/${msgId}/`,
 

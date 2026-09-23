@@ -1,5 +1,7 @@
 "use client";
 
+// لوحة المحادثات (الإدارة) — القائمة + الدردشة + ردّ الإدارة/حذف.
+// الهيكل مشترك مع مركز المساعدة عبر `components/admin/chat/ChatWorkspace`.
 import { useState, useEffect, useCallback } from "react";
 import { api, getErrorMessage } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
@@ -12,16 +14,22 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import {
+  ChatWorkspace, ChatListCard, ChatListRow, ChatPanel, ChatPanelEmpty,
+  ChatPanelHeader, ChatScroll, ChatScrollEmpty, ChatScrollSkeleton, ChatComposer,
+} from "@/components/admin/chat/ChatWorkspace";
 import { toast } from "sonner";
 import {
   ChatRoundDots, Magnifer, CloseCircle, User,
-  AltArrowLeft, AltArrowRight, Buildings2, TrashBinTrash,
+  AltArrowLeft, AltArrowRight, TrashBinTrash, ShieldCheck,
 } from "@solar-icons/react";
 
 const LIMIT = 20;
 const MSG_LIMIT = 50;
 
-// ─── Avatar ─────────────────────────────────────────────────────────────────
+//: البادئة التي يكتبها الخادم في نصّ رسالة الإدارة (`ADMIN_REPLY_PREFIX`).
+// تُقتطع عند العرض هنا لأنّ الشارة تقول المعنى نفسه بلا تكرار.
+const ADMIN_PREFIX = "إدارة مسكني:\n";
 
 function Avatar({ p, small = false }: { p: ChatParticipant; small?: boolean }) {
   const cls = small ? "w-7 h-7" : "w-9 h-9";
@@ -34,8 +42,6 @@ function Avatar({ p, small = false }: { p: ChatParticipant; small?: boolean }) {
     </div>
   );
 }
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminConversationsPage() {
   const [conversations, setConversations] = useState<AdminConversation[]>([]);
@@ -50,12 +56,14 @@ export default function AdminConversationsPage() {
   const [msgOffset, setMsgOffset] = useState(0);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
 
+  const [reply, setReply] = useState("");
+  const [sending, setSending] = useState(false);
+
   const [deleteConvTarget, setDeleteConvTarget] = useState<AdminConversation | null>(null);
   const [deletingConv, setDeletingConv] = useState(false);
   const [deleteMsgTarget, setDeleteMsgTarget] = useState<AdminConversationMessage | null>(null);
   const [deletingMsg, setDeletingMsg] = useState(false);
 
-  // ── Fetch conversations ─────────────────────────────────────────────────────
   const fetchConversations = useCallback(async (off = 0) => {
     setLoading(true);
     try {
@@ -76,7 +84,6 @@ export default function AdminConversationsPage() {
 
   useEffect(() => { fetchConversations(0); }, [fetchConversations]);
 
-  // ── Fetch messages of the selected conversation ─────────────────────────────
   const loadMessages = useCallback(async (id: number, off: number, append: boolean) => {
     setLoadingMsgs(true);
     try {
@@ -99,10 +106,30 @@ export default function AdminConversationsPage() {
     setMessages([]);
     setMsgTotal(0);
     setMsgOffset(0);
+    setReply("");
     loadMessages(c.id, 0, false);
   };
 
-  // ── Delete a whole conversation ─────────────────────────────────────────────
+  const sendReply = async () => {
+    const body = reply.trim();
+    if (!selected || !body) return;
+    setSending(true);
+    try {
+      const res = await api.post<AdminConversationMessage>(
+        ep.admin.conversationReply(selected.id), { body }
+      );
+      setReply("");
+      // الإضافة في المقدّمة (المصفوفة الأحدث→الأقدم) بلا إعادة جلبٍ كامل.
+      setMessages((prev) => [res.data, ...prev]);
+      setMsgTotal((t) => t + 1);
+      setSelected((c) => c ? { ...c, messages_count: c.messages_count + 1 } : c);
+      setConversations((prev) => prev.map((c) => c.id === selected.id
+        ? { ...c, last_message: c.last_message ? { ...c.last_message, body, is_deleted: false } : c.last_message }
+        : c));
+    } catch (err) { toast.error(getErrorMessage(err)); }
+    finally { setSending(false); }
+  };
+
   const confirmDeleteConversation = async () => {
     if (!deleteConvTarget) return;
     setDeletingConv(true);
@@ -120,7 +147,6 @@ export default function AdminConversationsPage() {
     finally { setDeletingConv(false); }
   };
 
-  // ── Delete a single message ─────────────────────────────────────────────────
   const confirmDeleteMessage = async () => {
     if (!deleteMsgTarget || !selected) return;
     setDeletingMsg(true);
@@ -146,115 +172,77 @@ export default function AdminConversationsPage() {
     `${c.participant_a.full_name} ↔ ${c.participant_b.full_name}`;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-6xl mx-auto space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <PageHeader icon={<ChatRoundDots />} title="المحادثات"
           subtitle={`${total.toLocaleString(NUMERIC_LOCALE)} محادثة إجمالاً`} />
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl card-shadow p-4 mb-6 flex flex-wrap gap-3 items-end">
-        <div className="flex-1 min-w-48">
-          <Input
-            placeholder="بحث باسم أحد الطرفين أو الهاتف..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            startIcon={<Magnifer className="h-4 w-4" />}
-            endIcon={search ? (
-              <button onClick={() => setSearch("")}>
-                <CloseCircle className="h-4 w-4 text-muted" />
-              </button>
-            ) : undefined}
-          />
-        </div>
+      <div className="max-w-md">
+        <Input
+          placeholder="بحث باسم أحد الطرفين أو الهاتف..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          startIcon={<Magnifer className="h-4 w-4" />}
+          endIcon={search ? (
+            <button onClick={() => setSearch("")}>
+              <CloseCircle className="h-4 w-4 text-muted" />
+            </button>
+          ) : undefined}
+        />
       </div>
 
-      <div className="flex gap-6">
-        {/* ── List Panel ── */}
-        <div className="flex-1 min-w-0">
-          <div className="bg-white rounded-2xl card-shadow overflow-hidden">
-            {loading ? (
-              <div className="divide-y">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="p-4 animate-pulse flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-muted-100" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-3 bg-muted-100 rounded w-2/3" />
-                      <div className="h-3 bg-muted-100 rounded w-1/2" />
-                    </div>
+      <ChatWorkspace>
+        {/* ── القائمة ── */}
+        <div className="space-y-4">
+          <ChatListCard
+            loading={loading}
+            isEmpty={conversations.length === 0}
+            emptyIcon={<ChatRoundDots />}
+            emptyText="لا توجد محادثات"
+          >
+            {conversations.map((c) => (
+              <ChatListRow key={c.id} active={selected?.id === c.id} onClick={() => openConversation(c)}>
+                <div className="flex items-center gap-3">
+                  <div className="flex -space-x-2 -space-x-reverse shrink-0">
+                    <Avatar p={c.participant_a} />
+                    <Avatar p={c.participant_b} />
                   </div>
-                ))}
-              </div>
-            ) : conversations.length === 0 ? (
-              <div className="py-20 text-center text-muted">
-                <ChatRoundDots className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p>لا توجد محادثات</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-muted-50">
-                {conversations.map((c) => (
-                  <div
-                    key={c.id}
-                    onClick={() => openConversation(c)}
-                    className={`p-4 flex items-center gap-3 cursor-pointer hover:bg-muted-50 transition-colors ${
-                      selected?.id === c.id ? "bg-primary/5 border-r-2 border-primary" : ""
-                    }`}
-                  >
-                    {/* Paired avatars */}
-                    <div className="flex -space-x-2 -space-x-reverse shrink-0">
-                      <Avatar p={c.participant_a} />
-                      <Avatar p={c.participant_b} />
-                    </div>
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-body text-ink truncate">
-                          {pairName(c)}
-                        </span>
-                        {c.unread_count > 0 && (
-                          <Badge variant="green">{c.unread_count} غير مقروءة</Badge>
-                        )}
-                        {c.property && <Badge variant="blue">عقار #{c.property}</Badge>}
-                      </div>
-                      <p className="text-caption text-muted-500 mt-1 line-clamp-1">
-                        {c.last_message
-                          ? (c.last_message.is_deleted ? "تم حذف الرسالة" : c.last_message.body)
-                          : "لا توجد رسائل"}
-                      </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-body text-ink truncate">{pairName(c)}</span>
+                      {c.unread_count > 0 && <Badge variant="green">{c.unread_count} غير مقروءة</Badge>}
+                      {c.property && <Badge variant="blue">عقار #{c.property}</Badge>}
                     </div>
-
-                    {/* Meta */}
-                    <div className="text-left shrink-0">
-                      <p className="text-caption text-muted">{formatRelativeTime(c.updated_at)}</p>
-                      <p className="text-caption text-muted mt-1 flex items-center gap-1 justify-end">
-                        <ChatRoundDots className="h-3 w-3" /> {c.messages_count}
-                      </p>
-                    </div>
+                    <p className="text-caption text-muted-500 mt-1 line-clamp-1">
+                      {c.last_message
+                        ? (c.last_message.is_deleted ? "تم حذف الرسالة" : c.last_message.body)
+                        : "لا توجد رسائل"}
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
 
-          {/* Pagination */}
+                  <div className="text-left shrink-0">
+                    <p className="text-caption text-muted">{formatRelativeTime(c.updated_at)}</p>
+                    <p className="text-caption text-muted mt-1 flex items-center gap-1 justify-end">
+                      <ChatRoundDots className="h-3 w-3" /> {c.messages_count}
+                    </p>
+                  </div>
+                </div>
+              </ChatListRow>
+            ))}
+          </ChatListCard>
+
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 px-1">
+            <div className="flex items-center justify-between px-1">
               <p className="text-body text-muted-500">صفحة {currentPage} من {totalPages}</p>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  disabled={offset === 0}
-                  onClick={() => fetchConversations(offset - LIMIT)}
-                >
+                <Button variant="outline" disabled={offset === 0}
+                  onClick={() => fetchConversations(offset - LIMIT)}>
                   <AltArrowRight className="h-4 w-4" /> السابق
                 </Button>
-                <Button
-                  variant="outline"
-                  disabled={offset + LIMIT >= total}
-                  onClick={() => fetchConversations(offset + LIMIT)}
-                >
+                <Button variant="outline" disabled={offset + LIMIT >= total}
+                  onClick={() => fetchConversations(offset + LIMIT)}>
                   التالي <AltArrowLeft className="h-4 w-4" />
                 </Button>
               </div>
@@ -262,122 +250,135 @@ export default function AdminConversationsPage() {
           )}
         </div>
 
-        {/* ── Detail Panel (messages, read-only) ── */}
-        {selected && (
-          <div className="w-96 shrink-0">
-            <div className="bg-white rounded-2xl card-shadow p-5 sticky top-6 flex flex-col max-h-[calc(100vh-120px)]">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-ink text-body truncate">{pairName(selected)}</h3>
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    onClick={() => setDeleteConvTarget(selected)}
-                    className="p-1 rounded-lg hover:bg-danger-50 text-muted hover:text-danger-600 transition-colors"
-                    title="حذف المحادثة"
-                  >
-                    <TrashBinTrash className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setSelected(null)}
-                    className="p-1 rounded-lg hover:bg-muted-100"
-                  >
-                    <CloseCircle className="h-4 w-4 text-muted" />
-                  </button>
-                </div>
-              </div>
+        {/* ── الدردشة ── */}
+        <ChatPanel>
+          {!selected ? (
+            <ChatPanelEmpty icon={<ChatRoundDots />} text="اختر محادثة لعرض رسائلها" />
+          ) : (
+            <>
+              <ChatPanelHeader
+                title={pairName(selected)}
+                meta={
+                  <>
+                    <Badge variant="gray">{selected.messages_count} رسالة</Badge>
+                    {selected.unread_count > 0 && (
+                      <Badge variant="green">{selected.unread_count} غير مقروءة</Badge>
+                    )}
+                    {selected.property && <Badge variant="blue">عقار #{selected.property}</Badge>}
+                  </>
+                }
+                actions={
+                  <>
+                    <button
+                      onClick={() => setDeleteConvTarget(selected)}
+                      className="p-1.5 rounded-lg hover:bg-danger-50 text-muted hover:text-danger-600 transition-colors"
+                      title="حذف المحادثة"
+                    >
+                      <TrashBinTrash className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg hover:bg-muted-100">
+                      <CloseCircle className="h-4 w-4 text-muted" />
+                    </button>
+                  </>
+                }
+              />
 
-              {/* Meta */}
-              <div className="flex gap-2 flex-wrap mb-4">
-                <Badge variant="gray">{selected.messages_count} رسالة</Badge>
-                {selected.unread_count > 0 && (
-                  <Badge variant="green">{selected.unread_count} غير مقروءة</Badge>
-                )}
-                {selected.property && <Badge variant="blue">عقار #{selected.property}</Badge>}
-              </div>
-
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto -mx-1 px-1 space-y-3">
+              <ChatScroll scrollKey={`${selected.id}:${messages.length}`}>
                 {hasOlder && (
                   <div className="text-center">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      loading={loadingMsgs}
-                      onClick={() => loadMessages(selected.id, msgOffset + MSG_LIMIT, true)}
-                    >
+                    <Button variant="ghost" size="sm" loading={loadingMsgs}
+                      onClick={() => loadMessages(selected.id, msgOffset + MSG_LIMIT, true)}>
                       تحميل رسائل أقدم
                     </Button>
                   </div>
                 )}
 
                 {loadingMsgs && messages.length === 0 ? (
-                  <div className="space-y-3">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="h-12 bg-muted-100 rounded-xl animate-pulse" />
-                    ))}
-                  </div>
+                  <ChatScrollSkeleton />
                 ) : displayMessages.length === 0 ? (
-                  <div className="py-16 text-center text-muted">
-                    <ChatRoundDots className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                    <p className="text-body">لا توجد رسائل</p>
-                  </div>
+                  <ChatScrollEmpty icon={<ChatRoundDots />} text="لا توجد رسائل" />
                 ) : (
                   displayMessages.map((m) => {
+                    // ⚠️ المُرسِل قد يكون **ثالثاً**: مشرفاً ردّ من هنا. تمييزه
+                    // إلزاميّ وإلّا ظهر ردّ الإدارة كأنّه من أحد الطرفين.
+                    const fromAdmin =
+                      m.sender.id !== selected.participant_a.id &&
+                      m.sender.id !== selected.participant_b.id;
                     const mine = m.sender.id === selected.participant_a.id;
+                    const body = m.is_deleted
+                      ? "تم حذف الرسالة"
+                      : (fromAdmin && m.body.startsWith(ADMIN_PREFIX)
+                          ? m.body.slice(ADMIN_PREFIX.length)
+                          : m.body);
+                    const meta = (
+                      <div className="flex items-center gap-1.5 mt-1 text-micro text-muted">
+                        <span>{m.sender.full_name}</span>
+                        <span>·</span>
+                        <span>{formatRelativeTime(m.created_at)}</span>
+                        {m.is_edited && !m.is_deleted && <span>· مُعدّلة</span>}
+                        {m.is_read && !fromAdmin && <span>· مقروءة</span>}
+                        <button
+                          onClick={() => setDeleteMsgTarget(m)}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-muted hover:text-danger-600"
+                          title="حذف الرسالة"
+                        >
+                          <TrashBinTrash className="h-3 w-3" />
+                        </button>
+                      </div>
+                    );
+
+                    if (fromAdmin) {
+                      return (
+                        <div key={m.id} className="group flex justify-center">
+                          <div className="max-w-[85%] rounded-2xl border border-primary/25 bg-primary/5 px-3.5 py-2">
+                            <div className="flex items-center gap-1.5 text-micro font-semibold text-primary mb-1">
+                              <ShieldCheck className="h-3.5 w-3.5" /> إدارة مسكني
+                            </div>
+                            <p className={`text-body break-words whitespace-pre-wrap ${m.is_deleted ? "text-muted italic" : "text-ink"}`}>
+                              {body}
+                            </p>
+                            {meta}
+                          </div>
+                        </div>
+                      );
+                    }
+
                     return (
-                      <div
-                        key={m.id}
-                        className={`group flex gap-2 ${mine ? "flex-row" : "flex-row-reverse"}`}
-                      >
+                      <div key={m.id} className={`group flex gap-2 ${mine ? "flex-row" : "flex-row-reverse"}`}>
                         <Avatar p={m.sender} small />
                         <div className={`flex-1 min-w-0 ${mine ? "text-right" : "text-left"}`}>
                           <div
-                            className={`inline-block max-w-full rounded-2xl px-3 py-2 text-body break-words ${
+                            className={`inline-block max-w-full rounded-2xl px-3 py-2 text-body break-words whitespace-pre-wrap ${
                               m.is_deleted
                                 ? "bg-muted-50 text-muted italic"
                                 : mine
                                 ? "bg-primary/10 text-ink"
-                                : "bg-muted-100 text-ink"
+                                : "bg-white border border-muted-100 text-ink"
                             }`}
                           >
-                            {m.is_deleted ? "تم حذف الرسالة" : m.body}
+                            {body}
                           </div>
-                          <div className="flex items-center gap-1.5 mt-1 text-micro text-muted">
-                            <span>{m.sender.full_name}</span>
-                            <span>·</span>
-                            <span>{formatRelativeTime(m.created_at)}</span>
-                            {m.is_edited && !m.is_deleted && <span>· مُعدّلة</span>}
-                            {m.is_read && <span>· مقروءة</span>}
-                            <button
-                              onClick={() => setDeleteMsgTarget(m)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-muted hover:text-danger-600"
-                              title="حذف الرسالة"
-                            >
-                              <TrashBinTrash className="h-3 w-3" />
-                            </button>
-                          </div>
+                          {meta}
                         </div>
                       </div>
                     );
                   })
                 )}
-              </div>
-            </div>
-          </div>
-        )}
+              </ChatScroll>
 
-        {/* Empty detail hint (desktop) */}
-        {!selected && (
-          <div className="w-96 shrink-0 hidden lg:block">
-            <div className="bg-white rounded-2xl card-shadow p-8 text-center text-muted">
-              <Buildings2 className="h-12 w-12 mx-auto mb-3 opacity-20" />
-              <p className="text-body">اختر محادثة لعرض رسائلها</p>
-            </div>
-          </div>
-        )}
-      </div>
+              <ChatComposer
+                value={reply}
+                onChange={setReply}
+                onSend={sendReply}
+                sending={sending}
+                placeholder="ردّ الإدارة… (Enter للإرسال، Shift+Enter لسطر جديد)"
+                hint="يصل الردّ الطرفين معاً باسم «إدارة مسكني»."
+              />
+            </>
+          )}
+        </ChatPanel>
+      </ChatWorkspace>
 
-      {/* Delete conversation confirm */}
       <ConfirmDialog
         open={!!deleteConvTarget}
         title="حذف المحادثة"
@@ -393,7 +394,6 @@ export default function AdminConversationsPage() {
         onCancel={() => setDeleteConvTarget(null)}
       />
 
-      {/* Delete message confirm */}
       <ConfirmDialog
         open={!!deleteMsgTarget}
         title="حذف الرسالة"
