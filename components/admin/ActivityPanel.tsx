@@ -13,6 +13,15 @@ import { History, Refresh, AltArrowLeft, AltArrowRight } from "@solar-icons/reac
  *
  * تحديث تلقائي كل دقيقة: مشرفٌ يتابع بلاغاً حيّاً يحتاج أن يرى الجديد بلا نقر،
  * والدقيقة كافية لمنصّة بهذا الحجم بلا إغراق الخادم.
+ *
+ * ⚠️ **الصفحة تُحمَّل بمؤشّر لا دفعةً واحدة.** كل عنصرٍ هنا يكلّف الخادم جلبَ
+ * صفوفٍ من ستّة وعشرين جدولاً ثمّ فرزها، والقاعدة في الرياض والتطبيق في
+ * فرجينيا — فرفع السقف ليقرأ المشرف أقدم هو ما يضغط الخادم فعلاً. عشرون
+ * عنصراً في الطلب الواحد، و«تحميل المزيد» يُكمل من حيث انتهى.
+ *
+ * ⚠️ **والتحديث التلقائيّ يتوقّف بعد الصفحة الأولى.** تحديثٌ يعيد الجلب من
+ * الرأس بينما المشرف يقرأ صفحةً ثالثة يمسح ما حمّله ويقفز به إلى الأعلى —
+ * فالمؤشّر حين يُفتح يُوقف المؤقّت حتى يعود المشرف إلى الرأس بـ«تحديث».
  */
 
 interface Item {
@@ -21,6 +30,7 @@ interface Item {
 }
 
 const REFRESH_MS = 60_000;
+const PAGE = 20;
 
 // الفلاتر مجمّعة بالمعنى لا بالكيان: المشرف يسأل «ما جرى في العقارات؟» لا «كم صفّ
 // Property أُنشئ؟» — فالطلب وعرضه وجهان لحدث واحد، ويجمعهما زرّ واحد.
@@ -57,6 +67,11 @@ const HREF: Record<string, (id: number) => string> = {
 export default function ActivityPanel() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
+  //: مؤشّر الصفحة التالية من الخادم — `null` يعني بلغنا آخر السجلّ.
+  const [nextBefore, setNextBefore] = useState<string | null>(null);
+  //: هل تجاوز المشرف الصفحة الأولى؟ (يُوقف التحديث التلقائيّ)
+  const [paged, setPaged] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   //: يُحفظ الطيّ محلياً — المشرف الذي يحتاج عرضاً أوسع لا يعيد طيّه كل صفحة.
   const [collapsed, setCollapsed] = useState(false);
   //: الفلتر المختار يُحفظ كذلك — مشرف الرقابة يبقى على تبويبه بين الصفحات.
@@ -82,10 +97,13 @@ export default function ActivityPanel() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await api.get<{ results: Item[] }>(endpoints.admin.activity, {
-        params: { limit: 40, ...(types ? { types } : {}) },
-      });
+      const { data } = await api.get<{ results: Item[]; next_before: string | null }>(
+        endpoints.admin.activity,
+        { params: { limit: PAGE, ...(types ? { types } : {}) } },
+      );
       setItems(data.results ?? []);
+      setNextBefore(data.next_before ?? null);
+      setPaged(false);
     } catch {
       // لوحة مرافقة لا صفحة رئيسية: فشل التحديث لا يُقحم خطأً في كل تبويب.
     } finally {
@@ -93,11 +111,33 @@ export default function ActivityPanel() {
     }
   }, [types]);
 
+  const loadMore = useCallback(async () => {
+    if (!nextBefore) return;
+    setLoadingMore(true);
+    try {
+      const { data } = await api.get<{ results: Item[]; next_before: string | null }>(
+        endpoints.admin.activity,
+        { params: { limit: PAGE, before: nextBefore, ...(types ? { types } : {}) } },
+      );
+      setItems((prev) => [...prev, ...(data.results ?? [])]);
+      setNextBefore(data.next_before ?? null);
+      setPaged(true);
+    } catch {
+      // كما أعلاه — لا خطأ يُقحَم في تبويب المشرف.
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [nextBefore, types]);
+
   useEffect(() => {
     load();
+  }, [load]);
+
+  useEffect(() => {
+    if (paged) return;   // المشرف يقرأ أقدم — لا تسحب الأرض من تحته.
     const t = setInterval(load, REFRESH_MS);
     return () => clearInterval(t);
-  }, [load]);
+  }, [load, paged]);
 
   if (collapsed) {
     return (
@@ -171,6 +211,21 @@ export default function ActivityPanel() {
             <div key={`${it.kind}-${i}`}>{row}</div>
           );
         })}
+
+        {items.length > 0 && (
+          nextBefore ? (
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="w-full mt-2 mb-1 py-2 rounded-xl text-micro font-semibold text-primary bg-primary/5 hover:bg-primary/10 disabled:opacity-60"
+            >
+              {loadingMore ? "جارٍ التحميل…" : "تحميل المزيد"}
+            </button>
+          ) : (
+            <p className="text-center text-micro text-muted py-3">بلغتَ آخر السجلّ.</p>
+          )
+        )}
       </div>
     </aside>
   );
