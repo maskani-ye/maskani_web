@@ -39,3 +39,5 @@ console.log(`✓ ${MARKETS.length * (SECTIONS.length + 1)} صفحة سوق تع�
 }
 
 main();
+
+export {};
