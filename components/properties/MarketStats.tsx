@@ -19,7 +19,17 @@ export interface MarketStatsData {
   usd_to_display: number | null;
   sale: Block | null;
   rent: Block | null;
-  types: { name: string; count: number }[];
+  types: {
+    name: string; count: number;
+    median_sale_usd: number | null;
+    median_rent_usd: number | null;
+    median_per_sqm_usd: number | null;
+  }[];
+  /** ترتيب أحياء المدينة بسعر المتر — لصفحة المدينة وحدها. */
+  neighborhood_table?: {
+    name: string; slug: string; count: number;
+    median_usd: number; median_per_sqm_usd: number | null;
+  }[];
   /** `from`/`to` بعملة العرض ومستديرة — `*_usd` احتياطٌ لخادمٍ أقدم. */
   price_buckets: { from?: number; to?: number; from_usd: number; to_usd: number; count: number }[];
   vs_city?: { city_median_per_sqm_usd: number; diff_pct: number; city_sample: number };
@@ -151,17 +161,82 @@ export function MarketStats({
         </div>
       )}
 
+      {/* ⚠️ **«٣٤ شقة» لا تُجيب سؤال القارئ: بكم الشقّة هنا؟** فالعدد وحده كان
+          سطراً يُقرأ ولا يُفيد. الجدول يضمّ وسيط البيع والإيجار وسعر المتر لكل
+          نوع — والخانة تبقى فارغة حين تقلّ عيّنتها، لا تُملأ بتقدير. */}
       {data.types.length > 1 && (
-        <p className="text-body text-muted-600 mt-5 leading-relaxed">
-          تركيبة المعروض:{" "}
-          {data.types.map((t, i) => (
-            <span key={t.name}>
-              {i > 0 && " · "}
-              <strong className="text-ink">{t.name}</strong> {formatNumber(t.count)}
-            </span>
-          ))}
-          .
-        </p>
+        <div className="mt-6 rounded-2xl border border-muted-200 bg-white p-5 overflow-x-auto">
+          <h3 className="text-body-lg font-semibold text-ink">
+            الأسعار حسب نوع العقار في {placeName}
+          </h3>
+          <table className="w-full mt-4 text-body">
+            <thead>
+              <tr className="text-caption text-muted-500 text-right">
+                <th className="font-medium py-2">النوع</th>
+                <th className="font-medium py-2">المعروض</th>
+                <th className="font-medium py-2">وسيط البيع</th>
+                <th className="font-medium py-2">وسيط الإيجار</th>
+                <th className="font-medium py-2">سعر المتر</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-muted-50">
+              {data.types.map((t) => (
+                <tr key={t.name}>
+                  <td className="py-2.5 font-semibold text-ink">{t.name}</td>
+                  <td className="py-2.5 text-muted-600">{formatNumber(t.count)}</td>
+                  <td className="py-2.5 text-muted-600">
+                    {t.median_sale_usd != null ? money(t.median_sale_usd) : "—"}
+                  </td>
+                  <td className="py-2.5 text-muted-600">
+                    {t.median_rent_usd != null ? money(t.median_rent_usd) : "—"}
+                  </td>
+                  <td className="py-2.5 text-muted-600">
+                    {t.median_per_sqm_usd != null ? money(t.median_per_sqm_usd) : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ⚠️ **أنفع ما تملكه صفحة المدينة.** الباحث لا يسأل «كم وسيط الرياض؟»
+          بل «أيّ حيٍّ في متناولي؟» — والترتيب نفسه جوابٌ لا يوجد في أيّ إعلان. */}
+      {(data.neighborhood_table?.length ?? 0) >= 2 && (
+        <div className="mt-6 rounded-2xl border border-muted-200 bg-white p-5 overflow-x-auto">
+          <h3 className="text-body-lg font-semibold text-ink">
+            أحياء {placeName} مرتّبةً بسعر المتر
+          </h3>
+          <table className="w-full mt-4 text-body">
+            <thead>
+              <tr className="text-caption text-muted-500 text-right">
+                <th className="font-medium py-2">الحيّ</th>
+                <th className="font-medium py-2">سعر المتر</th>
+                <th className="font-medium py-2">وسيط سعر العقار</th>
+                <th className="font-medium py-2">المعروض</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-muted-50">
+              {data.neighborhood_table!.map((h) => (
+                <tr key={h.slug}>
+                  <td className="py-2.5 font-semibold text-ink">
+                    <a href={`/properties/neighborhood/${encodeURIComponent(h.slug)}`}
+                       className="hover:text-primary">{h.name}</a>
+                  </td>
+                  <td className="py-2.5 text-muted-600">
+                    {h.median_per_sqm_usd != null ? money(h.median_per_sqm_usd) : "—"}
+                  </td>
+                  <td className="py-2.5 text-muted-600">{money(h.median_usd)}</td>
+                  <td className="py-2.5 text-muted-600">{formatNumber(h.count)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="text-micro text-muted mt-3">
+            الأحياء التي يقلّ معروضها عن ثلاثة عقارات لا تُدرَج — عيّنةٌ أصغر
+            لا يُشتقّ منها وسيطٌ يُوثَق به.
+          </p>
+        </div>
       )}
     </section>
   );
