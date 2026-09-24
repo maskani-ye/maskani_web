@@ -28,6 +28,7 @@ import MiniMap from "@/components/map/MiniMap";
 import { MatchingRequests } from "@/components/properties/MatchingRequests";
 import { AvailabilityPrompt } from "@/components/properties/AvailabilityPrompt";
 import { TrustSignals } from "@/components/properties/TrustSignals";
+import { MarketContext } from "@/components/properties/MarketContext";
 
 const featuresList = [
   { key: "has_elevator", label: "مصعد", icon: Layers },
@@ -557,6 +558,14 @@ export default function PropertyDetailClient(
 
           {/* إشارات التحقّق — وصف محايد يبني عليه الباحث قراره */}
           <TrustSignals property={property} />
+
+          {/* سياق السوق — أرقامٌ محسوبة تميّز هذه الصفحة عن مصدرها */}
+          <MarketContext
+            data={property.market_context}
+            cityName={property.city_name ?? null}
+            neighborhoodName={property.neighborhood ?? null}
+            offerType={property.offer_type}
+          />
         </div>
       </div>
     </div>

@@ -89,6 +89,7 @@ export interface Property {
   availability_confirmed_at?: string | null;
   // إشارات ثقة يحسبها الخادم (بديل التحقّق بالرسائل القصيرة).
   phone_listings_count?: number | null;
+  market_context?: MarketContextData | null;
   trust_note?: string | null;
   title: string;
   description: string;
@@ -427,4 +428,25 @@ export interface PaginatedResponse<T> {
 export interface AuthResponse {
   user: User;
   token: string;
+}
+
+
+/** سياق السوق المحسوب لعقار — انظر `properties/market_context.py` في الخادم. */
+export interface MarketLevel {
+  count: number;
+  diff_pct: number | null;
+  median: number | null;
+  min: number | null;
+  max: number | null;
+  median_per_m2: number | null;
+}
+
+export interface MarketContextData {
+  currency: string;
+  city?: MarketLevel | null;
+  neighborhood?: MarketLevel | null;
+  price_per_m2?: number | null;
+  per_m2_diff_pct?: number | null;
+  rental_yield_pct?: number | null;
+  median_annual_rent?: number | null;
 }
