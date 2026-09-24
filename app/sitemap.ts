@@ -96,6 +96,10 @@ async function fetchAll<T>(
 }
 
 // يجلب عناصر قسم كاملةً لبناء خريطة الموقع الديناميكية — مع lastmod وصورة.
+//
+// ⚠️ **الفشل يُسجَّل ولا يُبتلَع صامتاً.** `catch { return [] }` وحده أخفى عطلاً
+// أسقط ٧٬٠٢٦ رابطاً من الخريطة (٨٬٢٥٣ ← ٩٣٨) بلا أثرٍ في أيّ سجلّ: بقيت
+// الخريطة صحيحةَ الشكل وناقصةَ المضمون، وهو أسوأ أنواع الأعطال.
 async function rows(path: string): Promise<Row[]> {
   try {
     const list = await fetchAll<{ id: number; updated_at?: string; created_at?: string; main_image?: string; first_image?: string }>(path, 3600);
@@ -106,8 +110,32 @@ async function rows(path: string): Promise<Row[]> {
         image: x.main_image || x.first_image || null,
       }),
     );
-  } catch {
+  } catch (err) {
+    console.error(`sitemap: تعذّر جلب ${path} —`, err);
     return [];
+  }
+}
+
+// ⚠️ **مسارٌ واحد بلا ترقيم — لأنّ السقف في المنصّة لا في الكود.**
+// Workers المجانية تسمح بـ**خمسين طلباً فرعياً** لكل طلب، وجلب ٦٬٩٢١ عقاراً
+// بترقيم ١٠٠ يحتاج سبعين — فيسقط الجلب وتخرج الخريطة بلا صفحة عقارٍ واحدة.
+// والخادم يردّ المعرّفات والتواريخ فقط (نحو ٣٠٠ ك.ب) في نداءٍ واحد.
+async function propertyRows(): Promise<Row[]> {
+  try {
+    const res = await fetch(`${API}/properties/sitemap-rows/`, {
+      next: { revalidate: 3600 },
+      headers: process.env.INTERNAL_API_TOKEN
+        ? { "X-Maskani-Internal": process.env.INTERNAL_API_TOKEN }
+        : {},
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const list: { id: number; updated_at?: string }[] = data.results ?? [];
+    return list.map((x) => ({ id: x.id, updated: x.updated_at ?? null, image: null }));
+  } catch (err) {
+    console.error("sitemap: تعذّر جلب صفوف العقارات —", err);
+    // الرجوع إلى المسار المُرقَّم: أبطأ وقد يتجاوز السقف، لكنّه أفضل من لا شيء.
+    return rows("/properties/");
   }
 }
 
@@ -240,7 +268,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const [properties, services, requests, jobs, reports, cityList, countryList, hoodList, blog, blogCats] = await Promise.all([
-    rows("/properties/"),
+    propertyRows(),
     rows("/services/"),
     rows("/requests/"),
     rows("/jobs/"),
