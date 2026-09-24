@@ -53,6 +53,18 @@ jobs:
       - name: Build and deploy to Cloudflare Workers
         run: npx opennextjs-cloudflare build && npx opennextjs-cloudflare deploy
 
+      # ⚠️ **حارس الأسواق — يفحص الموقع الحيّ بعد النشر، ويُسقط التشغيل إن فشل.**
+      # كان الحارس مكتوباً منذ حادثة ٣٠‑٠٨ لكنّه **لم يُربَط بالنشر قطّ**، فلم
+      # يُشغَّل مرّة. وفي ٢٤‑٠٩ ردّت الأسواق الستّة كلّها 404 ساعةً حتى أبلغَنا
+      # جوجل — لا بناؤنا. حارسٌ لا يُنفَّذ ليس حارساً.
+      #
+      # ولا `continue-on-error` هنا: سقوط صفحات الأسواق عطلٌ يستحقّ رايةً حمراء،
+      # لا سطراً في سجلّ يمرّ.
+      - name: Verify market pages are live
+        run: |
+          sleep 20      # مهلة انتشار النشرة على الحافة قبل الحكم
+          npx tsx scripts/audit-market-pages.ts https://maskani.homes
+
       # إخطار محرّكات البحث بالصفحات فور النشر (IndexNow — Bing/Yandex).
       # فشلُه لا يُسقط النشر: الموقع منشور أصلاً وهذه خطوة تسويقية لا حرجة.
       - name: Notify search engines (IndexNow)

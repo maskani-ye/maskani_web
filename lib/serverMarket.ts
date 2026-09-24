@@ -65,12 +65,21 @@ interface CountryRow {
  * فالإصرار على الجلب ليس ترفاً بل شرط صحّة.
  */
 async function allCountries(): Promise<CountryRow[]> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     const rows = await fetchCountries(attempt);
     if (rows.length) return rows;
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
   }
-  return [];
+  // ⚠️ **ترمي ولا تُرجِع قائمةً فارغة — وهذا جوهر الإصلاح.** القائمة الفارغة
+  // تجعل `marketByCode` تُرجِع `null` فتستدعي الصفحة `notFound()`، فيُخبز
+  // **404 صالحٌ للتخزين ساعةً كاملة**. والخطأ المرفوع يُسقط التوليد، فيبقى
+  // ISR يخدم آخر نسخةٍ ناجحة (`stale-while-revalidate`) بدل أن يستبدلها
+  // بصفحة «غير موجودة».
+  //
+  // وقع مرّتين: 2026-08-30 أثناء البناء، و2026-09-24 حين أُعيد نشر الخادم
+  // فانقطع الـAPI دقائق بينما كان الزاحف يطلب صفحات الأسواق — فردّت الستّة
+  // كلّها 404 بـ`x-nextjs-cache: HIT`.
+  throw new Error("تعذّر جلب الدول بعد خمس محاولات — لا نبني 404 على فشلٍ مؤقّت.");
 }
 
 async function fetchCountries(attempt: number): Promise<CountryRow[]> {
@@ -95,10 +104,10 @@ async function fetchCountries(attempt: number): Promise<CountryRow[]> {
  * يلمس `headers()` ولا يُخرج المسار من التخزين.
  */
 export async function marketByCode(code: string): Promise<Market | null> {
+  // ⚠️ لا فرعَ احتياطيّاً هنا بعد اليوم: كان يُنجي اليمن وحده ويترك الأسواق
+  // الخمسة الأخرى لـ`null` — فتصير الأعطال انتقائيةً يصعب تفسيرها. الآن
+  // `allCountries` إمّا تُرجِع قائمةً حقيقية أو ترمي.
   const list = await allCountries();
-  if (!list.length) {
-    return code.toUpperCase() === FALLBACK.code ? FALLBACK : null;
-  }
   const hit = list.find((c) => c.code?.toUpperCase() === code.toUpperCase());
   if (!hit) return null;
   return {
@@ -124,7 +133,16 @@ export async function detectMarket(): Promise<Market> {
     /* خارج سياق طلب — نقع على الافتراضي */
   }
 
-  const list = await allCountries();
+  // ⚠️ **هنا يُسامَح الفشل، بخلاف صفحة السوق المفهرسة.** كشف سوق الزائر
+  // تجربةُ استخدام: الوقوع على الافتراضي يعني صفحةً تعمل بسوقٍ قد لا يناسبه،
+  // ورفعُ الخطأ يعني شاشةً بيضاء. أمّا صفحة `/ye` فرفعُ الخطأ فيها **أسلم**:
+  // بديله خبزُ 404 يبقى ساعةً في الفهرس.
+  let list: CountryRow[] = [];
+  try {
+    list = await allCountries();
+  } catch {
+    return FALLBACK;
+  }
   if (!list.length) return FALLBACK;
 
   const hit = list.find((c) => c.code?.toUpperCase() === code) ?? list[0];
