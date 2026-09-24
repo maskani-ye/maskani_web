@@ -28,7 +28,20 @@ export default async function CityNeighborhoods({
   const all = await getNeighborhoods(cityId);
   if (!all.length) return null;
 
-  // الأحياء التي فيها عقارات أولاً — رابطٌ إلى صفحة فارغة لا ينفع أحداً،
+  // ⚠️ **هذه أدواتُ تصفّحٍ لا روابطَ فهرسة.** قرار المالك: الحيّ **فلترة** في
+  // تجربة الموقع لا وجهةٌ منفصلة — فالنقر هنا يفتح قائمة العقارات مفلترةً،
+  // بتجربةٍ واحدة فيها كل الفلاتر الأخرى (السعر والنوع والمساحة) بدل شاشةٍ
+  // موازية تنقصها.
+  //
+  // ⚠️ **وصفحات الأحياء تبقى مفهرسة** — وليست تناقضاً مع ما سبق: هي ثاني أكبر
+  // مصدر زيارات للموقع (١٨٠ نقرة في ٩٠ يوماً مقابل ٧٤ لـ٦٬٩٢١ صفحة عقار)،
+  // وحذفها جرّبناه شبيهاً فكلّفنا ربع نقرات البحث. من يأتي من جوجل يهبط
+  // عليها، ومن يتصفّح من الداخل يمرّ بالفلتر. ورابطها الداخليّ الباقي هو
+  // **جدول أسعار الأحياء** في `MarketStats` — مرجعٌ لا زرّ تصفّح.
+  const listHref = (nid: number) =>
+    `/properties?city=${cityId}&neighborhood_ref=${nid}`;
+
+  // الأحياء التي فيها عقارات أولاً — فلترةٌ إلى قائمة فارغة لا تنفع أحداً،
   // لكنّنا نعرض الباقي أيضاً لأن الحيّ اسمٌ يبحث عنه الناس ولو لم يُنشر فيه بعد.
   const withStock = all.filter((n) => (n.properties_count ?? 0) > 0);
   const rest = all.filter((n) => !(n.properties_count ?? 0));
@@ -46,7 +59,7 @@ export default async function CityNeighborhoods({
         {shown.map((n) => (
           <Link
             key={n.id}
-            href={`/properties/neighborhood/${n.slug}`}
+            href={listHref(n.id)}
             className="text-body rounded-xl border border-muted-200 bg-white px-3 py-1.5 text-muted-700 hover:border-primary hover:text-primary transition-colors"
           >
             {n.name}
