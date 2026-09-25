@@ -16,9 +16,13 @@ import {
 
 // ─── Types (تطابق seo_service.build_seo_report) ─────────────────────────────
 interface ReasonBucket { key: string; reason: string; count: number }
+interface TypeBucket {
+  key: string; label: string; inspected: number; indexed: number;
+  total_in_sitemap: number; rate: number | null;
+}
 interface Coverage {
   inspected: number; indexed: number; not_indexed: number;
-  sitemap_total: number; by_reason: ReasonBucket[];
+  sitemap_total: number; by_reason: ReasonBucket[]; by_type?: TypeBucket[];
 }
 interface SeoPage {
   url: string; coverage: string; reason_key: string; reason: string;
@@ -235,6 +239,56 @@ export default function AdminSeoPage() {
                 })}
               </div>
             </Card>
+
+            {/* ⚠️ **«كم صفحةً مُفهرَسة؟» سؤالٌ أقلّ نفعاً من «أيّ نوعٍ يُفهرَس؟».**
+                نسبةٌ عامّة واحدة لا تقول أين المشكلة؛ وحين تُفصَّل بالنوع يظهر
+                فوراً أنّ صفحات العقارات (٨٨٪ من الخريطة) هي التي تتعثّر أو أنّ
+                المقالات وحدها تُفهرَس. هذا ما يُحوّل التقرير إلى قرار. */}
+            {(cov?.by_type?.length ?? 0) > 0 && (
+              <Card className="p-6 lg:col-span-3">
+                <SectionHeader icon={<ChartSquare className="h-5 w-5" />} title="الفهرسة حسب نوع الصفحة"
+                               subtitle="نسبة المفهرَس في عيّنة كل نوع — النوع الأضعف هو أولويّتك" />
+                <div className="mt-4 overflow-x-auto">
+                  <table className="w-full text-body">
+                    <thead>
+                      <tr className="text-caption text-muted-500 text-right">
+                        <th className="font-medium py-2">النوع</th>
+                        <th className="font-medium py-2">في الخريطة</th>
+                        <th className="font-medium py-2">فُحص</th>
+                        <th className="font-medium py-2">مُفهرَس</th>
+                        <th className="font-medium py-2">النسبة</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-muted-50">
+                      {cov!.by_type!.map((t) => (
+                        <tr key={t.key}>
+                          <td className="py-2.5 font-semibold text-ink">{t.label}</td>
+                          <td className="py-2.5 text-muted-600">{nf(t.total_in_sitemap)}</td>
+                          <td className="py-2.5 text-muted-600">{nf(t.inspected)}</td>
+                          <td className="py-2.5 text-muted-600">{nf(t.indexed)}</td>
+                          <td className="py-2.5">
+                            {t.rate == null ? "—" : (
+                              <span className="inline-flex items-center gap-2">
+                                <span className="w-24 h-2 rounded-full bg-muted-100 overflow-hidden">
+                                  <span className={`block h-full rounded-full ${t.rate >= 70 ? "bg-success-500" : t.rate >= 40 ? "bg-warning-500" : "bg-danger-500"}`}
+                                        style={{ width: `${t.rate}%` }} />
+                                </span>
+                                <strong className="text-ink">{t.rate}%</strong>
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* الإفصاح إلزاميّ: النسبة مشتقّة من عيّنة لا من جرد كامل. */}
+                <p className="text-micro text-muted mt-3">
+                  النِّسب من عيّنة مفحوصة عبر URL Inspection (حصّة لكل نوع)، لا من
+                  جردٍ كامل — فهي دلالة اتّجاه لا رقمٌ نهائيّ.
+                </p>
+              </Card>
+            )}
 
             <Card className="p-6 lg:col-span-2">
               <SectionHeader icon={<ChartSquare className="h-5 w-5" />} title="اتجاه الأداء"
