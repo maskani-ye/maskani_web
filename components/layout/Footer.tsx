@@ -48,6 +48,7 @@ const PLATFORM = [
   { href: "/help", label: "مركز المساعدة" },
   { href: "/reports", label: "مجتمع الشكاوى" },
   { href: "/about", label: "من نحن" },
+  { href: "/investors", label: "للمستثمرين" },
 ];
 
 const LEGAL = [

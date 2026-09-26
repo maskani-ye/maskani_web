@@ -252,6 +252,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // تقريرٌ أحمر بلا فائدة.
     { url: `${BASE}/reports`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE}/investors`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     ...TOOLS.map((t) => ({
       url: `${BASE}/tools/${t.slug}`,
