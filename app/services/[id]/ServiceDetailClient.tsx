@@ -19,6 +19,7 @@ import {
   Settings, User, CheckCircle, MapPoint, Phone, ChatSquare, ChatRoundDots,
   Star, AltArrowRight, Case, Gallery,
 } from "@solar-icons/react";
+import { waHref } from "@/lib/whatsapp";
 import { toast } from "sonner";
 import { YouTubePlayer } from "@/components/ui/YouTubePlayer";
 
@@ -111,7 +112,14 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
     </div>
   );
 
-  const wa = provider.contact_whatsapp?.replace(/\D/g, "");
+  // رابط واتساب برسالةٍ تحمل تفاصيل الخدمة ورابطها.
+  const waContactHref = waHref(provider.contact_whatsapp, {
+    kind: "الخدمة المعروضة",
+    title: provider.title,
+    place: (provider.cities_names ?? []).slice(0, 2).join(" و") || null,
+    ref: id,
+    url: `https://maskani.homes/services/${id}`,
+  });
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
@@ -285,9 +293,9 @@ export default function ServiceDetailClient({ id, initialProvider }: { id: strin
                 </Button>
               </a>
             )}
-            {wa && (
+            {waContactHref && (
               <a
-                href={`https://wa.me/${wa}`}
+                href={waContactHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackVisitEvent("whatsapp_click", { targetType: "service", targetId: id })}

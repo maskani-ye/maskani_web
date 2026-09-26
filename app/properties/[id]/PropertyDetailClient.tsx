@@ -29,6 +29,7 @@ import { MatchingRequests } from "@/components/properties/MatchingRequests";
 import { AvailabilityPrompt } from "@/components/properties/AvailabilityPrompt";
 import { TrustSignals } from "@/components/properties/TrustSignals";
 import { MarketContext } from "@/components/properties/MarketContext";
+import { waHref } from "@/lib/whatsapp";
 
 const featuresList = [
   { key: "has_elevator", label: "مصعد", icon: Layers },
@@ -164,6 +165,18 @@ export default function PropertyDetailClient(
   // بعد التحميل ليُصلحه — فشورك العقار في واتساب بلا طريقٍ إليه (رُصد في الإنتاج).
   // الرابط القانونيّ معروفٌ في الخادم والمتصفّح معاً، وخالٍ من معاملات البحث.
   const canonicalUrl = `https://maskani.homes/properties/${id}`;
+
+  // رابط واتساب برسالةٍ تحمل تفاصيل العقار ورابطه — يُحسب مرّة.
+  const waContactHref = waHref(property?.contact_whatsapp, {
+    kind: "العقار المعروض",
+    title: property?.title,
+    price: property ? formatPrice(property.price, property.currency) : null,
+    place: property?.city_name
+      ? property.city_name + (property.neighborhood ? ` — ${property.neighborhood}` : "")
+      : null,
+    ref: property?.id,
+    url: canonicalUrl,
+  });
   const whatsappShareHref = () =>
     `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${canonicalUrl}`)}`;
 
@@ -506,9 +519,9 @@ export default function PropertyDetailClient(
                   </Button>
                 </a>
               )}
-              {property.contact_whatsapp && (
+              {waContactHref && (
                 <a
-                  href={`https://wa.me/${property.contact_whatsapp.replace(/\D/g, "")}`}
+                  href={waContactHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackVisitEvent("whatsapp_click", { targetType: "property", targetId: property.id })}
