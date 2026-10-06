@@ -6,7 +6,12 @@
  * العقارات، و`catch { return [] }` ابتلع الفشل، فخرجت خريطةٌ **صحيحة الشكل
  * ناقصة المضمون**. وهذا أسوأ من خريطةٍ ساقطة: الساقطة تُرى.
  *
- * المعيار: عدد الروابط لا يقلّ عن عدد العقارات النشِطة في الـAPI.
+ * المعيار: عدد صفحات العقار في الخريطة لا يقلّ عمّا يعلنه الخادم لها
+ * (`sitemap-rows`) — لا عن كل العقارات النشِطة.
+ *
+ * ⚠️ **المستورَد خارج الخريطة عمداً منذ 2026‑10‑06** (`is_imported`، بعد رفض
+ * أدسنس الثاني)، فصار المُدرَج عشرة من سبعة آلاف بقصد. مقارنته بالعدد الكلّيّ
+ * كانت ستُفشل كل نشرٍ قادم، فيُعطَّل الحارس أو يُتجاهَل — وهو أسوأ من غيابه.
  *
  *     npx tsx scripts/audit-sitemap-size.ts [https://maskani.homes]
  */
@@ -16,13 +21,13 @@ const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1
 async function main() {
   const [xml, countRes] = await Promise.all([
     fetch(`${BASE}/sitemap.xml`).then((r) => r.text()),
-    fetch(`${API}/properties/?limit=1`).then((r) => r.json()),
+    fetch(`${API}/properties/sitemap-rows/`).then((r) => r.json()),
   ]);
   const urls = (xml.match(/<loc>/g) ?? []).length;
   const props = Number(countRes?.count ?? 0);
   const listed = (xml.match(/\/properties\/\d+</g) ?? []).length;
 
-  console.log(`روابط الخريطة: ${urls} · عقارات في الـAPI: ${props} · مُدرَجة: ${listed}`);
+  console.log(`روابط الخريطة: ${urls} · عقارات يعلنها الخادم للخريطة: ${props} · مُدرَجة: ${listed}`);
 
   // عتبة متساهلة عمداً: العقار قد يُحذف بين النداءين، والمطلوب كشف الانهيار
   // لا مطابقةٌ إلى الرقم. سقوطٌ دون التسعين بالمئة يعني عطلاً لا تقلّباً.
