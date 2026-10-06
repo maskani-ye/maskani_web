@@ -107,6 +107,11 @@ export async function generateMetadata(
     title,
     description,
     keywords,
+    // ⚠️ **المستورَد من مواقع أخرى لا يُفهرَس.** رفض أدسنس مرّتين بحكم «محتوى
+    // منخفض القيمة»، والسبب المقيس أنّ ٩٩٫٩٦٪ من العقارات منقولةٌ وتشكّل ٨٨٪
+    // من الخريطة — «المحتوى المنقول» في سياسات جوجل حرفياً. `follow` يبقى
+    // كي تمرّ روابط الصفحة إلى المدينة والحيّ المفهرَسين.
+    ...(l.is_imported ? { robots: { index: false, follow: true } } : {}),
     alternates: { canonical: `${BASE}/properties/${id}` },
     openGraph: { title, description, images: [{ url: ogImage }], type: "article", url: `${BASE}/properties/${id}` },
     twitter: {

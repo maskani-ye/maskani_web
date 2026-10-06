@@ -44,5 +44,12 @@ export function isAdFreePath(pathname: string | null): boolean {
   if (!pathname) return false;
   if (AD_FREE_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   // صفحات النشر والتعديل — المستخدم في منتصف مهمّة، لا يُقاطَع.
+  // ⚠️ **تفاصيل العقار وقائمته بلا إعلانات.** ٩٩٫٩٦٪ من العقارات منقولةٌ من
+  // مواقع أخرى، وعرض الإعلانات بجوار محتوىً منقول هو ما رفضه أدسنس مرّتين
+  // («محتوى منخفض القيمة»). المسار وحده لا يميّز المستورَد من عقار المستخدم،
+  // وكلفة التعميم ثلاث صفحات فقط. تبقى صفحات المدن والأحياء والدول (أرقامها
+  // محسوبة من مخزوننا) والمقالات والأدوات مؤهّلةً للإعلان.
+  if (pathname === "/properties" || /^\/properties\/\d+(\/|$)/.test(pathname)) return true;
+  if (/^\/[a-z]{2}\/properties\/?$/.test(pathname)) return true;
   return /\/(create|edit|my)(\/|$)/.test(pathname);
 }

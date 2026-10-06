@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/seo";
 import LandingClient, { type Market } from "./LandingClient";
+import MarketFigures from "./MarketFigures";
 
 /**
  * ════════════════════════════════════════════════════════════════════════
@@ -114,7 +115,7 @@ const PILLARS = [
   {
     key: "properties",
     ar: { name: "العقارات", short: "شقق وأراضٍ وبيوت للبيع والإيجار، بتواصل مباشر مع صاحب العقار.",
-          body: "شقق وأراضٍ وبيوت ومحلات للبيع والإيجار، بتواصل مباشر مع صاحب العقار — الصورة والسعر والموقع من مالكه لا من وسيط." },
+          body: "شقق وأراضٍ وبيوت ومحلات للبيع والإيجار في ستّة أسواق، مع موقعها على الخريطة ووسيط أسعار حيّها ومدينتها للمقارنة قبل التواصل." },
     en: { name: "Properties", short: "Homes and land for sale and rent — straight from the owner.",
           body: "Apartments, land, houses and shops for sale and rent — you reach the owner directly, not a middleman." },
     href: "/properties",
@@ -172,6 +173,7 @@ export default async function GlobalLanding() {
         }}
       />
       <LandingClient markets={markets} pillars={PILLARS} />
+      <MarketFigures />
     </>
   );
 }
