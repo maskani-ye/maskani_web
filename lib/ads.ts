@@ -38,7 +38,19 @@ const AD_FREE_PREFIXES = [
   "/favorites",
   "/saved-searches",
   "/help",
+  // صفحات الأحياء كلّها بلا إعلانات — حتى المفهرَسة منها: محتواها الأساسيّ
+  // قائمةُ عقاراتٍ منقولة، وقالبها يتكرّر على مئات الصفحات (٢٠٢٦‑١٠‑٠٧).
+  "/properties/neighborhood/",
 ];
+
+/**
+ * مسارات لا يُحمَّل فيها سكربت أدسنس من الجذر — الصفحة نفسها تقرّر من بياناتها.
+ * المدوّنة: الإعلان على المقال المراجَع يدوياً وحده (سياسة «المحتوى المُنشأ
+ * تلقائياً دون مراجعة»)، وقائمتها خليطٌ من المراجَع وغيره فتبقى بلا إعلان.
+ */
+export function isManualAdsPath(pathname: string | null): boolean {
+  return !!pathname && (pathname === "/blog" || pathname.startsWith("/blog/"));
+}
 
 export function isAdFreePath(pathname: string | null): boolean {
   if (!pathname) return false;

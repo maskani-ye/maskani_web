@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import ArticlePlaceLinks from "@/components/blog/ArticlePlaceLinks";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { AdSenseScript } from "@/components/ads/AdSenseScript";
 import { AD_SLOTS } from "@/lib/ads";
 import { ShareBar } from "@/components/blog/ShareBar";
 import { breadcrumbList, blogPosting, SITE_URL } from "@/lib/seo";
@@ -35,6 +36,8 @@ interface Article extends ArticleCard {
   meta_title: string; meta_description: string; meta_keywords: string;
   updated_at: string; views_count: number; tags: string[];
   related?: ArticleCard[];
+  /** روجع يدوياً — شرط ظهور الإعلانات (انظر `reviewed` أدناه). */
+  is_reviewed?: boolean;
 }
 
 async function getArticle(slug: string): Promise<Article | null> {
@@ -96,6 +99,11 @@ export default async function ArticlePage(
   const { slug } = await params;
   const a = await getArticle(slug);
   if (!a) notFound();
+  // ⚠️ **الإعلان على المقال المراجَع يدوياً وحده.** سياسات ناشري جوجل: «لا تضع
+  // إعلانات على محتوى مُنشأ تلقائياً دون مراجعة يدوية أو تنظيم» — ومقالاتنا
+  // مولَّدة بمساعدة الذكاء الاصطناعي. يضبط المالك المراجعة من لوحة المدوّنة،
+  // وتسقط تلقائياً إن عُدّل النصّ بعدها (رفض أدسنس الثاني، ٢٠٢٦‑١٠‑٠٦).
+  const reviewed = a.is_reviewed === true;
 
   const url = `${SITE_URL}/blog/${slug}`;
   // سوق المقال — يُبنى منه رابطٌ دقيق بدل مسارٍ مجرّد يُحوَّل إلى الافتراضيّ.
@@ -140,7 +148,8 @@ export default async function ArticlePage(
           </div>
 
           {/* المدونة هي موضع الكثافة الإعلانية: القارئ جاء للقراءة لا للتصفّح. */}
-          <AdSlot slot={AD_SLOTS.articleTop} />
+          {reviewed && <AdSenseScript force />}
+          <AdSlot slot={AD_SLOTS.articleTop} hasContent={reviewed} />
 
           <div
             className="article-body text-body leading-loose text-ink"
@@ -148,7 +157,7 @@ export default async function ArticlePage(
             dangerouslySetInnerHTML={{ __html: a.body }}
           />
 
-          <AdSlot slot={AD_SLOTS.articleMid} layout="in-article" format="fluid" />
+          <AdSlot slot={AD_SLOTS.articleMid} layout="in-article" format="fluid" hasContent={reviewed} />
 
           {a.tags?.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-6 pt-5 border-t border-muted-100">
@@ -171,7 +180,7 @@ export default async function ArticlePage(
             </p>
           </aside>
 
-          <AdSlot slot={AD_SLOTS.articleBottom} />
+          <AdSlot slot={AD_SLOTS.articleBottom} hasContent={reviewed} />
 
           <div className="mt-6 pt-5 border-t border-muted-100">
             <ShareBar url={url} title={a.title} />

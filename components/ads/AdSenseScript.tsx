@@ -7,11 +7,17 @@
 
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { AD_CLIENT, adsEnabled, isAdFreePath } from "@/lib/ads";
+import { AD_CLIENT, adsEnabled, isAdFreePath, isManualAdsPath } from "@/lib/ads";
 
-export function AdSenseScript() {
+/**
+ * `force` تتجاوز شرط المسار — للصفحة التي تقرّر بنفسها من بياناتها (المقال
+ * المراجَع يدوياً). ⚠️ وفي المدوّنة لا يُحمَّل السكربت من الجذر إطلاقاً: المسار
+ * وحده لا يعرف هل رُوجع المقال، وتحميله يُفعّل الإعلانات التلقائية عليه.
+ */
+export function AdSenseScript({ force = false }: { force?: boolean }) {
   const pathname = usePathname();
-  if (!adsEnabled || isAdFreePath(pathname)) return null;
+  if (!adsEnabled) return null;
+  if (!force && (isAdFreePath(pathname) || isManualAdsPath(pathname))) return null;
   return (
     <Script
       id="adsbygoogle"

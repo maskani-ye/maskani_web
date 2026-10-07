@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Dialog } from "@/components/ui/Dialog";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { NotebookBookmark, AddCircle, TrashBinMinimalistic, Pen, Eye, HashtagSquare } from "@solar-icons/react";
+import { NotebookBookmark, AddCircle, TrashBinMinimalistic, Pen, Eye, HashtagSquare, CheckCircle } from "@solar-icons/react";
 import { toast } from "sonner";
 import { compressImage } from "@/lib/imageCompression";
 
@@ -40,6 +40,8 @@ interface Article {
   views_count: number; reading_minutes: number;
   meta_title: string; meta_description: string; meta_keywords: string;
   published_at: string | null;
+  /** روجع يدوياً — شرط ظهور الإعلانات على المقال (سياسة المحتوى المُنشأ تلقائياً). */
+  is_reviewed?: boolean;
 }
 
 const empty = {
@@ -77,6 +79,18 @@ export default function AdminBlogPage() {
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setLoading(false); }
   }, [search, statusFilter]);
+
+  // ⚠️ **المراجعة تعني قراءة المقال كاملاً قبل الضغط.** الإعلانات تظهر على
+  // المراجَع وحده (سياسة ناشري جوجل: لا إعلانات على محتوى مُنشأ تلقائياً دون
+  // مراجعة يدوية)، ووسمُ مقالٍ لم يُقرأ يُعيد المخالفة التي رُفضنا بها.
+  // وأيّ تعديلٍ لنصّه بعدها يُسقط المراجعة من الخادم تلقائياً.
+  const toggleReviewed = async (a: Article) => {
+    try {
+      await api.patch(ep.admin.blogItem(a.id), { is_reviewed: !a.is_reviewed });
+      toast.success(a.is_reviewed ? "أُلغيت المراجعة — أُخفيت الإعلانات" : "سُجّلت المراجعة — تظهر الإعلانات على المقال");
+      fetchData(offset);
+    } catch (err) { toast.error(getErrorMessage(err)); }
+  };
 
   // البحث/الفلتر يعيدان للصفحة الأولى
   useEffect(() => { fetchData(0); }, [fetchData]);
@@ -214,6 +228,9 @@ export default function AdminBlogPage() {
                     <h3 className="font-bold text-ink text-body line-clamp-1">{a.title}</h3>
                     <Badge variant={a.status === "published" ? "success" : "default"}>{a.status === "published" ? "منشور" : "مسودّة"}</Badge>
                     {a.is_featured && <Badge variant="warning">مميّز</Badge>}
+                    {a.is_reviewed
+                      ? <Badge variant="success">مراجَع · بإعلانات</Badge>
+                      : <Badge variant="default">غير مراجَع · بلا إعلانات</Badge>}
                   </div>
                   <div className="flex items-center gap-3 text-caption text-muted mt-1 flex-wrap">
                     <span>{a.category_display}</span>
@@ -222,6 +239,11 @@ export default function AdminBlogPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
+                  <button onClick={() => toggleReviewed(a)}
+                          title={a.is_reviewed ? "إلغاء المراجعة" : "قرأته كاملاً — تمّت المراجعة"}
+                          className={`w-9 h-9 rounded-lg flex items-center justify-center ${a.is_reviewed ? "bg-success-50 hover:bg-success-100" : "bg-muted-50 hover:bg-primary/10"}`}>
+                    <CheckCircle className={`h-4 w-4 ${a.is_reviewed ? "text-success-600" : "text-muted-500"}`} />
+                  </button>
                   <button onClick={() => openEdit(a)} title="تعديل" className="w-9 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 flex items-center justify-center">
                     <Pen className="h-4 w-4 text-muted-500" />
                   </button>

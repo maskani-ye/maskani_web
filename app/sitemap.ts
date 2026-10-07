@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { HOOD_INDEX_MIN } from "@/lib/neighborhoods";
 import { citySlug } from "@/lib/seo";
 import { getBlogCategories } from "@/lib/blogCategories";
 import { TOOLS } from "@/lib/toolsMeta";
@@ -210,7 +211,8 @@ async function neighborhoods(): Promise<{ slug: string }[]> {
       // عنها كثيراً: لا يُشتقّ منها سعرٌ وسيط ولا مقارنة. وبها رُفض الموقع في
       // أدسنس بوصف «محتوى غير ذي قيمة» (٢٠٢٦-٠٩-١٠). تعود الصفحة تلقائياً
       // بثالث عقارٍ يُنشر فيها — بلا تدخّل يدويّ.
-      .filter((n: { slug: string; count: number }) => n.slug && n.count >= 3)
+      // العتبة رُفعت إلى عشرة (٢٠٢٦‑١٠‑٠٧) — انظر `HOOD_INDEX_MIN`.
+      .filter((n: { slug: string; count: number }) => n.slug && n.count >= HOOD_INDEX_MIN)
       .map((n: { slug: string }) => ({ slug: n.slug }));
   } catch {
     return [];
