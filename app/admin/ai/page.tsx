@@ -18,6 +18,9 @@ interface AIKey {
   id: number; name: string; provider: string; masked_key: string; base_url: string;
   default_model: string; is_active: boolean; last_used_at: string | null;
   last_error: string; last_error_at: string | null;
+  /** حالة الحصّة: شغّال · خلص الحدّ (يتجدّد في quota_resets_at) · موقوف. */
+  status?: "ok" | "exhausted" | "suspended"; status_display?: string; status_reason?: string;
+  quota_resets_at?: string | null; last_checked_at?: string | null; last_latency_ms?: number | null;
 }
 interface Provider {
   id: number; name: string; slug: string; base_url: string; default_model: string;
@@ -151,6 +154,32 @@ export default function AdminAIPage() {
       setOpen(false); fetchAll();
     } catch (err) { toast.error(getErrorMessage(err)); }
     finally { setSaving(false); }
+  };
+
+  const [checking, setChecking] = useState<number | "all" | null>(null);
+  const checkKey = async (k: AIKey) => {
+    setChecking(k.id);
+    try {
+      const { data } = await api.post<AIKey>(ep.admin.aiKeyCheck(k.id));
+      setKeys((list) => list.map((x) => (x.id === data.id ? data : x)));
+      toast.success(`«${k.name}»: ${data.status_display || data.status}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setChecking(null);
+    }
+  };
+  const checkAll = async () => {
+    setChecking("all");
+    try {
+      const { data } = await api.post<{ keys: AIKey[] }>(ep.admin.aiKeysCheckAll);
+      setKeys(data.keys || []);
+      toast.success("فُحصت المفاتيح كلّها");
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setChecking(null);
+    }
   };
 
   const setActive = async (k: AIKey) => {
@@ -356,7 +385,16 @@ export default function AdminAIPage() {
 
       {/* ── قائمة المفاتيح ── */}
       <div className="bg-white rounded-2xl shadow-e2 overflow-hidden">
-        <div className="px-5 py-3 border-b border-muted-100"><h2 className="font-bold text-ink">المفاتيح</h2></div>
+        <div className="px-5 py-3 border-b border-muted-100 flex items-center justify-between gap-3">
+          <div>
+            <h2 className="font-bold text-ink">المفاتيح</h2>
+            <p className="text-caption text-muted">يُفحص كل مفتاح عبر مزوّده كل ٢٤ ساعة، والمنتهية حصّته يُفحص في موعد تجدّدها. التبديل التلقائي لا يذهب إلا إلى مفتاحٍ «شغّال».</p>
+          </div>
+          <button onClick={checkAll} disabled={checking === "all"}
+            className="shrink-0 text-caption font-bold px-3 h-9 rounded-lg bg-primary text-white hover:bg-primary/90 flex items-center gap-1 disabled:opacity-60">
+            <Refresh className={`h-4 w-4 ${checking === "all" ? "animate-spin" : ""}`} /> افحص الكل
+          </button>
+        </div>
         {loading ? (
           <div className="divide-y divide-muted-100">{[0, 1].map((i) => <div key={i} className="h-16 bg-muted-50 animate-pulse m-3 rounded-xl" />)}</div>
         ) : keys.length === 0 ? (
@@ -372,15 +410,25 @@ export default function AdminAIPage() {
                       ? <span className="inline-flex items-center gap-1 text-caption font-bold text-white bg-primary px-2 py-0.5 rounded-full"><CheckCircle className="h-3.5 w-3.5" /> نشط الآن</span>
                       : <span className="text-caption text-muted bg-muted-100 px-2 py-0.5 rounded-full">غير نشط</span>}
                     <Badge variant="info">{provName(key.provider)}</Badge>
+                    <KeyStatus k={key} />
                   </div>
                   <div className="flex items-center gap-3 text-caption text-muted mt-1 flex-wrap">
                     <span dir="ltr" className="font-mono bg-muted-100 px-1.5 py-0.5 rounded">{key.masked_key || "—"}</span>
-                    {key.last_used_at && <span>آخر استخدام: {new Date(key.last_used_at).toLocaleDateString("ar")}</span>}
+                    {key.last_used_at && <span>آخر استخدام: {new Date(key.last_used_at).toLocaleDateString(NUMERIC_LOCALE)}</span>}
+                    {key.last_checked_at && <span>آخر فحص: {when(key.last_checked_at)}</span>}
+                    {key.status === "ok" && key.last_latency_ms != null && <span>يردّ في {fmt(key.last_latency_ms)} م.ث</span>}
                   </div>
-                  {!key.is_active && key.last_error && <p className="text-caption text-danger-500 mt-1 line-clamp-1" title={key.last_error}>توقّف: {key.last_error}</p>}
+                  {key.status === "exhausted" && key.quota_resets_at && (
+                    <p className="text-caption text-warning-700 mt-1">يتجدّد {when(key.quota_resets_at)} — يُفحص تلقائياً في موعده ويعود «شغّالاً».</p>
+                  )}
+                  {key.status !== "ok" && key.status_reason && <p className="text-caption text-danger-500 mt-1 line-clamp-1" title={key.status_reason}>السبب: {key.status_reason}</p>}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  {!key.is_active && (
+                  <button onClick={() => checkKey(key)} disabled={checking === key.id} title="افحص الآن"
+                    className="text-caption font-bold px-3 h-9 rounded-lg bg-muted-50 hover:bg-primary/10 text-ink flex items-center gap-1 disabled:opacity-50">
+                    <Refresh className={`h-4 w-4 ${checking === key.id ? "animate-spin" : ""}`} /> افحص
+                  </button>
+                  {!key.is_active && key.status === "ok" && (
                     <button onClick={() => setActive(key)} className="text-caption font-bold px-3 h-9 rounded-lg bg-primary text-white hover:bg-primary/90 flex items-center gap-1">
                       <CheckCircle className="h-4 w-4" /> تفعيل
                     </button>
@@ -616,6 +664,16 @@ function ModelPicker({ label, value, onChange, models, loading, onLoad }: {
       )}
     </div>
   );
+}
+
+const when = (iso: string) =>
+  new Date(iso).toLocaleString(NUMERIC_LOCALE, { dateStyle: "medium", timeStyle: "short" });
+
+/** شارة حالة الحصّة — اللون يقول الحالة قبل النصّ. */
+function KeyStatus({ k }: { k: AIKey }) {
+  if (!k.status) return null;
+  const variant = k.status === "ok" ? "success" : k.status === "exhausted" ? "warning" : "danger";
+  return <Badge variant={variant}>{k.status_display || k.status}</Badge>;
 }
 
 function Stat({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "primary" | "green" | "red" }) {

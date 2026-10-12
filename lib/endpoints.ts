@@ -99,6 +99,8 @@ export const endpoints = {
     blogGenerate: `${ADMIN}/blog/generate/`,
     // الذكاء الاصطناعي (مفاتيح OpenRouter)
     aiKeys: `${ADMIN}/ai/keys/`,
+    aiKeyCheck: (id: number) => `${ADMIN}/ai/keys/${id}/check/`,
+    aiKeysCheckAll: `${ADMIN}/ai/keys/check-all/`,
     assistantConversations: `${ADMIN}/ai/assistant-conversations/`,
     assistantConversation: (id: string) => `${ADMIN}/ai/assistant-conversations/${id}/`,
     assistantStats: `${ADMIN}/ai/assistant-conversations/stats/`,
