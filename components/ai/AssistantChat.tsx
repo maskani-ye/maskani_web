@@ -32,6 +32,8 @@ interface Turn {
   services?: ServiceCardData[];
   property_query?: Query;
   service_query?: Query;
+  /** سوق النتائج — قد يخالف سوق الزائر إن سمّى مدينةً في سوقٍ آخر. */
+  market?: string;
 }
 
 interface AssistantResponse extends Turn {
@@ -110,6 +112,7 @@ export function AssistantChat() {
         role: "assistant", content: data.reply,
         properties: data.properties, services: data.services,
         property_query: data.property_query, service_query: data.service_query,
+        market: data.market,
       }]);
       setSuggestions(data.suggestions || []);
     } catch (err) {
@@ -190,7 +193,7 @@ export function AssistantChat() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {t.properties.map((p) => <PropertyCard key={p.id} property={p} />)}
                 </div>
-                <Link href={listHref(market, "properties", t.property_query)}
+                <Link href={listHref(isMarket(t.market) ? t.market! : market, "properties", t.property_query)}
                   className="mt-3 inline-flex items-center gap-1 text-body font-semibold text-primary hover:underline">
                   عرض كل النتائج في قائمة العقارات <AltArrowLeft className="h-4 w-4" />
                 </Link>
@@ -201,7 +204,7 @@ export function AssistantChat() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {t.services.map((s) => <ServiceCard key={s.id} provider={s} />)}
                 </div>
-                <Link href={marketPath(market, "services")}
+                <Link href={marketPath(isMarket(t.market) ? t.market! : market, "services")}
                   className="mt-3 inline-flex items-center gap-1 text-body font-semibold text-primary hover:underline">
                   كل مزوّدي الخدمات <AltArrowLeft className="h-4 w-4" />
                 </Link>
@@ -243,7 +246,7 @@ export function AssistantChat() {
               }}
               rows={1}
               maxLength={500}
-              placeholder="مثلاً: شقة للإيجار بغرفتين في المدينة بأقلّ من ٣٠٠ دولار"
+              placeholder="اكتب ما تبحث عنه…"
               aria-label="اكتب ما تبحث عنه"
               className="flex-1 resize-none bg-transparent px-3 py-2.5 text-body text-ink placeholder:text-muted outline-none max-h-32"
             />
