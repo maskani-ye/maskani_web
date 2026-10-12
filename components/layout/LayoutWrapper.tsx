@@ -22,7 +22,11 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
 
   if (isLanding) return <>{children}</>;
   // محادثة مفتوحة = شاشة كاملة بلا شريط سفلي (مطابق للتطبيق)
-  const isChatConversation = pathname.startsWith("/chat/") && pathname !== "/chat";
+  // ومساعد مسكني شاشة محادثة أيضاً: نافذته تملأ الشاشة ومؤلِّفه في أسفلها، فلا
+  // تذييل يدفعه تحت الطيّة ولا شريط سفليّ يغطّيه.
+  const isAssistant = pathname === "/assistant";
+  const isChatConversation =
+    (pathname.startsWith("/chat/") && pathname !== "/chat") || isAssistant;
 
   if (isBare) return <>{children}</>;
 
@@ -38,7 +42,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       {/* ترغيب لطيف (لا إجبار) لإكمال الهاتف/المدينة للمستخدم المسجّل غير المكتمل */}
       <ProfileCompletionBanner />
       <main className="flex-1">{children}</main>
-      <Footer />
+      {!isAssistant && <Footer />}
       {/* زرّ عائم لمركز المساعدة */}
       <FloatingHelp />
       <FloatingAssistant />
