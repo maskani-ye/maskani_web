@@ -54,6 +54,9 @@ export const endpoints = {
   aiChatSuggestions: "/ai/chat-suggestions/",
   aiAskProperty: "/ai/ask-property/",
   aiHelpdeskAnswer: "/ai/helpdesk-answer/",
+  // «مساعد مسكني» — المحادثة تُحفظ على الخادم، والمعرّف يستعيدها.
+  aiAssistant: "/ai/assistant/",
+  aiAssistantHistory: (id: string) => `/ai/assistant/${id}/`,
   analyticsTrack: "/analytics/track/",
   appConfig: "/settings/app-config/",
 
@@ -96,6 +99,9 @@ export const endpoints = {
     blogGenerate: `${ADMIN}/blog/generate/`,
     // الذكاء الاصطناعي (مفاتيح OpenRouter)
     aiKeys: `${ADMIN}/ai/keys/`,
+    assistantConversations: `${ADMIN}/ai/assistant-conversations/`,
+    assistantConversation: (id: string) => `${ADMIN}/ai/assistant-conversations/${id}/`,
+    assistantStats: `${ADMIN}/ai/assistant-conversations/stats/`,
     aiKey: (id: number) => `${ADMIN}/ai/keys/${id}/`,
     aiKeySetActive: (id: number) => `${ADMIN}/ai/keys/${id}/set-active/`,
     aiKeyUsage: (id: number) => `${ADMIN}/ai/keys/${id}/usage/`,

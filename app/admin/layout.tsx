@@ -55,6 +55,7 @@ const NAV_GROUPS = [
     title: "التواصل",
     items: [
       { href: "/admin/conversations", label: "المحادثات",     icon: ChatRoundDots },
+      { href: "/admin/assistant",     label: "مساعد مسكني",   icon: Stars },
       { href: "/admin/helpdesk",      label: "مركز المساعدة", icon: HeadphonesRound },
       { href: "/admin/broadcast",     label: "الإشعارات",     icon: Bell },
       { href: "/admin/notification-templates", label: "قوالب الإشعارات", icon: Bell },

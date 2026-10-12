@@ -8,7 +8,7 @@ import { HeadphonesRound } from "@solar-icons/react";
 export function FloatingHelp() {
   const pathname = usePathname();
   // نُخفيه في /help نفسه، والإدارة/الدخول، والمحادثة المفتوحة
-  if (pathname === "/help" || pathname.startsWith("/admin") || pathname.startsWith("/auth")) return null;
+  if (pathname === "/help" || pathname === "/assistant" || pathname.startsWith("/admin") || pathname.startsWith("/auth")) return null;
   if (pathname.startsWith("/chat/") && pathname !== "/chat") return null;
 
   return (

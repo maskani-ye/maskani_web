@@ -12,7 +12,7 @@ import { isMarket, marketPath, splitMarket } from "@/lib/markets";
 import {
   Home2, Magnifer, Buildings2, ShieldWarning, ClipboardList, Case,
   Bell, ChatRound, User, HamburgerMenu, CloseCircle, AltArrowDown, Login, Settings, MapPoint,
-  AddCircle,
+  AddCircle, Stars,
 } from "@solar-icons/react";
 import { Button } from "@/components/ui/Button";
 import { api } from "@/lib/api";
@@ -30,6 +30,7 @@ const navLinks = [
   { href: "/properties", label: "العقارات", icon: Buildings2, match: ["/properties"] },
   { href: "/services", label: "الخدمات", icon: Settings, match: ["/services"] },
   { href: "/requests", label: "الطلبات", icon: ClipboardList, match: ["/requests", "/jobs"] },
+  { href: "/assistant", label: "المساعد", icon: Stars, match: ["/assistant"] },
   { href: "/reports", label: "مجتمع الشكاوي", icon: ShieldWarning, match: ["/reports"] },
 ];
 
