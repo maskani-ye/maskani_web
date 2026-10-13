@@ -36,7 +36,7 @@ import {
 import {
   Buildings2, Eye, TrashBinTrash, Star, ArrowRight, GalleryWide,
   ChartSquare, Pen, AddCircle, CheckCircle, DangerCircle, Heart, Share,
-  Phone, MapPoint, User,
+  Phone, MapPoint, User, LinkRound,
 } from "@solar-icons/react";
 
 // أيقونات Solar تُعرّف `weight` كنوع اتحادي، وStatCard تتوقّع عرضاً أوسع —
@@ -87,6 +87,10 @@ interface PropertyDetail {
   comments: CommentRef[];
   user_name?: string;
   user_phone?: string;
+  // للإدارة وحدها — لا يرجع في الواجهة العامة.
+  is_imported?: boolean;
+  source_url?: string;
+  source_checked_at?: string | null;
 }
 
 interface Perf {
@@ -158,6 +162,7 @@ function toForm(p: PropertyDetail): FormState {
     contact_phone: p.contact_phone ?? "",
     contact_whatsapp: p.contact_whatsapp ?? "",
     video_url: p.video_url ?? "",
+    source_url: p.source_url ?? "",
     is_active: p.is_active,
     is_promoted: p.is_promoted,
   };
@@ -372,6 +377,11 @@ export default function AdminPropertyDetailPage() {
           <a href={`/properties/${prop.id}`} target="_blank" rel="noopener noreferrer">
             <Button size="sm" variant="outline"><Eye className="h-4 w-4 ml-1" />في الموقع</Button>
           </a>
+          {prop.source_url && (
+            <a href={prop.source_url} target="_blank" rel="noopener noreferrer nofollow">
+              <Button size="sm" variant="outline"><LinkRound className="h-4 w-4 ml-1" />المصدر</Button>
+            </a>
+          )}
           {prop.is_active && (
             <Button size="sm" variant="danger" onClick={() => setDeleteOpen(true)}>
               <DangerCircle className="h-4 w-4 ml-1" />إيقاف
@@ -468,6 +478,18 @@ export default function AdminPropertyDetailPage() {
               onChange={(e) => set("contact_whatsapp")(e.target.value)} />
             <Input label="رابط الفيديو (يوتيوب)" value={String(form.video_url ?? "")} dir="ltr"
               onChange={(e) => set("video_url")(e.target.value)} />
+          </Section>
+
+          {/* رابط الإعلان الأصليّ — للإدارة وحدها؛ يزوره مُدقِّق المصدر يومياً
+              فإن أزاله المصدر صار العقار «مُباع/مؤجَّر». */}
+          <Section title="المصدر" icon={asIcon(LinkRound)}>
+            <div className="sm:col-span-2">
+              <Input label="رابط المصدر" value={String(form.source_url ?? "")} dir="ltr"
+                onChange={(e) => set("source_url")(e.target.value)}
+                hint={prop.source_checked_at
+                  ? `آخر تحقّق: ${new Date(prop.source_checked_at).toLocaleString(NUMERIC_LOCALE)}`
+                  : prop.is_imported ? "لم يُتحقَّق منه بعد" : "إعلانٌ أصليّ في مسكني — لا مصدر له"} />
+            </div>
           </Section>
 
           <Section title="المزايا">
