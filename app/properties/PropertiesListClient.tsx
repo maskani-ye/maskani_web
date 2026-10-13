@@ -37,6 +37,7 @@ const OFFER_TYPE_OPTS = [
   { value: "sale", label: "للبيع" },
   { value: "rent_monthly", label: "إيجار شهري" },
   { value: "rent_yearly", label: "إيجار سنوي" },
+  { value: "rent_daily", label: "إيجار يومي" },
 ];
 
 function PropertiesContent() {

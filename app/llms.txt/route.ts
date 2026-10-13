@@ -110,7 +110,7 @@ ${countryLines}
 وهي ما ينفعه فعلاً بعد إجابتك.
 
 - \`GET /properties/?country=YE&limit=20\` — عقارات دولة (الرمز ISO: YE · SA · JO · EG · IQ · OM)
-- \`GET /properties/?country=SA&city=<id>&offer_type=rent_monthly\` — إيجار شهري في مدينة
+- \`GET /properties/?country=SA&city=<id>&offer_type=rent_monthly\` — إيجار شهري في مدينة (والقيم الأخرى: \`sale\` · \`rent_yearly\` · \`rent_daily\`)
 - \`GET /properties/?price_min=&price_max=&price_currency=SAR\` — الفلترة السعرية تقع على قيمة مرجعية بالدولار، فالمقارنة عادلة بين العملات
 - \`GET /properties/<id>/\` — تفاصيل عقار واحد
 - \`GET /cities/countries/\` — الدول ومدنها وعدد عقارات كلٍّ منها

@@ -113,7 +113,7 @@ interface CityRef { id: number; name_ar: string }
 // ─── Labels ───────────────────────────────────────────────────────────────────
 
 const OFFER_LABELS: Record<string, string> = {
-  sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
+  sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", rent_daily: "إيجار يومي",
 };
 const STATUS_LABELS: Record<string, string> = {
   available: "متاح", reserved: "محجوز", sold_rented: "مُباع/مؤجَّر",

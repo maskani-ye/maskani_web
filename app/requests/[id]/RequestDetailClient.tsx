@@ -28,7 +28,7 @@ import { ShareButton } from "@/components/ui/ShareButton";
 const asIcon = (I: ComponentType<{ className?: string }>) => I;
 
 const offerTypeLabels: Record<string, string> = {
-  sale: "للشراء", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", any: "أي نوع",
+  sale: "للشراء", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", rent_daily: "إيجار يومي", any: "أي نوع",
 };
 
 export default function RequestDetailClient({ id, initialRequest }: { id: string; initialRequest: ClientRequest | null }) {

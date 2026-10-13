@@ -62,7 +62,7 @@ const COLORS = [...chartPalette];
 
 const roleLabels: Record<string, string> = { user: "مستخدم", admin: "مشرف" };
 const offerLabels: Record<string, string> = {
-  sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
+  sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", rent_daily: "إيجار يومي",
 };
 const statusLabels: Record<string, string> = {
   available: "متاح", reserved: "محجوز", sold_rented: "مباع / مؤجّر",

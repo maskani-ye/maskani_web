@@ -51,7 +51,7 @@ function descriptionOf(l: any): string {
 }
 
 const OFFER_LABELS: Record<string, string> = {
-  sale: "للبيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
+  sale: "للبيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", rent_daily: "إيجار يومي",
 };
 
 async function getProperty(id: string) {

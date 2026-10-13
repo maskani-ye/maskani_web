@@ -42,6 +42,7 @@ const OFFER_TYPES: Record<string, string> = {
   sale: "بيع",
   rent_monthly: "إيجار شهري",
   rent_yearly: "إيجار سنوي",
+  rent_daily: "إيجار يومي",
 };
 
 const FURNISHING: Record<string, string> = {
@@ -195,7 +196,7 @@ export default function CreatePropertyPage() {
 
   // عنوانٌ من الحقائق حين يُترك فارغاً: «شقة للإيجار الشهري في حدة، صنعاء».
   function autoTitle(): string {
-    const offer = { sale: "للبيع", rent_monthly: "للإيجار الشهري", rent_yearly: "للإيجار السنوي" }[form.offer_type] ?? "";
+    const offer = { sale: "للبيع", rent_monthly: "للإيجار الشهري", rent_yearly: "للإيجار السنوي", rent_daily: "للإيجار اليومي" }[form.offer_type] ?? "";
     const cityName = cities.find((c) => String(c.id) === form.city)?.name_ar ?? "";
     const place = [form.neighborhood?.trim(), cityName].filter(Boolean).join("، ");
     return [selectedPt?.name_ar ?? "عقار", offer, place ? `في ${place}` : ""].filter(Boolean).join(" ");

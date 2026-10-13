@@ -79,7 +79,7 @@ export default function RequestsPage() {
   useEffect(() => { fetchRequests(); }, [fetchRequests]);
 
   const offerTypeLabels: Record<string, string> = {
-    sale: "للشراء", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", any: "أي نوع",
+    sale: "للشراء", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", rent_daily: "إيجار يومي", any: "أي نوع",
   };
 
   const chips = [
@@ -138,7 +138,8 @@ export default function RequestsPage() {
               label="نوع العرض"
               options={[
                 { value: "sale", label: "للشراء" }, { value: "rent_monthly", label: "إيجار شهري" },
-                { value: "rent_yearly", label: "إيجار سنوي" }, { value: "any", label: "أي نوع" },
+                { value: "rent_yearly", label: "إيجار سنوي" }, { value: "rent_daily", label: "إيجار يومي" },
+                { value: "any", label: "أي نوع" },
               ]}
               value={filters.offer_type}
               onChange={(e) => setFilters((p) => ({ ...p, offer_type: e.target.value }))}

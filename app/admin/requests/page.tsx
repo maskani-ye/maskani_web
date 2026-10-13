@@ -55,7 +55,7 @@ const typeLabel = (r: { property_type?: string; property_type_name?: string }) =
 
 const OFFER_LABELS: Record<string, string> = {
   sale: "شراء", rent_monthly: "إيجار شهري",
-  rent_yearly: "إيجار سنوي", any: "أي نوع",
+  rent_yearly: "إيجار سنوي", rent_daily: "إيجار يومي", any: "أي نوع",
 };
 
 const PROPERTY_FILTER = [
@@ -72,6 +72,7 @@ const OFFER_FILTER = [
   { value: "sale", label: "شراء" },
   { value: "rent_monthly", label: "إيجار شهري" },
   { value: "rent_yearly", label: "إيجار سنوي" },
+  { value: "rent_daily", label: "إيجار يومي" },
   { value: "any", label: "أي نوع" },
 ];
 

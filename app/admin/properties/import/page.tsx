@@ -30,7 +30,7 @@ const SAMPLE = `title,city,offer_type,contact_phone,price,currency,area,rooms
 const TEMPLATE = `title,city,offer_type,contact_phone,price,currency,area,rooms,bathrooms,property_type,address,description
 شقة للإيجار في حي كذا,إب,rent_yearly,+9677XXXXXXXX,600000,YER,150,3,2,شقة,شارع كذا,وصف مختصر
 ,,,,,,,,,,,
-ملاحظات: offer_type = sale أو rent_monthly أو rent_yearly · currency = YER أو SAR أو USD,,,,,,,,,,,`;
+ملاحظات: offer_type = sale أو rent_monthly أو rent_yearly أو rent_daily · currency = YER أو SAR أو USD,,,,,,,,,,,`;
 
 /** رسالة جاهزة تُرسَل للمكتب العقاريّ كما هي.
  *

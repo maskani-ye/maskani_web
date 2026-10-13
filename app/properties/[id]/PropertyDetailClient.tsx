@@ -494,7 +494,7 @@ export default function PropertyDetailClient(
             )}
             <p className="text-h1 font-extrabold text-primary mb-1">{formatPrice(property.price, property.currency)}</p>
             {property.offer_type !== "sale" && (
-              <p className="text-body text-muted">{property.offer_type === "rent_monthly" ? "شهرياً" : "سنوياً"}</p>
+              <p className="text-body text-muted">{{ rent_monthly: "شهرياً", rent_daily: "لليلة الواحدة" }[property.offer_type as string] ?? "سنوياً"}</p>
             )}
 
             <hr className="my-4 border-muted-100" />

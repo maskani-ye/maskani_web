@@ -46,10 +46,10 @@ interface AdminCountry { id: number; code: string; name_ar: string; cities?: Adm
 interface AdminHood { id: number; name: string; city: number }
 
 const OFFER_LABELS: Record<string, string> = {
-  sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي",
+  sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", rent_daily: "إيجار يومي",
 };
-const OFFER_COLORS: Record<string, "green" | "yellow" | "blue"> = {
-  sale: "green", rent_monthly: "yellow", rent_yearly: "blue",
+const OFFER_COLORS: Record<string, "green" | "yellow" | "blue" | "gold"> = {
+  sale: "green", rent_monthly: "yellow", rent_yearly: "blue", rent_daily: "gold",
 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────

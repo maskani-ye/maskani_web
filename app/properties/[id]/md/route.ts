@@ -19,7 +19,7 @@ const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1
 const SITE = "https://maskani.homes";
 
 const OFFER: Record<string, string> = {
-  sale: "للبيع", rent_monthly: "للإيجار الشهري", rent_yearly: "للإيجار السنوي",
+  sale: "للبيع", rent_monthly: "للإيجار الشهري", rent_yearly: "للإيجار السنوي", rent_daily: "للإيجار اليومي",
 };
 const CUR: Record<string, string> = {
   YER: "ريال يمني", YEA: "ريال يمني (عدن)", SAR: "ريال سعودي", JOD: "دينار أردني",

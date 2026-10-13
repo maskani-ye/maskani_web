@@ -65,7 +65,7 @@ export interface City {
 
 // ─── Properties ─────────────────────────────────────────────────────────────
 export type PropertyType = "apartment" | "house" | "land" | "commercial";
-export type OfferType = "sale" | "rent_monthly" | "rent_yearly";
+export type OfferType = "sale" | "rent_monthly" | "rent_yearly" | "rent_daily";
 export type Currency = "SAR" | "YER" | "USD";
 export type FurnishingType = "furnished" | "unfurnished" | "semi_furnished";
 export type PropertyStatus = "available" | "reserved" | "sold_rented";

@@ -75,7 +75,7 @@ const FILTER_LABELS: Record<string, string> = {
   price_min: "سعر≥", price_max: "سعر≤", price_currency: "العملة", area_min: "مساحة≥",
   area_max: "مساحة≤", area_text: "الحيّ", search: "كلمات", category: "تصنيف",
 };
-const OFFER: Record<string, string> = { sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي" };
+const OFFER: Record<string, string> = { sale: "بيع", rent_monthly: "إيجار شهري", rent_yearly: "إيجار سنوي", rent_daily: "إيجار يومي" };
 
 function FilterChips({ filters }: { filters?: Record<string, unknown> }) {
   const entries = Object.entries(filters || {}).filter(([k]) => k !== "country");
