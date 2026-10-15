@@ -1,5 +1,6 @@
 "use client";
 
+import { oxfileUrl } from "@/lib/fileTools";
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -654,6 +655,13 @@ function StepMedia({
         <span className="text-body text-muted">{images.length}/10</span>
       </div>
       <p className="text-caption text-muted -mt-1 mb-2.5">الصورة الأولى ستكون الصورة الرئيسية للعقار</p>
+      <p className="text-caption text-muted -mt-1.5 mb-2.5">
+        تريد قصّ صورة أو وضع علامة مائية عليها؟{" "}
+        <a href={oxfileUrl("image/crop-image", "create_property")} target="_blank" rel="noopener" className="text-primary font-semibold">قصّ</a>
+        {" · "}
+        <a href={oxfileUrl("image/image-watermark", "create_property")} target="_blank" rel="noopener" className="text-primary font-semibold">علامة مائية</a>
+        {" — "}أدوات مجّانية في OxFile.
+      </p>
       <div className="flex flex-wrap gap-2">
         {images.map((img, i) => (
           <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden">

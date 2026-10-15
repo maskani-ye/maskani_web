@@ -3,6 +3,7 @@ import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbList, itemList, SITE_URL } from "@/lib/seo";
 import { TOOLS } from "@/lib/toolsMeta";
+import { FILE_TOOL_GROUPS, oxfileUrl } from "@/lib/fileTools";
 
 export const metadata: Metadata = {
   title: "أدوات وحاسبات عقارية | حاسبة البناء والعائد والأقساط",
@@ -45,6 +46,34 @@ export default function ToolsHub() {
           </Link>
         ))}
       </div>
+
+      {/* أدوات الملفات — تفتح في OxFile (موقعٌ شقيق). */}
+      <section className="mt-12" aria-labelledby="file-tools">
+        <h2 id="file-tools" className="text-h3 sm:text-h2 font-extrabold text-ink">أدوات صور العقار والمستندات</h2>
+        <p className="text-muted-600 mt-2 leading-relaxed max-w-3xl">
+          جهّز صور إعلانك وعقودك قبل النشر أو الإرسال. هذه الأدوات مجّانية وتفتح في موقع OxFile.
+        </p>
+        {FILE_TOOL_GROUPS.map((g) => (
+          <div key={g.title} className="mt-6">
+            <h3 className="font-bold text-ink text-body-lg mb-3">{g.title}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {g.tools.map((t) => (
+                <a
+                  key={t.path}
+                  href={oxfileUrl(t.path, "tools_hub")}
+                  target="_blank"
+                  rel="noopener"
+                  className="rounded-2xl border border-muted-200 bg-white p-4 hover:border-primary hover:shadow-e3 transition-all group"
+                >
+                  <span className="block font-bold text-ink group-hover:text-primary transition-colors">{t.title}</span>
+                  <span className="block text-muted-500 text-body mt-1 leading-relaxed">{t.desc}</span>
+                  <span className="inline-block mt-2 text-primary text-caption font-semibold">افتح في OxFile ↗</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }
