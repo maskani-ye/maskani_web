@@ -22,8 +22,8 @@ export interface MarketSectionConfig {
   title: (m: Market) => string;
   /** الوصف — يستقبل اسم السوق ومدنه. */
   description: (m: Market, cities: string) => string;
-  /** واجهة القسم. */
-  render: () => React.ReactNode;
+  /** واجهة القسم — تستقبل رمز السوق (`ye` · `sa` …) لمن يحتاجه. */
+  render: (market: string) => React.ReactNode;
 }
 
 export function createMarketSection(cfg: MarketSectionConfig) {
@@ -64,7 +64,7 @@ export function createMarketSection(cfg: MarketSectionConfig) {
     const { market } = await params;
     const m = await marketByCode(market);
     if (!m) notFound();
-    return <>{cfg.render()}</>;
+    return <>{cfg.render(market)}</>;
   }
 
   return { generateStaticParams, generateMetadata, Page };

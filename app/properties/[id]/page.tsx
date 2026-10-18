@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Property } from "@/types";
 import PropertyDetailClient from "./PropertyDetailClient";
+import { CampaignSlot } from "@/components/campaigns/CampaignSlot";
 
 /**
  * ⚠️ درسٌ من عطل حيّ (2026-08-23): بُني الويب بينما كانت القاعدة ساقطة، فثُبِّتت
@@ -56,5 +57,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (property === "NOT_FOUND") notFound(); // 404 حقيقي (عقار محذوف/غير موجود)
   // بعد notFound()، النوع هنا Property | null — خطأ شبكة عابر يمرّر null وتتكفّل
   // الجزيرة بإعادة المحاولة عميلًا.
-  return <PropertyDetailClient id={id} initialProperty={property} />;
+  // الإعلان يُجلب في الخادم ويُمرَّر عقدةً جاهزة — الجزيرة عميلٌ لا يجلب بنفسه.
+  const campaign = property ? (
+    <CampaignSlot placement="property_detail" city={property.city} topic={[property.title]} />
+  ) : null;
+  return <PropertyDetailClient id={id} initialProperty={property} campaign={campaign} />;
 }

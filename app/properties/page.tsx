@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { citySlug } from "@/lib/seo";
 import PropertiesListClient from "./PropertiesListClient";
+import { CampaignSlot } from "@/components/campaigns/CampaignSlot";
 import LatestProperties from "@/components/properties/LatestProperties";
 import SectionIntro from "@/components/SectionIntro";
 
@@ -48,6 +49,9 @@ export default function PropertiesPage() {
       <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8 text-center text-muted">جارِ التحميل…</div>}>
         <PropertiesListClient />
       </Suspense>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
+        <CampaignSlot placement="properties_list" country="YE" />
+      </div>
       <LatestProperties />
     </>
   );

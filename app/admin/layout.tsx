@@ -16,6 +16,7 @@ import {
   ServerSquare,
   DocumentAdd,
   Dollar,
+  Sale,
 } from "@solar-icons/react";
 
 // عناصر التنقّل مجمّعة حسب التخصّص/الوظيفة. الترتيب ثابت ومطابق لتطبيق الإدارة.
@@ -59,6 +60,7 @@ const NAV_GROUPS = [
       { href: "/admin/helpdesk",      label: "مركز المساعدة", icon: HeadphonesRound },
       { href: "/admin/broadcast",     label: "الإشعارات",     icon: Bell },
       { href: "/admin/notification-templates", label: "قوالب الإشعارات", icon: Bell },
+      { href: "/admin/campaigns", label: "الإعلانات", icon: Sale },
     ],
   },
   {

@@ -90,6 +90,10 @@ export const endpoints = {
     // بينما الخادم يُرجع 50 عنصرًا على المسار الصحيح.
     activity: `${ADMIN}/dashboard/activity/`,
 
+    // campaigns — إعلانات مسكني الخاصّة
+    campaigns: `${ADMIN}/campaigns/`,
+    campaign: (id: Id) => `${ADMIN}/campaigns/${id}/`,
+    campaignPlacements: `${ADMIN}/campaigns/placements/`,
     // blog
     propertiesBulkImport: `${ADMIN}/properties/bulk-import/`,
     blog: `${ADMIN}/blog/`,

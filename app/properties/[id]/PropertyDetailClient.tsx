@@ -58,7 +58,7 @@ interface PropertyComment {
 // جزيرة تفاعلية (client) — تستقبل بيانات العقار المُصيَّرة من الخادم (initialProperty)
 // كي يظهر المحتوى في HTML الخام فورًا (SSR) بدل هيكل تحميل فارغ؛ ثم تُحدّثها بهدوء.
 export default function PropertyDetailClient(
-  { id, initialProperty }: { id: string; initialProperty: Property | null },
+  { id, initialProperty, campaign }: { id: string; initialProperty: Property | null; campaign?: React.ReactNode },
 ) {
   const router = useRouter();
   const { user } = useAuth();
@@ -369,6 +369,9 @@ export default function PropertyDetailClient(
               <h3 className="font-bold text-ink mb-2">الوصف</h3>
               <p className="text-muted-600 text-body leading-relaxed whitespace-pre-line">{property.description}</p>
             </div>
+
+            {/* إعلان مسكني (يُدار من /admin/campaigns) — بعد الوصف، لا بين الصور والسعر. */}
+            {campaign}
 
             {/* فيديو الإعلان — يُعرض بعد الوصف مباشرةً حيث يبحث عنه المهتمّ. */}
             {property.video_url && (

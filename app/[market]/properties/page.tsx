@@ -1,5 +1,6 @@
 import { createMarketSection } from "@/lib/marketSection";
 import PropertiesListClient from "@/app/properties/PropertiesListClient";
+import { CampaignSlot } from "@/components/campaigns/CampaignSlot";
 
 /**
  * عقارات السوق — تُبنى من مصنع أقسام السوق.
@@ -12,7 +13,14 @@ const section = createMarketSection({
   slug: "properties",
   title: (m) => `عقارات للبيع والإيجار في ${m.nameAr}`,
   description: (m, cities) => `شقق وفلل وأراضٍ للبيع والإيجار في ${m.nameAr} — ${cities} وغيرها. تواصل مباشر مع صاحب العقار بلا عمولة.`,
-  render: () => <PropertiesListClient />,
+  render: (market) => (
+    <>
+      <PropertiesListClient />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
+        <CampaignSlot placement="properties_list" country={market} />
+      </div>
+    </>
+  ),
 });
 
 // ⚠️ **قيمتان حرفيّتان لا مُستوردتان.** يرفض Next أي `revalidate` أو
