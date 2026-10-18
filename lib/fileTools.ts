@@ -34,7 +34,6 @@ export const FILE_TOOL_GROUPS: { title: string; tools: FileTool[] }[] = [
       { path: "pdf/compress-pdf", title: "ضغط PDF", desc: "صكٌّ ممسوح ضوئياً بحجمٍ يقبله واتساب والبريد." },
       { path: "pdf/split-pdf", title: "تقسيم PDF", desc: "استخرج صفحةً واحدة من عقدٍ طويل." },
       { path: "pdf/word-to-pdf", title: "Word إلى PDF", desc: "عقد إيجار كتبته في Word بصيغةٍ لا تتغيّر عند الطرف الآخر." },
-      { path: "pdf/pdf-to-word", title: "PDF إلى Word", desc: "عدّل نموذج عقدٍ وصلك PDF." },
       { path: "pdf/pdf-to-jpg", title: "PDF إلى صورة", desc: "مخطّط العقار من ملف PDF إلى صورةٍ تُرفق بالإعلان." },
     ],
   },
