@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbList, SITE_URL } from "@/lib/seo";
 import { Card } from "@/components/ui/Card";
 import { ToolMeta, TOOLS, TOOL_ARTICLES } from "@/lib/toolsMeta";
+import { OxFileBanner } from "@/components/promo/OxFileBanner";
 
 // غلاف خادميّ لصفحة أداة — كل المحتوى (h1، المقدّمة، خطوات العمل، الأسئلة الشائعة،
 // JSON-LD) مُصيَّر خادميًّا في HTML الخام للفهرسة؛ الحاسبة التفاعلية (client) تُمرَّر
@@ -77,6 +78,8 @@ export function ToolPage({ tool, children }: { tool: ToolMeta; children: ReactNo
       </header>
 
       <Card className="p-5 sm:p-6 mb-8">{children}</Card>
+
+      <OxFileBanner medium={`tool_${tool.slug}`} topic={[tool.h1, tool.intro]} className="mb-8" />
 
       {tool.sections?.length ? (
         <div className="mb-8 space-y-6">

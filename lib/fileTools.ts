@@ -38,3 +38,39 @@ export const FILE_TOOL_GROUPS: { title: string; tools: FileTool[] }[] = [
     ],
   },
 ];
+
+// ─── بانر OxFile — الأداة الأنسب لموضوع الصفحة ──────────────────────────────
+// الكلمات تُطابَق في العنوان والوسوم: مقالٌ عن العقود يقترح أدوات PDF، وعن الصور
+// أدوات الصور. وما لا يطابق شيئاً يأخذ «دمج PDF» — أكثر ما يحتاجه من يبيع أو يؤجّر.
+
+export interface BannerTool {
+  path: string;
+  headline: string;
+  pitch: string;
+}
+
+const BANNER_RULES: { words: RegExp; tool: BannerTool }[] = [
+  {
+    words: /صور|تصوير|لقطة|معرض|كاميرا/,
+    tool: { path: "image/image-watermark", headline: "احمِ صور عقارك بعلامة مائية", pitch: "ضع اسمك على الصور قبل نشرها — مجاناً ومن متصفّحك." },
+  },
+  {
+    words: /مخطط|مخطّط|خريطة|رسم هندسي|كروكي/,
+    tool: { path: "pdf/pdf-to-jpg", headline: "حوّل مخطّط PDF إلى صورة", pitch: "أرفق مخطّط عقارك بالإعلان صورةً واضحة — في ثوانٍ." },
+  },
+  {
+    words: /عقد|إيجار|ايجار|صك|صكّ|طابو|سند|توثيق|ملكية|نقل|وكالة|شهر عقاري|تسجيل/,
+    tool: { path: "pdf/merge-pdf", headline: "اجمع العقد والصكّ والهوية في ملف واحد", pitch: "ادمج مستنداتك في PDF واحد يُرسل بسهولة — مجاناً." },
+  },
+];
+
+const DEFAULT_BANNER: BannerTool = {
+  path: "pdf/compress-pdf",
+  headline: "مستنداتك أكبر من أن تُرسل؟",
+  pitch: "اضغط ملف PDF ليقبله واتساب والبريد — مجاناً ومن متصفّحك.",
+};
+
+export function pickBannerTool(...texts: (string | undefined | null)[]): BannerTool {
+  const hay = texts.filter(Boolean).join(" ");
+  return BANNER_RULES.find((r) => r.words.test(hay))?.tool ?? DEFAULT_BANNER;
+}

@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import ArticlePlaceLinks from "@/components/blog/ArticlePlaceLinks";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { OxFileBanner } from "@/components/promo/OxFileBanner";
 import { AdSenseScript } from "@/components/ads/AdSenseScript";
 import { AD_SLOTS } from "@/lib/ads";
 import { ShareBar } from "@/components/blog/ShareBar";
@@ -158,6 +159,8 @@ export default async function ArticlePage(
           />
 
           <AdSlot slot={AD_SLOTS.articleMid} layout="in-article" format="fluid" hasContent={reviewed} />
+
+          <OxFileBanner medium="blog_article" topic={[a.title, ...(a.tags ?? [])]} className="mt-6" />
 
           {a.tags?.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-6 pt-5 border-t border-muted-100">
