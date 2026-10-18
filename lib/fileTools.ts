@@ -31,7 +31,6 @@ export const FILE_TOOL_GROUPS: { title: string; tools: FileTool[] }[] = [
     title: "العقود والمستندات",
     tools: [
       { path: "pdf/merge-pdf", title: "دمج ملفات PDF", desc: "العقد والصكّ والهوية في ملفٍّ واحد للمشتري أو المستأجر." },
-      { path: "pdf/compress-pdf", title: "ضغط PDF", desc: "صكٌّ ممسوح ضوئياً بحجمٍ يقبله واتساب والبريد." },
       { path: "pdf/split-pdf", title: "تقسيم PDF", desc: "استخرج صفحةً واحدة من عقدٍ طويل." },
       { path: "pdf/word-to-pdf", title: "Word إلى PDF", desc: "عقد إيجار كتبته في Word بصيغةٍ لا تتغيّر عند الطرف الآخر." },
       { path: "pdf/pdf-to-jpg", title: "PDF إلى صورة", desc: "مخطّط العقار من ملف PDF إلى صورةٍ تُرفق بالإعلان." },
@@ -42,6 +41,8 @@ export const FILE_TOOL_GROUPS: { title: string; tools: FileTool[] }[] = [
 // ─── بانر OxFile — الأداة الأنسب لموضوع الصفحة ──────────────────────────────
 // الكلمات تُطابَق في العنوان والوسوم: مقالٌ عن العقود يقترح أدوات PDF، وعن الصور
 // أدوات الصور. وما لا يطابق شيئاً يأخذ «دمج PDF» — أكثر ما يحتاجه من يبيع أو يؤجّر.
+// ⚠️ **لا تُروَّج أداةٌ قبل قياس أنّها تعمل.** «ضغط PDF» في OxFile يعيد حفظ الملفّ
+// فقط: ملفٌّ بأربعة ميغابايت خرج أصغر بـ0.02% (قيس 2026-10-18)، فأُخرج من هنا.
 
 export interface BannerTool {
   path: string;
@@ -65,9 +66,9 @@ const BANNER_RULES: { words: RegExp; tool: BannerTool }[] = [
 ];
 
 const DEFAULT_BANNER: BannerTool = {
-  path: "pdf/compress-pdf",
-  headline: "مستنداتك أكبر من أن تُرسل؟",
-  pitch: "اضغط ملف PDF ليقبله واتساب والبريد — مجاناً ومن متصفّحك.",
+  path: "pdf/merge-pdf",
+  headline: "أوراق عقارك في ملفٍّ واحد",
+  pitch: "ادمج العقد والصكّ والمخطّط في PDF واحد يُرسل بسهولة — مجاناً ومن متصفّحك.",
 };
 
 export function pickBannerTool(...texts: (string | undefined | null)[]): BannerTool {
