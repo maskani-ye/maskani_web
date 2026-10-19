@@ -32,6 +32,7 @@ interface AdminCampaign {
   image: string | null;
   placements: string[];
   countries: string[];
+  platforms: string[];
   keywords: string[];
   priority: number;
   is_active: boolean;
@@ -53,6 +54,7 @@ interface CampaignForm {
   target_url: string;
   placements: string[];
   countries: string[];
+  platforms: string[];
   keywords: string;
   priority: number;
   is_active: boolean;
@@ -62,7 +64,7 @@ interface CampaignForm {
 
 const emptyForm: CampaignForm = {
   name: "", advertiser: "", label: "إعلان", headline: "", body: "", cta_label: "اعرف أكثر",
-  target_url: "https://", placements: [], countries: [], keywords: "", priority: 0,
+  target_url: "https://", placements: [], countries: [], platforms: [], keywords: "", priority: 0,
   is_active: true, starts_at: "", ends_at: "",
 };
 
@@ -76,6 +78,13 @@ const toLocalInput = (iso: string | null) => {
 const fromLocalInput = (v: string) => (v ? new Date(v).toISOString() : null);
 
 const fmt = (n: number) => n.toLocaleString(NUMERIC_LOCALE);
+
+const PLATFORMS = [
+  { value: "android", label: "أندرويد" },
+  { value: "ios", label: "آيفون" },
+  { value: "desktop", label: "كمبيوتر" },
+];
+const platformLabel = (v: string) => PLATFORMS.find((p) => p.value === v)?.label ?? v;
 
 export default function AdminCampaignsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -127,7 +136,7 @@ export default function AdminCampaignsPage() {
   const openEdit = (c: AdminCampaign) => {
     setForm({
       name: c.name, advertiser: c.advertiser, label: c.label, headline: c.headline, body: c.body,
-      cta_label: c.cta_label, target_url: c.target_url, placements: c.placements, countries: c.countries,
+      cta_label: c.cta_label, target_url: c.target_url, placements: c.placements, countries: c.countries, platforms: c.platforms ?? [],
       keywords: c.keywords.join("، "), priority: c.priority, is_active: c.is_active,
       starts_at: toLocalInput(c.starts_at), ends_at: toLocalInput(c.ends_at),
     });
@@ -138,7 +147,7 @@ export default function AdminCampaignsPage() {
 
   const closeModal = () => setModal({ open: false, editing: null });
 
-  const toggle = (key: "placements" | "countries", v: string) =>
+  const toggle = (key: "placements" | "countries" | "platforms", v: string) =>
     setForm((p) => ({ ...p, [key]: p[key].includes(v) ? p[key].filter((x) => x !== v) : [...p[key], v] }));
 
   const save = async () => {
@@ -163,13 +172,14 @@ export default function AdminCampaignsPage() {
       Object.entries(fields).forEach(([k, v]) => fd.append(k, String(v)));
       fd.append("placements", form.placements.join(","));
       fd.append("countries", form.countries.join(","));
+      fd.append("platforms", form.platforms.join(","));
       fd.append("keywords", keywords.join(","));
       fd.append("starts_at", starts_at ?? "");
       fd.append("ends_at", ends_at ?? "");
       fd.append("image", await compressImage(image));
       payload = fd;
     } else {
-      payload = { ...fields, placements: form.placements, countries: form.countries, keywords, starts_at, ends_at };
+      payload = { ...fields, placements: form.placements, countries: form.countries, platforms: form.platforms, keywords, starts_at, ends_at };
       if (removeImage) payload.image = null;
     }
 
@@ -254,6 +264,7 @@ export default function AdminCampaignsPage() {
                     <p className="text-caption text-muted-500 mt-0.5">
                       {c.advertiser || "—"} · أولويّة {c.priority}
                       {c.countries.length > 0 && <> · {c.countries.join("، ")}</>}
+                      {(c.platforms ?? []).length > 0 && <> · {c.platforms.map(platformLabel).join("، ")} فقط</>}
                       {c.keywords.length > 0 && <> · {c.keywords.length} كلمة موضوع</>}
                     </p>
                   </td>
@@ -352,13 +363,25 @@ export default function AdminCampaignsPage() {
               </div>
             </div>
 
+            <div>
+              <p className="text-body font-medium text-muted-700 mb-1">الأجهزة</p>
+              <p className="text-caption text-muted mb-2">بلا اختيار = كل الأجهزة. إعلان تطبيق أندرويد ← اختر «أندرويد» وحده.</p>
+              <div className="flex flex-wrap gap-2">
+                {PLATFORMS.map((p) => (
+                  <Chip key={p.value} on={form.platforms.includes(p.value)} onClick={() => toggle("platforms", p.value)}>
+                    {p.label}
+                  </Chip>
+                ))}
+              </div>
+            </div>
+
             <Input label="كلمات الموضوع" value={form.keywords}
-              hint="مفصولة بفاصلة. فارغة = إعلان عامّ لأيّ صفحة. وإلا يظهر حين يحوي عنوان الصفحة إحداها، ويتقدّم على العامّ."
+              hint="مفصولة بفاصلة. فارغة = إعلان عامّ لأيّ صفحة. وإلا يظهر حين يحوي عنوان الصفحة إحداها، ويتقدّم على العامّ إن تساوت الأولويّة."
               onChange={(e) => setForm((p) => ({ ...p, keywords: e.target.value }))} />
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Input label="الأولويّة" type="number" value={form.priority}
-                hint="الأعلى يظهر أوّلاً"
+                hint="الأعلى يظهر أوّلاً — ارفعها ليتقدّم على غيره في كل المواضع"
                 onChange={(e) => setForm((p) => ({ ...p, priority: Number(e.target.value) }))} />
               <Input label="يبدأ" type="datetime-local" value={form.starts_at}
                 onChange={(e) => setForm((p) => ({ ...p, starts_at: e.target.value }))} />

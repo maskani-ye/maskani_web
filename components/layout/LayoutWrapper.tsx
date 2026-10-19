@@ -9,9 +9,13 @@ import { FloatingAssistant } from "./FloatingAssistant";
 import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
 import { LocationGate } from "@/components/city/LocationGate";
 import { ProfileCompletionBanner } from "@/components/account/ProfileCompletionBanner";
+import { CampaignSlot } from "@/components/campaigns/CampaignSlot";
+import { splitMarket } from "@/lib/markets";
+import { useCountry } from "@/context/CountryContext";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { country } = useCountry();
   // مسارات /auth و /admin لها هيكلها الخاص — لا نغلّفها بشريط التنقّل العام والتذييل
   const isBare = pathname.startsWith("/auth") || pathname.startsWith("/admin");
   // ⚠️ **الصفحة الأولى تُدير إطارها بنفسها**: تأليفها مِلء الشاشة بترويسة
@@ -42,6 +46,12 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       {/* ترغيب لطيف (لا إجبار) لإكمال الهاتف/المدينة للمستخدم المسجّل غير المكتمل */}
       <ProfileCompletionBanner />
       <main className="flex-1">{children}</main>
+      {/* إعلان «كل الصفحات» — فوق التذييل، لا في المحادثة ولا في بوّابة الموقع. */}
+      {!isChatConversation && pathname !== "/location" && (
+        <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 pb-8">
+          <CampaignSlot placement="site_wide" siteWide country={splitMarket(pathname).market ?? country?.code} />
+        </div>
+      )}
       {!isAssistant && <Footer />}
       {/* زرّ عائم لمركز المساعدة */}
       <FloatingHelp />
