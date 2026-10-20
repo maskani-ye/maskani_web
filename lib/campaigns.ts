@@ -10,7 +10,8 @@ export type CampaignPlacement =
   | "property_detail"
   | "properties_list"
   | "app_home"
-  | "site_wide";
+  | "site_wide"
+  | "spotlight";
 
 export type CampaignPlatform = "android" | "ios" | "desktop";
 
@@ -32,6 +33,8 @@ export interface Campaign {
   cta_label: string;
   image: string | null;
   target_url: string;
+  /** النافذة المنبثقة: لا تُعاد على الزائر نفسه قبل هذه الساعات */
+  spotlight_every_hours?: number;
 }
 
 /** النقرة تمرّ بالخادم ليعدّها ثم يحوّل إلى وجهة الإعلان. */

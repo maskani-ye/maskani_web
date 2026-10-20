@@ -35,6 +35,7 @@ interface AdminCampaign {
   platforms: string[];
   keywords: string[];
   priority: number;
+  spotlight_every_hours: number;
   is_active: boolean;
   starts_at: string | null;
   ends_at: string | null;
@@ -57,6 +58,7 @@ interface CampaignForm {
   platforms: string[];
   keywords: string;
   priority: number;
+  spotlight_every_hours: number;
   is_active: boolean;
   starts_at: string;
   ends_at: string;
@@ -64,7 +66,7 @@ interface CampaignForm {
 
 const emptyForm: CampaignForm = {
   name: "", advertiser: "", label: "إعلان", headline: "", body: "", cta_label: "اعرف أكثر",
-  target_url: "https://", placements: [], countries: [], platforms: [], keywords: "", priority: 0,
+  target_url: "https://", placements: [], countries: [], platforms: [], keywords: "", priority: 0, spotlight_every_hours: 24,
   is_active: true, starts_at: "", ends_at: "",
 };
 
@@ -137,7 +139,7 @@ export default function AdminCampaignsPage() {
     setForm({
       name: c.name, advertiser: c.advertiser, label: c.label, headline: c.headline, body: c.body,
       cta_label: c.cta_label, target_url: c.target_url, placements: c.placements, countries: c.countries, platforms: c.platforms ?? [],
-      keywords: c.keywords.join("، "), priority: c.priority, is_active: c.is_active,
+      keywords: c.keywords.join("، "), priority: c.priority, spotlight_every_hours: c.spotlight_every_hours ?? 24, is_active: c.is_active,
       starts_at: toLocalInput(c.starts_at), ends_at: toLocalInput(c.ends_at),
     });
     setImage(null);
@@ -159,6 +161,7 @@ export default function AdminCampaignsPage() {
       name: form.name.trim(), advertiser: form.advertiser.trim(), label: form.label.trim(),
       headline: form.headline.trim(), body: form.body.trim(), cta_label: form.cta_label.trim(),
       target_url: form.target_url.trim(), priority: Number(form.priority) || 0, is_active: form.is_active,
+      spotlight_every_hours: Math.max(1, Math.round(Number(form.spotlight_every_hours) || 24)),
     };
     // الكلمات تُكتب مفصولةً بفاصلة عربية أو لاتينية.
     const keywords = form.keywords.split(/[,،]/).map((k) => k.trim()).filter(Boolean);
@@ -346,6 +349,12 @@ export default function AdminCampaignsPage() {
                   </Chip>
                 ))}
               </div>
+              {form.placements.includes("spotlight") && (
+                <div className="mt-3"><Input label="تكرار النافذة المنبثقة (بالساعات)" type="number" min={1}
+                  value={form.spotlight_every_hours}
+                  hint="لا تظهر للزائر نفسه قبل مرور هذه المدّة. ولا تظهر في أوّل صفحة يفتحها الزائر."
+                  onChange={(e) => setForm((p) => ({ ...p, spotlight_every_hours: Number(e.target.value) }))} /></div>
+              )}
             </div>
 
             <div>

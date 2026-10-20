@@ -10,6 +10,7 @@ import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
 import { LocationGate } from "@/components/city/LocationGate";
 import { ProfileCompletionBanner } from "@/components/account/ProfileCompletionBanner";
 import { CampaignSlot } from "@/components/campaigns/CampaignSlot";
+import { CampaignSpotlight } from "@/components/campaigns/CampaignSpotlight";
 import { splitMarket } from "@/lib/markets";
 import { useCountry } from "@/context/CountryContext";
 
@@ -51,6 +52,10 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 pb-8">
           <CampaignSlot placement="site_wide" siteWide country={splitMarket(pathname).market ?? country?.code} />
         </div>
+      )}
+      {/* النافذة المنبثقة — لا فوق محادثة ولا فوق بوّابة الموقع */}
+      {!isChatConversation && pathname !== "/location" && (
+        <CampaignSpotlight pathname={pathname} country={splitMarket(pathname).market ?? country?.code} />
       )}
       {!isAssistant && <Footer />}
       {/* زرّ عائم لمركز المساعدة */}
