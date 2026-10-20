@@ -106,8 +106,8 @@ export function CampaignSpotlight({ pathname, country }: { pathname: string; cou
         <span className="block text-micro font-semibold text-white/60">{c.label || "إعلان"}</span>
         {c.image && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={c.image} alt="" width={96} height={96}
-            className="mx-auto mt-4 w-24 h-24 rounded-2xl object-cover bg-white/10" />
+          <img src={c.image} alt="" width={192} height={96}
+            className="mx-auto mt-4 h-24 w-auto max-w-full rounded-2xl object-contain" />
         )}
         <p className="mt-4 font-extrabold text-h3 leading-snug text-balance">{c.headline}</p>
         {c.body && <p className="mt-2 text-white/75 text-body leading-relaxed">{c.body}</p>}
