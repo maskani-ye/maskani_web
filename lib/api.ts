@@ -15,6 +15,12 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Token ${token}`;
   }
+  // ⚠️ الترويسة الافتراضية JSON تجعل axios يحوّل FormData إلى JSON فيصل الملفّ
+  // نصّاً ويردّ الخادم «البيانات المرسلة ليست ملف» — كسر رفع صور الإعلانات والمدن
+  // وصور العقار في اللوحة. FormData = multipart دائماً، والمتصفّح يضع الحدّ.
+  if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+    config.headers["Content-Type"] = "multipart/form-data";
+  }
   return config;
 });
 
