@@ -303,8 +303,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ⚠️ دخلت الخريطة بعد أن صارت **مفهرسة**: كانت تُخدَم على `/` بوسم `noindex`
   // فأخرجت الرئيسية نفسها من الفهرس. الأولوية 0.9 — أعلى من صفحة هبوط الدولة
   // لأنها واجهة السوق لا قائمة عقاراته وحدها.
+  // ⚠️ سوقٌ بلا عقارٍ على الموقع `noindex` (2026‑10‑25: المنقول للتطبيقات وحدها)،
+  // فلا يُرسَل — القاعدة نفسها في `app/market/[market]/page.tsx`.
   const marketEntries: MetadataRoute.Sitemap = countryList
-    .filter((c) => c.code)
+    .filter((c) => c.code && c.count > 0)
     .flatMap((c) => [
       {
         url: `${BASE}/${c.code}`,
@@ -325,7 +327,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
   // صفحات هبوط الدول — /properties/country/<slug>
-  const countryEntries: MetadataRoute.Sitemap = countryList.map((c) => ({
+  // العتبة نفسها في `robots` صفحة الدولة (`COUNTRY_INDEX_MIN`).
+  const countryEntries: MetadataRoute.Sitemap = countryList.filter((c) => c.count >= 3).map((c) => ({
     url: `${BASE}/properties/country/${c.slug}`,
     lastModified: now,
     changeFrequency: "daily",

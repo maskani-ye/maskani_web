@@ -292,11 +292,13 @@ export default function HomeClient({
       <MapBand cityId={cityId} countryCode={countryCode} where={where} />
 
       {/* ─── ⑤ المدن — بلاطات بأعداد المخزون ───────────────────────────── */}
-      <section className="bg-cream">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-20">
-          <CitiesTiles cities={cities} />
-        </div>
-      </section>
+      {(cities as City[]).some((c) => (c.properties_count ?? 0) > 0) && (
+        <section className="bg-cream">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+            <CitiesTiles cities={cities} />
+          </div>
+        </section>
+      )}
 
       {/* ─── ⑥ الخدمات والطلبات — نطاق واحد بثلاثة أعمدة ───────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-20">
@@ -524,12 +526,9 @@ const TILE_SURFACES = [
 function CitiesTiles({ cities }: { cities: City[] }) {
   const router = useRouter();
   const { cityId, setCity } = useCity();
-  if (!cities.length) return null;
-
-  const ordered = [...cities].sort(
-    (a, b) => Number((b.properties_count ?? 0) > 0) - Number((a.properties_count ?? 0) > 0),
-  );
-  const shown = ordered.slice(0, 8);
+  // مدينةٌ بلا عقار لا بلاطة لها: «٠» ثماني مرّات وعدٌ بسوقٍ فارغ (2026‑10‑25).
+  const shown = cities.filter((c) => (c.properties_count ?? 0) > 0).slice(0, 8);
+  if (!shown.length) return null;
 
   const pick = (c: City) => {
     setCity(String(c.id), c.name_ar);
@@ -605,11 +604,11 @@ function CitiesTiles({ cities }: { cities: City[] }) {
         })}
       </div>
 
-      {ordered.length > shown.length && (
+      {cities.length > shown.length && (
         <div className="mt-6 text-center">
           <MarketLink href="/properties">
             <Button variant="outline">
-              كل المدن ({ordered.length.toLocaleString(NUMERIC_LOCALE)})
+              كل المدن ({cities.length.toLocaleString(NUMERIC_LOCALE)})
             </Button>
           </MarketLink>
         </div>

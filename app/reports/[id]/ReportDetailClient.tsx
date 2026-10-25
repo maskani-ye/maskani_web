@@ -92,7 +92,7 @@ export default function ReportDetailClient({ id, initialReport }: { id: string; 
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-body text-muted mb-6">
-        <Link href="/reports" className="hover:text-primary">مجتمع الشكاوي</Link>
+        <Link href="/reports" className="hover:text-primary">مجتمع الشكاوى</Link>
         <AltArrowRight className="h-3.5 w-3.5" />
         <span className="text-muted-700 font-medium line-clamp-1">{report.title}</span>
       </div>

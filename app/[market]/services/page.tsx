@@ -11,7 +11,7 @@ import ServicesListClient from "@/app/services/ServicesListClient";
 const section = createMarketSection({
   slug: "services",
   title: (m) => `مزوّدو الخدمات العقارية في ${m.nameAr}`,
-  description: (m, cities) => `مقاولون وفنّيون ومهندسون في ${m.nameAr} — ${cities} وغيرها، بتقييمات حقيقية وتواصل مباشر.`,
+  description: (m, cities) => `مقاولون وفنّيون ومهندسون في ${m.nameAr} — ${cities} وغيرها، بتواصل مباشر مع مزوّد الخدمة.`,
   render: () => <ServicesListClient />,
 });
 

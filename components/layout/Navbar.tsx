@@ -31,7 +31,7 @@ const navLinks = [
   { href: "/services", label: "الخدمات", icon: Settings, match: ["/services"] },
   { href: "/requests", label: "الطلبات", icon: ClipboardList, match: ["/requests", "/jobs"] },
   { href: "/assistant", label: "المساعد", icon: Stars, match: ["/assistant"] },
-  { href: "/reports", label: "مجتمع الشكاوي", icon: ShieldWarning, match: ["/reports"] },
+  { href: "/reports", label: "مجتمع الشكاوى", icon: ShieldWarning, match: ["/reports"] },
 ];
 
 export function Navbar() {

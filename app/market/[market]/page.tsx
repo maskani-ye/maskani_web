@@ -51,8 +51,7 @@ export async function generateMetadata(
   const title = `مسكني — عقارات ${m.nameAr}: تواصل مع صاحب العقار مباشرة`;
   const description =
     `شقق وأراضٍ وفلل للبيع والإيجار${cities ? ` في ${cities} وبقيّة المدن` : ` في ${m.nameAr}`}، ` +
-    `ومقاولون وفنيّون بتقييمات حقيقية، وبلاغات احتيال تحميك قبل أن تدفع — ` +
-    `مجّاناً وبلا عمولة.`;
+    `تنشرها مجاناً وتتواصل فيها مع صاحب العقار مباشرةً — بلا عمولة.`;
 
   return {
     // ⚠️ `absolute` يتجاوز قالب التخطيط `%s | مسكني` — وإلّا صار العنوان
@@ -72,6 +71,9 @@ export async function generateMetadata(
     ],
     // العنوان الأساسي هو المسار القصير — لا `/market/…` الذي يُحوَّل إليه.
     alternates: { canonical: `/${market}` },
+    // سوقٌ بلا عقارٍ معروض على الموقع (المنقول للتطبيقات وحدها منذ 2026‑10‑25)
+    // صفحةٌ وعدُها أكبر من محتواها — لا تُفهرَس حتى يُنشر فيها أوّل إعلان.
+    ...(m.count === 0 ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title, description, url: `/${market}`, siteName: "مسكني",
       locale: "ar_AR", type: "website",

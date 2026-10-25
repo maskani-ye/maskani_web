@@ -74,7 +74,7 @@ export default function FraudReportsPage() {
       <Breadcrumbs items={[{ name: "الرئيسية", href: "/" }, { name: sectionLabel("reports") }]} />
       {/* Header */}
       <div className="mb-6">
-        <PageHeader as="h2" icon={<ShieldWarning />} title="مجتمع الشكاوي"
+        <PageHeader as="h2" icon={<ShieldWarning />} title="مجتمع الشكاوى"
           subtitle={`${total} بلاغ | الشفافية تحمي الجميع`}
           actions={
             <Button onClick={() => requireAuth(() => router.push("/reports/create"))}>

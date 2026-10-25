@@ -79,6 +79,10 @@ export function MapBand({
     ? `/properties?view=map&city=${cityId}`
     : "/properties?view=map";
 
+  // سوقٌ بلا عقارٍ على الخريطة لا يُعلَن له نطاقٌ بعرض الشاشة يقول «٠ عقاراً»
+  // (كان يُصيَّر صفراً للزاحف قبل الجلب أيضاً) — وعدٌ بقسمٍ فارغ (2026‑10‑25).
+  if (pins !== null && !total && points.length === 0) return null;
+
   return (
     <section ref={holder} className="bg-ink text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-20 grid gap-8 lg:grid-cols-12 lg:items-center">
@@ -106,7 +110,7 @@ export function MapBand({
               يقولها أصلاً. */}
           <p className="mt-7 flex items-baseline gap-3">
             <span className="text-display tabular-nums">
-              {(total ?? points.length).toLocaleString(NUMERIC_LOCALE)}
+              {total === null ? "…" : total.toLocaleString(NUMERIC_LOCALE)}
             </span>
             <span className="text-body-lg text-white/60">
               عقاراً بموقعه الدقيق على الخريطة

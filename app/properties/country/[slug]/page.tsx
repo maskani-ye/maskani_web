@@ -149,6 +149,8 @@ export async function generateStaticParams() {
   return list.map((c) => ({ slug: c.slug })).filter((p) => p.slug);
 }
 
+const COUNTRY_INDEX_MIN = 3;
+
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> },
 ): Promise<Metadata> {
@@ -167,6 +169,9 @@ export async function generateMetadata(
     description,
     keywords: keywordsFor(country, cities),
     alternates: { canonical: `/properties/country/${slug}` },
+    // دولةٌ بأقلّ من ثلاثة عقاراتٍ على الموقع صفحةٌ رقيقة — العتبة نفسها في الخريطة.
+    ...((country.properties_count ?? 0) < COUNTRY_INDEX_MIN
+      ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title,
       description,

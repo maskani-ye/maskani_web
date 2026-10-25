@@ -32,7 +32,7 @@ import { StoreBadges } from "@/components/download/StoreBadges";
 import { useCountry } from "@/context/CountryContext";
 import { api } from "@/lib/api";
 import { endpoints as ep } from "@/lib/endpoints";
-import { formatNumber } from "@/lib/utils";
+import { formatNumber, NUMERIC_LOCALE } from "@/lib/utils";
 import { marketPath } from "@/lib/markets";
 
 const BROWSE = [
@@ -200,7 +200,7 @@ export function Footer() {
             المساحة تحته بدل أن نُزيح الزرّ — الزرّ يجب أن يبقى في متناول اليد. */}
         <div className="flex flex-col gap-3 border-t border-white/10 pb-24 pt-6 sm:flex-row sm:items-center sm:justify-between lg:pb-6">
           <p className="text-caption text-white/45">
-            © {formatNumber(new Date().getFullYear())} مسكني — جميع الحقوق محفوظة
+            © {new Date().getFullYear().toLocaleString(NUMERIC_LOCALE, { useGrouping: false })} مسكني — جميع الحقوق محفوظة
           </p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             {LEGAL.map(({ href, label }) => (

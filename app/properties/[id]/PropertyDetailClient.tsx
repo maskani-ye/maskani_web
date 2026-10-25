@@ -17,7 +17,7 @@ import { AskPropertyBox } from "@/components/ai/AskPropertyBox";
 import { StarRating } from "@/components/ui/StarRating";
 import {
   MapPoint, Bed, Ruler, Eye, Heart, Phone, ChatSquare, ChatRoundDots,
-  CheckCircle, CloseCircle, Buildings2, Share, AltArrowRight, User, PenNewSquare,
+  CheckCircle, Buildings2, Share, AltArrowRight, User, PenNewSquare,
   Bath, Layers, TagPrice, WiFiRouter, CloudBolt, Shield, Leaf, Bolt, Box, Paw,
   Refresh, DangerTriangle,
 } from "@solar-icons/react";
@@ -348,21 +348,21 @@ export default function PropertyDetailClient(
               })}
             </div>
 
-            {/* Features */}
-            <div className="mb-5">
-              <h3 className="font-bold text-ink mb-3">المميزات</h3>
-              <div className="flex flex-wrap gap-2">
-                {featuresList.map(({ key, label }) => {
-                  const has = property[key as keyof Property] as boolean;
-                  return (
-                    <span key={key} className={`flex items-center gap-1.5 text-caption px-3 py-1.5 rounded-full font-medium ${has ? "bg-primary/10 text-primary" : "bg-muted-100 text-muted line-through"}`}>
-                      {has ? <CheckCircle className="h-3.5 w-3.5" /> : <CloseCircle className="h-3.5 w-3.5" />}
+            {/* Features — المتوفّر وحده. عشر شاراتٍ مشطوبة في كل صفحة («مسبح ✗»)
+                حشوٌ مكرّر لا يقول شيئاً، والغائب لا يُعدَّد (2026‑10‑25). */}
+            {featuresList.some(({ key }) => property[key as keyof Property]) && (
+              <div className="mb-5">
+                <h3 className="font-bold text-ink mb-3">المميزات</h3>
+                <div className="flex flex-wrap gap-2">
+                  {featuresList.filter(({ key }) => property[key as keyof Property]).map(({ key, label }) => (
+                    <span key={key} className="flex items-center gap-1.5 text-caption px-3 py-1.5 rounded-full font-medium bg-primary/10 text-primary">
+                      <CheckCircle className="h-3.5 w-3.5" />
                       {label}
                     </span>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Description */}
             <div>
@@ -382,7 +382,9 @@ export default function PropertyDetailClient(
             )}
 
             <div className="flex items-center gap-4 mt-4 pt-4 border-t border-muted-100 text-caption text-muted">
-              <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {property.views_count} مشاهدة</span>
+              {property.views_count > 0 && (
+                <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {property.views_count} مشاهدة</span>
+              )}
               <span>نُشر {formatRelativeTime(property.created_at)}</span>
             </div>
           </div>
