@@ -244,6 +244,9 @@ async function blogArticles(): Promise<{ slug: string; updated: string | null }[
 // `next.config.mjs` — انظر `headers()` هناك.
 export const dynamic = "force-dynamic";
 
+/** العتبة نفسها في `robots` صفحة السوق (`app/market/[market]/page.tsx`). */
+const MARKET_INDEX_MIN = 3;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticEntries: MetadataRoute.Sitemap = [
@@ -306,7 +309,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ⚠️ سوقٌ بلا عقارٍ على الموقع `noindex` (2026‑10‑25: المنقول للتطبيقات وحدها)،
   // فلا يُرسَل — القاعدة نفسها في `app/market/[market]/page.tsx`.
   const marketEntries: MetadataRoute.Sitemap = countryList
-    .filter((c) => c.code && c.count > 0)
+    .filter((c) => c.code && c.count >= MARKET_INDEX_MIN)
     .flatMap((c) => [
       {
         url: `${BASE}/${c.code}`,
@@ -375,7 +378,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...unitEntries,
-    ...staticEntries,
+    // البلاغات بلا بلاغٍ واحد `noindex` (`app/reports/layout.tsx`) — لا تُرسَل.
+    ...staticEntries.filter((e) => reports.length > 0 || e.url !== `${BASE}/reports`),
     ...marketEntries,
     ...countryEntries,
     ...cityEntries,

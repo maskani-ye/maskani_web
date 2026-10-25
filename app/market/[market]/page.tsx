@@ -71,9 +71,9 @@ export async function generateMetadata(
     ],
     // العنوان الأساسي هو المسار القصير — لا `/market/…` الذي يُحوَّل إليه.
     alternates: { canonical: `/${market}` },
-    // سوقٌ بلا عقارٍ معروض على الموقع (المنقول للتطبيقات وحدها منذ 2026‑10‑25)
-    // صفحةٌ وعدُها أكبر من محتواها — لا تُفهرَس حتى يُنشر فيها أوّل إعلان.
-    ...(m.count === 0 ? { robots: { index: false, follow: true } } : {}),
+    // سوقٌ بأقلّ من ثلاثة عقاراتٍ على الموقع (المنقول للتطبيقات وحدها منذ 2026‑10‑25)
+    // صفحةٌ وعدُها أكبر من محتواها — العتبة نفسها في الخريطة (`MARKET_INDEX_MIN`).
+    ...(m.count < 3 ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title, description, url: `/${market}`, siteName: "مسكني",
       locale: "ar_AR", type: "website",

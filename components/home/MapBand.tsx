@@ -81,7 +81,11 @@ export function MapBand({
 
   // سوقٌ بلا عقارٍ على الخريطة لا يُعلَن له نطاقٌ بعرض الشاشة يقول «٠ عقاراً»
   // (كان يُصيَّر صفراً للزاحف قبل الجلب أيضاً) — وعدٌ بقسمٍ فارغ (2026‑10‑25).
-  if (pins !== null && !total && points.length === 0) return null;
+  // ولا يُصيَّر قبل الجلب: الزاحف (بلا JS) كان يقرأ «… عقاراً بموقعه» لسوقٍ بلا
+  // نقطة. يبقى حاملٌ فارغ يرصده `IntersectionObserver` ليبدأ الجلب.
+  if (pins === null || (!total && points.length === 0)) {
+    return <div ref={holder} aria-hidden className="h-px" />;
+  }
 
   return (
     <section ref={holder} className="bg-ink text-white">
