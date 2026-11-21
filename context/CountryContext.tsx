@@ -62,7 +62,12 @@ export function CountryProvider({ children }: { children: React.ReactNode }) {
       } catch {
         /* تخزين غير متاح أو قيمة تالفة — نتابع بالكشف */
       }
-      if (saved?.code && !cancelled) setCountryState(saved);
+      // ⚠️ داخل رابط سوقٍ لا يُطبَّق محفوظٌ يخالفه — ولو لحظةً حتى تصل القائمة:
+      // كان محفوظ «السعودية» يُعرض عنواناً لصفحة `/ye` ريثما تُطابَق الدولة
+      // («ابحث عن مسكنك في السعودية»)، ويبقى إن تعذّر جلب القائمة. 2026-11-21
+      if (saved?.code && !cancelled && (!urlMarket || saved.code.toLowerCase() === urlMarket)) {
+        setCountryState(saved);
+      }
 
       // 2) قائمة الدول — تُعرض في المُبدِّل ويُطابَق بها الكشف.
       try {
@@ -126,12 +131,18 @@ export function CountryProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // الحارس الأخير لكل مستهلك (العنوان · علم الناف بار · …): داخل رابط سوق، كائن
+  // دولةٍ يخالف الرابط لا يُكشَف أبداً — `null` حتى يصل كائن سوق الرابط نفسه،
+  // فيحتاط المستهلك بقيمة الخادم (`serverMarket`) المطابقة للتصيير الأول.
+  const exposed =
+    urlMarket && country && country.code.toLowerCase() !== urlMarket ? null : country;
+
   return (
     <CountryContext.Provider
       value={{
         // الرمز من المسار تزامنياً — قبل أن تصل أي قائمة أو يُقرأ أي تخزين.
         code: urlMarket ? urlMarket.toUpperCase() : (country?.code ?? ""),
-        country,
+        country: exposed,
         countries,
         // ⚠️ داخل سوق لا يوجد «انتظار»: الرمز معروف من العنوان، وإبقاء
         // `loading` صحيحاً يُجمّد القوائم بلا سبب.
