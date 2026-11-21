@@ -104,7 +104,6 @@ export function CountryProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlMarket]);
 
   // متى وصلت القائمة، يُطابَق كائن الدولة بسوق المسار (الرمز صحيح قبلها أصلاً).

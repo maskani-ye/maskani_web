@@ -154,7 +154,6 @@ export default async function ArticlePage(
 
           <div
             className="article-body text-body leading-loose text-ink"
-            // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: a.body }}
           />
 

@@ -290,7 +290,6 @@ export function useChatSocket(options: UseChatSocketOptions): ChatSocket {
       setState("disconnected");
     };
     // نُعيد الاتصال فقط عند تغيّر المحادثة/المستخدم/التفعيل — لا عند تغيّر الـcallbacks.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, userId, enabled]);
 
   return { send, state, isConnected: state === "connected" };

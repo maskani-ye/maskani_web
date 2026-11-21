@@ -62,7 +62,6 @@ export default function CreateJobPage() {
       const def = globalCityId ? Number(globalCityId) : (user?.city ? Number(user.city) : "");
       return def ? { ...f, city: def } : f;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, globalCityId]);
 
   const save = async () => {

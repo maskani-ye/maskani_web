@@ -139,7 +139,6 @@ function PropertiesContent() {
     prevCity.current = cityId;
     if (before === null || before === "" || before === cityId) return;
     setFilters((f) => (f.neighborhood_ref ? { ...f, neighborhood_ref: "" } : f));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityId]);
 
   const fetchProperties = useCallback(async () => {

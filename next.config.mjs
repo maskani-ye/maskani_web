@@ -20,9 +20,6 @@ const nextConfig = {
   experimental: {
     cpus: 3,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     // وسائط الباك اند (صور العقارات/الخدمات/الأفاتار) تُخدَم من هذا النطاق.
     remotePatterns: [

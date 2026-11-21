@@ -17,20 +17,34 @@ function videoIdOf(url?: string | null): string | null {
   return m ? m[1] : null;
 }
 
+/** الحقول التي تقرؤها دوال البيانات الوصفية من ردّ تفاصيل العقار — لا أكثر. */
+type PropertyMeta = {
+  title?: string | null;
+  main_image?: string | null;
+  images?: { image?: string | null; is_main?: boolean }[] | null;
+  property_type?: string | { name_ar?: string; name?: string } | null;
+  meta_description?: string | null;
+  description?: string | null;
+  city_name?: string | null;
+  rooms?: number | null;
+  bathrooms?: number | null;
+  area?: number | string | null;
+};
+
 /** صورة العقار الرئيسية. تفصيل مهم: استجابة **التفاصيل** لا تحمل `main_image`
  *  (هو حقل استجابة القائمة فقط) بل `images[]` — فكانت كل صفحة عقار تُصدّر صورة
  *  الهوية الافتراضية بدل صورة العقار في المشاركة وفي البيانات المنظَّمة. */
-function imageOf(l: any): string | null {
+function imageOf(l: PropertyMeta | null | undefined): string | null {
   if (l?.main_image) return l.main_image;
   const imgs = Array.isArray(l?.images) ? l.images : [];
-  const main = imgs.find((i: any) => i?.is_main) || imgs[0];
+  const main = imgs.find((i) => i?.is_main) || imgs[0];
   return main?.image || null;
 }
 
 /** اسم نوع العقار نصّاً — الحقل `category` يقبل نصّاً فقط، وواجهة الـAPI
  *  تُرجعه كائناً `{id, name_ar, icon}`؛ تمريره كما هو كان يُنتج
  *  «نوع الكائن غير صالح في الحقل category». */
-function propertyTypeName(l: any): string | undefined {
+function propertyTypeName(l: PropertyMeta | null | undefined): string | undefined {
   const t = l?.property_type;
   if (!t) return undefined;
   return typeof t === "string" ? t : (t.name_ar || t.name || undefined);
@@ -38,7 +52,7 @@ function propertyTypeName(l: any): string | undefined {
 
 /** وصفٌ لا يكون فارغاً أبداً: نصّ صاحب العقار إن وُجد، وإلا جملة مُركَّبة من
  *  خصائصه الفعلية (نوع · مدينة · غرف · مساحة) — أفضل من حقل ناقص. */
-function descriptionOf(l: any): string {
+function descriptionOf(l: PropertyMeta | null | undefined): string {
   const written = (l?.meta_description || l?.description || "").trim();
   if (written) return written.slice(0, 300);
   const parts = [

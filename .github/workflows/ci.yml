@@ -5,16 +5,19 @@ on:
   push:
     branches: [stable, main]
 
+# ⚠️ (2026-11-21) كان هذا السير يستدعي `next lint` — أُزيل في Next 16 فيفشل دائماً،
+# والخطوة مخفيّة خلف `continue-on-error` — ولم يكن للويب اختبار واحد. الآن كل خطوة
+# تُسقط السير، وNode بإصدار النشر نفسه (deploy.yml: 22) لا 20.
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node 20
+      - name: Set up Node 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "22"
           cache: npm
 
       - name: Install dependencies
@@ -23,9 +26,14 @@ jobs:
       - name: Type-check
         run: npx tsc --noEmit
 
-      - name: Lint
-        # Non-blocking: there is a backlog of pre-existing lint errors
-        # (mostly unused imports). Surfaced here without failing the pipeline
-        # so the team can burn them down without blocking merges.
-        continue-on-error: true
-        run: npx next lint
+      - name: Lint (warnings capped — see eslint.config.mjs)
+        run: npm run lint
+
+      - name: Every logic module has tests (guard)
+        run: npm run audit:tests
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Source guards (ads · units · digits · design · robots · jsonld …)
+        run: npm run audit

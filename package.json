@@ -8,6 +8,7 @@
     "prebuild": "npm run audit && tsx scripts/audit-broker-claim.ts && tsx scripts/audit-market-links.ts && tsx scripts/audit-single-market-claim.ts",
     "audit": "npm run audit:ads && npm run audit:units && npm run audit:digits && npm run audit:notfound && npm run audit:design && npm run audit:robots && npm run audit:jsonld",
     "audit:jsonld": "tsx scripts/audit-jsonld.ts",
+    "audit:tests": "tsx scripts/audit-tests.ts",
     "audit:ads": "tsx scripts/audit-ads.ts",
     "audit:notfound": "tsx scripts/audit-notfound-cache.ts",
     "audit:overflow": "node scripts/audit-overflow.mjs",
@@ -15,7 +16,9 @@
     "audit:design": "tsx scripts/audit-design-system.ts",
     "audit:responsive": "tsx scripts/audit-responsive.ts",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --max-warnings 224",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "audit:units": "tsx scripts/audit-units.ts",
     "audit:digits": "tsx scripts/audit-digits.ts",
     "audit:broker": "tsx scripts/audit-broker-claim.ts",
@@ -58,17 +61,21 @@
     "three": "^0.185.1"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.35",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.5",
+    "jsdom": "^31.0.1",
     "playwright": "^1.62.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.23.12",
     "typescript": "^5",
+    "vitest": "^5.1.1",
     "wrangler": "^4.135.0"
   }
 }
