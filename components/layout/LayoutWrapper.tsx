@@ -4,8 +4,7 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "./Navbar";
 import { BottomNav } from "./BottomNav";
 import { Footer } from "./Footer";
-import { FloatingHelp } from "./FloatingHelp";
-import { FloatingAssistant } from "./FloatingAssistant";
+import { FloatingActions } from "./FloatingActions";
 import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
 import { LocationGate } from "@/components/city/LocationGate";
 import { ProfileCompletionBanner } from "@/components/account/ProfileCompletionBanner";
@@ -58,9 +57,8 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         <CampaignSpotlight pathname={pathname} country={splitMarket(pathname).market ?? country?.code} />
       )}
       {!isAssistant && <Footer />}
-      {/* زرّ عائم لمركز المساعدة */}
-      <FloatingHelp />
-      <FloatingAssistant />
+      {/* الزرّان العائمان (المساعد + المساعدة) مكدّسان في طرف واحد */}
+      <FloatingActions />
       {/* شريط تنقّل سفلي app-like — جوّال فقط (يُخفى في المحادثة المفتوحة) */}
       {!isChatConversation && <BottomNav />}
     </div>
