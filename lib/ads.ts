@@ -19,8 +19,6 @@ export const AD_SLOTS = {
   articleMid: process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID || "",
   /** أسفل المقال بعد المحتوى. */
   articleBottom: process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM || "",
-  /** قائمة المدونة. */
-  blogList: process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_LIST || "",
 } as const;
 
 /** المسارات **المؤهَّلة** للإعلان — قائمة سماح، وكل ما عداها بلا إعلان.

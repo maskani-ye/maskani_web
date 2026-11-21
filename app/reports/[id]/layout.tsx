@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { jsonLdHtml } from "@/lib/jsonLd";
 import { notFound } from "next/navigation";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "https://api.maskani.homes/api/v1";
@@ -60,7 +61,7 @@ export default async function Layout(
   return (
     <>
       {breadcrumb && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumb) }} />
       )}
       {children}
     </>

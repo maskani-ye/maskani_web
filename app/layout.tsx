@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { jsonLdHtml } from "@/lib/jsonLd";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -119,7 +120,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: jsonLdHtml({
               "@context": "https://schema.org",
               "@type": "MobileApplication",
               name: "مسكني",
@@ -139,7 +140,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
+            __html: jsonLdHtml([
               {
                 "@context": "https://schema.org",
                 "@type": "Organization",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { jsonLdHtml } from "@/lib/jsonLd";
 
 import { NUMERIC_LOCALE } from "@/lib/utils";
 import { notFound } from "next/navigation";
@@ -224,13 +225,13 @@ export default async function Layout(
   return (
     <>
       {realEstate && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstate) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(realEstate) }} />
       )}
       {videoLd && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(videoLd) }} />
       )}
       {breadcrumb && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumb) }} />
       )}
       {children}
       {/* روابط داخلية خادمية للصفحات العميقة — تُحسّن اكتشاف/فهرسة العقارات. */}

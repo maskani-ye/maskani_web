@@ -40,6 +40,19 @@ for (const file of walk("app").concat(walk("components"))) {
   }
 }
 
+// القاعدة الثانية (2026-11-21): في المسارات التي لا يُحمَّل فيها سكربت أدسنس من
+// الجذر (`isManualAdsPath` — المدوّنة)، لا تمتلئ الوحدة إلا إن حمّلت صفحتها
+// السكربت بنفسها (`<AdSenseScript force`). بدونه تُرسم لافتة «إعلان» فوق صندوقٍ
+// فارغ — كانت قائمة المدوّنة تفعل ذلك لكل زائر.
+const MANUAL_ADS = [/^app\/blog(\/|$)/];
+for (const file of walk("app")) {
+  if (!MANUAL_ADS.some((re) => re.test(file))) continue;
+  const src = readFileSync(file, "utf8");
+  if (src.includes("<AdSlot") && !src.includes("<AdSenseScript force")) {
+    offenders.push(`${file}: وحدة إعلانية في مسار يدويّ بلا <AdSenseScript force> — ستبقى فارغة`);
+  }
+}
+
 if (offenders.length) {
   console.error("✗ وحدات إعلانية بلا شرط محتوى (مخالفة سياسة محتملة):");
   for (const o of offenders) console.error("   " + o);
