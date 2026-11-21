@@ -55,17 +55,21 @@ export function AdSlot({
   const pathname = usePathname();
   const pushed = useRef(false);
 
+  // شرطٌ واحد للرسم وللطلب (2026-11-21): كان الأثر لا يفحص `isAdFreePath`، فيُدفع
+  // طلبٌ إلى AdSense في صفحةٍ بلا إعلان (`/ye/properties`) بلا `<ins>` يقابله.
+  const visible = !!slot && adsEnabled && hasContent && !isAdFreePath(pathname);
+
   useEffect(() => {
-    if (!slot || !adsEnabled || !hasContent || pushed.current) return;
+    if (!visible || pushed.current) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       pushed.current = true;
     } catch {
       /* حاجب إعلانات أو سكربت لم يُحمَّل — لا شيء نفعله */
     }
-  }, [slot, hasContent]);
+  }, [visible]);
 
-  if (!slot || !adsEnabled || !hasContent || isAdFreePath(pathname)) return null;
+  if (!visible) return null;
 
   return (
     <div className={`my-6 ${className}`}>

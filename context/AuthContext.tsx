@@ -76,6 +76,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await doLogout();
+    } catch {
+      // الخروج المحليّ لا ينتظر نجاح الخادم ولا يُرفع خطؤه إلى المعالِج — انظر lib/auth.
     } finally {
       clearToken();
       setUser(null);

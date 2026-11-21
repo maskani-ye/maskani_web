@@ -16,7 +16,7 @@
     "audit:design": "tsx scripts/audit-design-system.ts",
     "audit:responsive": "tsx scripts/audit-responsive.ts",
     "start": "next start",
-    "lint": "eslint . --max-warnings 224",
+    "lint": "eslint . --max-warnings 223",
     "test": "vitest run",
     "test:watch": "vitest",
     "audit:units": "tsx scripts/audit-units.ts",

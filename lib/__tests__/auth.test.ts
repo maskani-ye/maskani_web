@@ -69,10 +69,13 @@ describe("logout", () => {
     expect(api.post).not.toHaveBeenCalled();
   });
 
-  it("فشل الخادم لا يُبقي الكوكي — يُمسح ويُرفع الخطأ", async () => {
+  it("فشل الخادم لا يوقف الخروج: يُمسح الكوكي ولا يُرفع الخطأ إلى المعالِج", async () => {
+    // كان يُرفع فتتوقّف معالِجات الخروج (الرسالة والانتقال) — الزائر عالقٌ في الصفحة.
     setToken("t");
     api.post.mockRejectedValueOnce(new Error("network"));
-    await expect(logout()).rejects.toThrow("network");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    await expect(logout()).resolves.toBeUndefined();
     expect(getToken()).toBeUndefined();
+    expect(warn).toHaveBeenCalledTimes(1);
   });
 });

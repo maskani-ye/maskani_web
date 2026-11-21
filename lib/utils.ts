@@ -104,9 +104,12 @@ export function formatPrice(price: string | number | null | undefined, currency?
   if (num == null || isNaN(num)) return PRICE_ON_REQUEST;
   // عملة غير صالحة/فارغة → افتراضي YER (تفادي: "Currency code is required with currency style").
   const cur = (currency || "YER").toUpperCase();
-  // YEA (ريال عدن) رمز داخلي لا يعرفه Intl — يسقط عمداً إلى صيغة الرمز أدناه.
   const localeMap: Record<string, string> = { SAR: "ar-SA", JOD: "ar-JO", EGP: "ar-EG", IQD: "ar-IQ", OMR: "ar-OM", YER: "ar-YE", USD: "en-US" };
-  const locale = localeMap[cur] ?? "ar-SA";
+  // ⚠️ YEA (ريال عدن) رمزٌ داخليّ ليس ISO. كان التعليق يفترض أن Intl يرمي عنده فيسقط
+  // إلى `catch` — لكنه يقبل أيّ ثلاثة أحرف ويطبع «YEA» لاتينياً، فظهر كل سعرٍ بريال
+  // عدن «١٬٠٠٠ YEA» (2026-11-21). العملات خارج الخريطة تُصاغ بالرمز صراحةً.
+  if (!localeMap[cur]) return `${formatNumber(num, { maximumFractionDigits: 0 })} ${CURRENCY_SYMBOLS[cur] ?? cur}`;
+  const locale = localeMap[cur];
   try {
     return new Intl.NumberFormat(locale, {
       style: "currency",
@@ -115,7 +118,7 @@ export function formatPrice(price: string | number | null | undefined, currency?
     }).format(num);
   } catch {
     // رمز عملة غير معياري (ISO) → صيغة رقمية بسيطة + الرمز.
-    return `${num.toLocaleString("ar")} ${CURRENCY_SYMBOLS[cur] ?? cur}`;
+    return `${formatNumber(num, { maximumFractionDigits: 0 })} ${CURRENCY_SYMBOLS[cur] ?? cur}`;
   }
 }
 

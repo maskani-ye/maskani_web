@@ -58,40 +58,49 @@ export async function fetchRetry(
     : init;
 
   let wait = 1500;
+  const backoff = async () => {
+    await new Promise((r) => setTimeout(r, wait));
+    wait *= 2;
+  };
   for (let i = 0; i < tries; i++) {
+    // ⚠️ الخانة تُحرَّر **فور** انتهاء الطلب، والتراجع خارجها (2026-11-21). كان فرع ٤٢٩
+    // يحرّرها (فيوقظ منتظراً يأخذها) ثم يزيد العدّاد يدوياً ليوازن `finally` — فيصير
+    // سبعةً والسقف ستّة؛ وفرع الخطأ كان ينتظر التراجع ممسكاً بخانةٍ لا يستعملها.
     await acquire();
+    let res: Response | null = null;
+    let failure: unknown = null;
     try {
-      const res = await fetch(url, {
+      res = await fetch(url, {
         ...signed,
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
-      // ٤٢٩ وأخطاء الخادم عابرة — نتراجع ونعيد. أمّا ٤٠٤ فجواب نهائيّ.
-      if (res.status === 429 || res.status >= 500) {
-        if (i === tries - 1) return res;
-        release();
-        inflight++;            // يُوازن `finally` التالي
-        await new Promise((r) => setTimeout(r, wait));
-        wait *= 2;
-        continue;
-      }
-      return res;
     } catch (err) {
-      // ⚠️ **الابتلاع الصامت أضاع ساعةً في تشخيص بناءٍ فاشل.** كان `catch {}`
-      // يُخفي السبب، فتصل الرسالة إلى الحارس بكلمة «شبكة» وحدها — ولا يُعرف
-      // أمهلةٌ انتهت أم رفضٌ من الخادم أم خطأ برمجيّ. السبب يُطبع الآن مرّة.
-      if (i === 0) {
-        const e = err as { name?: string; message?: string; cause?: unknown };
-        console.warn(
-          `   ↻ فشل جلب ${url.slice(0, 80)} — ${e?.name ?? "?"}: ${e?.message ?? err}` +
-            (e?.cause ? ` · السبب: ${String(e.cause).slice(0, 120)}` : ""),
-        );
-      }
-      if (i === tries - 1) return null;
-      await new Promise((r) => setTimeout(r, wait));
-      wait *= 2;
+      failure = err;
     } finally {
       release();
     }
+
+    if (res) {
+      // ٤٢٩ وأخطاء الخادم عابرة — نتراجع ونعيد. أمّا ٤٠٤ فجواب نهائيّ.
+      if ((res.status === 429 || res.status >= 500) && i < tries - 1) {
+        await backoff();
+        continue;
+      }
+      return res;
+    }
+
+    // ⚠️ **الابتلاع الصامت أضاع ساعةً في تشخيص بناءٍ فاشل.** كان `catch {}`
+    // يُخفي السبب، فتصل الرسالة إلى الحارس بكلمة «شبكة» وحدها — ولا يُعرف
+    // أمهلةٌ انتهت أم رفضٌ من الخادم أم خطأ برمجيّ. السبب يُطبع الآن مرّة.
+    if (i === 0) {
+      const e = failure as { name?: string; message?: string; cause?: unknown };
+      console.warn(
+        `   ↻ فشل جلب ${url.slice(0, 80)} — ${e?.name ?? "?"}: ${e?.message ?? failure}` +
+          (e?.cause ? ` · السبب: ${String(e.cause).slice(0, 120)}` : ""),
+      );
+    }
+    if (i === tries - 1) return null;
+    await backoff();
   }
   return null;
 }

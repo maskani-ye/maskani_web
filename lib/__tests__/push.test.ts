@@ -32,6 +32,17 @@ describe("routeForData — نقرة الإشعار تفتح صفحته (مرآة
     for (const [data, route] of cases) expect(routeForData(data), JSON.stringify(data)).toBe(route);
   });
 
+  it("إشعارات طلب الخدمة تفتح الطلب في /jobs لا طلب العقار في /requests", () => {
+    // الحمولات كما يرسلها الباك اند (jobs/api/v1/views.py).
+    const kind = { request_kind: "service" };
+    expect(routeForData({ type: "request_offer", service_request_id: "44", ...kind })).toBe("/jobs/44");
+    expect(routeForData({ type: "offer_accepted", service_request_id: "44", ...kind })).toBe("/jobs/44");
+    expect(routeForData({ type: "new_service_request", service_request_id: "45", ...kind })).toBe("/jobs/45");
+    expect(routeForData({ type: "offer_accepted", ...kind })).toBe("/jobs");
+    // طلب العقار لم يتغيّر.
+    expect(routeForData({ type: "offer_accepted", request_id: "9", request_kind: "client" })).toBe("/requests/9");
+  });
+
   it("النوع المجهول أو الغائب إلى صفحة الإشعارات لا إلى لا شيء", () => {
     expect(routeForData({ type: "broadcast" })).toBe("/notifications");
     expect(routeForData({})).toBe("/notifications");

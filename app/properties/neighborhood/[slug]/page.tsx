@@ -33,6 +33,8 @@ interface Neighborhood {
   slug: string;
   city: number;
   city_name: string;
+  /** يُشتقّ منه معرّف صفحة المدينة — الاسم العربي لا يُنتج معرّفاً. */
+  city_name_en?: string | null;
   country_name?: string | null;
   country_code?: string | null;
   properties_count?: number;
@@ -42,6 +44,13 @@ interface Neighborhood {
 
 /** اسم الحيّ مع «حي» مرّةً واحدة — كثيرٌ من الأسماء تبدأ بها أصلاً
  *  («حي الاسراء»)، فكان العنوان «حي حي الاسراء». */
+/** سوق الحيّ من دولته — لا من كعكة الزائر. صفحةٌ مفهرسة تُقرأ من أيّ سوق،
+ *  فوجهتها يجب أن تُشتقّ من محتواها لا من حالة قارئها. */
+function marketOf(hood: Neighborhood): string {
+  const code = (hood.country_code || "").toLowerCase();
+  return (MARKETS as readonly string[]).includes(code) ? code : DEFAULT_MARKET;
+}
+
 function hoodLabel(name: string): string {
   return /^حي\s/.test(name.trim()) ? name.trim() : `حي ${name.trim()}`;
 }
@@ -225,11 +234,12 @@ export default async function NeighborhoodPropertiesPage(
   const ownIds = new Set(items.map((p) => p.id));
   const nearby = nearbyAll.filter((p) => !ownIds.has(p.id));
   const requestHref = `/requests/create?city=${hood.city}&neighborhood=${encodeURIComponent(hood.name)}`;
-  const cityHref = `/properties/city/${citySlug(hood.city_name)}`;
-  // سوق الحيّ من دولته — لا من كعكة الزائر. صفحةٌ مفهرسة تُقرأ من أيّ سوق،
-  // فوجهتها يجب أن تُشتقّ من محتواها لا من حالة قارئها.
-  const code = (hood.country_code || "").toLowerCase();
-  const market = (MARKETS as readonly string[]).includes(code) ? code : DEFAULT_MARKET;
+  // ⚠️ من الاسم الإنجليزي (2026-11-21): `citySlug` يحذف كل ما ليس لاتينياً، فكان الاسم
+  // العربي يُنتج `/properties/city/` فارغاً في الصفحة وفي breadcrumb البيانات المنظّمة.
+  // وإن غاب الاسم الإنجليزي فقائمة السوق مفلترةً بالمدينة — لا رابطٌ مكسور.
+  const cSlug = citySlug(hood.city_name_en || "");
+  const cityHref = cSlug ? `/properties/city/${cSlug}` : `/${marketOf(hood)}/properties?city=${hood.city}`;
+  const market = marketOf(hood);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

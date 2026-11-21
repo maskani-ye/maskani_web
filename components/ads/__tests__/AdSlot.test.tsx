@@ -46,6 +46,18 @@ describe("AdSlot — متى لا يُعرض شيء", () => {
     }
   });
 
+  it("في صفحةٍ بلا إعلان لا يُدفع طلبٌ إلى AdSense ولو بمحتوى", () => {
+    // كان الأثر لا يفحص قائمة السماح: لا `<ins>` يُرسم، لكن `{}` يُدفع إلى الطابور.
+    for (const path of ["/ye/properties", "/sa/services", "/properties/12"]) {
+      h.pathname = path;
+      delete window.adsbygoogle;
+      const { container, unmount } = render(<AdSlot slot={SLOT} hasContent />);
+      expect(container.querySelector("ins")).toBeNull();
+      expect(window.adsbygoogle, path).toBeUndefined();
+      unmount();
+    }
+  });
+
   it("لا وحدة حين تُطفأ الإعلانات صراحةً من البيئة", async () => {
     vi.stubEnv("NEXT_PUBLIC_ADS_ENABLED", "false");
     vi.resetModules();

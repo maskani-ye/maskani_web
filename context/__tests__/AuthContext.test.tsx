@@ -161,8 +161,9 @@ describe("AuthProvider — logout", () => {
     h.logout.mockRejectedValue(new Error("offline"));
     mount();
     await waitFor(() => expect(text("user")).toBe("7"));
+    // لا `.catch` هنا عمداً: الخروج يجب أن ينجح فيُكمل المعالِج رسالته وانتقاله.
     await act(async () => {
-      await ctx!.logout().catch(() => {});
+      await ctx!.logout();
     });
     expect(h.clearToken).toHaveBeenCalledTimes(1);
     expect(text("user")).toBe("none");

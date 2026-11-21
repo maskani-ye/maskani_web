@@ -57,6 +57,13 @@ describe("formatNumber", () => {
 });
 
 describe("formatPrice", () => {
+  it("ريال عدن (رمز داخليّ ليس ISO) يظهر برمزه العربي لا «YEA» اللاتيني", () => {
+    // كان Intl يقبل «YEA» فيطبعه لاتينياً، وفرع الرمز العربي لا يُبلَغ أبداً.
+    expect(formatPrice(1000, "YEA")).toBe("١٬٠٠٠ ر.ي (عدن)");
+    expect(formatPrice("2500", "yea")).toBe("٢٬٥٠٠ ر.ي (عدن)");
+    expect(formatPrice(1000, "YEA")).not.toContain("YEA");
+  });
+
   it("غياب السعر أو تعذّر قراءته = «السعر عند التواصل»", () => {
     for (const v of [null, undefined, "", "abc"]) expect(formatPrice(v, "SAR")).toBe(PRICE_ON_REQUEST);
   });

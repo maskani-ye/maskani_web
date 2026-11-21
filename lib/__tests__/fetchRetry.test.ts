@@ -141,6 +141,32 @@ describe("fetchRetry — سقف التزامن", () => {
     expect(out.every((r) => r?.status === 200)).toBe(true);
   });
 
+  it("ردّ 429 لا يخترق السقف: ستّة طلبات جارية على الأكثر طوال التراجع والإعادة", async () => {
+    // كان فرع ٤٢٩ يحرّر الخانة ثم يزيد العدّاد يدوياً — قيست ذروة ٧ بتسعة مستدعين.
+    let active = 0;
+    let peak = 0;
+    const track = (p: Promise<Response>) => {
+      active++;
+      peak = Math.max(peak, active);
+      return p.finally(() => active--);
+    };
+    const pending = Array.from({ length: 9 }, () => deferred<Response>());
+    fetchMock.mockImplementationOnce(() => track(Promise.resolve(res(429))));
+    pending.forEach((d) => fetchMock.mockImplementationOnce(() => track(d.promise)));
+
+    const all = pending.map((_, i) => fetchRetry(`https://api/p${i}`));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(peak).toBeLessThanOrEqual(6);
+
+    await vi.advanceTimersByTimeAsync(1500);           // انتهاء تراجع الطلب الأوّل
+    pending.forEach((d) => d.resolve(res(200)));
+    await vi.advanceTimersByTimeAsync(0);
+    const out = await Promise.all(all);
+    expect(peak).toBeLessThanOrEqual(6);
+    expect(out.every((r) => r?.status === 200)).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(10);       // تسعة + إعادة الأوّل
+  });
+
   it("الفشل لا يُسرّب خانة: بعد أخطاء شبكة تبقى ستّة خانات عاملة", async () => {
     fetchMock.mockRejectedValue(new TypeError("fetch failed"));
     const failed = Array.from({ length: 6 }, (_, i) => fetchRetry(`https://api/f${i}`, undefined, 1));

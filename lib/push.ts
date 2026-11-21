@@ -171,8 +171,17 @@ export function routeForData(data: Record<string, string>): string | null {
     case "new_offer":
     case "request_offer":
     case "offer_accepted": {
-      const r = id("request_id", "request", "service_request_id");
+      // ⚠️ طلب الخدمة أوّلاً كما في فلاتر (2026-11-21): كان `service_request_id` يُقرأ
+      // ضمن معرّفات طلب العقار فيفتح `/requests/<id>` — صفحة كيانٍ آخر أو 404.
+      const job = id("service_request_id");
+      if (job || data.request_kind === "service") return job ? `/jobs/${job}` : "/jobs";
+      const r = id("request_id", "request");
       return r ? `/requests/${r}` : "/requests";
+    }
+    case "new_service_request": {
+      // كان بلا فرع فيقع على صفحة الإشعارات — المزوّد يريد الطلب نفسه.
+      const job = id("service_request_id");
+      return job ? `/jobs/${job}` : "/jobs";
     }
     case "report_updated":
     case "fraud_report_update": {

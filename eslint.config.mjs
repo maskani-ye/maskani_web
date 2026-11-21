@@ -13,7 +13,7 @@ export default defineConfig([
     // المُترجِم (`reactCompiler` غائب)، ومواضعها أنماطٌ مقصودة وموثّقة: «المرجع الحيّ»
     // (`ref.current = value` أثناء الرسم)، وعلامة اكتمال التحميل في `useEffect`، ودالةٌ
     // تُستدعى بعد تعريفها. تحذيرٌ يُعدّ لا خطأ — وسقف التحذيرات في `npm run lint`
-    // (`--max-warnings`) يمنع زيادتها، فيُنزَل السقف كلّما أُصلح شيء (2026-11-21).
+    // (`--max-warnings`) يمنع زيادتها، فيُنزَل السقف كلّما أُصلح شيء (2026-11-21: 224 ← 223).
     rules: {
       "react-hooks/set-state-in-effect": "warn",
       "react-hooks/refs": "warn",

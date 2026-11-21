@@ -242,6 +242,27 @@ describe("CountryProvider — setCountry", () => {
     expect(h.push).not.toHaveBeenCalled();
   });
 
+  it("بعد التنقّل داخل التطبيق تُحسب الوجهة من المسار **الحاليّ** لا من أوّل تحميل", async () => {
+    // دخل على /ye ثم انتقل إلى صفحة اختيار الموقع (بلا سوق في الرابط): لا انتقال.
+    h.pathname = "/ye";
+    const view = mount();
+    await waitFor(() => expect(text("count")).toBe("3"));
+    h.pathname = "/location";
+    view.rerender(<CountryProvider><Probe /></CountryProvider>);
+    act(() => ctx!.setCountry(SA));
+    expect(h.push).not.toHaveBeenCalled();
+    cleanup();
+
+    // دخل على / ثم انتقل إلى /ye/services: الاختيار يفتح القسم نفسه في السوق الآخر.
+    h.pathname = "/";
+    const view2 = mount();
+    await waitFor(() => expect(text("count")).toBe("3"));
+    h.pathname = "/ye/services";
+    view2.rerender(<CountryProvider><Probe /></CountryProvider>);
+    act(() => ctx!.setCountry(SA));
+    expect(h.push).toHaveBeenCalledWith("/sa/services");
+  });
+
   it("على / يغيّر الدولة في مكانها بلا انتقال ويحفظها", async () => {
     save(YE);
     mount();
